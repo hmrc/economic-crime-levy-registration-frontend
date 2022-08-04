@@ -49,10 +49,10 @@
     <script src='@controllers.routes.Assets.versioned("javascripts/application.min.js")'></script>
 }
 
-@beforeContent = {
-    @if(showBackLink) {
-        @govukBackLink(BackLinkViewModel(href = "#"))
-    }
+@backLink = @{
+    if(showBackLink) {
+        Some("#")
+    } else None
 }
 
 @content = {
@@ -71,6 +71,6 @@
     isWelshTranslationAvailable = appConfig.languageTranslationEnabled,
     additionalScriptsBlock = Some(additionalScripts),
     additionalHeadBlock = head,
-    beforeContentBlock = Some(beforeContent),
+    backLinkUrl = backLink,
     phaseBanner = Some(alphaBanner(appConfig.feedbackUrl))
 )(content)

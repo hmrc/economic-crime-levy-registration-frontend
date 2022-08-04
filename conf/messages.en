@@ -1,4 +1,4 @@
-service.name = economic-crime-levy-registration-frontend
+service.name = Register for Economic Crime Levy
 
 site.back = Back
 site.remove = Remove
