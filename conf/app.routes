@@ -12,8 +12,8 @@ GET         /there-is-a-problem                          uk.gov.hmrc.economiccri
 
 GET         /check-your-answers                          uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad
 
-GET         /account/sign-out-survey                     uk.gov.hmrc.economiccrimelevyregistration.controllers.auth.AuthController.signOut
-GET         /account/sign-out                            uk.gov.hmrc.economiccrimelevyregistration.controllers.auth.AuthController.signOutNoSurvey
-GET         /account/signed-out                          uk.gov.hmrc.economiccrimelevyregistration.controllers.auth.SignedOutController.onPageLoad
+GET         /account/sign-out-survey                     uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut
+GET         /account/sign-out                            uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey
+GET         /account/signed-out                          uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut
 
 GET         /unauthorised                                uk.gov.hmrc.economiccrimelevyregistration.controllers.UnauthorisedController.onPageLoad

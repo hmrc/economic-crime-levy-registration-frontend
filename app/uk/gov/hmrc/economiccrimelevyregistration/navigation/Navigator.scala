@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, UserAnswers}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.pages.Page
 
 import javax.inject.{Inject, Singleton}
@@ -26,15 +26,15 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class Navigator @Inject() () {
 
-  private val normalRoutes: Page => UserAnswers => Call = { case _ =>
+  private val normalRoutes: Page => Registration => Call = { case _ =>
     _ => routes.IndexController.onPageLoad
   }
 
-  private val checkRouteMap: Page => UserAnswers => Call = { case _ =>
+  private val checkRouteMap: Page => Registration => Call = { case _ =>
     _ => routes.CheckYourAnswersController.onPageLoad
   }
 
-  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
+  def nextPage(page: Page, mode: Mode, userAnswers: Registration): Call = mode match {
     case NormalMode =>
       normalRoutes(page)(userAnswers)
     case CheckMode  =>

@@ -14,39 +14,30 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.controllers.auth
+package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.FrontendAppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.repositories.SessionRepository
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.SignedOutView
 
 import java.net.URLEncoder
-import scala.concurrent.Future
 
-class AuthControllerSpec extends SpecBase with MockitoSugar {
+class SignOutControllerSpec extends SpecBase with MockitoSugar {
 
   "signOut" - {
 
-    "must clear user answers and redirect to sign out, specifying the exit survey as the continue URL" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.clear(any())) thenReturn Future.successful(true)
-
+    "redirect to sign out, specifying the exit survey as the continue URL" in {
       val application =
         applicationBuilder(None)
-          .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
           .build()
 
       running(application) {
 
         val appConfig = application.injector.instanceOf[FrontendAppConfig]
-        val request   = FakeRequest(GET, routes.AuthController.signOut.url)
+        val request   = FakeRequest(GET, routes.SignOutController.signOut.url)
 
         val result = route(application, request).value
 
@@ -55,36 +46,48 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual expectedRedirectUrl
-        verify(mockSessionRepository, times(1)).clear(eqTo(userAnswersId))
       }
     }
   }
 
   "signOutNoSurvey" - {
 
-    "must clear users answers and redirect to sign out, specifying SignedOut as the continue URL" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.clear(any())) thenReturn Future.successful(true)
-
+    "redirect to sign out, specifying SignedOut as the continue URL" in {
       val application =
         applicationBuilder(None)
-          .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
           .build()
 
       running(application) {
 
         val appConfig = application.injector.instanceOf[FrontendAppConfig]
-        val request   = FakeRequest(GET, routes.AuthController.signOutNoSurvey.url)
+        val request   = FakeRequest(GET, routes.SignOutController.signOutNoSurvey.url)
 
         val result = route(application, request).value
 
-        val encodedContinueUrl  = URLEncoder.encode(routes.SignedOutController.onPageLoad.url, "UTF-8")
+        val encodedContinueUrl  = URLEncoder.encode(routes.SignOutController.signedOut.url, "UTF-8")
         val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual expectedRedirectUrl
-        verify(mockSessionRepository, times(1)).clear(eqTo(userAnswersId))
+      }
+    }
+  }
+
+  "signedOut" - {
+
+    "must return OK and the correct view for a GET" in {
+
+      val application = applicationBuilder(userAnswers = None).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.SignOutController.signedOut.url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[SignedOutView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view()(request, messages(application)).toString
       }
     }
   }

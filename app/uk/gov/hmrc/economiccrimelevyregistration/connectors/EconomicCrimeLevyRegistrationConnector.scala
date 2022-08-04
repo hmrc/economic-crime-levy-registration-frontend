@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.queries
+package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
-import play.api.libs.json.JsPath
-import uk.gov.hmrc.economiccrimelevyregistration.models.UserAnswers
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-import scala.util.{Success, Try}
+import javax.inject.Singleton
+import scala.concurrent.Future
 
-sealed trait Query {
+@Singleton
+class EconomicCrimeLevyRegistrationConnector {
 
-  def path: JsPath
-}
+  def createRegistration = ???
 
-trait Gettable[A] extends Query
+  def getRegistration(userId: String): Future[Option[Registration]] = ???
 
-trait Settable[A] extends Query {
-
-  def cleanup(value: Option[A], userAnswers: UserAnswers): Try[UserAnswers] =
-    Success(userAnswers)
 }

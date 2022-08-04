@@ -26,7 +26,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
-import uk.gov.hmrc.economiccrimelevyregistration.models.UserAnswers
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 trait SpecBase
     extends AnyFreeSpec
@@ -38,11 +38,11 @@ trait SpecBase
 
   val userAnswersId: String = "id"
 
-  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+  def emptyUserAnswers: Registration = Registration(userAnswersId)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
+  protected def applicationBuilder(userAnswers: Option[Registration] = None): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .overrides(
         bind[DataRequiredAction].to[DataRequiredActionImpl],

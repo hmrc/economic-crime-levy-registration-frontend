@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.pages
+package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import uk.gov.hmrc.economiccrimelevyregistration.queries.{Gettable, Settable}
+import play.api.libs.json._
 
-trait QuestionPage[A] extends Page with Gettable[A] with Settable[A]
+import java.time.Instant
+
+final case class Registration(
+  id: String,
+  data: JsObject = Json.obj(),
+  lastUpdated: Instant = Instant.now
+)

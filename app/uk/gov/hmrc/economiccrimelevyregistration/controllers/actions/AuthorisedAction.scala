@@ -33,7 +33,7 @@ trait IdentifierAction
     extends ActionBuilder[IdentifierRequest, AnyContent]
     with ActionFunction[Request, IdentifierRequest]
 
-class AuthenticatedIdentifierAction @Inject() (
+class AuthorisedAction @Inject() (
   override val authConnector: AuthConnector,
   config: FrontendAppConfig,
   val parser: BodyParsers.Default
@@ -54,24 +54,6 @@ class AuthenticatedIdentifierAction @Inject() (
         Redirect(config.signInUrl, Map("continue" -> Seq(config.signInContinueUrl)))
       case _: AuthorisationException =>
         Redirect(routes.UnauthorisedController.onPageLoad)
-    }
-  }
-}
-
-class SessionIdentifierAction @Inject() (
-  val parser: BodyParsers.Default
-)(implicit val executionContext: ExecutionContext)
-    extends IdentifierAction {
-
-  override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
-
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-
-    hc.sessionId match {
-      case Some(session) =>
-        block(IdentifierRequest(request, session.value))
-      case None          =>
-        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
   }
 }

@@ -17,10 +17,10 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models.requests
 
 import play.api.mvc.{Request, WrappedRequest}
-import uk.gov.hmrc.economiccrimelevyregistration.models.UserAnswers
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-case class OptionalDataRequest[A](request: Request[A], userId: String, userAnswers: Option[UserAnswers])
+case class OptionalDataRequest[A](request: Request[A], userId: String, userAnswers: Option[Registration])
     extends WrappedRequest[A](request)
 
-case class DataRequest[A](request: Request[A], userId: String, userAnswers: UserAnswers)
+case class DataRequest[A](request: Request[A], userId: String, userAnswers: Registration)
     extends WrappedRequest[A](request)
