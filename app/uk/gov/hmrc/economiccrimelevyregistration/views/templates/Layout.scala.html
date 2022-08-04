@@ -20,26 +20,18 @@
 
 @this(
     appConfig: FrontendAppConfig,
-    govukLayout: GovukLayout,
+    hmrcLayout: HmrcLayout,
     govukBackLink: GovukBackLink,
     hmrcHead: HmrcHead,
-    hmrcStandardHeader: HmrcStandardHeader,
-    hmrcStandardFooter: HmrcStandardFooter,
-    hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-    hmrcLanguageSelect: HmrcLanguageSelect,
     hmrcTimeoutDialog: HmrcTimeoutDialog,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-    hmrcScripts: HmrcScripts,
     alphaBanner: StandardAlphaBanner
 )
 
 @(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
-@head = {
-
-    @hmrcHead(
-        nonce     = CSPNonce.get,
-        headBlock = if(timeout) { Some(
+@head = @{
+    if(timeout) { Some(
             hmrcTimeoutDialog(TimeoutDialog(
                 timeout             = Some(appConfig.timeout),
                 countdown           = Some(appConfig.countdown),
@@ -51,7 +43,6 @@
                 message             = Some(messages("timeout.message"))
             )))
         } else None
-    )
 }
 
 @additionalScripts = {
@@ -59,15 +50,6 @@
 }
 
 @beforeContent = {
-
-    @if(appConfig.languageTranslationEnabled) {
-        @hmrcLanguageSelect(LanguageSelect(
-            if (messages.lang.code == "cy") Cy else En,
-            (En, routes.LanguageSwitchController.switchToLanguage("en").url),
-            (Cy, routes.LanguageSwitchController.switchToLanguage("cy").url)
-        ))
-    }
-
     @if(showBackLink) {
         @govukBackLink(BackLinkViewModel(href = "#"))
     }
@@ -81,18 +63,14 @@
     </div>
 }
 
-@govukLayout(
-    pageTitle   = Some(pageTitle),
-    headBlock   = Some(head),
-    headerBlock = Some(hmrcStandardHeader(
-        serviceUrl  = Some(routes.IndexController.onPageLoad.url),
-        signOutUrl  = if(showSignOut) Some(uk.gov.hmrc.economiccrimelevyregistration.controllers.auth.routes.AuthController.signOut.url) else None,
-        phaseBanner = Some(alphaBanner(appConfig.feedbackUrl))
-    )),
+@hmrcLayout(
+    pageTitle = Some(pageTitle),
+    nonce = CSPNonce.get,
+    signOutUrl = Some(uk.gov.hmrc.economiccrimelevyregistration.controllers.auth.routes.AuthController.signOut.url),
+    serviceUrl = Some(routes.IndexController.onPageLoad.url),
+    isWelshTranslationAvailable = appConfig.languageTranslationEnabled,
+    additionalScriptsBlock = Some(additionalScripts),
+    additionalHeadBlock = head,
     beforeContentBlock = Some(beforeContent),
-    footerBlock        = Some(hmrcStandardFooter()),
-    scriptsBlock       = Some(hmrcScripts(
-        nonce        = CSPNonce.get,
-        scriptsBlock = Some(additionalScripts)
-    ))
+    phaseBanner = Some(alphaBanner(appConfig.feedbackUrl))
 )(content)

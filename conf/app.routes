@@ -6,8 +6,6 @@ GET         /                                            uk.gov.hmrc.economiccri
 
 GET         /assets/*file                                controllers.Assets.versioned(path = "/public", file: Asset)
 
-GET         /language/:lang                              uk.gov.hmrc.economiccrimelevyregistration.controllers.LanguageSwitchController.switchToLanguage(lang: String)
-
 GET         /refresh-session                             uk.gov.hmrc.economiccrimelevyregistration.controllers.KeepAliveController.keepAlive
 
 GET         /there-is-a-problem                          uk.gov.hmrc.economiccrimelevyregistration.controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)

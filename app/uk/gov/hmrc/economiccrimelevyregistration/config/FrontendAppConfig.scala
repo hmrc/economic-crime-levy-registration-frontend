@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.config
 
 import com.google.inject.{Inject, Singleton}
 import play.api.Configuration
-import play.api.i18n.Lang
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 
@@ -43,11 +42,6 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
 
   val languageTranslationEnabled: Boolean =
     configuration.get[Boolean]("features.welsh-translation")
-
-  def languageMap: Map[String, Lang] = Map(
-    "en" -> Lang("en"),
-    "cy" -> Lang("cy")
-  )
 
   val timeout: Int   = configuration.get[Int]("timeout-dialog.timeout")
   val countdown: Int = configuration.get[Int]("timeout-dialog.countdown")
