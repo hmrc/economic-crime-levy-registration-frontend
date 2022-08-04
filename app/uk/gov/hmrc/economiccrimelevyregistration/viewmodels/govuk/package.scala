@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels
 package object govuk {
 
   object all
-    extends ImplicitConversions
+      extends ImplicitConversions
       with BackLinkFluency
       with ButtonFluency
       with CheckboxFluency

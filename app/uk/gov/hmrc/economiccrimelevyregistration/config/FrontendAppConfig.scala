@@ -27,7 +27,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val host: String    = configuration.get[String]("host")
   val appName: String = configuration.get[String]("appName")
 
-  private val contactHost = configuration.get[String]("contact-frontend.host")
+  private val contactHost                  = configuration.get[String]("contact-frontend.host")
   private val contactFormServiceIdentifier = "economic-crime-levy-registration-frontend"
 
   def feedbackUrl(implicit request: RequestHeader): String =
@@ -35,7 +35,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
 
   val signInUrl: String         = configuration.get[String]("urls.signIn")
   val signInContinueUrl: String = configuration.get[String]("urls.signInContinue")
-  val signOutUrl: String       = configuration.get[String]("urls.signOut")
+  val signOutUrl: String        = configuration.get[String]("urls.signOut")
 
   private val exitSurveyBaseUrl: String = configuration.get[Service]("microservice.services.feedback-frontend").baseUrl
   val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/economic-crime-levy-registration-frontend"

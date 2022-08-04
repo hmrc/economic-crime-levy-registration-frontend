@@ -1,4 +1,5 @@
 import play.sbt.routes.RoutesKeys
+import scoverage.ScoverageKeys
 
 val appName = "economic-crime-levy-registration-frontend"
 
@@ -13,7 +14,7 @@ lazy val root = (project in file("."))
   .settings(inConfig(IntegrationTest)(itSettings): _*)
   .settings(majorVersion := 0)
   .settings(ThisBuild / useSuperShell := false)
-  .settings(CodeCoverageSettings.settings: _*)
+  .settings(scoverageSettings: _*)
   .settings(
     scalaVersion := "2.12.15",
     name := appName,
@@ -71,3 +72,33 @@ lazy val itSettings = Defaults.itSettings ++ Seq(
   parallelExecution := false,
   fork := true
 )
+
+val excludedScoveragePackages: Seq[String] = Seq(
+  "<empty>",
+  "Reverse.*",
+  ".*handlers.*",
+  ".*components.*",
+  "uk.gov.hmrc.BuildInfo",
+  "app.*",
+  "prod.*",
+  ".*Routes.*",
+  ".*viewmodels.govuk.*",
+  "testOnly.*",
+  "testOnlyDoNotUseInAppConf.*"
+)
+
+val scoverageSettings: Seq[Setting[_]] = Seq(
+  ScoverageKeys.coverageExcludedFiles := excludedScoveragePackages.mkString(";"),
+  ScoverageKeys.coverageMinimumStmtTotal := 80,
+  ScoverageKeys.coverageFailOnMinimum := true,
+  ScoverageKeys.coverageHighlighting := true,
+  scalacOptions ++= Seq(
+    "-feature",
+    "-Ypartial-unification",
+    "-rootdir",
+    baseDirectory.value.getCanonicalPath,
+    "-Wconf:cat=deprecation:ws,cat=feature:ws,cat=optimizer:ws,src=target/.*:s"
+  )
+)
+
+addCommandAlias("runAllChecks", ";clean;compile;scalafmtCheckAll;coverage;test;it:test;coverageReport")
