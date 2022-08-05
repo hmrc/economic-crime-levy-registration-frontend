@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
-class WithName(string: String) {
-  override val toString: String = string
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+
+import javax.inject.Singleton
+import scala.concurrent.Future
+
+@Singleton
+class EclRegistrationConnector {
+
+  def createRegistration = ???
+
+  def getRegistration(internalId: String): Future[Option[Registration]] = ???
+
 }

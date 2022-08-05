@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours
+package uk.gov.hmrc.economiccrimelevyregistration.services
 
-import play.api.data.{Form, FormError}
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-trait StringFieldBehaviours extends FieldBehaviours {
+import javax.inject.Singleton
+import scala.concurrent.Future
 
-  def fieldWithMaxLength(form: Form[_], fieldName: String, maxLength: Int, lengthError: FormError): Unit =
-    s"not bind strings longer than $maxLength characters" in {
+@Singleton
+class EclRegistrationService {
 
-      forAll(stringsLongerThan(maxLength) -> "longString") { string =>
-        val result = form.bind(Map(fieldName -> string)).apply(fieldName)
-        result.errors must contain only lengthError
-      }
-    }
+  def getOrCreateRegistration(internalId: String): Future[Registration] = ???
+
 }

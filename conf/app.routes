@@ -8,8 +8,6 @@ GET         /assets/*file                                controllers.Assets.vers
 
 GET         /refresh-session                             uk.gov.hmrc.economiccrimelevyregistration.controllers.KeepAliveController.keepAlive
 
-GET         /there-is-a-problem                          uk.gov.hmrc.economiccrimelevyregistration.controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
-
 GET         /check-your-answers                          uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad
 
 GET         /account/sign-out-survey                     uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut

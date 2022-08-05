@@ -36,17 +36,16 @@ trait SpecBase
     with ScalaFutures
     with IntegrationPatience {
 
-  val userAnswersId: String = "id"
+  val registrationId: String = "id"
 
-  def emptyUserAnswers: Registration = Registration(userAnswersId)
+  def emptyRegistration: Registration = Registration(registrationId)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  protected def applicationBuilder(userAnswers: Option[Registration] = None): GuiceApplicationBuilder =
+  protected def applicationBuilder(registration: Registration = emptyRegistration): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .overrides(
-        bind[DataRequiredAction].to[DataRequiredActionImpl],
         bind[IdentifierAction].to[FakeIdentifierAction],
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(registration))
       )
 }

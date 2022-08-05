@@ -19,8 +19,5 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.requests
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-case class OptionalDataRequest[A](request: Request[A], userId: String, userAnswers: Option[Registration])
-    extends WrappedRequest[A](request)
-
-case class DataRequest[A](request: Request[A], userId: String, userAnswers: Registration)
+case class DataRequest[A](request: Request[A], internalId: String, registration: Registration)
     extends WrappedRequest[A](request)

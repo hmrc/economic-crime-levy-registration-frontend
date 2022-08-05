@@ -31,8 +31,7 @@ lazy val root = (project in file("."))
       "uk.gov.hmrc.hmrcfrontend.views.config._",
       "uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils._",
       "uk.gov.hmrc.economiccrimelevyregistration.models.Mode",
-      "uk.gov.hmrc.economiccrimelevyregistration.controllers.routes",
-      "uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.all._"
+      "uk.gov.hmrc.economiccrimelevyregistration.controllers.routes"
     ),
     PlayKeys.playDefaultPort := 14000,
     libraryDependencies ++= AppDependencies(),

@@ -26,7 +26,7 @@ class KeepAliveControllerSpec extends SpecBase with MockitoSugar {
   "keepAlive" - {
     "must return OK" in {
       val application =
-        applicationBuilder(None)
+        applicationBuilder()
           .build()
 
       running(application) {

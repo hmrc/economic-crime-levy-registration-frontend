@@ -31,7 +31,7 @@ class SignOutControllerSpec extends SpecBase with MockitoSugar {
 
     "redirect to sign out, specifying the exit survey as the continue URL" in {
       val application =
-        applicationBuilder(None)
+        applicationBuilder()
           .build()
 
       running(application) {
@@ -54,7 +54,7 @@ class SignOutControllerSpec extends SpecBase with MockitoSugar {
 
     "redirect to sign out, specifying SignedOut as the continue URL" in {
       val application =
-        applicationBuilder(None)
+        applicationBuilder()
           .build()
 
       running(application) {
@@ -77,7 +77,7 @@ class SignOutControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder().build()
 
       running(application) {
         val request = FakeRequest(GET, routes.SignOutController.signedOut.url)
