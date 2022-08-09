@@ -17,19 +17,18 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
 import play.api.mvc._
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.IdentifierRequest
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeIdentifierAction @Inject() (bodyParsers: PlayBodyParsers) extends IdentifierAction {
+class FakeAuthorisedAction @Inject() (bodyParsers: PlayBodyParsers) extends AuthorisedAction {
 
-  override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] =
-    block(IdentifierRequest(request, "id"))
+  override def parser: BodyParser[AnyContent] = bodyParsers.defaultBodyParser
 
-  override def parser: BodyParser[AnyContent] =
-    bodyParsers.default
+  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
+    block(AuthorisedRequest(request, "id"))
 
-  override protected def executionContext: ExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
+  override protected def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+
 }

@@ -16,36 +16,57 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.base
 
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.freespec.AnyFreeSpec
+import org.mockito.MockitoSugar
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{OptionValues, TryValues}
-import play.api.Application
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.inject.bind
-import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.mvc._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
+import play.api.test.Helpers.{stubBodyParser, stubControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{FakeAuthorisedAction, FakeDataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.ExecutionContext
 
 trait SpecBase
-    extends AnyFreeSpec
+    extends AnyWordSpec
     with Matchers
     with TryValues
     with OptionValues
     with ScalaFutures
-    with IntegrationPatience {
+    with Results
+    with GuiceOneAppPerSuite
+    with MockitoSugar {
 
-  val registrationId: String = "id"
+  val internalId: String                               = "id"
+  val emptyRegistration: Registration                  = Registration(internalId)
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val appConfig: AppConfig                             = app.injector.instanceOf[AppConfig]
+  val messagesApi: MessagesApi                         = app.injector.instanceOf[MessagesApi]
+  val messages: Messages                               = messagesApi.preferred(fakeRequest)
+  val bodyParsers: PlayBodyParsers                     = app.injector.instanceOf[PlayBodyParsers]
+  val fakeAuthorisedAction                             = new FakeAuthorisedAction(bodyParsers)
+  val fakeDataRetrievalAction                          = new FakeDataRetrievalAction(emptyRegistration)
 
-  def emptyRegistration: Registration = Registration(registrationId)
+  val mcc: DefaultMessagesControllerComponents = {
+    val stub = stubControllerComponents()
+    DefaultMessagesControllerComponents(
+      new DefaultMessagesActionBuilderImpl(stubBodyParser(AnyContentAsEmpty), stub.messagesApi)(stub.executionContext),
+      DefaultActionBuilder(stub.actionBuilder.parser)(stub.executionContext),
+      stub.parsers,
+      messagesApi,
+      stub.langs,
+      stub.fileMimeTypes,
+      stub.executionContext
+    )
+  }
 
-  def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
+  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  implicit val hc: HeaderCarrier    = HeaderCarrier()
 
-  protected def applicationBuilder(registration: Registration = emptyRegistration): GuiceApplicationBuilder =
-    new GuiceApplicationBuilder()
-      .overrides(
-        bind[IdentifierAction].to[FakeIdentifierAction],
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(registration))
-      )
 }

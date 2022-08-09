@@ -21,39 +21,37 @@ import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.economiccrimelevyregistration.config.FrontendAppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.IdentifierRequest
-import uk.gov.hmrc.http.{HeaderCarrier, UnauthorizedException}
-import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
+import uk.gov.hmrc.http.UnauthorizedException
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait IdentifierAction
-    extends ActionBuilder[IdentifierRequest, AnyContent]
-    with ActionFunction[Request, IdentifierRequest]
+trait AuthorisedAction
+    extends ActionBuilder[AuthorisedRequest, AnyContent]
+    with FrontendHeaderCarrierProvider
+    with ActionFunction[Request, AuthorisedRequest]
 
-class AuthorisedAction @Inject() (
+class BaseAuthorisedAction @Inject() (
   override val authConnector: AuthConnector,
-  config: FrontendAppConfig,
+  config: AppConfig,
   val parser: BodyParsers.Default
 )(implicit val executionContext: ExecutionContext)
-    extends IdentifierAction
+    extends AuthorisedAction
+    with FrontendHeaderCarrierProvider
     with AuthorisedFunctions {
 
-  override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
-
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-
+  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
     authorised().retrieve(Retrievals.internalId) {
       _.map { internalId =>
-        block(IdentifierRequest(request, internalId))
-      }.getOrElse(throw new UnauthorizedException("Unable to retrieve internal Id"))
-    } recover {
+        block(AuthorisedRequest(request, internalId))
+      }.getOrElse(throw new UnauthorizedException("Unable to retrieve internalId"))
+    }(hc(request), executionContext) recover {
       case _: NoActiveSession        =>
         Redirect(config.signInUrl, Map("continue" -> Seq(config.signInContinueUrl)))
       case _: AuthorisationException =>
         Redirect(routes.UnauthorisedController.onPageLoad)
     }
-  }
 }

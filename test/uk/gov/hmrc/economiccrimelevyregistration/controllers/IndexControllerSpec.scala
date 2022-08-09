@@ -16,30 +16,28 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IndexView
 
 class IndexControllerSpec extends SpecBase {
 
-  "Index Controller" - {
+  val view: IndexView = app.injector.instanceOf[IndexView]
 
-    "must return OK and the correct view for a GET" in {
+  val controller = new IndexController(
+    mcc,
+    fakeAuthorisedAction,
+    view
+  )
 
-      val application = applicationBuilder().build()
+  "onPageLoad" should {
+    "return OK and the correct view" in {
+      val result = controller.onPageLoad()(fakeRequest)
 
-      running(application) {
-        val request = FakeRequest(GET, routes.IndexController.onPageLoad.url)
+      status(result) mustEqual OK
 
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[IndexView]
-
-        status(result) mustEqual OK
-
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
-      }
+      contentAsString(result) mustEqual view()(fakeRequest, messages).toString
     }
   }
+
 }

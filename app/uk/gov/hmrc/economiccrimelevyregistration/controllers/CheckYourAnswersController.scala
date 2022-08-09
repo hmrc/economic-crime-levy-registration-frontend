@@ -19,21 +19,21 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{DataRetrievalAction, IdentifierAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
+  authorise: AuthorisedAction,
+  getRegistrationData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData) { implicit request =>
+  def onPageLoad(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     val list = SummaryList(
       rows = Seq.empty
     )

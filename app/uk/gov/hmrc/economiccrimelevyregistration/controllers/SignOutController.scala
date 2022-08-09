@@ -18,8 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.config.FrontendAppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.IdentifierAction
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedAction
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.SignedOutView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -27,21 +27,21 @@ import javax.inject.Inject
 
 class SignOutController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  config: FrontendAppConfig,
-  identify: IdentifierAction,
+  config: AppConfig,
+  authorise: AuthorisedAction,
   view: SignedOutView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def signOut(): Action[AnyContent] = identify { _ =>
+  def signOut(): Action[AnyContent] = authorise { _ =>
     Redirect(config.signOutUrl, Map("continue" -> Seq(config.exitSurveyUrl)))
   }
 
-  def signOutNoSurvey(): Action[AnyContent] = identify { _ =>
+  def signOutNoSurvey(): Action[AnyContent] = authorise { _ =>
     Redirect(config.signOutUrl, Map("continue" -> Seq(routes.SignOutController.signedOut.url)))
   }
 
-  def signedOut: Action[AnyContent] = Action { implicit request =>
+  def signedOut(): Action[AnyContent] = Action { implicit request =>
     Ok(view())
   }
 }

@@ -17,21 +17,21 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
 import play.api.mvc.ActionTransformer
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{DataRequest, IdentifierRequest}
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataRetrievalActionImpl @Inject() (
+class RegistrationDataRetrievalAction @Inject() (
   val eclRegistrationService: EclRegistrationService
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction {
 
-  override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
+  override protected def transform[A](request: AuthorisedRequest[A]): Future[RegistrationDataRequest[A]] =
     eclRegistrationService.getOrCreateRegistration(request.internalId).map {
-      DataRequest(request.request, request.internalId, _)
+      RegistrationDataRequest(request.request, request.internalId, _)
     }
 }
 
-trait DataRetrievalAction extends ActionTransformer[IdentifierRequest, DataRequest]
+trait DataRetrievalAction extends ActionTransformer[AuthorisedRequest, RegistrationDataRequest]

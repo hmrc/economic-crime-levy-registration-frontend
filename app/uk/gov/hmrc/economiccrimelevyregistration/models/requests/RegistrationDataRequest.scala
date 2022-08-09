@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.controllers
+package uk.gov.hmrc.economiccrimelevyregistration.models.requests
 
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{DataRetrievalAction, IdentifierAction}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import play.api.mvc.{Request, WrappedRequest}
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-import javax.inject.Inject
-
-class KeepAliveController @Inject() (
-  val controllerComponents: MessagesControllerComponents,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction
-) extends FrontendBaseController {
-
-  def keepAlive: Action[AnyContent] = identify(_ => Ok)
-}
+case class RegistrationDataRequest[A](request: Request[A], internalId: String, registration: Registration)
+    extends WrappedRequest[A](request)

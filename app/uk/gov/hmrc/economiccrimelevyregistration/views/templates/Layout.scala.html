@@ -14,12 +14,12 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.economiccrimelevyregistration.config.FrontendAppConfig
+@import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 @import uk.gov.hmrc.hmrcfrontend.views.config.StandardAlphaBanner
 @import views.html.helper.CSPNonce
 
 @this(
-    appConfig: FrontendAppConfig,
+    appConfig: AppConfig,
     hmrcLayout: HmrcLayout,
     govukBackLink: GovukBackLink,
     hmrcHead: HmrcHead,
@@ -35,7 +35,7 @@
             hmrcTimeoutDialog(TimeoutDialog(
                 timeout             = Some(appConfig.timeout),
                 countdown           = Some(appConfig.countdown),
-                keepAliveUrl        = Some(routes.KeepAliveController.keepAlive.url),
+                keepAliveUrl        = Some(uk.gov.hmrc.hmrcfrontend.controllers.routes.KeepAliveController.keepAlive.url),
                 keepAliveButtonText = Some(messages("timeout.keepAlive")),
                 signOutUrl          = Some(routes.SignOutController.signOut.url),
                 signOutButtonText   = Some(messages("timeout.signOut")),

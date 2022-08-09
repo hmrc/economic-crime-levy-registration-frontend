@@ -17,15 +17,16 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{DataRequest, IdentifierRequest}
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDataRetrievalAction(dataToReturn: Registration) extends DataRetrievalAction {
+class FakeDataRetrievalAction(registration: Registration) extends DataRetrievalAction {
 
-  override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
-    Future(DataRequest(request.request, request.internalId, dataToReturn))
+  override protected def transform[A](request: AuthorisedRequest[A]): Future[RegistrationDataRequest[A]] =
+    Future(RegistrationDataRequest(request.request, request.internalId, registration))
 
   override protected implicit val executionContext: ExecutionContext =
     scala.concurrent.ExecutionContext.Implicits.global
+
 }

@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
@@ -24,24 +23,25 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 class CheckYourAnswersControllerSpec extends SpecBase {
 
-  "Check Your Answers Controller" - {
+  val view: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
 
-    "must return OK and the correct view for a GET" in {
+  val controller = new CheckYourAnswersController(
+    messagesApi,
+    fakeAuthorisedAction,
+    fakeDataRetrievalAction,
+    mcc,
+    view
+  )
 
-      val application = applicationBuilder().build()
+  "onPageLoad" should {
+    "return OK and the correct view for a GET" in {
+      val result = controller.onPageLoad()(fakeRequest)
 
-      running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
+      val list = SummaryList(Seq.empty)
 
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[CheckYourAnswersView]
-        val list = SummaryList(Seq.empty)
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(list)(request, messages(application)).toString
-      }
+      status(result) mustEqual OK
+      contentAsString(result) mustEqual view(list)(fakeRequest, messages).toString
     }
-
   }
+
 }

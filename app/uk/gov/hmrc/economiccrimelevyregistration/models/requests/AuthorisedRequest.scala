@@ -18,4 +18,4 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.requests
 
 import play.api.mvc.{Request, WrappedRequest}
 
-case class IdentifierRequest[A](request: Request[A], internalId: String) extends WrappedRequest[A](request)
+case class AuthorisedRequest[A](request: Request[A], internalId: String) extends WrappedRequest[A](request)

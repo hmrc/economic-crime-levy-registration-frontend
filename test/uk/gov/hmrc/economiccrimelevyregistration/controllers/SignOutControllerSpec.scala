@@ -17,78 +17,54 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.config.FrontendAppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.SignedOutView
 
 import java.net.URLEncoder
 
 class SignOutControllerSpec extends SpecBase with MockitoSugar {
 
-  "signOut" - {
+  val view: SignedOutView = app.injector.instanceOf[SignedOutView]
 
+  val controller = new SignOutController(
+    mcc,
+    appConfig,
+    fakeAuthorisedAction,
+    view
+  )
+
+  "signOut" should {
     "redirect to sign out, specifying the exit survey as the continue URL" in {
-      val application =
-        applicationBuilder()
-          .build()
+      val result = controller.signOut()(fakeRequest)
 
-      running(application) {
+      val encodedContinueUrl  = URLEncoder.encode(appConfig.exitSurveyUrl, "UTF-8")
+      val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
 
-        val appConfig = application.injector.instanceOf[FrontendAppConfig]
-        val request   = FakeRequest(GET, routes.SignOutController.signOut.url)
-
-        val result = route(application, request).value
-
-        val encodedContinueUrl  = URLEncoder.encode(appConfig.exitSurveyUrl, "UTF-8")
-        val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual expectedRedirectUrl
-      }
+      status(result) mustEqual SEE_OTHER
+      redirectLocation(result).value mustEqual expectedRedirectUrl
     }
   }
 
-  "signOutNoSurvey" - {
-
+  "signOutNoSurvey" should {
     "redirect to sign out, specifying SignedOut as the continue URL" in {
-      val application =
-        applicationBuilder()
-          .build()
+      val result = controller.signOutNoSurvey()(fakeRequest)
 
-      running(application) {
+      val encodedContinueUrl  = URLEncoder.encode(routes.SignOutController.signedOut.url, "UTF-8")
+      val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
 
-        val appConfig = application.injector.instanceOf[FrontendAppConfig]
-        val request   = FakeRequest(GET, routes.SignOutController.signOutNoSurvey.url)
-
-        val result = route(application, request).value
-
-        val encodedContinueUrl  = URLEncoder.encode(routes.SignOutController.signedOut.url, "UTF-8")
-        val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual expectedRedirectUrl
-      }
+      status(result) mustEqual SEE_OTHER
+      redirectLocation(result).value mustEqual expectedRedirectUrl
     }
   }
 
-  "signedOut" - {
+  "signedOut" should {
+    "must return OK and the correct view" in {
+      val result = controller.signedOut()(fakeRequest)
 
-    "must return OK and the correct view for a GET" in {
-
-      val application = applicationBuilder().build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.SignOutController.signedOut.url)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[SignedOutView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
-      }
+      status(result) mustEqual OK
+      contentAsString(result) mustEqual view()(fakeRequest, messages).toString
     }
   }
+
 }

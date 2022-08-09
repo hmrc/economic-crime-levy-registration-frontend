@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.IdentifierAction
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedAction
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IndexView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -26,12 +26,12 @@ import javax.inject.Inject
 
 class IndexController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  identify: IdentifierAction,
+  authorise: AuthorisedAction,
   view: IndexView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = identify { implicit request =>
+  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     Ok(view())
   }
 }

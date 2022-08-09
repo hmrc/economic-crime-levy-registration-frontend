@@ -23,7 +23,6 @@ import scala.concurrent.Future
 
 @Singleton
 class EclRegistrationService {
-
   def getOrCreateRegistration(internalId: String): Future[Registration] = ???
 
 }
