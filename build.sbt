@@ -36,7 +36,7 @@ lazy val root = (project in file("."))
     PlayKeys.playDefaultPort := 14000,
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
-    update / evictionWarningOptions :=
+    (update / evictionWarningOptions).withRank(KeyRanks.Invisible) :=
       EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
     resolvers ++= Seq(Resolver.jcenterRepo),
     // concatenate js
