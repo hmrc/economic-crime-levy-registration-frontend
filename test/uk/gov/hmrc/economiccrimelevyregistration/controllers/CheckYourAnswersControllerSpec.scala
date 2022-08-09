@@ -39,8 +39,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
       val list = SummaryList(Seq.empty)
 
-      status(result) mustEqual OK
-      contentAsString(result) mustEqual view(list)(fakeRequest, messages).toString
+      status(result)          shouldBe OK
+      contentAsString(result) shouldBe view(list)(fakeRequest, messages).toString
     }
   }
 

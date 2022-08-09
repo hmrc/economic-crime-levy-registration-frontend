@@ -22,7 +22,7 @@
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle    = titleNoForm(messages("signedOut.title")),
+    pageTitle    = title(messages("signedOut.title")),
     showBackLink = false,
     timeout      = false,
     showSignOut  = false

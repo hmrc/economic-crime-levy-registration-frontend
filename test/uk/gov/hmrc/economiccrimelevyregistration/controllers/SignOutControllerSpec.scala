@@ -41,8 +41,8 @@ class SignOutControllerSpec extends SpecBase with MockitoSugar {
       val encodedContinueUrl  = URLEncoder.encode(appConfig.exitSurveyUrl, "UTF-8")
       val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
 
-      status(result) mustEqual SEE_OTHER
-      redirectLocation(result).value mustEqual expectedRedirectUrl
+      status(result)                 shouldBe SEE_OTHER
+      redirectLocation(result).value shouldBe expectedRedirectUrl
     }
   }
 
@@ -53,8 +53,8 @@ class SignOutControllerSpec extends SpecBase with MockitoSugar {
       val encodedContinueUrl  = URLEncoder.encode(routes.SignOutController.signedOut.url, "UTF-8")
       val expectedRedirectUrl = s"${appConfig.signOutUrl}?continue=$encodedContinueUrl"
 
-      status(result) mustEqual SEE_OTHER
-      redirectLocation(result).value mustEqual expectedRedirectUrl
+      status(result)                 shouldBe SEE_OTHER
+      redirectLocation(result).value shouldBe expectedRedirectUrl
     }
   }
 
@@ -62,8 +62,8 @@ class SignOutControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and the correct view" in {
       val result = controller.signedOut()(fakeRequest)
 
-      status(result) mustEqual OK
-      contentAsString(result) mustEqual view()(fakeRequest, messages).toString
+      status(result)          shouldBe OK
+      contentAsString(result) shouldBe view()(fakeRequest, messages).toString
     }
   }
 

@@ -45,8 +45,8 @@ class AuthorisedActionSpec extends SpecBase {
 
           val result: Future[Result] = authorisedAction.invokeBlock(FakeRequest(), testAction)
 
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result).value must startWith(appConfig.signInUrl)
+          status(result)               shouldBe SEE_OTHER
+          redirectLocation(result).value should startWith(appConfig.signInUrl)
       }
     }
   }

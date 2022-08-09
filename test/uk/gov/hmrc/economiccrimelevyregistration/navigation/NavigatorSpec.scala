@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes._
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.pages.Page
 
@@ -28,12 +28,16 @@ class NavigatorSpec extends SpecBase {
   "nextPage" should {
     "go from a page that doesn't exist in the route map to Index in NormalMode" in {
       case object UnknownPage extends Page
-      navigator.nextPage(UnknownPage, NormalMode, Registration("id")) mustBe IndexController.onPageLoad
+      navigator.nextPage(UnknownPage, NormalMode, Registration("id")) shouldBe routes.IndexController.onPageLoad
     }
 
     "go from a page that doesn't exist in the edit route map to CheckYourAnswers in CheckMode" in {
       case object UnknownPage extends Page
-      navigator.nextPage(UnknownPage, CheckMode, Registration("id")) mustBe CheckYourAnswersController.onPageLoad
+      navigator.nextPage(
+        UnknownPage,
+        CheckMode,
+        Registration("id")
+      ) shouldBe routes.CheckYourAnswersController.onPageLoad
     }
   }
 }

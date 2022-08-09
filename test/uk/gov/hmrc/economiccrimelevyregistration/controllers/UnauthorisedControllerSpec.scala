@@ -34,8 +34,8 @@ class UnauthorisedControllerSpec extends SpecBase {
 
       val result = controller.onPageLoad()(fakeRequest)
 
-      status(result) mustEqual OK
-      contentAsString(result) mustEqual view()(fakeRequest, messages).toString
+      status(result)          shouldBe OK
+      contentAsString(result) shouldBe view()(fakeRequest, messages).toString
     }
   }
 

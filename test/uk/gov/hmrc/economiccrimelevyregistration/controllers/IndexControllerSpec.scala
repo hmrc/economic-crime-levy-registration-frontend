@@ -34,9 +34,9 @@ class IndexControllerSpec extends SpecBase {
     "return OK and the correct view" in {
       val result = controller.onPageLoad()(fakeRequest)
 
-      status(result) mustEqual OK
+      status(result) shouldBe OK
 
-      contentAsString(result) mustEqual view()(fakeRequest, messages).toString
+      contentAsString(result) shouldBe view()(fakeRequest, messages).toString
     }
   }
 
