@@ -44,7 +44,7 @@ class BaseAuthorisedAction @Inject() (
     with AuthorisedFunctions {
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
-    authorised().retrieve(Retrievals.internalId) {
+    authorised().retrieve[Option[String]](Retrievals.internalId) {
       _.map { internalId =>
         block(AuthorisedRequest(request, internalId))
       }.getOrElse(throw new UnauthorizedException("Unable to retrieve internalId"))
@@ -52,6 +52,6 @@ class BaseAuthorisedAction @Inject() (
       case _: NoActiveSession        =>
         Redirect(config.signInUrl, Map("continue" -> Seq(config.signInContinueUrl)))
       case _: AuthorisationException =>
-        Redirect(routes.UnauthorisedController.onPageLoad)
+        Redirect(routes.UnauthorisedController.onPageLoad())
     }
 }

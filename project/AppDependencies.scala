@@ -12,8 +12,6 @@ object AppDependencies {
     "org.jsoup"               %  "jsoup"                      % "1.14.3",
     "org.scalatestplus"       %% "scalacheck-1-15"            % "3.2.10.0",
     "org.scalatestplus"       %% "mockito-3-4"                % "3.2.10.0",
-    "org.mockito"             %% "mockito-scala"              % "1.16.42",
-    "org.scalacheck"          %% "scalacheck"                 % "1.15.4",
     "com.vladsch.flexmark"    %  "flexmark-all"               % "0.62.2",
     "com.github.tomakehurst"  %  "wiremock-standalone"        % "2.27.2"
   ).map(_ % "test, it")

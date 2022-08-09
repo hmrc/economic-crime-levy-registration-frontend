@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.SignedOutView
 
 import java.net.URLEncoder
 
-class SignOutControllerSpec extends SpecBase with MockitoSugar {
+class SignOutControllerSpec extends SpecBase {
 
   val view: SignedOutView = app.injector.instanceOf[SignedOutView]
 

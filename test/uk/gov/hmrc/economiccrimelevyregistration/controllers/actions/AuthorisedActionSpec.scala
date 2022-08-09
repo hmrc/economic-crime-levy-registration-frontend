@@ -17,11 +17,12 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import play.api.mvc.{BodyParsers, Request, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
 import scala.concurrent.Future
 
@@ -38,15 +39,43 @@ class AuthorisedActionSpec extends SpecBase {
   }
 
   "invokeBlock" should {
+    "execute the block and return the result if authorised" in {
+      when(mockAuthConnector.authorise[Option[String]](any(), any())(any(), any())).thenReturn(Future(Some("id")))
+
+      val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
+
+      status(result)          shouldBe OK
+      contentAsString(result) shouldBe "Test"
+    }
+
     "redirect the user to sign in when there is no active session" in {
       List(BearerTokenExpired(), MissingBearerToken(), InvalidBearerToken(), SessionRecordNotFound()).foreach {
         exception =>
           when(mockAuthConnector.authorise[Unit](any(), any())(any(), any())).thenReturn(Future.failed(exception))
 
-          val result: Future[Result] = authorisedAction.invokeBlock(FakeRequest(), testAction)
+          val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
           status(result)               shouldBe SEE_OTHER
           redirectLocation(result).value should startWith(appConfig.signInUrl)
+      }
+    }
+
+    "redirect the user to the unauthorised page if there is an authorisation exception" in {
+      List(
+        InsufficientConfidenceLevel(),
+        InsufficientEnrolments(),
+        UnsupportedAffinityGroup(),
+        UnsupportedCredentialRole(),
+        UnsupportedAuthProvider(),
+        IncorrectCredentialStrength(),
+        InternalError()
+      ).foreach { exception =>
+        when(mockAuthConnector.authorise[Unit](any(), any())(any(), any())).thenReturn(Future.failed(exception))
+
+        val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
+
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.UnauthorisedController.onPageLoad().url
       }
     }
   }

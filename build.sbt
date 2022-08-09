@@ -76,7 +76,6 @@ val excludedScoveragePackages: Seq[String] = Seq(
   "app.*",
   "prod.*",
   ".*Routes.*",
-  ".*viewmodels.govuk.*",
   "testOnly.*",
   "testOnlyDoNotUseInAppConf.*"
 )
