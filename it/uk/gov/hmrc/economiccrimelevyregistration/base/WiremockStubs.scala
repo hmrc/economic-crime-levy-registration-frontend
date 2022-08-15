@@ -8,7 +8,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 
-trait WiremockStubs extends BaseISpec with WireMockHelper with WireMockSupport with WireMockConfig {
+trait WiremockStubs extends ISpecBase with WireMockHelper with WireMockSupport with WireMockConfig {
 
   /*
   This is to initialise the app before running any tests, as it is lazy by default in org.scalatestplus.play.BaseOneAppPerSuite.

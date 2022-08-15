@@ -10,7 +10,7 @@ import com.github.tomakehurst.wiremock.client.{MappingBuilder, ResponseDefinitio
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 
 trait WireMockHelper {
-  this: BaseISpec =>
+  this: ISpecBase =>
 
   def stub(method: MappingBuilder, response: ResponseDefinitionBuilder): StubMapping =
     stubFor(method.willReturn(response))

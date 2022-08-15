@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.WiremockStubs
 
-class HealthEndpointIntegrationSpec extends WiremockStubs {
+class HealthEndpointISpec extends WiremockStubs {
 
   "service health endpoint" should {
     "respond with 200 status" in {

@@ -6,7 +6,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.base
 
 trait WireMockConfig {
-  me: BaseISpec with WireMockSupport =>
+  me: ISpecBase with WireMockSupport =>
 
   additionalAppConfig ++=
     setWireMockPort(

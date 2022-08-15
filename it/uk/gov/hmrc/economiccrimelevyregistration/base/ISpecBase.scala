@@ -22,7 +22,7 @@ import play.api.{Application, Mode}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.global
 
-abstract class BaseISpec
+abstract class ISpecBase
     extends AnyWordSpec
     with GuiceOneServerPerSuite
     with BeforeAndAfterEach
