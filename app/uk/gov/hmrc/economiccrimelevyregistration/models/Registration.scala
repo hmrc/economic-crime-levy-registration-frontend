@@ -16,12 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import play.api.libs.json._
-
 import java.time.Instant
 
 final case class Registration(
   id: String,
-  data: JsObject = Json.obj(),
   lastUpdated: Instant = Instant.now
 )
