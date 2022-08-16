@@ -15,7 +15,7 @@ import org.scalatest.{Status => _, _}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http._
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.{AnyContentAsEmpty, Call, Result, Results}
+import play.api.mvc.{Result, Results}
 import play.api.test._
 import play.api.{Application, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
@@ -93,24 +93,18 @@ abstract class ISpecBase
     super.afterEach()
   }
 
-  override def beforeEach(): Unit =
-    super.beforeEach()
-
-  def callRoute(httpMethod: String, path: String)(implicit app: Application): Future[Result] = {
+  def callRoute[A](fakeRequest: FakeRequest[A], requiresAuth: Boolean = true)(implicit
+    app: Application,
+    w: Writeable[A]
+  ): Future[Result] = {
     val errorHandler = app.errorHandler
 
-    def request(httpMethod: String, path: String): FakeRequest[AnyContentAsEmpty.type] = FakeRequest(
-      Call(
-        method = httpMethod,
-        url = path
-      )
-    ).withSession("authToken" -> "test")
+    val req = if (requiresAuth) fakeRequest.withSession("authToken" -> "test") else fakeRequest
 
-    val req                                                                            = request(httpMethod, path)
     route(app, req) match {
-      case None          => fail("Route does not exist")
-      case Some(fResult) =>
-        fResult.recoverWith { case t: Throwable =>
+      case None         => fail("Route does not exist")
+      case Some(result) =>
+        result.recoverWith { case t: Throwable =>
           errorHandler.onServerError(req, t)
         }
     }

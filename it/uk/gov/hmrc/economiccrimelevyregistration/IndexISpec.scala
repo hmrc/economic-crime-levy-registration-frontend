@@ -16,7 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
+import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
 class IndexISpec extends ISpecBase {
 
@@ -24,7 +26,7 @@ class IndexISpec extends ISpecBase {
     "respond with 200 status and the index HTML view" in {
       stubAuthorised()
 
-      val result = callRoute("GET", s"/$contextPath/")
+      val result = callRoute(FakeRequest(routes.IndexController.onPageLoad()))
 
       status(result) shouldBe OK
       html(result)     should include("economic-crime-levy-registration-frontend")

@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
+import play.api.mvc.Call
+import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 
 class HealthEndpointISpec extends ISpecBase {
 
   "GET /ping/ping" should {
     "respond with 200 status" in {
-      val result = callRoute("GET", "/ping/ping")
+      val result = callRoute(FakeRequest(Call("GET", "/ping/ping")))
 
       status(result) shouldBe OK
     }
