@@ -18,13 +18,16 @@ package uk.gov.hmrc.economiccrimelevyregistration
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 
-class HealthEndpointISpec extends ISpecBase {
+class IndexISpec extends ISpecBase {
 
-  "GET /ping/ping" should {
-    "respond with 200 status" in {
-      val result = callRoute("GET", "/ping/ping")
+  s"GET /$contextPath/" should {
+    "respond with 200 status and the index HTML view" in {
+      stubAuthorised()
+
+      val result = callRoute("GET", s"/$contextPath/")
 
       status(result) shouldBe OK
+      html(result)     should include("economic-crime-levy-registration-frontend")
     }
   }
 
