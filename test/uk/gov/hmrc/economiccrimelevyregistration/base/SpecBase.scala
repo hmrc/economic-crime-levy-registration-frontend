@@ -26,6 +26,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{stubBodyParser, stubControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{FakeAuthorisedAction, FakeDataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
@@ -41,7 +42,8 @@ trait SpecBase
     with ScalaFutures
     with Results
     with GuiceOneAppPerSuite
-    with MockitoSugar {
+    with MockitoSugar
+    with EclTestData {
 
   val internalId: String                               = "id"
   val emptyRegistration: Registration                  = Registration(internalId)
