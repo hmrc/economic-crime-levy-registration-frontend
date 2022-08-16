@@ -103,4 +103,4 @@ val scoverageSettings: Seq[Setting[_]] = Seq(
   )
 )
 
-addCommandAlias("runAllChecks", ";clean;compile;scalafmtCheckAll;coverage;test;it:test;coverageReport")
+addCommandAlias("runAllChecks", ";clean;compile;scalafmtCheckAll;coverage;test;it:test;scalastyle;coverageReport")
