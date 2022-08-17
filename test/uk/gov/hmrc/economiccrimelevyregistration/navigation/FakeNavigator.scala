@@ -22,6 +22,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.pages.Page
 
 class FakeNavigator(desiredRoute: Call) extends Navigator {
 
-  override def nextPage(page: Page, mode: Mode, userAnswers: Registration): Call =
+  override def nextPage(page: Page, mode: Mode, registration: Registration): Call =
     desiredRoute
 }

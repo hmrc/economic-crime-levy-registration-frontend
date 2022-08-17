@@ -33,3 +33,5 @@ bin
 /*.ipr
 *.iws
 .bsp
+/migrations
+/generated-test

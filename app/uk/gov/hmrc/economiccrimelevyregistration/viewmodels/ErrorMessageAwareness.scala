@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.connectors
+package uk.gov.hmrc.economiccrimelevyregistration.viewmodels
 
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import play.api.data.Field
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.errormessage.ErrorMessage
 
-import javax.inject.Singleton
-import scala.concurrent.Future
+trait ErrorMessageAwareness {
 
-@Singleton
-class EclRegistrationConnector {
-
-  def createRegistration: Future[Registration] = ???
-
-  def getRegistration(internalId: String): Future[Option[Registration]] = ???
-
-  def updateRegistration(registration: Registration): Future[Registration] = Future.successful(Registration.empty)
-
+  def errorMessage(field: Field)(implicit messages: Messages): Option[ErrorMessage] =
+    field.error
+      .map { err =>
+        ErrorMessage(content = Text(messages(err.message, err.args: _*)))
+      }
 }

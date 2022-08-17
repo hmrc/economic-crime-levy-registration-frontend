@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.connectors
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import play.api.data._
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.models.ExampleRadioButton
 
-import javax.inject.Singleton
-import scala.concurrent.Future
+import javax.inject.Inject
 
-@Singleton
-class EclRegistrationConnector {
+class ExampleRadioButtonFormProvider @Inject() extends Mappings {
 
-  def createRegistration: Future[Registration] = ???
-
-  def getRegistration(internalId: String): Future[Option[Registration]] = ???
-
-  def updateRegistration(registration: Registration): Future[Registration] = Future.successful(Registration.empty)
+  def apply(): Form[ExampleRadioButton] =
+    Form(
+      "value" -> enumerable[ExampleRadioButton]("exampleRadioButton.error.required")
+    )
 
 }

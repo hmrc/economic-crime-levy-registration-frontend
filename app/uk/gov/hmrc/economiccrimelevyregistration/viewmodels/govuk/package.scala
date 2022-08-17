@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.connectors
+package uk.gov.hmrc.economiccrimelevyregistration.viewmodels
 
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+package object govuk {
 
-import javax.inject.Singleton
-import scala.concurrent.Future
-
-@Singleton
-class EclRegistrationConnector {
-
-  def createRegistration: Future[Registration] = ???
-
-  def getRegistration(internalId: String): Future[Option[Registration]] = ???
-
-  def updateRegistration(registration: Registration): Future[Registration] = Future.successful(Registration.empty)
-
+  object all
+      extends ImplicitConversions
+      with BackLinkFluency
+      with ButtonFluency
+      with CheckboxFluency
+      with DateFluency
+      with ErrorSummaryFluency
+      with FieldsetFluency
+      with HintFluency
+      with InputFluency
+      with LabelFluency
+      with RadiosFluency
+      with SummaryListFluency
+      with TagFluency
 }

@@ -31,4 +31,5 @@ object Mode {
       case CheckMode  => "CheckMode"
     }
   }
+
 }

@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.connectors
+package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+trait Enumerable[A] {
 
-import javax.inject.Singleton
-import scala.concurrent.Future
+  def value(str: String): Option[A]
 
-@Singleton
-class EclRegistrationConnector {
+}
 
-  def createRegistration: Future[Registration] = ???
+object Enumerable {
 
-  def getRegistration(internalId: String): Future[Option[Registration]] = ???
-
-  def updateRegistration(registration: Registration): Future[Registration] = Future.successful(Registration.empty)
+  def apply[A](values: (String, A)*): Enumerable[A] =
+    (str: String) => values.toMap.get(str)
 
 }

@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.connectors
+package uk.gov.hmrc.economiccrimelevyregistration.viewmodels
 
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 
-import javax.inject.Singleton
-import scala.concurrent.Future
+import scala.language.implicitConversions
 
-@Singleton
-class EclRegistrationConnector {
+object implicits extends ImplicitConversions
 
-  def createRegistration: Future[Registration] = ???
+trait ImplicitConversions {
 
-  def getRegistration(internalId: String): Future[Option[Registration]] = ???
+  implicit def stringToText(string: String)(implicit messages: Messages): Text =
+    Text(messages(string))
 
-  def updateRegistration(registration: Registration): Future[Registration] = Future.successful(Registration.empty)
-
+  implicit def stringToKey(string: String)(implicit messages: Messages): Key =
+    Key(content = Text(messages(string)))
 }

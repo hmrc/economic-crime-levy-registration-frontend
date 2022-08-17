@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.connectors
+package uk.gov.hmrc.economiccrimelevyregistration.viewmodels
 
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-
-import javax.inject.Singleton
-import scala.concurrent.Future
-
-@Singleton
-class EclRegistrationConnector {
-
-  def createRegistration: Future[Registration] = ???
-
-  def getRegistration(internalId: String): Future[Option[Registration]] = ???
-
-  def updateRegistration(registration: Registration): Future[Registration] = Future.successful(Registration.empty)
-
+abstract class WithCssClass(className: String) {
+  override val toString: String = className
 }

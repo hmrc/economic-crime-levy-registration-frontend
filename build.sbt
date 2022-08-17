@@ -19,7 +19,7 @@ lazy val root = (project in file("."))
     scalaVersion := "2.12.15",
     name := appName,
     RoutesKeys.routesImport ++= Seq(
-      "models._",
+      "uk.gov.hmrc.economiccrimelevyregistration.models._",
       "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl"
     ),
     TwirlKeys.templateImports ++= Seq(
@@ -31,7 +31,8 @@ lazy val root = (project in file("."))
       "uk.gov.hmrc.hmrcfrontend.views.config._",
       "uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils._",
       "uk.gov.hmrc.economiccrimelevyregistration.models.Mode",
-      "uk.gov.hmrc.economiccrimelevyregistration.controllers.routes"
+      "uk.gov.hmrc.economiccrimelevyregistration.controllers.routes._",
+      "uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.all._"
     ),
     PlayKeys.playDefaultPort := 14000,
     libraryDependencies ++= AppDependencies(),

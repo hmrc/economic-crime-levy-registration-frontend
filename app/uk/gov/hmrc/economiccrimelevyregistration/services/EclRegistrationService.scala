@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import uk.gov.hmrc.economiccrimelevyregistration.models.ExampleRadioButton.Option1
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
+import java.time.Instant
 import javax.inject.Singleton
 import scala.concurrent.Future
 
 @Singleton
 class EclRegistrationService {
-  def getOrCreateRegistration(internalId: String): Future[Registration] = ???
+  def getOrCreateRegistration(internalId: String): Future[Registration] = Future.successful(Registration.empty)
 
 }

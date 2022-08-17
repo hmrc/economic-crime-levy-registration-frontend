@@ -34,10 +34,10 @@ class Navigator @Inject() () {
     _ => routes.CheckYourAnswersController.onPageLoad
   }
 
-  def nextPage(page: Page, mode: Mode, userAnswers: Registration): Call = mode match {
+  def nextPage(page: Page, mode: Mode, registration: Registration): Call = mode match {
     case NormalMode =>
-      normalRoutes(page)(userAnswers)
+      normalRoutes(page)(registration)
     case CheckMode  =>
-      checkRouteMap(page)(userAnswers)
+      checkRouteMap(page)(registration)
   }
 }

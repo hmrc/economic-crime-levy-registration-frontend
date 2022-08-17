@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.connectors
+package uk.gov.hmrc.economiccrimelevyregistration.viewmodels
 
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+sealed trait LabelSize
 
-import javax.inject.Singleton
-import scala.concurrent.Future
-
-@Singleton
-class EclRegistrationConnector {
-
-  def createRegistration: Future[Registration] = ???
-
-  def getRegistration(internalId: String): Future[Option[Registration]] = ???
-
-  def updateRegistration(registration: Registration): Future[Registration] = Future.successful(Registration.empty)
-
+object LabelSize {
+  case object ExtraLarge extends WithCssClass("govuk-label--xl") with LabelSize
+  case object Large extends WithCssClass("govuk-label--l") with LabelSize
+  case object Medium extends WithCssClass("govuk-label--m") with LabelSize
+  case object Small extends WithCssClass("govuk-label--s") with LabelSize
 }

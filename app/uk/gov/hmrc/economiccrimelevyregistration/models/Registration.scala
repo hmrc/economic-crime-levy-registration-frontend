@@ -20,5 +20,14 @@ import java.time.Instant
 
 final case class Registration(
   id: String,
+  exampleRadioButton: Option[ExampleRadioButton],
   lastUpdated: Instant = Instant.now
 )
+
+object Registration {
+  def empty: Registration = Registration(
+    "id",
+    None,
+    Instant.now()
+  )
+}

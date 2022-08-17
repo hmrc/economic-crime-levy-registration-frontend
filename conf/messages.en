@@ -55,3 +55,10 @@ signedOut.guidance = We did not save your answers.
 
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
+
+exampleRadioButton.title = Example radio buttons
+exampleRadioButton.heading = Example radio buttons
+exampleRadioButton.Option1 = Option 1
+exampleRadioButton.Option2 = Option 2
+exampleRadioButton.Option3 = Option 3
+exampleRadioButton.error.required = Select an option

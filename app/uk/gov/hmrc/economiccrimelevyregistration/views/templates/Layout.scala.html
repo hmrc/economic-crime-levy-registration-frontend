@@ -37,7 +37,7 @@
                 countdown           = Some(appConfig.countdown),
                 keepAliveUrl        = Some(uk.gov.hmrc.hmrcfrontend.controllers.routes.KeepAliveController.keepAlive.url),
                 keepAliveButtonText = Some(messages("timeout.keepAlive")),
-                signOutUrl          = Some(routes.SignOutController.signOut.url),
+                signOutUrl          = Some(SignOutController.signOut.url),
                 signOutButtonText   = Some(messages("timeout.signOut")),
                 title               = Some(messages("timeout.title")),
                 message             = Some(messages("timeout.message"))
@@ -66,8 +66,8 @@
 @hmrcLayout(
     pageTitle = Some(pageTitle),
     nonce = CSPNonce.get,
-    signOutUrl = Some(routes.SignOutController.signOut.url),
-    serviceUrl = Some(routes.IndexController.onPageLoad.url),
+    signOutUrl = Some(SignOutController.signOut.url),
+    serviceUrl = Some(IndexController.onPageLoad.url),
     isWelshTranslationAvailable = appConfig.languageTranslationEnabled,
     additionalScriptsBlock = Some(additionalScripts),
     additionalHeadBlock = head,
