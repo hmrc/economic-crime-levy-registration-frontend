@@ -77,3 +77,6 @@ exampleRadioButton.option2 = Option 2
 exampleRadioButton.checkYourAnswersLabel = exampleRadioButton
 exampleRadioButton.error.required = Select exampleRadioButton
 exampleRadioButton.change.hidden = ExampleRadioButton
+
+exampleContent.title = exampleContent
+exampleContent.heading = exampleContent

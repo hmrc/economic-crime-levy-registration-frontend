@@ -16,31 +16,31 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.$className$View
 
-class CheckYourAnswersControllerSpec extends SpecBase {
+import scala.concurrent.Future
 
-  val view: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
+class $className$ControllerSpec extends SpecBase {
 
-  val controller = new CheckYourAnswersController(
+  val view: $className$View = app.injector.instanceOf[$className$View]
+
+  val controller = new $className$Controller(
     messagesApi,
     fakeAuthorisedAction,
-    fakeDataRetrievalAction(),
     mcc,
     view
   )
 
   "onPageLoad" should {
     "return OK and the correct view" in {
-      val result = controller.onPageLoad()(fakeRequest)
+      val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
-      val list = SummaryList(Seq.empty)
+      status(result) shouldBe OK
 
-      status(result)          shouldBe OK
-      contentAsString(result) shouldBe view(list)(fakeRequest, messages).toString
+      contentAsString(result) shouldBe view()(fakeRequest, messages).toString
     }
   }
 

@@ -54,17 +54,15 @@ class ExampleRadioButtonControllerSpec extends SpecBase {
 
   "onPageLoad" should {
 
-    "return OK and the correct view for a GET" in new TestFixture() {
+    "return OK and the correct view" in new TestFixture() {
       val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
       status(result)          shouldBe OK
       contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
     }
 
-    "populate the view correctly on a GET when the question has previously been answered" in new TestFixture(
-      emptyRegistration.copy(exampleRadioButton =
-        Some(ExampleRadioButton.values.head)
-      ) // TODO Choose the data you are testing
+    "populate the view correctly when the question has previously been answered" in new TestFixture(
+      emptyRegistration.copy(exampleRadioButton = Some(ExampleRadioButton.values.head))
     ) {
       val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
