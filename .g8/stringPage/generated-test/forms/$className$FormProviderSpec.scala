@@ -1,4 +1,4 @@
-package forms
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
 import play.api.data.FormError

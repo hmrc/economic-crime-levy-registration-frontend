@@ -80,3 +80,9 @@ exampleRadioButton.change.hidden = ExampleRadioButton
 
 exampleContent.title = exampleContent
 exampleContent.heading = exampleContent
+
+exampleYesNo.title = exampleYesNo
+exampleYesNo.heading = exampleYesNo
+exampleYesNo.checkYourAnswersLabel = exampleYesNo
+exampleYesNo.error.required = Select yes if exampleYesNo
+exampleYesNo.change.hidden = ExampleYesNo

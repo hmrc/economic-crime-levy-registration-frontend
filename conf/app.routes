@@ -25,3 +25,8 @@ GET         /changeExampleRadioButton        uk.gov.hmrc.economiccrimelevyregist
 POST        /changeExampleRadioButton        uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleRadioButtonController.onSubmit(mode: Mode = CheckMode)
 
 GET         /exampleContent                  uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleContentController.onPageLoad()
+
+GET         /exampleYesNo                    uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleYesNoController.onPageLoad(mode: Mode = NormalMode)
+POST        /exampleYesNo                    uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleYesNoController.onSubmit(mode: Mode = NormalMode)
+GET         /changeExampleYesNo              uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleYesNoController.onPageLoad(mode: Mode = CheckMode)
+POST        /changeExampleYesNo              uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleYesNoController.onSubmit(mode: Mode = CheckMode)
