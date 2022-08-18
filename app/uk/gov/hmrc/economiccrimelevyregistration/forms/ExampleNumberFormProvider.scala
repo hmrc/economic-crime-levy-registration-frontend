@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import java.time.{Instant, LocalDate}
+import javax.inject.Inject
 
-final case class Registration(
-  id: String,
-  exampleRadioButton: Option[ExampleRadioButton],
-  exampleTextField: Option[String],
-  exampleYesNo: Option[Boolean],
-  exampleDate: Option[LocalDate],
-  exampleNumber: Option[Int],
-  lastUpdated: Instant = Instant.now
-)
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import play.api.data.Form
 
-object Registration {
-  def empty: Registration = Registration(
-    "id",
-    None,
-    None,
-    None,
-    None,
-    None,
-    Instant.now()
-  )
+class ExampleNumberFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Int] =
+    Form(
+      "value" -> int(
+        "exampleNumber.error.required",
+        "exampleNumber.error.wholeNumber",
+        "exampleNumber.error.nonNumeric"
+      )
+        .verifying(inRange(1, 999, "exampleNumber.error.outOfRange"))
+    )
 }

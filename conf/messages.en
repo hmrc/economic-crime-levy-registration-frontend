@@ -89,3 +89,12 @@ exampleDate.error.required.two = The exampleDate must include {0} and {1}
 exampleDate.error.required = The exampleDate must include {0}
 exampleDate.error.invalid = Enter a real ExampleDate
 exampleDate.change.hidden = ExampleDate
+
+exampleNumber.title = ExampleNumber
+exampleNumber.heading = ExampleNumber
+exampleNumber.checkYourAnswersLabel = ExampleNumber
+exampleNumber.error.nonNumeric = Enter your exampleNumber using numbers
+exampleNumber.error.required = Enter your exampleNumber
+exampleNumber.error.wholeNumber = Enter your exampleNumber using whole numbers
+exampleNumber.error.outOfRange = ExampleNumber must be between {0} and {1}
+exampleNumber.change.hidden = ExampleNumber
