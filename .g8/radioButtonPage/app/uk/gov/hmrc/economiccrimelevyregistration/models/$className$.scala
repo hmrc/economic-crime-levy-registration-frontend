@@ -1,4 +1,4 @@
-package models
+package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text

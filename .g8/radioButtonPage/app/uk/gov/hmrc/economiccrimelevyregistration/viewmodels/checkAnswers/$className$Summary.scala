@@ -1,8 +1,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, UserAnswers}
-import uk.gov.hmrc.economiccrimelevyregistration.pages.$className$Page
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Registration}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent

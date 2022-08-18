@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import org.mockito.ArgumentMatchers.any
@@ -7,24 +23,24 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.forms.$className$FormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration, $className$}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.$className$View
+import uk.gov.hmrc.economiccrimelevyregistration.forms.ExampleRadioButtonFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ExampleRadioButton, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ExampleRadioButtonView
 
 import scala.concurrent.Future
 
-class $className$ControllerSpec extends SpecBase {
+class ExampleRadioButtonControllerSpec extends SpecBase {
 
-  val view: $className$View = app.injector.instanceOf[$className$View]
+  val view: ExampleRadioButtonView = app.injector.instanceOf[ExampleRadioButtonView]
 
-  val formProvider = new $className$FormProvider()
+  val formProvider = new ExampleRadioButtonFormProvider()
 
-  val form: Form[$className$] = formProvider()
+  val form: Form[ExampleRadioButton] = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
   class TestFixture(data: Registration = emptyRegistration) {
-    val controller = new $className$Controller(
+    val controller = new ExampleRadioButtonController(
       messagesApi = messagesApi,
       eclRegistrationConnector = mockEclRegistrationConnector,
       navigator = fakeNavigator,
@@ -46,28 +62,35 @@ class $className$ControllerSpec extends SpecBase {
     }
 
     "populate the view correctly on a GET when the question has previously been answered" in new TestFixture(
-      emptyRegistration.copy(??? = Some($className$.values.head)) // TODO Choose the data you are testing
+      emptyRegistration.copy(exampleRadioButton =
+        Some(ExampleRadioButton.values.head)
+      ) // TODO Choose the data you are testing
     ) {
       val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
       status(result)          shouldBe OK
-      contentAsString(result) shouldBe view(form.fill($className$.values.head), NormalMode)(fakeRequest, messages).toString
+      contentAsString(result) shouldBe view(form.fill(ExampleRadioButton.values.head), NormalMode)(
+        fakeRequest,
+        messages
+      ).toString
     }
 
     "redirect to the next page when valid data is submitted" in new TestFixture() {
       when(mockEclRegistrationConnector.updateRegistration(any())).thenReturn(Future.successful(emptyRegistration))
 
       val result: Future[Result] =
-        controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> $className$.values.head.toString))
+        controller.onSubmit(NormalMode)(
+          fakeRequest.withFormUrlEncodedBody("value" -> ExampleRadioButton.values.head.toString)
+        )
 
-      status(result) shouldBe SEE_OTHER
+      status(result)                 shouldBe SEE_OTHER
       redirectLocation(result).value shouldBe onwardRoute.url
     }
 
     "return a Bad Request and errors when invalid data is submitted" in new TestFixture() {
       val result: Future[Result] = controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> ""))
 
-      val formWithErrors: Form[$className$] = form.bind(Map("value" -> ""))
+      val formWithErrors: Form[ExampleRadioButton] = form.bind(Map("value" -> ""))
 
       status(result)          shouldBe BAD_REQUEST
       contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString

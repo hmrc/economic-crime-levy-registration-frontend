@@ -69,3 +69,11 @@ exampleTextField.checkYourAnswersLabel = exampleTextField
 exampleTextField.error.required = Enter something in to the example text field
 exampleTextField.error.length = Example text field must be 36 characters or less
 exampleTextField.change.hidden = ExampleTextField
+
+exampleRadioButton.title = exampleRadioButton
+exampleRadioButton.heading = exampleRadioButton
+exampleRadioButton.option1 = Option 1
+exampleRadioButton.option2 = Option 2
+exampleRadioButton.checkYourAnswersLabel = exampleRadioButton
+exampleRadioButton.error.required = Select exampleRadioButton
+exampleRadioButton.change.hidden = ExampleRadioButton
