@@ -14,30 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import java.time.{Instant, LocalDate}
+import javax.inject.Inject
 
-final case class Registration(
-  id: String,
-  exampleRadioButton: Option[ExampleRadioButton],
-  exampleTextField: Option[String],
-  exampleYesNo: Option[Boolean],
-  exampleDate: Option[LocalDate],
-  exampleNumber: Option[Int],
-  exampleCheckBox: Option[Set[ExampleCheckBox]],
-  lastUpdated: Instant = Instant.now
-)
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.models.ExampleCheckBox
+import play.api.data.Form
+import play.api.data.Forms.set
 
-object Registration {
-  def empty: Registration = Registration(
-    "id",
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    Instant.now()
-  )
+class ExampleCheckBoxFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Set[ExampleCheckBox]] =
+    Form(
+      "value" -> set(enumerable[ExampleCheckBox]("exampleCheckBox.error.required"))
+        .verifying(nonEmptySet("exampleCheckBox.error.required"))
+    )
+
 }

@@ -98,3 +98,11 @@ exampleNumber.error.required = Enter your exampleNumber
 exampleNumber.error.wholeNumber = Enter your exampleNumber using whole numbers
 exampleNumber.error.outOfRange = ExampleNumber must be between {0} and {1}
 exampleNumber.change.hidden = ExampleNumber
+
+exampleCheckBox.title = exampleCheckBox
+exampleCheckBox.heading = exampleCheckBox
+exampleCheckBox.option1 = Option 1
+exampleCheckBox.option2 = Option 2
+exampleCheckBox.checkYourAnswersLabel = exampleCheckBox
+exampleCheckBox.error.required = Select exampleCheckBox
+exampleCheckBox.change.hidden = ExampleCheckBox

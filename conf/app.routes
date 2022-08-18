@@ -40,3 +40,8 @@ GET         /exampleNumber                   uk.gov.hmrc.economiccrimelevyregist
 POST        /exampleNumber                   uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleNumberController.onSubmit(mode: Mode = NormalMode)
 GET         /changeExampleNumber             uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /changeExampleNumber             uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleNumberController.onSubmit(mode: Mode = CheckMode)
+
+GET         /exampleCheckBox                 uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleCheckBoxController.onPageLoad(mode: Mode = NormalMode)
+POST        /exampleCheckBox                 uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleCheckBoxController.onSubmit(mode: Mode = NormalMode)
+GET         /changeExampleCheckBox           uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleCheckBoxController.onPageLoad(mode: Mode = CheckMode)
+POST        /changeExampleCheckBox           uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleCheckBoxController.onSubmit(mode: Mode = CheckMode)
