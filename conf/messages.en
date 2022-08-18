@@ -79,3 +79,13 @@ exampleYesNo.heading = exampleYesNo
 exampleYesNo.checkYourAnswersLabel = exampleYesNo
 exampleYesNo.error.required = Select yes if exampleYesNo
 exampleYesNo.change.hidden = ExampleYesNo
+
+exampleDate.title = ExampleDate
+exampleDate.heading = ExampleDate
+exampleDate.hint = For example, 12 11 2007
+exampleDate.checkYourAnswersLabel = ExampleDate
+exampleDate.error.required.all = Enter the exampleDate
+exampleDate.error.required.two = The exampleDate must include {0} and {1}
+exampleDate.error.required = The exampleDate must include {0}
+exampleDate.error.invalid = Enter a real ExampleDate
+exampleDate.change.hidden = ExampleDate

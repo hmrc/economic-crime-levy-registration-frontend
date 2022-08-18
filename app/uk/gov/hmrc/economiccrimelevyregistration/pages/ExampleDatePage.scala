@@ -14,26 +14,6 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.pages
 
-import java.time.{Instant, LocalDate}
-
-final case class Registration(
-  id: String,
-  exampleRadioButton: Option[ExampleRadioButton],
-  exampleTextField: Option[String],
-  exampleYesNo: Option[Boolean],
-  exampleDate: Option[LocalDate],
-  lastUpdated: Instant = Instant.now
-)
-
-object Registration {
-  def empty: Registration = Registration(
-    "id",
-    None,
-    None,
-    None,
-    None,
-    Instant.now()
-  )
-}
+case object ExampleDatePage extends Page

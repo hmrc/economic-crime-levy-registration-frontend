@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import java.time.{Instant, LocalDate}
+import java.time.{LocalDate, ZoneOffset}
 
-final case class Registration(
-  id: String,
-  exampleRadioButton: Option[ExampleRadioButton],
-  exampleTextField: Option[String],
-  exampleYesNo: Option[Boolean],
-  exampleDate: Option[LocalDate],
-  lastUpdated: Instant = Instant.now
-)
+import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.DateBehaviours
 
-object Registration {
-  def empty: Registration = Registration(
-    "id",
-    None,
-    None,
-    None,
-    None,
-    Instant.now()
-  )
+class ExampleDateFormProviderSpec extends DateBehaviours {
+
+  val form = new ExampleDateFormProvider()()
+
+  "value" should {
+
+    val validData = datesBetween(
+      min = LocalDate.of(2000, 1, 1),
+      max = LocalDate.now(ZoneOffset.UTC)
+    )
+
+    behave like dateField(form, "value", validData)
+
+    behave like mandatoryDateField(form, "value", "exampleDate.error.required.all")
+  }
 }

@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import java.time.{Instant, LocalDate}
+import java.time.LocalDate
+import javax.inject.Inject
 
-final case class Registration(
-  id: String,
-  exampleRadioButton: Option[ExampleRadioButton],
-  exampleTextField: Option[String],
-  exampleYesNo: Option[Boolean],
-  exampleDate: Option[LocalDate],
-  lastUpdated: Instant = Instant.now
-)
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import play.api.data.Form
 
-object Registration {
-  def empty: Registration = Registration(
-    "id",
-    None,
-    None,
-    None,
-    None,
-    Instant.now()
-  )
+class ExampleDateFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[LocalDate] =
+    Form(
+      "value" -> localDate(
+        invalidKey = "exampleDate.error.invalid",
+        allRequiredKey = "exampleDate.error.required.all",
+        twoRequiredKey = "exampleDate.error.required.two",
+        requiredKey = "exampleDate.error.required"
+      )
+    )
 }

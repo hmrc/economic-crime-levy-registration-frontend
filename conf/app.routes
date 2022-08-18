@@ -30,3 +30,8 @@ GET         /exampleYesNo                    uk.gov.hmrc.economiccrimelevyregist
 POST        /exampleYesNo                    uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleYesNoController.onSubmit(mode: Mode = NormalMode)
 GET         /changeExampleYesNo              uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleYesNoController.onPageLoad(mode: Mode = CheckMode)
 POST        /changeExampleYesNo              uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleYesNoController.onSubmit(mode: Mode = CheckMode)
+
+GET         /exampleDate                     uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleDateController.onPageLoad(mode: Mode = NormalMode)
+POST        /exampleDate                     uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleDateController.onSubmit(mode: Mode = NormalMode)
+GET         /changeExampleDate               uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleDateController.onPageLoad(mode: Mode = CheckMode)
+POST        /changeExampleDate               uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleDateController.onSubmit(mode: Mode = CheckMode)
