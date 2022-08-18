@@ -16,30 +16,10 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import java.time.{Instant, LocalDate}
+import play.api.libs.json._
 
-final case class Registration(
-  id: String,
-  exampleRadioButton: Option[ExampleRadioButton],
-  exampleTextField: Option[String],
-  exampleYesNo: Option[Boolean],
-  exampleDate: Option[LocalDate],
-  exampleNumber: Option[Int],
-  exampleCheckBox: Option[Set[ExampleCheckBox]],
-  exampleMultipleQuestions: Option[ExampleMultipleQuestions],
-  lastUpdated: Instant = Instant.now
-)
+case class ExampleMultipleQuestions(field1: String, field2: String)
 
-object Registration {
-  def empty: Registration = Registration(
-    "id",
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    Instant.now()
-  )
+object ExampleMultipleQuestions {
+  implicit val format: OFormat[ExampleMultipleQuestions] = Json.format[ExampleMultipleQuestions]
 }

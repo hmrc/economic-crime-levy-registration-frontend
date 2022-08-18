@@ -106,3 +106,15 @@ exampleCheckBox.option2 = Option 2
 exampleCheckBox.checkYourAnswersLabel = exampleCheckBox
 exampleCheckBox.error.required = Select exampleCheckBox
 exampleCheckBox.change.hidden = ExampleCheckBox
+
+exampleMultipleQuestions.title = exampleMultipleQuestions
+exampleMultipleQuestions.heading = exampleMultipleQuestions
+exampleMultipleQuestions.field1 = field1
+exampleMultipleQuestions.field2 = field2
+exampleMultipleQuestions.checkYourAnswersLabel = ExampleMultipleQuestions
+exampleMultipleQuestions.error.field1.required = Enter field1
+exampleMultipleQuestions.error.field2.required = Enter field2
+exampleMultipleQuestions.error.field1.length = field1 must be 100 characters or less
+exampleMultipleQuestions.error.field2.length = field2 must be 100 characters or less
+exampleMultipleQuestions.field1.change.hidden = field1
+exampleMultipleQuestions.field2.change.hidden = field2
