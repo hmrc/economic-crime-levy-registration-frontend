@@ -1,6 +1,6 @@
 package forms
 
-import forms.behaviours.StringFieldBehaviours
+import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
 import play.api.data.FormError
 
 class $className$FormProviderSpec extends StringFieldBehaviours {
@@ -11,7 +11,7 @@ class $className$FormProviderSpec extends StringFieldBehaviours {
 
   val form = new $className$FormProvider()()
 
-  ".value" - {
+  "value" should {
 
     val fieldName = "value"
 

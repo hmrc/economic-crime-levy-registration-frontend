@@ -30,6 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{FakeAuthorisedAction, FakeDataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.FakeNavigator
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext
@@ -45,15 +46,19 @@ trait SpecBase
     with MockitoSugar
     with EclTestData {
 
-  val internalId: String                               = "id"
-  val emptyRegistration: Registration                  = Registration(internalId, None)
-  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  val appConfig: AppConfig                             = app.injector.instanceOf[AppConfig]
-  val messagesApi: MessagesApi                         = app.injector.instanceOf[MessagesApi]
-  val messages: Messages                               = messagesApi.preferred(fakeRequest)
-  val bodyParsers: PlayBodyParsers                     = app.injector.instanceOf[PlayBodyParsers]
-  val fakeAuthorisedAction                             = new FakeAuthorisedAction(bodyParsers)
-  val fakeDataRetrievalAction                          = new FakeDataRetrievalAction(emptyRegistration)
+  val internalId: String                                              = "id"
+  val emptyRegistration: Registration                                 = Registration(internalId, None, None)
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type]                = FakeRequest()
+  val appConfig: AppConfig                                            = app.injector.instanceOf[AppConfig]
+  val messagesApi: MessagesApi                                        = app.injector.instanceOf[MessagesApi]
+  val messages: Messages                                              = messagesApi.preferred(fakeRequest)
+  val bodyParsers: PlayBodyParsers                                    = app.injector.instanceOf[PlayBodyParsers]
+  val fakeAuthorisedAction                                            = new FakeAuthorisedAction(bodyParsers)
+  def fakeDataRetrievalAction(data: Registration = emptyRegistration) = new FakeDataRetrievalAction(data)
+
+  def onwardRoute: Call = Call("GET", "/foo")
+
+  val fakeNavigator = new FakeNavigator(onwardRoute)
 
   val mcc: DefaultMessagesControllerComponents = {
     val stub = stubControllerComponents()

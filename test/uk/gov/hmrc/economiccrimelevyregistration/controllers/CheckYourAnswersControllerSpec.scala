@@ -28,7 +28,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val controller = new CheckYourAnswersController(
     messagesApi,
     fakeAuthorisedAction,
-    fakeDataRetrievalAction,
+    fakeDataRetrievalAction(),
     mcc,
     view
   )

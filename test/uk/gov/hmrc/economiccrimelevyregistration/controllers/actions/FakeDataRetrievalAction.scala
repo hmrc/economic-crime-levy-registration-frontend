@@ -21,10 +21,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequ
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDataRetrievalAction(registration: Registration) extends DataRetrievalAction {
+class FakeDataRetrievalAction(data: Registration) extends DataRetrievalAction {
 
   override protected def transform[A](request: AuthorisedRequest[A]): Future[RegistrationDataRequest[A]] =
-    Future(RegistrationDataRequest(request.request, request.internalId, registration))
+    Future(RegistrationDataRequest(request.request, request.internalId, data))
 
   override protected implicit val executionContext: ExecutionContext =
     scala.concurrent.ExecutionContext.Implicits.global

@@ -16,9 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IndexView
+
+import scala.concurrent.Future
 
 class IndexControllerSpec extends SpecBase {
 
@@ -32,7 +35,7 @@ class IndexControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK and the correct view" in {
-      val result = controller.onPageLoad()(fakeRequest)
+      val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
       status(result) shouldBe OK
 
