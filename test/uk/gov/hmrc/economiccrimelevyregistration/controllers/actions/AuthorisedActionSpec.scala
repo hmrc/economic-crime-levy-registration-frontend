@@ -23,6 +23,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.http.UnauthorizedException
 
 import scala.concurrent.Future
 
@@ -77,6 +78,16 @@ class AuthorisedActionSpec extends SpecBase {
         status(result)                 shouldBe SEE_OTHER
         redirectLocation(result).value shouldBe routes.UnauthorisedController.onPageLoad().url
       }
+    }
+
+    "throw an UnauthorizedException if there is no internal id" in {
+      when(mockAuthConnector.authorise[Option[String]](any(), any())(any(), any())).thenReturn(Future(None))
+
+      val result = intercept[UnauthorizedException] {
+        await(authorisedAction.invokeBlock(fakeRequest, testAction))
+      }
+
+      result.message shouldBe "Unable to retrieve internalId"
     }
   }
 
