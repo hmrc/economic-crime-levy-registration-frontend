@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.forms
+package uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours
 
-class ExampleRadioButtonFormSpec {}
+import play.api.data.{Form, FormError}
+
+trait StringFieldBehaviours extends FieldBehaviours {
+
+  def fieldWithMaxLength(form: Form[_], fieldName: String, maxLength: Int, lengthError: FormError): Unit =
+    "bind" should {
+      s"not bind strings longer than $maxLength characters" in {
+
+        forAll(stringsLongerThan(maxLength) -> "longString") { string =>
+          val result = form.bind(Map(fieldName -> string)).apply(fieldName)
+          result.errors should contain only lengthError
+        }
+      }
+    }
+}

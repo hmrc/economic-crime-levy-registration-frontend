@@ -28,7 +28,7 @@ class NavigatorSpec extends SpecBase {
   "nextPage" should {
     "go from a page that doesn't exist in the route map to Index in NormalMode" in {
       case object UnknownPage extends Page
-      navigator.nextPage(UnknownPage, NormalMode, Registration("id")) shouldBe routes.IndexController.onPageLoad
+      navigator.nextPage(UnknownPage, NormalMode, emptyRegistration) shouldBe routes.IndexController.onPageLoad
     }
 
     "go from a page that doesn't exist in the edit route map to CheckYourAnswers in CheckMode" in {
@@ -36,7 +36,7 @@ class NavigatorSpec extends SpecBase {
       navigator.nextPage(
         UnknownPage,
         CheckMode,
-        Registration("id")
+        emptyRegistration
       ) shouldBe routes.CheckYourAnswersController.onPageLoad
     }
   }

@@ -58,7 +58,7 @@ class SignOutControllerSpec extends SpecBase {
   }
 
   "signedOut" should {
-    "must return OK and the correct view" in {
+    "return OK and the correct view" in {
       val result = controller.signedOut()(fakeRequest)
 
       status(result)          shouldBe OK

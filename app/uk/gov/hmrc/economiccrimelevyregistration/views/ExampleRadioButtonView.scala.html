@@ -35,25 +35,15 @@
         }
 
         @govukRadios(
-            Radios(
-                fieldset = Some(Fieldset(
-                    legend = Some(Legend(
-                        content = Text(messages("exampleRadioButton.heading")),
-                        classes = "govuk-fieldset__legend--l",
-                        isPageHeading = true
-                    ))
-                )),
-                idPrefix = Some(form("value").name),
-                name = form("value").name,
+            RadiosViewModel(
+                field = form("value"),
+                legend = LegendViewModel(messages("exampleRadioButton.heading")).asPageHeading(),
                 items = ExampleRadioButton.options
             )
         )
 
         @govukButton(
-            Button(
-                element = Some("button"),
-                content = Text(messages("site.continue"))
-            )
+            ButtonViewModel(messages("site.continue"))
         )
     }
 }
