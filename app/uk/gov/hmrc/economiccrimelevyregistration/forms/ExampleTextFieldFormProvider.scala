@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import java.time.Instant
+import javax.inject.Inject
 
-final case class Registration(
-  id: String,
-  exampleRadioButton: Option[ExampleRadioButton],
-  exampleTextField: Option[String],
-  lastUpdated: Instant = Instant.now
-)
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import play.api.data.Form
 
-object Registration {
-  def empty: Registration = Registration(
-    "id",
-    None,
-    None,
-    Instant.now()
-  )
+class ExampleTextFieldFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("exampleTextField.error.required")
+        .verifying(maxLength(36, "exampleTextField.error.length"))
+    )
 }

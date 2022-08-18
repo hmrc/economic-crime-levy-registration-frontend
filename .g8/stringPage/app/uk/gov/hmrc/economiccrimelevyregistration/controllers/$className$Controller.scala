@@ -48,8 +48,8 @@ class $className$Controller @Inject()(
         value => {
           val updatedRegistration = request.registration.copy(??? = Some(value)) //TODO Choose the data you want to update
 
-          eclRegistrationConnector.updateRegistration(updatedRegistration).map { _ =>
-            Redirect(navigator.nextPage($className$Page, mode, _))
+          eclRegistrationConnector.updateRegistration(updatedRegistration).map { registration =>
+            Redirect(navigator.nextPage($className$Page, mode, registration))
           }
         }
       )

@@ -18,3 +18,8 @@ GET         /example-radio-buttons               uk.gov.hmrc.economiccrimelevyre
 POST        /example-radio-buttons               uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleRadioButtonController.onSubmit(mode: Mode = NormalMode)
 GET         /change-example-radio-buttons        uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleRadioButtonController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-example-radio-buttons        uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleRadioButtonController.onSubmit(mode: Mode = CheckMode)
+
+GET         /exampleTextField                    uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleTextFieldController.onPageLoad(mode: Mode = NormalMode)
+POST        /exampleTextField                    uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleTextFieldController.onSubmit(mode: Mode = NormalMode)
+GET         /changeExampleTextField              uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleTextFieldController.onPageLoad(mode: Mode = CheckMode)
+POST        /changeExampleTextField              uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleTextFieldController.onSubmit(mode: Mode = CheckMode)
