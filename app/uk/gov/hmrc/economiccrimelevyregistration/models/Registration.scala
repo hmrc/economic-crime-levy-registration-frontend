@@ -16,30 +16,16 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import java.time.{Instant, LocalDate}
+import java.time.Instant
 
 final case class Registration(
   id: String,
-  exampleRadioButton: Option[ExampleRadioButton],
-  exampleTextField: Option[String],
-  exampleYesNo: Option[Boolean],
-  exampleDate: Option[LocalDate],
-  exampleNumber: Option[Int],
-  exampleCheckBox: Option[Set[ExampleCheckBox]],
-  exampleMultipleQuestions: Option[ExampleMultipleQuestions],
   lastUpdated: Instant = Instant.now
 )
 
 object Registration {
   def empty: Registration = Registration(
     "id",
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
     Instant.now()
   )
 }

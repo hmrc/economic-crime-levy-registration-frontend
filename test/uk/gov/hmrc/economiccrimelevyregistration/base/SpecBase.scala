@@ -47,7 +47,7 @@ trait SpecBase
     with EclTestData {
 
   val internalId: String                                              = "id"
-  val emptyRegistration: Registration                                 = Registration(internalId, None, None, None, None, None, None, None)
+  val emptyRegistration: Registration                                 = Registration(internalId)
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type]                = FakeRequest()
   val appConfig: AppConfig                                            = app.injector.instanceOf[AppConfig]
   val messagesApi: MessagesApi                                        = app.injector.instanceOf[MessagesApi]

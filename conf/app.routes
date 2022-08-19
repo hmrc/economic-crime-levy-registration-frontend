@@ -1,52 +1,15 @@
 # microservice specific routes
 
-->          /hmrc-frontend                         hmrcfrontend.Routes
+->         /hmrc-frontend                  hmrcfrontend.Routes
 
-GET         /                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.IndexController.onPageLoad()
+GET        /                               uk.gov.hmrc.economiccrimelevyregistration.controllers.IndexController.onPageLoad()
 
-GET         /assets/*file                          controllers.Assets.versioned(path = "/public", file: Asset)
+GET        /assets/*file                   controllers.Assets.versioned(path = "/public", file: Asset)
 
-GET         /check-your-answers                    uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
+GET        /check-your-answers             uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
 
-GET         /account/sign-out-survey               uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
-GET         /account/sign-out                      uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
-GET         /account/signed-out                    uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()
+GET        /account/sign-out-survey        uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
+GET        /account/sign-out               uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
+GET        /account/signed-out             uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()
 
-GET         /unauthorised                          uk.gov.hmrc.economiccrimelevyregistration.controllers.UnauthorisedController.onPageLoad()
-
-GET         /exampleTextField                      uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleTextFieldController.onPageLoad(mode: Mode = NormalMode)
-POST        /exampleTextField                      uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleTextFieldController.onSubmit(mode: Mode = NormalMode)
-GET         /changeExampleTextField                uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleTextFieldController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeExampleTextField                uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleTextFieldController.onSubmit(mode: Mode = CheckMode)
-
-GET         /exampleRadioButton                    uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleRadioButtonController.onPageLoad(mode: Mode = NormalMode)
-POST        /exampleRadioButton                    uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleRadioButtonController.onSubmit(mode: Mode = NormalMode)
-GET         /changeExampleRadioButton              uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleRadioButtonController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeExampleRadioButton              uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleRadioButtonController.onSubmit(mode: Mode = CheckMode)
-
-GET         /exampleContent                        uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleContentController.onPageLoad()
-
-GET         /exampleYesNo                          uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleYesNoController.onPageLoad(mode: Mode = NormalMode)
-POST        /exampleYesNo                          uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleYesNoController.onSubmit(mode: Mode = NormalMode)
-GET         /changeExampleYesNo                    uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleYesNoController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeExampleYesNo                    uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleYesNoController.onSubmit(mode: Mode = CheckMode)
-
-GET         /exampleDate                           uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleDateController.onPageLoad(mode: Mode = NormalMode)
-POST        /exampleDate                           uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleDateController.onSubmit(mode: Mode = NormalMode)
-GET         /changeExampleDate                     uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleDateController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeExampleDate                     uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleDateController.onSubmit(mode: Mode = CheckMode)
-
-GET         /exampleNumber                         uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleNumberController.onPageLoad(mode: Mode = NormalMode)
-POST        /exampleNumber                         uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleNumberController.onSubmit(mode: Mode = NormalMode)
-GET         /changeExampleNumber                   uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleNumberController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeExampleNumber                   uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleNumberController.onSubmit(mode: Mode = CheckMode)
-
-GET         /exampleCheckBox                       uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleCheckBoxController.onPageLoad(mode: Mode = NormalMode)
-POST        /exampleCheckBox                       uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleCheckBoxController.onSubmit(mode: Mode = NormalMode)
-GET         /changeExampleCheckBox                 uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleCheckBoxController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeExampleCheckBox                 uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleCheckBoxController.onSubmit(mode: Mode = CheckMode)
-
-GET         /exampleMultipleQuestions              uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleMultipleQuestionsController.onPageLoad(mode: Mode = NormalMode)
-POST        /exampleMultipleQuestions              uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleMultipleQuestionsController.onSubmit(mode: Mode = NormalMode)
-GET         /changeExampleMultipleQuestions        uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleMultipleQuestionsController.onPageLoad(mode: Mode = CheckMode)
-POST        /changeExampleMultipleQuestions        uk.gov.hmrc.economiccrimelevyregistration.controllers.ExampleMultipleQuestionsController.onSubmit(mode: Mode = CheckMode)
+GET        /unauthorised                   uk.gov.hmrc.economiccrimelevyregistration.controllers.UnauthorisedController.onPageLoad()
