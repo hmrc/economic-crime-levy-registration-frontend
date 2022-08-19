@@ -28,17 +28,18 @@ class AppConfig @Inject() (configuration: Configuration) {
   val appName: String = configuration.get[String]("appName")
 
   private val contactHost                  = configuration.get[String]("contact-frontend.host")
-  private val contactFormServiceIdentifier = "economic-crime-levy-registration-frontend"
+  private val contactFormServiceIdentifier = configuration.get[String]("contact-frontend.serviceId")
 
   def feedbackUrl(implicit request: RequestHeader): String =
     s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${SafeRedirectUrl(host + request.uri).encodedUrl}"
 
-  val signInUrl: String         = configuration.get[String]("urls.signIn")
-  val signInContinueUrl: String = configuration.get[String]("urls.signInContinue")
-  val signOutUrl: String        = configuration.get[String]("urls.signOut")
+  val signInUrl: String  = configuration.get[String]("urls.signIn")
+  val signOutUrl: String = configuration.get[String]("urls.signOut")
 
-  private val exitSurveyBaseUrl: String = configuration.get[Service]("microservice.services.feedback-frontend").baseUrl
-  val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/economic-crime-levy-registration-frontend"
+  private val exitSurveyHost              = configuration.get[String]("feedback-frontend.host")
+  private val exitSurveyServiceIdentifier = configuration.get[String]("feedback-frontend.serviceId")
+
+  val exitSurveyUrl: String = s"$exitSurveyHost/feedback/$exitSurveyServiceIdentifier"
 
   val languageTranslationEnabled: Boolean =
     configuration.get[Boolean]("features.welsh-translation")
