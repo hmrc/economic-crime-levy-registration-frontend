@@ -16,16 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import java.time.Instant
+import play.api.libs.json.{Json, OFormat}
 
 final case class Registration(
-  id: String,
-  lastUpdated: Instant = Instant.now
+  internalId: String
 )
 
 object Registration {
-  def empty: Registration = Registration(
-    "id",
-    Instant.now()
-  )
+  implicit val format: OFormat[Registration] = Json.format[Registration]
 }

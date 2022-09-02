@@ -46,7 +46,7 @@ trait SpecBase
     with MockitoSugar
     with EclTestData {
 
-  val internalId: String                                              = "id"
+  val internalId: String                                              = "test-id"
   val emptyRegistration: Registration                                 = Registration(internalId)
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type]                = FakeRequest()
   val appConfig: AppConfig                                            = app.injector.instanceOf[AppConfig]
