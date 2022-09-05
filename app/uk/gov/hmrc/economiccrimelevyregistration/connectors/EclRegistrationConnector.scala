@@ -28,7 +28,7 @@ class EclRegistrationConnector {
 
   def getRegistration(internalId: String): Future[Option[Registration]] = ???
 
-  def updateRegistration(registration: Registration): Future[Registration] = Future.successful(Registration.empty)
+  def updateRegistration(registration: Registration): Future[Registration] = Future.successful(Registration("test-id"))
 
   def deleteRegistration(internalId: Registration): Future[Unit] = ???
 
