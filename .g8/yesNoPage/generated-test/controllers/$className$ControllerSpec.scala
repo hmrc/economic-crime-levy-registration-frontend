@@ -55,7 +55,7 @@ class $className$ControllerSpec extends SpecBase {
     }
 
     "redirect to the next page when valid data is submitted" in new TestFixture() {
-      when(mockEclRegistrationConnector.updateRegistration(any())).thenReturn(Future.successful(emptyRegistration))
+      when(mockEclRegistrationConnector.upsertRegistration(any())).thenReturn(Future.successful(emptyRegistration))
 
       val result: Future[Result] =
         controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> "true"))

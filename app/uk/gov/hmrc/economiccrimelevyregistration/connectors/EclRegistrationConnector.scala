@@ -16,19 +16,22 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
-import javax.inject.Singleton
-import scala.concurrent.Future
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EclRegistrationConnector {
+class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit ec: ExecutionContext) {
 
-  def createRegistration: Future[Registration] = ???
+  def getRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Option[Registration]] =
+    httpClient.GET[Option[Registration]](
+      s"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration/registrations/$internalId"
+    )
 
-  def getRegistration(internalId: String): Future[Option[Registration]] = ???
-
-  def updateRegistration(registration: Registration): Future[Registration] = Future.successful(Registration("test-id"))
+  def upsertRegistration(registration: Registration): Future[Registration] = Future.successful(Registration("test-id"))
 
   def deleteRegistration(internalId: Registration): Future[Unit] = ???
 
