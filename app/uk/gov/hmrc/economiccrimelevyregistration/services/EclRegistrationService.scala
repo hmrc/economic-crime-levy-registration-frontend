@@ -16,13 +16,20 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.http.HeaderCarrier
 
-import javax.inject.Singleton
-import scala.concurrent.Future
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EclRegistrationService {
-  def getOrCreateRegistration(internalId: String): Future[Registration] = Future.successful(Registration("test-id"))
+class EclRegistrationService @Inject() (eclRegistrationConnector: EclRegistrationConnector)(implicit ec: ExecutionContext) {
+  def getOrCreateRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] = {
+    eclRegistrationConnector.getRegistration(internalId).flatMap {
+      case Some(registration) => Future.successful(registration)
+      case None => eclRegistrationConnector.upsertRegistration(Registration(internalId))
+    }
+  }
 
 }

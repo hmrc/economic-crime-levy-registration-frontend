@@ -19,15 +19,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.IndexView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.StartView
 
 import scala.concurrent.Future
 
-class IndexControllerSpec extends SpecBase {
+class StartControllerSpec extends SpecBase {
 
-  val view: IndexView = app.injector.instanceOf[IndexView]
+  val view: StartView = app.injector.instanceOf[StartView]
 
-  val controller = new IndexController(
+  val controller = new StartController(
     mcc,
     fakeAuthorisedAction,
     view

@@ -27,7 +27,7 @@ import javax.inject.{Inject, Singleton}
 class Navigator @Inject() () {
 
   private val normalRoutes: Page => Registration => Call = { case _ =>
-    _ => routes.IndexController.onPageLoad()
+    _ => routes.StartController.onPageLoad()
   }
 
   private val checkRouteMap: Page => Registration => Call = { case _ =>
