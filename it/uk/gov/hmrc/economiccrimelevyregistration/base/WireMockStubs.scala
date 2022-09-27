@@ -11,16 +11,16 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
 
 trait WireMockStubs {
 
-  def stubAuthorised(): StubMapping =
+  def stubAuthorised(): StubMapping = {
     stub(
       post(urlEqualTo("/auth/authorise"))
         .withRequestBody(
           equalToJson(
             s"""
-             |{
-             |  "authorise": [],
-             |  "retrieve": [ "internalId" ]
-             |}
+               |{
+               |  "authorise": [],
+               |  "retrieve": [ "internalId" ]
+               |}
            """.stripMargin,
             true,
             true
@@ -28,11 +28,26 @@ trait WireMockStubs {
         ),
       aResponse()
         .withStatus(200)
-        .withBody(s"""
-                     |{
-                     |  "internalId": "test-id"
-                     |}
+        .withBody(
+          s"""
+             |{
+             |  "internalId": "test-id"
+             |}
            """.stripMargin)
     )
+  }
 
+  def stubGetRegistration(): StubMapping = {
+    stub(
+      get(urlEqualTo("/economic-crime-levy-registration/registrations/test-id")),
+      aResponse()
+        .withStatus(200)
+        .withBody(
+          s"""
+             |{
+             |  "internalId": "test-id"
+             |}
+     """.stripMargin)
+    )
+  }
 }
