@@ -37,7 +37,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
       result shouldBe Some(emptyRegistration)
     }
 
-    "return none when the Http Client returns none" in {
+    "return none when the http client returns none" in {
       when(mockHttpClient.GET[Option[Registration]](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
 
