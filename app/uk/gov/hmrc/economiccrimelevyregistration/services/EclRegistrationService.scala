@@ -24,12 +24,13 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EclRegistrationService @Inject() (eclRegistrationConnector: EclRegistrationConnector)(implicit ec: ExecutionContext) {
-  def getOrCreateRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] = {
+class EclRegistrationService @Inject() (eclRegistrationConnector: EclRegistrationConnector)(implicit
+  ec: ExecutionContext
+) {
+  def getOrCreateRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] =
     eclRegistrationConnector.getRegistration(internalId).flatMap {
       case Some(registration) => Future.successful(registration)
-      case None => eclRegistrationConnector.upsertRegistration(Registration(internalId))
+      case None               => eclRegistrationConnector.upsertRegistration(Registration(internalId))
     }
-  }
 
 }

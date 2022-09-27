@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import javax.inject.{Inject, Singleton}
@@ -40,10 +40,11 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
       registration
     )
 
-  def deleteRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] = {
-    httpClient.DELETE[HttpResponse](
-      s"${appConfig.eclRegistrationBaseUrl}/$eclRegistrationsPath/$internalId"
-    ).map(_ => ())
-  }
+  def deleteRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
+    httpClient
+      .DELETE[HttpResponse](
+        s"${appConfig.eclRegistrationBaseUrl}/$eclRegistrationsPath/$internalId"
+      )
+      .map(_ => ())
 
 }

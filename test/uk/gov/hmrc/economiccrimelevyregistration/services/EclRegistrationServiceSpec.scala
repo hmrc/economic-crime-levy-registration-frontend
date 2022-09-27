@@ -24,7 +24,7 @@ import scala.concurrent.Future
 
 class EclRegistrationServiceSpec extends SpecBase {
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val service = new EclRegistrationService(mockEclRegistrationConnector)
+  val service                                                = new EclRegistrationService(mockEclRegistrationConnector)
 
   "getOrCreateRegistration" should {
     "return a created registration when one does not exist" in {

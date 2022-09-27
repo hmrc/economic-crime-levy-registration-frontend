@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsEmpty, Request, Result}
-import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
@@ -43,7 +42,7 @@ class DataRetrievalActionSpec extends SpecBase {
 
   "transform" should {
     "transform an AuthorisedRequest into a RegistrationDataRequest" in {
-      when(mockEclRegistrationService.getOrCreateRegistration(any())).thenReturn(Future(emptyRegistration))
+      when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(emptyRegistration))
 
       val result: Future[RegistrationDataRequest[AnyContentAsEmpty.type]] =
         dataRetrievalAction.transform(AuthorisedRequest(fakeRequest, internalId))

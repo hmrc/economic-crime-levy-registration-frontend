@@ -60,7 +60,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
   "upsertRegistration" should {
     "return the new or updated registration" in {
-      when(mockHttpClient.PUT[Registration, Registration](any(), any(), any())(any(), any(), any(),any()))
+      when(mockHttpClient.PUT[Registration, Registration](any(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(emptyRegistration))
 
       val result = await(connector.upsertRegistration(emptyRegistration))

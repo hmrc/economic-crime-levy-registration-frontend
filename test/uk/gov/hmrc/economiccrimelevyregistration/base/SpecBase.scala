@@ -17,7 +17,6 @@
 package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import org.mockito.MockitoSugar
-import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{OptionValues, TryValues}
