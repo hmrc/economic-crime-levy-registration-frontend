@@ -29,7 +29,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
   val connector                  = new EclRegistrationConnector(appConfig, mockHttpClient)
 
   "getRegistration" should {
-    "return a registration when the Http Client returns a registration" in {
+    "return a registration when the http client returns a registration" in {
       when(mockHttpClient.GET[Option[Registration]](any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(emptyRegistration)))
 
