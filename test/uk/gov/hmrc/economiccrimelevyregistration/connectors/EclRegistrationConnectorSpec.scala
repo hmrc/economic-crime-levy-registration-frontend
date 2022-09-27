@@ -17,9 +17,10 @@
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import org.mockito.ArgumentMatchers.any
+import play.api.http.Status.NO_CONTENT
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{HttpClient, HttpResponse}
 
 import scala.concurrent.Future
 
@@ -42,6 +43,28 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
       val result = await(connector.getRegistration(internalId))
       result shouldBe None
+    }
+  }
+
+  "deleteRegistration" should {
+    "return nothing" in {
+      val response = HttpResponse(NO_CONTENT, "", Map.empty)
+
+      when(mockHttpClient.DELETE[HttpResponse](any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(response))
+
+      val result = await(connector.deleteRegistration(internalId))
+      result shouldBe ()
+    }
+  }
+
+  "upsertRegistration" should {
+    "return the new or updated registration" in {
+      when(mockHttpClient.PUT[Registration, Registration](any(), any(), any())(any(), any(), any(),any()))
+        .thenReturn(Future.successful(emptyRegistration))
+
+      val result = await(connector.upsertRegistration(emptyRegistration))
+      result shouldBe emptyRegistration
     }
   }
 }

@@ -18,7 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -26,13 +27,23 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit ec: ExecutionContext) {
 
+  private val eclRegistrationsPath: String = "economic-crime-levy-registration/registrations"
+
   def getRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Option[Registration]] =
     httpClient.GET[Option[Registration]](
-      s"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration/registrations/$internalId"
+      s"${appConfig.eclRegistrationBaseUrl}/$eclRegistrationsPath/$internalId"
     )
 
-  def upsertRegistration(registration: Registration): Future[Registration] = Future.successful(Registration("test-id"))
+  def upsertRegistration(registration: Registration)(implicit hc: HeaderCarrier): Future[Registration] =
+    httpClient.PUT[Registration, Registration](
+      s"${appConfig.eclRegistrationBaseUrl}/$eclRegistrationsPath",
+      registration
+    )
 
-  def deleteRegistration(internalId: Registration): Future[Unit] = ???
+  def deleteRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] = {
+    httpClient.DELETE[HttpResponse](
+      s"${appConfig.eclRegistrationBaseUrl}/$eclRegistrationsPath/$internalId"
+    ).map(_ => ())
+  }
 
 }
