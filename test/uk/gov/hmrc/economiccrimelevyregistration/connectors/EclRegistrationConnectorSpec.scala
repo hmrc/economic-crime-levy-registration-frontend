@@ -47,7 +47,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
   }
 
   "deleteRegistration" should {
-    "return nothing" in {
+    "return unit when the http client successfully returns a http response" in {
       val response = HttpResponse(NO_CONTENT, "", Map.empty)
 
       when(mockHttpClient.DELETE[HttpResponse](any(), any())(any(), any(), any()))
