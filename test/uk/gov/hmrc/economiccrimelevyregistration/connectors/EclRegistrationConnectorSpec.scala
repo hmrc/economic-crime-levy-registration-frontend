@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.http.Status.NO_CONTENT
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
@@ -27,44 +28,85 @@ import scala.concurrent.Future
 class EclRegistrationConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
   val connector                  = new EclRegistrationConnector(appConfig, mockHttpClient)
+  val eclRegistrationsUrl        = "http://localhost:14001/economic-crime-levy-registration/registrations"
+
+  override def afterEach(): Unit =
+    reset(mockHttpClient)
 
   "getRegistration" should {
+    val expectedUrl = s"$eclRegistrationsUrl/$internalId"
+
     "return a registration when the http client returns a registration" in {
-      when(mockHttpClient.GET[Option[Registration]](any(), any(), any())(any(), any(), any()))
+      when(
+        mockHttpClient.GET[Option[Registration]](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
+      )
         .thenReturn(Future.successful(Some(emptyRegistration)))
 
       val result = await(connector.getRegistration(internalId))
+
       result shouldBe Some(emptyRegistration)
+
+      verify(mockHttpClient, times(1))
+        .GET[Option[Registration]](
+          ArgumentMatchers.eq(expectedUrl),
+          any(),
+          any()
+        )(any(), any(), any())
     }
 
     "return none when the http client returns none" in {
-      when(mockHttpClient.GET[Option[Registration]](any(), any(), any())(any(), any(), any()))
+      when(
+        mockHttpClient.GET[Option[Registration]](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
+      )
         .thenReturn(Future.successful(None))
 
       val result = await(connector.getRegistration(internalId))
       result shouldBe None
+
+      verify(mockHttpClient, times(1))
+        .GET[Option[Registration]](
+          ArgumentMatchers.eq(expectedUrl),
+          any(),
+          any()
+        )(any(), any(), any())
     }
   }
 
   "deleteRegistration" should {
+    val expectedUrl = s"$eclRegistrationsUrl/$internalId"
+
     "return unit when the http client successfully returns a http response" in {
       val response = HttpResponse(NO_CONTENT, "", Map.empty)
 
-      when(mockHttpClient.DELETE[HttpResponse](any(), any())(any(), any(), any()))
+      when(mockHttpClient.DELETE[HttpResponse](ArgumentMatchers.eq(expectedUrl), any())(any(), any(), any()))
         .thenReturn(Future.successful(response))
 
-      val result = await(connector.deleteRegistration(internalId))
+      val result: Unit = await(connector.deleteRegistration(internalId))
       result shouldBe ()
+
+      verify(mockHttpClient, times(1))
+        .DELETE[HttpResponse](
+          ArgumentMatchers.eq(expectedUrl),
+          any()
+        )(any(), any(), any())
     }
   }
 
   "upsertRegistration" should {
+    val expectedUrl = s"$eclRegistrationsUrl"
+
     "return the new or updated registration" in {
-      when(mockHttpClient.PUT[Registration, Registration](any(), any(), any())(any(), any(), any(), any()))
+      when(
+        mockHttpClient
+          .PUT[Registration, Registration](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any(), any())
+      )
         .thenReturn(Future.successful(emptyRegistration))
 
       val result = await(connector.upsertRegistration(emptyRegistration))
       result shouldBe emptyRegistration
+
+      verify(mockHttpClient, times(1))
+        .PUT[Registration, Registration](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any(), any())
     }
   }
 }
