@@ -94,7 +94,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
   "upsertRegistration" should {
     "return the new or updated registration" in {
-      val expectedUrl = s"$eclRegistrationsUrl"
+      val expectedUrl = eclRegistrationsUrl
 
       when(
         mockHttpClient
