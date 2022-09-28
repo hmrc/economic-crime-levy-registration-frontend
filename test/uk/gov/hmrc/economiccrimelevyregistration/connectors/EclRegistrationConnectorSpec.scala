@@ -73,9 +73,9 @@ class EclRegistrationConnectorSpec extends SpecBase {
   }
 
   "deleteRegistration" should {
-    val expectedUrl = s"$eclRegistrationsUrl/$internalId"
-
     "return unit when the http client successfully returns a http response" in {
+      val expectedUrl = s"$eclRegistrationsUrl/$internalId"
+
       val response = HttpResponse(NO_CONTENT, "", Map.empty)
 
       when(mockHttpClient.DELETE[HttpResponse](ArgumentMatchers.eq(expectedUrl), any())(any(), any(), any()))
@@ -93,9 +93,9 @@ class EclRegistrationConnectorSpec extends SpecBase {
   }
 
   "upsertRegistration" should {
-    val expectedUrl = s"$eclRegistrationsUrl"
-
     "return the new or updated registration" in {
+      val expectedUrl = s"$eclRegistrationsUrl"
+
       when(
         mockHttpClient
           .PUT[Registration, Registration](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any(), any())
