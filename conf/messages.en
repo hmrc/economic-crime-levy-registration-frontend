@@ -48,3 +48,9 @@ signedOut.guidance = We did not save your answers.
 
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
+
+entityTypePageName.heading = What is your entity type?
+entityType.UkLimitedCompany = UK Limited Company
+entityType.SoleTrader = Sole Trader
+entityType.Partnership = Partnership
+entityType.error.required = Please select your entity type
