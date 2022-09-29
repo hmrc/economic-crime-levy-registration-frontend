@@ -15,35 +15,34 @@
  *@
 
 @this(
-layout: templates.Layout,
-formHelper: FormWithCSRF,
-errorSummary: GovukErrorSummary,
-radios: GovukRadios,
-button: GovukButton
+        layout: templates.Layout,
+        formHelper: FormWithCSRF,
+        errorSummary: GovukErrorSummary,
+        radios: GovukRadios,
+        button: GovukButton
 )
 
 @(form: Form[EntityType])(implicit request: Request[_], messages: Messages)
 
 @layout(
-pageTitle    = titleWithForm(form, messages("entityType.title")),
-showBackLink = false
+    pageTitle = titleWithForm(form, messages("entityType.title")),
+    showBackLink = false
 ) {
+    @formHelper(action = EntityTypeController.onSubmit()) {
+        @if(form.errors.nonEmpty) {
+            @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
+        }
+        @radios(
+            RadiosViewModel(
+                field = form("value"),
+                legend = LegendViewModel(messages("entityTypePageName.heading")).asPageHeading(),
+                items = EntityType.options
+            )
+        )
 
-@formHelper(action = EntityTypeController.onSubmit()) {
-@if(form.errors.nonEmpty) {
-@errorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))
-}
-@radios(
-RadiosViewModel(
-field  = form("value"),
-legend = LegendViewModel(messages("entityTypePageName.heading")).asPageHeading(),
-items  = EntityType.options
-)
-)
-
-@button(
-ButtonViewModel(messages("site.continue"))
-)
-}
+        @button(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
 }
 
