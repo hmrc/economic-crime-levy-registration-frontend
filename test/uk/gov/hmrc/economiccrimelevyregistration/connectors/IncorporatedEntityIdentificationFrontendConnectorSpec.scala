@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, IncorporatedEntityCreateJourneyRequest}
 import uk.gov.hmrc.http.HttpClient
 
@@ -26,20 +27,20 @@ import scala.concurrent.Future
 
 class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new IncorporatedEntityIdentificationFrontendConnector(appConfig, mockHttpClient)
+  val connector                  = new IncorporatedEntityIdentificationFrontendConnector(messagesApi, appConfig, mockHttpClient)
   val limitedCompanyJourneyUrl   = s"${appConfig.incorporatedEntityIdentificationApiUrl}/limited-company-journey"
 
   override def afterEach(): Unit =
     reset(mockHttpClient)
 
   "createLimitedCompanyJourney" should {
-    val expectedUrl                                                                         = limitedCompanyJourneyUrl
-    val emptyIncorporatedEntityCreateJourneyRequest: IncorporatedEntityCreateJourneyRequest =
+    val expectedUrl                                                                            = limitedCompanyJourneyUrl
+    val expectedIncorporatedEntityCreateJourneyRequest: IncorporatedEntityCreateJourneyRequest =
       IncorporatedEntityCreateJourneyRequest(
         continueUrl = "",
-        optServiceName = Some(""),
-        deskProServiceId = "",
-        signOutUrl = "",
+        optServiceName = Some("Register for Economic Crime Levy"),
+        deskProServiceId = appConfig.appName,
+        signOutUrl = routes.SignOutController.signOut().url,
         accessibilityUrl = ""
       )
 
@@ -49,20 +50,20 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
       when(
         mockHttpClient.POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
           ArgumentMatchers.eq(expectedUrl),
-          any(),
+          ArgumentMatchers.eq(expectedIncorporatedEntityCreateJourneyRequest),
           any()
         )(any(), any(), any(), any())
       )
         .thenReturn(Future.successful(emptyGrsCreateJourneyResponse))
 
-      val result = await(connector.createLimitedCompanyJourney(emptyIncorporatedEntityCreateJourneyRequest))
+      val result = await(connector.createLimitedCompanyJourney()(hc, fakeRequest))
 
       result shouldBe emptyGrsCreateJourneyResponse
 
       verify(mockHttpClient, times(1))
         .POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
           ArgumentMatchers.eq(expectedUrl),
-          any(),
+          ArgumentMatchers.eq(expectedIncorporatedEntityCreateJourneyRequest),
           any()
         )(any(), any(), any(), any())
     }
