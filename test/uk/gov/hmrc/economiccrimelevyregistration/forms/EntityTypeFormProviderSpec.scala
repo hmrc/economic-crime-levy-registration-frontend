@@ -24,7 +24,7 @@ class EntityTypeFormProviderSpec extends OptionFieldBehaviours {
   val form = new EntityTypeFormProvider()()
 
   "value" should {
-    val fieldName = "value"
+    val fieldName   = "value"
     val requiredKey = "entityType.error.required"
 
     behave like optionsField[EntityType](form, fieldName, EntityType.values, FormError(fieldName, "error.invalid"))

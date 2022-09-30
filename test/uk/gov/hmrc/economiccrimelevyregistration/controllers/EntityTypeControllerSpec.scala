@@ -53,7 +53,8 @@ class EntityTypeControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
-      val result: Future[Result] = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "UkLimitedCompany")))
+      val result: Future[Result] =
+        controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "UkLimitedCompany")))
 
       status(result) shouldBe SEE_OTHER
 
@@ -61,7 +62,7 @@ class EntityTypeControllerSpec extends SpecBase {
     }
 
     "return a Bad Request with form errors when invalid data is submitted" in {
-      val result: Future[Result] = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
+      val result: Future[Result]           = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
       val formWithErrors: Form[EntityType] = form.bind(Map("value" -> ""))
 
       status(result) shouldBe BAD_REQUEST
