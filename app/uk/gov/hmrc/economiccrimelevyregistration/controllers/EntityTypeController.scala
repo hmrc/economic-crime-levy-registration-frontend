@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.IncorporatedEntityIdentificationFrontendConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
@@ -27,15 +28,18 @@ import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class EntityTypeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
+  incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
   formProvider: EntityTypeFormProvider,
   view: EntityTypeView
-) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   val form: Form[EntityType] = formProvider()
@@ -44,15 +48,18 @@ class EntityTypeController @Inject() (
     Ok(view(form))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => BadRequest(view(formWithErrors)),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         {
-          case UkLimitedCompany => Ok("Hello Ltd")
-          case SoleTrader       => Ok("Ok Trader")
-          case Partnership      => Ok("Howdy Partner")
+          case UkLimitedCompany =>
+            incorporatedEntityIdentificationFrontendConnector
+              .createLimitedCompanyJourney()
+              .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
+          case SoleTrader       => Future.successful(Ok("Ok Trader"))
+          case Partnership      => Future.successful(Ok("Howdy Partner"))
         }
       )
   }

@@ -33,7 +33,8 @@ class IncorporatedEntityIdentificationFrontendConnector @Inject() (
   val messagesApi: MessagesApi,
   ec: ExecutionContext
 ) {
-  private val limitedCompanyJourneyUrl = s"${appConfig.incorporatedEntityIdentificationApiUrl}/limited-company-journey"
+  private val limitedCompanyJourneyUrl =
+    s"${appConfig.incorporatedEntityIdentificationApiUrl}/incorporated-entity-identification/api/limited-company-journey"
 
   private val createJourneyRequest = {
     val serviceNameLabels = ServiceNameLabels()

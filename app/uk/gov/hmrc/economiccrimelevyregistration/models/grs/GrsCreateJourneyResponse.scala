@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.grs
 import play.api.libs.json.{Json, OFormat}
 
 final case class GrsCreateJourneyResponse(
-  journeyUrl: String
+  journeyStartUrl: String
 )
 
 object GrsCreateJourneyResponse {
