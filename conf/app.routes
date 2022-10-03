@@ -9,6 +9,8 @@ GET        /                               uk.gov.hmrc.economiccrimelevyregistra
 GET        /select-entity-type             uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
 POST       /select-entity-type             uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
 
+GET        /grs-continue                   uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
+
 GET        /check-your-answers             uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
 
 GET        /account/sign-out-survey        uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()

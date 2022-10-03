@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, IncorporatedEntityCreateJourneyRequest, ServiceNameLabels}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, IncorporatedEntityCreateJourneyRequest, IncorporatedEntityJourneyData, ServiceNameLabels}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -33,8 +33,7 @@ class IncorporatedEntityIdentificationFrontendConnector @Inject() (
   val messagesApi: MessagesApi,
   ec: ExecutionContext
 ) {
-  private val limitedCompanyJourneyUrl =
-    s"${appConfig.incorporatedEntityIdentificationApiUrl}/incorporated-entity-identification/api/limited-company-journey"
+  private val apiUrl = s"${appConfig.incorporatedEntityIdentificationApiUrl}/incorporated-entity-identification/api"
 
   private val createJourneyRequest = {
     val serviceNameLabels = ServiceNameLabels()
@@ -53,7 +52,10 @@ class IncorporatedEntityIdentificationFrontendConnector @Inject() (
     hc: HeaderCarrier
   ): Future[GrsCreateJourneyResponse] =
     httpClient.POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-      limitedCompanyJourneyUrl,
+      s"$apiUrl/limited-company-journey",
       createJourneyRequest
     )
+
+  def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData] =
+    httpClient.GET[IncorporatedEntityJourneyData](s"$apiUrl/journey/$journeyId")
 }

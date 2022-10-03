@@ -21,6 +21,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterEach, OptionValues, TryValues}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc._
 import play.api.test.Helpers.{stubBodyParser, stubControllerComponents}
@@ -45,6 +46,7 @@ trait SpecBase
     with GuiceOneAppPerSuite
     with MockitoSugar
     with BeforeAndAfterEach
+    with ScalaCheckPropertyChecks
     with EclTestData {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

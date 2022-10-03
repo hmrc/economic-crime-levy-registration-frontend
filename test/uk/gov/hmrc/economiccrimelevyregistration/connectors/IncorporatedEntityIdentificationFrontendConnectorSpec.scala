@@ -21,59 +21,88 @@ import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.HttpClient
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 
 import scala.concurrent.Future
 
 class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
   val connector                  = new IncorporatedEntityIdentificationFrontendConnector(appConfig, mockHttpClient)
-  val limitedCompanyJourneyUrl   =
-    s"${appConfig.incorporatedEntityIdentificationApiUrl}/incorporated-entity-identification/api/limited-company-journey"
-
-  override def afterEach(): Unit =
-    reset(mockHttpClient)
+  val apiUrl                     = s"${appConfig.incorporatedEntityIdentificationApiUrl}/incorporated-entity-identification/api"
 
   "createLimitedCompanyJourney" should {
-    val expectedUrl = limitedCompanyJourneyUrl
+    "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {
+      (grsCreateJourneyResponse: GrsCreateJourneyResponse) =>
+        val expectedUrl = s"$apiUrl/limited-company-journey"
 
-    val expectedIncorporatedEntityCreateJourneyRequest: IncorporatedEntityCreateJourneyRequest = {
-      val serviceNameLabels = ServiceNameLabels(
-        En("Register for Economic Crime Levy"),
-        Cy("service.name")
-      )
+        val expectedIncorporatedEntityCreateJourneyRequest: IncorporatedEntityCreateJourneyRequest = {
+          val serviceNameLabels = ServiceNameLabels(
+            En("Register for Economic Crime Levy"),
+            Cy("service.name")
+          )
 
-      IncorporatedEntityCreateJourneyRequest(
-        continueUrl = "http://localhost:14000/register-for-economic-crime-levy/grs-continue",
-        optServiceName = Some(serviceNameLabels.en.optServiceName),
-        deskProServiceId = "economic-crime-levy-registration-frontend",
-        signOutUrl = "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
-        accessibilityUrl = "/accessibility-statement/register-for-economic-crime-levy",
-        labels = serviceNameLabels
-      )
+          IncorporatedEntityCreateJourneyRequest(
+            continueUrl = "http://localhost:14000/register-for-economic-crime-levy/grs-continue",
+            optServiceName = Some(serviceNameLabels.en.optServiceName),
+            deskProServiceId = "economic-crime-levy-registration-frontend",
+            signOutUrl = "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
+            accessibilityUrl = "/accessibility-statement/register-for-economic-crime-levy",
+            labels = serviceNameLabels
+          )
+        }
+
+        when(
+          mockHttpClient.POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
+            ArgumentMatchers.eq(expectedUrl),
+            ArgumentMatchers.eq(expectedIncorporatedEntityCreateJourneyRequest),
+            any()
+          )(any(), any(), any(), any())
+        )
+          .thenReturn(Future.successful(grsCreateJourneyResponse))
+
+        val result = await(connector.createLimitedCompanyJourney())
+
+        result shouldBe grsCreateJourneyResponse
+
+        verify(mockHttpClient, times(1))
+          .POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
+            ArgumentMatchers.eq(expectedUrl),
+            ArgumentMatchers.eq(expectedIncorporatedEntityCreateJourneyRequest),
+            any()
+          )(any(), any(), any(), any())
+
+        reset(mockHttpClient)
     }
+  }
 
-    val emptyGrsCreateJourneyResponse: GrsCreateJourneyResponse = GrsCreateJourneyResponse("")
+  "getJourneyData" should {
+    "return journey data for a given journey id" in forAll {
+      (incorporatedEntityJourneyData: IncorporatedEntityJourneyData, journeyId: String) =>
+        println(incorporatedEntityJourneyData)
 
-    "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in {
-      when(
-        mockHttpClient.POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-          ArgumentMatchers.eq(expectedUrl),
-          ArgumentMatchers.eq(expectedIncorporatedEntityCreateJourneyRequest),
-          any()
-        )(any(), any(), any(), any())
-      )
-        .thenReturn(Future.successful(emptyGrsCreateJourneyResponse))
+        val expectedUrl = s"$apiUrl/journey/$journeyId"
 
-      val result = await(connector.createLimitedCompanyJourney())
+        when(
+          mockHttpClient.GET[IncorporatedEntityJourneyData](
+            ArgumentMatchers.eq(expectedUrl),
+            any(),
+            any()
+          )(any(), any(), any())
+        )
+          .thenReturn(Future.successful(incorporatedEntityJourneyData))
 
-      result shouldBe emptyGrsCreateJourneyResponse
+        val result = await(connector.getJourneyData(journeyId))
 
-      verify(mockHttpClient, times(1))
-        .POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-          ArgumentMatchers.eq(expectedUrl),
-          ArgumentMatchers.eq(expectedIncorporatedEntityCreateJourneyRequest),
-          any()
-        )(any(), any(), any(), any())
+        result shouldBe incorporatedEntityJourneyData
+
+        verify(mockHttpClient, times(1))
+          .GET[IncorporatedEntityJourneyData](
+            ArgumentMatchers.eq(expectedUrl),
+            any(),
+            any()
+          )(any(), any(), any())
+
+        reset(mockHttpClient)
     }
   }
 }
