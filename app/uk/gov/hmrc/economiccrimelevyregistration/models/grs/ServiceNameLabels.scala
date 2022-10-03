@@ -16,20 +16,32 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models.grs
 
+import play.api.i18n.{Lang, MessagesApi}
 import play.api.libs.json.{Json, OFormat}
 
-final case class IncorporatedEntityCreateJourneyRequest(
-  continueUrl: String,
-  businessVerificationCheck: Boolean = true,
-  optServiceName: Option[String],
-  deskProServiceId: String,
-  signOutUrl: String,
-  regime: String = "ECL",
-  accessibilityUrl: String,
-  labels: ServiceNameLabels
-)
+final case class ServiceNameLabels(en: En, cy: Cy)
 
-object IncorporatedEntityCreateJourneyRequest {
-  implicit val format: OFormat[IncorporatedEntityCreateJourneyRequest] =
-    Json.format[IncorporatedEntityCreateJourneyRequest]
+object ServiceNameLabels {
+  def apply()(implicit messagesApi: MessagesApi): ServiceNameLabels =
+    ServiceNameLabels(
+      En(optServiceName = messagesApi("service.name")(Lang("en"))),
+      Cy(optServiceName = messagesApi("service.name")(Lang("cy")))
+    )
+
+  implicit val format: OFormat[ServiceNameLabels] =
+    Json.format[ServiceNameLabels]
+}
+
+final case class Cy(optServiceName: String)
+
+object Cy {
+  implicit val format: OFormat[Cy] =
+    Json.format[Cy]
+}
+
+final case class En(optServiceName: String)
+
+object En {
+  implicit val format: OFormat[En] =
+    Json.format[En]
 }

@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Request
+import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, IncorporatedEntityCreateJourneyRequest}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, IncorporatedEntityCreateJourneyRequest, ServiceNameLabels}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -29,27 +27,32 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class IncorporatedEntityIdentificationFrontendConnector @Inject() (
-  val messagesApi: MessagesApi,
   appConfig: AppConfig,
   httpClient: HttpClient
 )(implicit
+  val messagesApi: MessagesApi,
   ec: ExecutionContext
-) extends I18nSupport {
+) {
   private val limitedCompanyJourneyUrl = s"${appConfig.incorporatedEntityIdentificationApiUrl}/limited-company-journey"
-  private val createJourneyRequest     = IncorporatedEntityCreateJourneyRequest(
-    continueUrl = "",
-    optServiceName = None,
-    deskProServiceId = appConfig.appName,
-    signOutUrl = routes.SignOutController.signOut().url,
-    accessibilityUrl = ""
-  )
+
+  private val createJourneyRequest = {
+    val serviceNameLabels = ServiceNameLabels()
+
+    IncorporatedEntityCreateJourneyRequest(
+      continueUrl = appConfig.grsContinueUrl,
+      optServiceName = Some(serviceNameLabels.en.optServiceName),
+      deskProServiceId = appConfig.appName,
+      signOutUrl = appConfig.grsSignOutUrl,
+      accessibilityUrl = appConfig.grsAccessibilityStatementPath,
+      labels = serviceNameLabels
+    )
+  }
 
   def createLimitedCompanyJourney()(implicit
-    hc: HeaderCarrier,
-    request: Request[_]
+    hc: HeaderCarrier
   ): Future[GrsCreateJourneyResponse] =
     httpClient.POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
       limitedCompanyJourneyUrl,
-      createJourneyRequest.copy(optServiceName = Some(request2Messages(request)("service.name")))
+      createJourneyRequest
     )
 }
