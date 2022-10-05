@@ -42,10 +42,8 @@ object EntityType {
 
   implicit val enumerable: Enumerable[EntityType] = Enumerable(values.map(v => (v.toString, v)): _*)
 
-  implicit val format: OFormat[EntityType] = {
-    implicit val ukLimitedCompanyFormat: OFormat[UkLimitedCompany.type] = Json.format[UkLimitedCompany.type]
-    implicit val soleTraderFormat: OFormat[SoleTrader.type]             = Json.format[SoleTrader.type]
-    implicit val partnershipFormat: OFormat[Partnership.type]           = Json.format[Partnership.type]
-    Json.format[EntityType]
-  }
+  implicit val ukLimitedCompanyFormat: OFormat[UkLimitedCompany.type] = Json.format[UkLimitedCompany.type]
+  implicit val soleTraderFormat: OFormat[SoleTrader.type]             = Json.format[SoleTrader.type]
+  implicit val partnershipFormat: OFormat[Partnership.type]           = Json.format[Partnership.type]
+  implicit val format: OFormat[EntityType]                            = Json.format[EntityType]
 }
