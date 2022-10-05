@@ -32,5 +32,4 @@ class EclRegistrationService @Inject() (eclRegistrationConnector: EclRegistratio
       case Some(registration) => Future.successful(registration)
       case None               => eclRegistrationConnector.upsertRegistration(Registration(internalId, None))
     }
-
 }

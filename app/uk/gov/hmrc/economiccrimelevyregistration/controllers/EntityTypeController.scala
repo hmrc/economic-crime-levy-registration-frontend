@@ -53,14 +53,19 @@ class EntityTypeController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        {
-          case UkLimitedCompany =>
-            incorporatedEntityIdentificationFrontendConnector
-              .createLimitedCompanyJourney()
-              .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
-          case SoleTrader       => Future.successful(Ok("Ok Trader"))
-          case Partnership      => Future.successful(Ok("Howdy Partner"))
-        }
+        entityType =>
+          eclRegistrationConnector
+            .upsertRegistration(request.registration.copy(entityType = Some(entityType)))
+            .flatMap { _ =>
+              entityType match {
+                case UkLimitedCompany =>
+                  incorporatedEntityIdentificationFrontendConnector
+                    .createLimitedCompanyJourney()
+                    .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
+                case SoleTrader       => Future.successful(Ok("Ok Trader"))
+                case Partnership      => Future.successful(Ok("Howdy Partner"))
+              }
+            }
       )
   }
 }
