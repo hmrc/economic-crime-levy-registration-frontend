@@ -32,18 +32,18 @@ class EclRegistrationServiceSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-        .thenReturn(Future.successful(emptyRegistration))
+        .thenReturn(Future.successful(testRegistration))
 
       val result = await(service.getOrCreateRegistration(internalId))
-      result shouldBe emptyRegistration
+      result shouldBe testRegistration
     }
 
     "return an existing registration" in {
       when(mockEclRegistrationConnector.getRegistration(any())(any()))
-        .thenReturn(Future.successful(Some(emptyRegistration)))
+        .thenReturn(Future.successful(Some(testRegistration)))
 
       val result = await(service.getOrCreateRegistration(internalId))
-      result shouldBe emptyRegistration
+      result shouldBe testRegistration
     }
   }
 }

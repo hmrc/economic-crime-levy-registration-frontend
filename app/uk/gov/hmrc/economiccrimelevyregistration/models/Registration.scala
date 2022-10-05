@@ -17,10 +17,12 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.IncorporatedEntityJourneyData
 
 final case class Registration(
   internalId: String,
-  entityType: Option[EntityType]
+  entityType: Option[EntityType],
+  incorporatedEntityJourneyData: Option[IncorporatedEntityJourneyData]
 )
 
 object Registration {

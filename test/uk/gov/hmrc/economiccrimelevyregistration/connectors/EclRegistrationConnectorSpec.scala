@@ -40,11 +40,11 @@ class EclRegistrationConnectorSpec extends SpecBase {
       when(
         mockHttpClient.GET[Option[Registration]](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
       )
-        .thenReturn(Future.successful(Some(emptyRegistration)))
+        .thenReturn(Future.successful(Some(testRegistration)))
 
       val result = await(connector.getRegistration(internalId))
 
-      result shouldBe Some(emptyRegistration)
+      result shouldBe Some(testRegistration)
 
       verify(mockHttpClient, times(1))
         .GET[Option[Registration]](
@@ -100,10 +100,10 @@ class EclRegistrationConnectorSpec extends SpecBase {
         mockHttpClient
           .PUT[Registration, Registration](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any(), any())
       )
-        .thenReturn(Future.successful(emptyRegistration))
+        .thenReturn(Future.successful(testRegistration))
 
-      val result = await(connector.upsertRegistration(emptyRegistration))
-      result shouldBe emptyRegistration
+      val result = await(connector.upsertRegistration(testRegistration))
+      result shouldBe testRegistration
 
       verify(mockHttpClient, times(1))
         .PUT[Registration, Registration](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any(), any())

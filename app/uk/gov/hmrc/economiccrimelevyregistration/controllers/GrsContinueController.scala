@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.IncorporatedEntityIdentificationFrontendConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -30,12 +30,19 @@ class GrsContinueController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
-  incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector
+  incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
+  eclRegistrationConnector: EclRegistrationConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController {
 
   def continue(journeyId: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
     implicit request =>
-      incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId).map(jd => Ok(Json.toJson(jd)))
+      incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
+        eclRegistrationConnector
+          .upsertRegistration(request.registration.copy(incorporatedEntityJourneyData = Some(jd)))
+          .map { _ =>
+            Ok(Json.toJson(jd))
+          }
+      }
   }
 }

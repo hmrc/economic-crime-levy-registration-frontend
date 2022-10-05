@@ -65,7 +65,7 @@ class EntityTypeControllerSpec extends SpecBase {
       when(mockIncorporatedEntityIdentificationFrontendConnector.createLimitedCompanyJourney()(any()))
         .thenReturn(Future.successful(GrsCreateJourneyResponse("test-url")))
 
-      val updatedRegistration = emptyRegistration.copy(entityType = Some(UkLimitedCompany))
+      val updatedRegistration = testRegistration.copy(entityType = Some(UkLimitedCompany))
       when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
         .thenReturn(Future.successful(updatedRegistration))
 

@@ -20,10 +20,12 @@ import org.mockito.ArgumentMatchers.any
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.IncorporatedEntityIdentificationFrontendConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.IncorporatedEntityJourneyData
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers
+import play.api.mvc.Result
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, UkLimitedCompany}
 
 import scala.concurrent.Future
 
@@ -31,26 +33,39 @@ class GrsContinueControllerSpec extends SpecBase {
   val mockIncorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector =
     mock[IncorporatedEntityIdentificationFrontendConnector]
 
-  val controller = new GrsContinueController(
-    mcc,
-    fakeAuthorisedAction,
-    fakeDataRetrievalAction(),
-    mockIncorporatedEntityIdentificationFrontendConnector
-  )
+  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
+  class TestContext(registrationData: Registration) {
+    val controller = new GrsContinueController(
+      mcc,
+      fakeAuthorisedAction,
+      fakeDataRetrievalAction(registrationData),
+      mockIncorporatedEntityIdentificationFrontendConnector,
+      mockEclRegistrationConnector
+    )
+  }
   "continue" should {
     "retrieve the GRS journey data and display the GRS result" in forAll {
       (journeyId: String, incorporatedEntityJourneyData: IncorporatedEntityJourneyData) =>
-        when(
-          mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
-        )
-          .thenReturn(Future.successful(incorporatedEntityJourneyData))
+        new TestContext(testRegistration.copy(entityType = Some(UkLimitedCompany))) {
+          when(
+            mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(incorporatedEntityJourneyData))
 
-        val result = controller.continue(journeyId)(fakeRequest)
+          val updatedRegistration: Registration = testRegistration.copy(
+            entityType = Some(UkLimitedCompany),
+            incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData)
+          )
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
 
-        status(result) shouldBe OK
+          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
 
-        contentAsJson(result) shouldBe Json.toJson(incorporatedEntityJourneyData)
+          status(result) shouldBe OK
+
+          contentAsJson(result) shouldBe Json.toJson(incorporatedEntityJourneyData)
+        }
     }
   }
 }
