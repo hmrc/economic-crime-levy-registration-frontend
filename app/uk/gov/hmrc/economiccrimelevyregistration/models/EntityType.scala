@@ -17,15 +17,17 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.i18n.Messages
+import play.api.libs.json._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 sealed trait EntityType
 
+case object UkLimitedCompany extends EntityType
+case object SoleTrader extends EntityType
+case object Partnership extends EntityType
+
 object EntityType {
-  case object UkLimitedCompany extends EntityType
-  case object SoleTrader extends EntityType
-  case object Partnership extends EntityType
 
   val values: Seq[EntityType] = Seq(UkLimitedCompany, SoleTrader, Partnership)
 
@@ -39,4 +41,11 @@ object EntityType {
     }
 
   implicit val enumerable: Enumerable[EntityType] = Enumerable(values.map(v => (v.toString, v)): _*)
+
+  implicit val format: OFormat[EntityType] = {
+    implicit val ukLimitedCompanyFormat: OFormat[UkLimitedCompany.type] = Json.format[UkLimitedCompany.type]
+    implicit val soleTraderFormat: OFormat[SoleTrader.type]             = Json.format[SoleTrader.type]
+    implicit val partnershipFormat: OFormat[Partnership.type]           = Json.format[Partnership.type]
+    Json.format[EntityType]
+  }
 }

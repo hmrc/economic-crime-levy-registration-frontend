@@ -16,8 +16,16 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import org.mockito.ArgumentMatchers.any
+import play.api.libs.json.Json
+import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.IncorporatedEntityIdentificationFrontendConnector
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.IncorporatedEntityJourneyData
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import org.mockito.ArgumentMatchers
+
+import scala.concurrent.Future
 
 class GrsContinueControllerSpec extends SpecBase {
   val mockIncorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector =
@@ -31,7 +39,18 @@ class GrsContinueControllerSpec extends SpecBase {
   )
 
   "continue" should {
-    "retrieve the GRS journey data and display the GRS result" in {}
-  }
+    "retrieve the GRS journey data and display the GRS result" in forAll {
+      (journeyId: String, incorporatedEntityJourneyData: IncorporatedEntityJourneyData) =>
+        when(
+          mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+        )
+          .thenReturn(Future.successful(incorporatedEntityJourneyData))
 
+        val result = controller.continue(journeyId)(fakeRequest)
+
+        status(result) shouldBe OK
+
+        contentAsJson(result) shouldBe Json.toJson(incorporatedEntityJourneyData)
+    }
+  }
 }

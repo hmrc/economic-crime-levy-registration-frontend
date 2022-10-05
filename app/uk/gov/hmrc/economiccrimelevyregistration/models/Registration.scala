@@ -19,7 +19,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.models
 import play.api.libs.json.{Json, OFormat}
 
 final case class Registration(
-  internalId: String
+  internalId: String,
+  entityType: Option[EntityType]
 )
 
 object Registration {

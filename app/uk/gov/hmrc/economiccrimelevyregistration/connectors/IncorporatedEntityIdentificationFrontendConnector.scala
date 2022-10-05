@@ -35,26 +35,23 @@ class IncorporatedEntityIdentificationFrontendConnector @Inject() (
 ) {
   private val apiUrl = s"${appConfig.incorporatedEntityIdentificationApiUrl}/incorporated-entity-identification/api"
 
-  private val createJourneyRequest = {
-    val serviceNameLabels = ServiceNameLabels()
-
-    IncorporatedEntityCreateJourneyRequest(
-      continueUrl = appConfig.grsContinueUrl,
-      optServiceName = Some(serviceNameLabels.en.optServiceName),
-      deskProServiceId = appConfig.appName,
-      signOutUrl = appConfig.grsSignOutUrl,
-      accessibilityUrl = appConfig.grsAccessibilityStatementPath,
-      labels = serviceNameLabels
-    )
-  }
-
   def createLimitedCompanyJourney()(implicit
     hc: HeaderCarrier
-  ): Future[GrsCreateJourneyResponse] =
+  ): Future[GrsCreateJourneyResponse] = {
+    val serviceNameLabels = ServiceNameLabels()
+
     httpClient.POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
       s"$apiUrl/limited-company-journey",
-      createJourneyRequest
+      IncorporatedEntityCreateJourneyRequest(
+        continueUrl = appConfig.grsContinueUrl,
+        optServiceName = Some(serviceNameLabels.en.optServiceName),
+        deskProServiceId = appConfig.appName,
+        signOutUrl = appConfig.grsSignOutUrl,
+        accessibilityUrl = appConfig.grsAccessibilityStatementPath,
+        labels = serviceNameLabels
+      )
     )
+  }
 
   def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData] =
     httpClient.GET[IncorporatedEntityJourneyData](s"$apiUrl/journey/$journeyId")

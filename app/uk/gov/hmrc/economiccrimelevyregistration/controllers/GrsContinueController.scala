@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.IncorporatedEntityIdentificationFrontendConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
@@ -33,8 +34,8 @@ class GrsContinueController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController {
 
-  def continue(journeyId: String): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    val journeyData = incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId)
-    Ok("GRS journey data")
+  def continue(journeyId: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
+    implicit request =>
+      incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId).map(jd => Ok(Json.toJson(jd)))
   }
 }

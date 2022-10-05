@@ -16,15 +16,16 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.IncorporatedEntityIdentificationFrontendConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, UkLimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.GrsCreateJourneyResponse
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 
@@ -37,12 +38,14 @@ class EntityTypeControllerSpec extends SpecBase {
   val form: Form[EntityType]                                                                                   = formProvider()
   val mockIncorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector =
     mock[IncorporatedEntityIdentificationFrontendConnector]
+  val mockEclRegistrationConnector: EclRegistrationConnector                                                   = mock[EclRegistrationConnector]
 
   val controller = new EntityTypeController(
     mcc,
     fakeAuthorisedAction,
     fakeDataRetrievalAction(),
     mockIncorporatedEntityIdentificationFrontendConnector,
+    mockEclRegistrationConnector,
     formProvider,
     view
   )
@@ -58,9 +61,13 @@ class EntityTypeControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
+    "save the selected entity type then redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
       when(mockIncorporatedEntityIdentificationFrontendConnector.createLimitedCompanyJourney()(any()))
         .thenReturn(Future.successful(GrsCreateJourneyResponse("test-url")))
+
+      val updatedRegistration = emptyRegistration.copy(entityType = Some(UkLimitedCompany))
+      when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+        .thenReturn(Future.successful(updatedRegistration))
 
       val result: Future[Result] =
         controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "UkLimitedCompany")))
