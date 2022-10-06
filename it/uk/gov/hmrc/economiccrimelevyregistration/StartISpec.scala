@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 class StartISpec extends ISpecBase {
 
   s"GET /$contextPath/" should {
-    "respond with 200 status and the index HTML view" in {
+    "respond with 200 status and the start HTML view" in {
       stubAuthorised()
       stubGetRegistration()
 

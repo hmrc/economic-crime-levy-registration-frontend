@@ -15,7 +15,7 @@ import org.scalatest.{Status => _, _}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http._
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.{Result, Results}
+import play.api.mvc.{AnyContentAsEmpty, Result, Results}
 import play.api.test._
 import play.api.{Application, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
@@ -60,7 +60,8 @@ abstract class ISpecBase
     "auditing.enabled" -> false
   ) ++ setWireMockPort(
     "auth",
-    "economic-crime-levy-registration"
+    "economic-crime-levy-registration",
+    "incorporated-entity-identification-api"
   )
 
   val contextPath: String = "register-for-economic-crime-levy"
