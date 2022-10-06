@@ -33,7 +33,7 @@ class EntityTypeSpec extends SpecBase {
     "return the entity type deserialized from its JSON representation" in forAll { (entityType: EntityType) =>
       val json = Json.toJson(entityType)
 
-      Json.fromJson[EntityType](json).map(et => et shouldBe entityType)
+      json.as[EntityType] shouldBe entityType
     }
 
     "return a '... is not a valid EntityType' error when passed an invalid string value" in forAll { (value: String) =>
