@@ -58,4 +58,5 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
 
   val eclRegistrationBaseUrl: String                 = servicesConfig.baseUrl("economic-crime-levy-registration")
   val incorporatedEntityIdentificationApiUrl: String = servicesConfig.baseUrl("incorporated-entity-identification-api")
+  val soleTraderEntityIdentificationApiUrl: String   = servicesConfig.baseUrl("sole-trader-identification-api")
 }

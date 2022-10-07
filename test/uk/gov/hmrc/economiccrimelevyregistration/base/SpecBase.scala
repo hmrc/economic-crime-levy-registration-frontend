@@ -54,7 +54,7 @@ trait SpecBase
   implicit val hc: HeaderCarrier        = HeaderCarrier()
 
   val internalId: String                                             = "test-id"
-  val testRegistration: Registration                                 = Registration(internalId, None, None)
+  val testRegistration: Registration                                 = Registration(internalId, None, None, None)
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type]               = FakeRequest()
   val appConfig: AppConfig                                           = app.injector.instanceOf[AppConfig]
   val messages: Messages                                             = messagesApi.preferred(fakeRequest)
