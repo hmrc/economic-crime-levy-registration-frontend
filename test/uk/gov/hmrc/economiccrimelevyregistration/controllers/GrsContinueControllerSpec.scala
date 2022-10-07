@@ -20,12 +20,12 @@ import org.mockito.ArgumentMatchers.any
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers
 import play.api.mvc.Result
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Partnership, Registration, SoleTrader, UkLimitedCompany}
 
 import scala.concurrent.Future
 
@@ -36,6 +36,9 @@ class GrsContinueControllerSpec extends SpecBase {
   val mockSoleTraderEntityIdentificationFrontendConnector: SoleTraderEntityIdentificationFrontendConnector =
     mock[SoleTraderEntityIdentificationFrontendConnector]
 
+  val mockPartnershipEntityIdentificationFrontendConnector: PartnershipEntityIdentificationFrontendConnector =
+    mock[PartnershipEntityIdentificationFrontendConnector]
+
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
   class TestContext(registrationData: Registration) {
@@ -45,6 +48,7 @@ class GrsContinueControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       mockIncorporatedEntityIdentificationFrontendConnector,
       mockSoleTraderEntityIdentificationFrontendConnector,
+      mockPartnershipEntityIdentificationFrontendConnector,
       mockEclRegistrationConnector
     )
   }
@@ -93,6 +97,29 @@ class GrsContinueControllerSpec extends SpecBase {
           status(result) shouldBe OK
 
           contentAsJson(result) shouldBe Json.toJson(soleTraderEntityJourneyData)
+        }
+    }
+
+    "retrieve the partnership entity GRS journey data and display the GRS result" in forAll {
+      (journeyId: String, partnershipEntityJourneyData: PartnershipEntityJourneyData) =>
+        new TestContext(testRegistration.copy(entityType = Some(Partnership))) {
+          when(
+            mockPartnershipEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(partnershipEntityJourneyData))
+
+          val updatedRegistration: Registration = testRegistration.copy(
+            entityType = Some(Partnership),
+            partnershipEntityJourneyData = Some(partnershipEntityJourneyData)
+          )
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+
+          status(result) shouldBe OK
+
+          contentAsJson(result) shouldBe Json.toJson(partnershipEntityJourneyData)
         }
     }
 

@@ -18,9 +18,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Partnership, SoleTrader, UkLimitedCompany}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -33,6 +33,7 @@ class GrsContinueController @Inject() (
   getRegistrationData: DataRetrievalAction,
   incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
   soleTraderEntityIdentificationFrontendConnector: SoleTraderEntityIdentificationFrontendConnector,
+  partnershipEntityIdentificationFrontendConnector: PartnershipEntityIdentificationFrontendConnector,
   eclRegistrationConnector: EclRegistrationConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController {
@@ -53,6 +54,15 @@ class GrsContinueController @Inject() (
           soleTraderEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             eclRegistrationConnector
               .upsertRegistration(request.registration.copy(soleTraderEntityJourneyData = Some(jd)))
+              .map { _ =>
+                Ok(Json.toJson(jd))
+              }
+          }
+
+        case Some(Partnership) =>
+          partnershipEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
+            eclRegistrationConnector
+              .upsertRegistration(request.registration.copy(partnershipEntityJourneyData = Some(jd)))
               .map { _ =>
                 Ok(Json.toJson(jd))
               }

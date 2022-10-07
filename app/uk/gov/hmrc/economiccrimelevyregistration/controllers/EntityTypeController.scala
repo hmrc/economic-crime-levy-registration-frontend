@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Partnership, SoleTrader, UkLimitedCompany}
@@ -36,6 +36,7 @@ class EntityTypeController @Inject() (
   getRegistrationData: DataRetrievalAction,
   incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
   soleTraderEntityIdentificationFrontendConnector: SoleTraderEntityIdentificationFrontendConnector,
+  partnershipEntityIdentificationFrontendConnector: PartnershipEntityIdentificationFrontendConnector,
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: EntityTypeFormProvider,
   view: EntityTypeView
@@ -67,7 +68,10 @@ class EntityTypeController @Inject() (
                   soleTraderEntityIdentificationFrontendConnector
                     .createSoleTraderJourney()
                     .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
-                case Partnership      => Future.successful(Ok("Howdy Partner"))
+                case Partnership      =>
+                  partnershipEntityIdentificationFrontendConnector
+                    .createLimitedLiabilityPartnershipJourney()
+                    .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
               }
             }
       )

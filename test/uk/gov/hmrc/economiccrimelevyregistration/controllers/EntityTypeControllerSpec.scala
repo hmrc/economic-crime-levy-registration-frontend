@@ -23,9 +23,9 @@ import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Partnership, SoleTrader, UkLimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.GrsCreateJourneyResponse
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 
@@ -40,6 +40,8 @@ class EntityTypeControllerSpec extends SpecBase {
     mock[IncorporatedEntityIdentificationFrontendConnector]
   val mockSoleTraderEntityIdentificationFrontendConnector: SoleTraderEntityIdentificationFrontendConnector     =
     mock[SoleTraderEntityIdentificationFrontendConnector]
+  val mockPartnershipEntityIdentificationFrontendConnector: PartnershipEntityIdentificationFrontendConnector   =
+    mock[PartnershipEntityIdentificationFrontendConnector]
   val mockEclRegistrationConnector: EclRegistrationConnector                                                   = mock[EclRegistrationConnector]
 
   val controller = new EntityTypeController(
@@ -48,6 +50,7 @@ class EntityTypeControllerSpec extends SpecBase {
     fakeDataRetrievalAction(),
     mockIncorporatedEntityIdentificationFrontendConnector,
     mockSoleTraderEntityIdentificationFrontendConnector,
+    mockPartnershipEntityIdentificationFrontendConnector,
     mockEclRegistrationConnector,
     formProvider,
     view
@@ -90,6 +93,22 @@ class EntityTypeControllerSpec extends SpecBase {
 
       val result: Future[Result] =
         controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "SoleTrader")))
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some("test-url")
+    }
+
+    "save the selected entity type then redirect to the GRS Partnership journey when the Partnership option is selected" in {
+      when(mockPartnershipEntityIdentificationFrontendConnector.createLimitedLiabilityPartnershipJourney()(any()))
+        .thenReturn(Future.successful(GrsCreateJourneyResponse("test-url")))
+
+      val updatedRegistration = testRegistration.copy(entityType = Some(Partnership))
+      when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+        .thenReturn(Future.successful(updatedRegistration))
+
+      val result: Future[Result] =
+        controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "Partnership")))
 
       status(result) shouldBe SEE_OTHER
 
