@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.IncorporatedEntityJourneyData
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 
-final case class Registration(
-  internalId: String,
-  entityType: Option[EntityType],
-  incorporatedEntityJourneyData: Option[IncorporatedEntityJourneyData]
-)
-
-object Registration {
-  implicit val format: OFormat[Registration] = Json.format[Registration]
+class EntityTypeFormProvider extends Mappings {
+  def apply(): Form[EntityType] = Form(("value", enumerable[EntityType]("entityType.error.required")))
 }

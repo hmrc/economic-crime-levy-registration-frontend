@@ -21,10 +21,11 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterEach, OptionValues, TryValues}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc._
-import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import play.api.test.Helpers.{stubBodyParser, stubControllerComponents}
+import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{FakeAuthorisedAction, FakeDataRetrievalAction}
@@ -45,17 +46,20 @@ trait SpecBase
     with GuiceOneAppPerSuite
     with MockitoSugar
     with BeforeAndAfterEach
+    with ScalaCheckPropertyChecks
     with EclTestData {
 
-  val internalId: String                                              = "test-id"
-  val emptyRegistration: Registration                                 = Registration(internalId)
-  val fakeRequest: FakeRequest[AnyContentAsEmpty.type]                = FakeRequest()
-  val appConfig: AppConfig                                            = app.injector.instanceOf[AppConfig]
-  val messagesApi: MessagesApi                                        = app.injector.instanceOf[MessagesApi]
-  val messages: Messages                                              = messagesApi.preferred(fakeRequest)
-  val bodyParsers: PlayBodyParsers                                    = app.injector.instanceOf[PlayBodyParsers]
-  val fakeAuthorisedAction                                            = new FakeAuthorisedAction(bodyParsers)
-  def fakeDataRetrievalAction(data: Registration = emptyRegistration) = new FakeDataRetrievalAction(data)
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val ec: ExecutionContext     = scala.concurrent.ExecutionContext.Implicits.global
+  implicit val hc: HeaderCarrier        = HeaderCarrier()
+
+  val internalId: String                               = "test-id"
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val appConfig: AppConfig                             = app.injector.instanceOf[AppConfig]
+  val messages: Messages                               = messagesApi.preferred(fakeRequest)
+  val bodyParsers: PlayBodyParsers                     = app.injector.instanceOf[PlayBodyParsers]
+  val fakeAuthorisedAction                             = new FakeAuthorisedAction(bodyParsers)
+  def fakeDataRetrievalAction(data: Registration)      = new FakeDataRetrievalAction(data)
 
   def onwardRoute: Call = Call("GET", "/foo")
 
@@ -73,8 +77,5 @@ trait SpecBase
       stub.executionContext
     )
   }
-
-  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-  implicit val hc: HeaderCarrier    = HeaderCarrier()
 
 }
