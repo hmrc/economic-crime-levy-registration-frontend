@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsEmpty, Request, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 
@@ -41,13 +43,13 @@ class DataRetrievalActionSpec extends SpecBase {
   }
 
   "transform" should {
-    "transform an AuthorisedRequest into a RegistrationDataRequest" in {
-      when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(testRegistration))
+    "transform an AuthorisedRequest into a RegistrationDataRequest" in forAll { registration: Registration =>
+      when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
 
       val result: Future[RegistrationDataRequest[AnyContentAsEmpty.type]] =
         dataRetrievalAction.transform(AuthorisedRequest(fakeRequest, internalId))
 
-      await(result) shouldBe RegistrationDataRequest(fakeRequest, internalId, testRegistration)
+      await(result) shouldBe RegistrationDataRequest(fakeRequest, internalId, registration)
     }
   }
 

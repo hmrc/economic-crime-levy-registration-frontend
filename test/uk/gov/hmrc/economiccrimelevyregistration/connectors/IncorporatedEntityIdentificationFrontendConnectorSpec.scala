@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.HttpClient
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 
 import scala.concurrent.Future
 
@@ -78,8 +78,6 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
   "getJourneyData" should {
     "return journey data for a given journey id" in forAll {
       (incorporatedEntityJourneyData: IncorporatedEntityJourneyData, journeyId: String) =>
-        println(incorporatedEntityJourneyData)
-
         val expectedUrl = s"$apiUrl/journey/$journeyId"
 
         when(

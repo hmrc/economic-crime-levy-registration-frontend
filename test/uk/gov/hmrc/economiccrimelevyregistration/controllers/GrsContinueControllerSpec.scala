@@ -16,15 +16,15 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.libs.json.Json
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.IncorporatedEntityJourneyData
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
-import org.mockito.ArgumentMatchers
-import play.api.mvc.Result
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, UkLimitedCompany}
 
 import scala.concurrent.Future
@@ -44,16 +44,17 @@ class GrsContinueControllerSpec extends SpecBase {
       mockEclRegistrationConnector
     )
   }
+
   "continue" should {
     "retrieve the GRS journey data and display the GRS result" in forAll {
-      (journeyId: String, incorporatedEntityJourneyData: IncorporatedEntityJourneyData) =>
-        new TestContext(testRegistration.copy(entityType = Some(UkLimitedCompany))) {
+      (journeyId: String, registration: Registration, incorporatedEntityJourneyData: IncorporatedEntityJourneyData) =>
+        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
           when(
             mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
           )
             .thenReturn(Future.successful(incorporatedEntityJourneyData))
 
-          val updatedRegistration: Registration = testRegistration.copy(
+          val updatedRegistration: Registration = registration.copy(
             entityType = Some(UkLimitedCompany),
             incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData)
           )

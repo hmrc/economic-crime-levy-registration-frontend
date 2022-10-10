@@ -53,14 +53,13 @@ trait SpecBase
   implicit val ec: ExecutionContext     = scala.concurrent.ExecutionContext.Implicits.global
   implicit val hc: HeaderCarrier        = HeaderCarrier()
 
-  val internalId: String                                             = "test-id"
-  val testRegistration: Registration                                 = Registration(internalId, None, None)
-  val fakeRequest: FakeRequest[AnyContentAsEmpty.type]               = FakeRequest()
-  val appConfig: AppConfig                                           = app.injector.instanceOf[AppConfig]
-  val messages: Messages                                             = messagesApi.preferred(fakeRequest)
-  val bodyParsers: PlayBodyParsers                                   = app.injector.instanceOf[PlayBodyParsers]
-  val fakeAuthorisedAction                                           = new FakeAuthorisedAction(bodyParsers)
-  def fakeDataRetrievalAction(data: Registration = testRegistration) = new FakeDataRetrievalAction(data)
+  val internalId: String                               = "test-id"
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val appConfig: AppConfig                             = app.injector.instanceOf[AppConfig]
+  val messages: Messages                               = messagesApi.preferred(fakeRequest)
+  val bodyParsers: PlayBodyParsers                     = app.injector.instanceOf[PlayBodyParsers]
+  val fakeAuthorisedAction                             = new FakeAuthorisedAction(bodyParsers)
+  def fakeDataRetrievalAction(data: Registration)      = new FakeDataRetrievalAction(data)
 
   def onwardRoute: Call = Call("GET", "/foo")
 
