@@ -7,6 +7,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
 
 trait WireMockStubs {
@@ -35,16 +36,12 @@ trait WireMockStubs {
            """.stripMargin)
     )
 
-  def stubGetRegistration(): StubMapping =
+  def stubGetRegistration(registrationJson: JsValue): StubMapping =
     stub(
       get(urlEqualTo("/economic-crime-levy-registration/registrations/test-id")),
       aResponse()
         .withStatus(200)
-        .withBody(s"""
-             |{
-             |  "internalId": "test-id"
-             |}
-     """.stripMargin)
+        .withBody(registrationJson.toString())
     )
 
   def stubCreateLimitedCompanyJourney(): StubMapping =
@@ -84,49 +81,22 @@ trait WireMockStubs {
          """.stripMargin)
     )
 
-  def stubUpsertRegistration(registrationJson: String): StubMapping =
+  def stubUpsertRegistration(registrationJson: JsValue): StubMapping =
     stub(
       put(urlEqualTo("/economic-crime-levy-registration/registrations"))
         .withRequestBody(
-          equalToJson(registrationJson.stripMargin, true, true)
+          equalToJson(registrationJson.toString(), true, true)
         ),
       aResponse()
         .withStatus(200)
-        .withBody(registrationJson.stripMargin)
+        .withBody(registrationJson.toString())
     )
 
-  def stubGetJourneyData(journeyId: String): StubMapping =
+  def stubGetJourneyData(journeyId: String, journeyData: JsValue): StubMapping =
     stub(
       get(urlEqualTo(s"/incorporated-entity-identification/api/journey/$journeyId")),
       aResponse()
         .withStatus(200)
-        .withBody(s"""
-                     |{
-                     |    "companyProfile" : {
-                     |        "companyName" : "Test Company Ltd",
-                     |        "companyNumber" : "01234567",
-                     |        "unsanitisedCHROAddress" : {
-                     |            "address_line_1" : "testLine1",
-                     |            "address_line_2" : "test town",
-                     |            "care_of" : "test name",
-                     |            "country" : "United Kingdom",
-                     |            "locality" : "test city",
-                     |            "po_box" : "123",
-                     |            "postal_code" : "AA11AA",
-                     |            "premises" : "1",
-                     |            "region" : "test region"
-                     |        }
-                     |    },
-                     |    "ctutr" : "1234567890",
-                     |    "identifiersMatch" : true,
-                     |    "businessVerification" : {
-                     |        "verificationStatus" : "PASS"
-                     |    },
-                     |    "registration" : {
-                     |        "registrationStatus" : "REGISTERED",
-                     |        "registeredBusinessPartnerId" : "X00000123456789"
-                     |    }
-                     |}
-                   """.stripMargin)
+        .withBody(journeyData.toString())
     )
 }

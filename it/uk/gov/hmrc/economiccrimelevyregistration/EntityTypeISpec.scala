@@ -1,15 +1,26 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import org.scalacheck.Arbitrary
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.UkLimitedCompany
 
 class EntityTypeISpec extends ISpecBase {
 
   s"GET /$contextPath/select-entity-type"  should {
     "respond with 200 status and the select entity type HTML view" in {
       stubAuthorised()
-      stubGetRegistration()
+
+      val registration =
+        Arbitrary
+          .arbitrary[models.Registration]
+          .sample
+          .get
+
+      stubGetRegistration(Json.toJson(registration))
 
       val result = callRoute(FakeRequest(routes.EntityTypeController.onPageLoad()))
 
@@ -22,18 +33,19 @@ class EntityTypeISpec extends ISpecBase {
   s"POST /$contextPath/select-entity-type" should {
     "save the selected entity type then redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
       stubAuthorised()
-      stubGetRegistration()
+
+      val registration =
+        Arbitrary
+          .arbitrary[models.Registration]
+          .sample
+          .get
+
+      stubGetRegistration(Json.toJson(registration))
       stubCreateLimitedCompanyJourney()
 
-      val registrationJson: String =
-        """
-          |{
-          |    "internalId" : "test-id",
-          |    "entityType" : "UkLimitedCompany"
-          |}
-        """.stripMargin
+      val updatedRegistration = registration.copy(entityType = Some(UkLimitedCompany))
 
-      stubUpsertRegistration(registrationJson)
+      stubUpsertRegistration(Json.toJson(updatedRegistration))
 
       val result = callRoute(
         FakeRequest(routes.EntityTypeController.onSubmit()).withFormUrlEncodedBody(("value", "UkLimitedCompany"))

@@ -1,60 +1,47 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import org.scalacheck.Arbitrary
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.UkLimitedCompany
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.IncorporatedEntityJourneyData
 
 class GrsContinueISpec extends ISpecBase {
 
   s"GET /$contextPath/grs-continue" should {
     "retrieve the GRS journey data, update the registration with the GRS journey data and (display the GRS journey data)" in {
       stubAuthorised()
-      stubGetRegistration()
 
-      val journeyId: String = "journeyId"
+      val registration =
+        Arbitrary
+          .arbitrary[models.Registration]
+          .sample
+          .get
+          .copy(
+            entityType = Some(UkLimitedCompany),
+            incorporatedEntityJourneyData = None
+          )
 
-      val registrationJson: String =
-        """
-          |{
-          |    "internalId" : "test-id",
-          |    "entityType" : "UkLimitedCompany",
-          |    "incorporatedEntityJourneyData" : {
-          |        "companyProfile" : {
-          |            "companyName" : "Test Company Ltd",
-          |            "companyNumber" : "01234567",
-          |            "unsanitisedCHROAddress" : {
-          |                "address_line_1" : "testLine1",
-          |                "address_line_2" : "test town",
-          |                "care_of" : "test name",
-          |                "country" : "United Kingdom",
-          |                "locality" : "test city",
-          |                "po_box" : "123",
-          |                "postal_code" : "AA11AA",
-          |                "premises" : "1",
-          |                "region" : "test region"
-          |            }
-          |        },
-          |        "ctutr" : "1234567890",
-          |        "identifiersMatch" : true,
-          |        "businessVerification" : {
-          |            "verificationStatus" : "PASS"
-          |        },
-          |        "registration" : {
-          |            "registrationStatus" : "REGISTERED",
-          |            "registeredBusinessPartnerId" : "X00000123456789"
-          |        }
-          |    }
-          |}
-        """.stripMargin
+      stubGetRegistration(Json.toJson(registration))
 
-      stubGetJourneyData(journeyId)
-      stubUpsertRegistration(registrationJson)
+      val journeyId: String = "test-journey-id"
+
+      val incorporatedEntityJourneyData = Arbitrary.arbitrary[IncorporatedEntityJourneyData].sample.get
+
+      val updatedRegistration = registration.copy(incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData))
+
+      stubGetJourneyData(journeyId, Json.toJson(incorporatedEntityJourneyData))
+
+      stubUpsertRegistration(Json.toJson(updatedRegistration))
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(journeyId)))
 
       status(result) shouldBe OK
 
-      html(result) should include("UkLimitedCompany")
+      contentAsJson(result) shouldBe Json.toJson(incorporatedEntityJourneyData)
     }
   }
 

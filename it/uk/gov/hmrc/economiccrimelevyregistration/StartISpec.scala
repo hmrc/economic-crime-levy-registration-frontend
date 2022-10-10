@@ -16,16 +16,27 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 class StartISpec extends ISpecBase {
 
   s"GET /$contextPath/" should {
     "respond with 200 status and the start HTML view" in {
       stubAuthorised()
-      stubGetRegistration()
+
+      val reg = Json.toJson(
+        Registration(
+          internalId = "test-id",
+          entityType = None,
+          incorporatedEntityJourneyData = None
+        )
+      )
+
+      stubGetRegistration(reg)
 
       val result = callRoute(FakeRequest(routes.StartController.onPageLoad()))
 
