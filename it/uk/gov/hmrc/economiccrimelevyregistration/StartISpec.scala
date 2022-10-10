@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import play.api.libs.json.Json
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbitrary, random}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
@@ -28,15 +28,9 @@ class StartISpec extends ISpecBase {
     "respond with 200 status and the start HTML view" in {
       stubAuthorised()
 
-      val reg = Json.toJson(
-        Registration(
-          internalId = "test-id",
-          entityType = None,
-          incorporatedEntityJourneyData = None
-        )
-      )
+      val registration = random[Registration]
 
-      stubGetRegistration(reg)
+      stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(routes.StartController.onPageLoad()))
 

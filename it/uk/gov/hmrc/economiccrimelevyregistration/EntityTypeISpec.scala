@@ -1,12 +1,10 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
-import org.scalacheck.Arbitrary
-import play.api.libs.json.Json
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbitrary, random}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.UkLimitedCompany
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, UkLimitedCompany}
 
 class EntityTypeISpec extends ISpecBase {
 
@@ -14,13 +12,9 @@ class EntityTypeISpec extends ISpecBase {
     "respond with 200 status and the select entity type HTML view" in {
       stubAuthorised()
 
-      val registration =
-        Arbitrary
-          .arbitrary[models.Registration]
-          .sample
-          .get
+      val registration = random[Registration]
 
-      stubGetRegistration(Json.toJson(registration))
+      stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(routes.EntityTypeController.onPageLoad()))
 
@@ -34,18 +28,14 @@ class EntityTypeISpec extends ISpecBase {
     "save the selected entity type then redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
       stubAuthorised()
 
-      val registration =
-        Arbitrary
-          .arbitrary[models.Registration]
-          .sample
-          .get
+      val registration = random[Registration]
 
-      stubGetRegistration(Json.toJson(registration))
+      stubGetRegistration(registration)
       stubCreateLimitedCompanyJourney()
 
       val updatedRegistration = registration.copy(entityType = Some(UkLimitedCompany))
 
-      stubUpsertRegistration(Json.toJson(updatedRegistration))
+      stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
         FakeRequest(routes.EntityTypeController.onSubmit()).withFormUrlEncodedBody(("value", "UkLimitedCompany"))

@@ -1,13 +1,12 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
-import org.scalacheck.Arbitrary
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbitrary, random}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.UkLimitedCompany
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.IncorporatedEntityJourneyData
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, UkLimitedCompany}
 
 class GrsContinueISpec extends ISpecBase {
 
@@ -16,26 +15,23 @@ class GrsContinueISpec extends ISpecBase {
       stubAuthorised()
 
       val registration =
-        Arbitrary
-          .arbitrary[models.Registration]
-          .sample
-          .get
+        random[Registration]
           .copy(
             entityType = Some(UkLimitedCompany),
             incorporatedEntityJourneyData = None
           )
 
-      stubGetRegistration(Json.toJson(registration))
+      stubGetRegistration(registration)
 
       val journeyId: String = "test-journey-id"
 
-      val incorporatedEntityJourneyData = Arbitrary.arbitrary[IncorporatedEntityJourneyData].sample.get
+      val incorporatedEntityJourneyData = random[IncorporatedEntityJourneyData]
 
       val updatedRegistration = registration.copy(incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData))
 
-      stubGetJourneyData(journeyId, Json.toJson(incorporatedEntityJourneyData))
+      stubGetJourneyData(journeyId, incorporatedEntityJourneyData)
 
-      stubUpsertRegistration(Json.toJson(updatedRegistration))
+      stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(journeyId)))
 
