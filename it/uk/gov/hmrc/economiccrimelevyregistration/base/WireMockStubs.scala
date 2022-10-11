@@ -10,7 +10,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.IncorporatedEntityJourneyData
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, SoleTraderEntityJourneyData}
 
 trait WireMockStubs {
 
@@ -78,9 +78,47 @@ trait WireMockStubs {
         .withStatus(201)
         .withBody(s"""
            |{
-           |    "journeyStartUrl": "http://localhost:9718/identify-your-incorporated-business/e9e5b979-26e8-4f33-90b0-7e5e092ed095/company-number"
+           |    "journeyStartUrl": "test-url"
            |}
          """.stripMargin)
+    )
+
+  def stubCreateSoleTraderJourney(): StubMapping =
+    stub(
+      post(urlEqualTo("/sole-trader-identification/api/sole-trader-journey"))
+        .withRequestBody(
+          equalToJson(
+            s"""
+               |{
+               |  "continueUrl" : "http://localhost:14000/register-for-economic-crime-levy/grs-continue",
+               |  "businessVerificationCheck" : true,
+               |  "optServiceName" : "Register for Economic Crime Levy",
+               |  "deskProServiceId" : "economic-crime-levy-registration-frontend",
+               |  "signOutUrl" : "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
+               |  "regime" : "ECL",
+               |  "accessibilityUrl" : "/accessibility-statement/register-for-economic-crime-levy",
+               |  "labels" : {
+               |    "en" : {
+               |      "optServiceName" : "Register for Economic Crime Levy"
+               |    },
+               |    "cy" : {
+               |      "optServiceName" : "service.name"
+               |    }
+               |  }
+               |}
+         """.stripMargin,
+            true,
+            true
+          )
+        ),
+      aResponse()
+        .withStatus(201)
+        .withBody(
+          s"""
+             |{
+             |    "journeyStartUrl": "test-url"
+             |}
+       """.stripMargin)
     )
 
   def stubUpsertRegistration(registration: Registration): StubMapping =
@@ -94,9 +132,17 @@ trait WireMockStubs {
         .withBody(Json.toJson(registration).toString())
     )
 
-  def stubGetJourneyData(journeyId: String, journeyData: IncorporatedEntityJourneyData): StubMapping =
+  def stubGetIncorporatedEntityJourneyData(journeyId: String, journeyData: IncorporatedEntityJourneyData): StubMapping =
     stub(
       get(urlEqualTo(s"/incorporated-entity-identification/api/journey/$journeyId")),
+      aResponse()
+        .withStatus(200)
+        .withBody(Json.toJson(journeyData).toString())
+    )
+
+  def stubGetSoleTraderEntityJourneyData(journeyId: String, journeyData: SoleTraderEntityJourneyData): StubMapping =
+    stub(
+      get(urlEqualTo(s"/sole-trader-identification/api/journey/$journeyId")),
       aResponse()
         .withStatus(200)
         .withBody(Json.toJson(journeyData).toString())

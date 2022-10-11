@@ -4,7 +4,7 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbit
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
 
 class EntityTypeISpec extends ISpecBase {
 
@@ -43,9 +43,28 @@ class EntityTypeISpec extends ISpecBase {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(
-        "http://localhost:9718/identify-your-incorporated-business/e9e5b979-26e8-4f33-90b0-7e5e092ed095/company-number"
+      redirectLocation(result) shouldBe Some("test-url")
+    }
+
+    "save the selected entity type then redirect to the GRS Sole Trader journey when the Sole Trader option is selected" in {
+      stubAuthorised()
+
+      val registration = random[Registration]
+
+      stubGetRegistration(registration)
+      stubCreateSoleTraderJourney()
+
+      val updatedRegistration = registration.copy(entityType = Some(SoleTrader))
+
+      stubUpsertRegistration(updatedRegistration)
+
+      val result = callRoute(
+        FakeRequest(routes.EntityTypeController.onSubmit()).withFormUrlEncodedBody(("value", "SoleTrader"))
       )
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some("test-url")
     }
   }
 
