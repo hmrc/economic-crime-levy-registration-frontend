@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import org.mockito.ArgumentMatchers.any
-import play.api.libs.json.Json
-import play.api.test.Helpers._
-import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import play.api.libs.json.Json
 import play.api.mvc.Result
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
+import play.api.test.Helpers._
+import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 
 import scala.concurrent.Future
 
@@ -51,14 +51,14 @@ class GrsContinueControllerSpec extends SpecBase {
   "continue" should {
 
     "retrieve the incorporated entity GRS journey data and display the GRS result" in forAll {
-      (journeyId: String, incorporatedEntityJourneyData: IncorporatedEntityJourneyData) =>
-        new TestContext(testRegistration.copy(entityType = Some(UkLimitedCompany))) {
+      (journeyId: String, registration: Registration, incorporatedEntityJourneyData: IncorporatedEntityJourneyData) =>
+        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
           when(
             mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
           )
             .thenReturn(Future.successful(incorporatedEntityJourneyData))
 
-          val updatedRegistration: Registration = testRegistration.copy(
+          val updatedRegistration: Registration = registration.copy(
             entityType = Some(UkLimitedCompany),
             incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData)
           )
@@ -74,14 +74,14 @@ class GrsContinueControllerSpec extends SpecBase {
     }
 
     "retrieve the sole trader entity GRS journey data and display the GRS result" in forAll {
-      (journeyId: String, soleTraderEntityJourneyData: SoleTraderEntityJourneyData) =>
-        new TestContext(testRegistration.copy(entityType = Some(SoleTrader))) {
+      (journeyId: String, registration: Registration, soleTraderEntityJourneyData: SoleTraderEntityJourneyData) =>
+        new TestContext(registration.copy(entityType = Some(SoleTrader))) {
           when(
             mockSoleTraderEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
           )
             .thenReturn(Future.successful(soleTraderEntityJourneyData))
 
-          val updatedRegistration: Registration = testRegistration.copy(
+          val updatedRegistration: Registration = registration.copy(
             entityType = Some(SoleTrader),
             soleTraderEntityJourneyData = Some(soleTraderEntityJourneyData)
           )

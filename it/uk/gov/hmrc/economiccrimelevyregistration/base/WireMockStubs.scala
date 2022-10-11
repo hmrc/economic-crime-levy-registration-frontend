@@ -7,7 +7,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.IncorporatedEntityJourneyData
 
 trait WireMockStubs {
 
@@ -35,16 +38,12 @@ trait WireMockStubs {
            """.stripMargin)
     )
 
-  def stubGetRegistration(): StubMapping =
+  def stubGetRegistration(registration: Registration): StubMapping =
     stub(
       get(urlEqualTo("/economic-crime-levy-registration/registrations/test-id")),
       aResponse()
         .withStatus(200)
-        .withBody(s"""
-             |{
-             |  "internalId": "test-id"
-             |}
-     """.stripMargin)
+        .withBody(Json.toJson(registration).toString())
     )
 
   def stubCreateLimitedCompanyJourney(): StubMapping =
@@ -84,49 +83,22 @@ trait WireMockStubs {
          """.stripMargin)
     )
 
-  def stubUpsertRegistration(registrationJson: String): StubMapping =
+  def stubUpsertRegistration(registration: Registration): StubMapping =
     stub(
       put(urlEqualTo("/economic-crime-levy-registration/registrations"))
         .withRequestBody(
-          equalToJson(registrationJson.stripMargin, true, true)
+          equalToJson(Json.toJson(registration).toString(), true, true)
         ),
       aResponse()
         .withStatus(200)
-        .withBody(registrationJson.stripMargin)
+        .withBody(Json.toJson(registration).toString())
     )
 
-  def stubGetJourneyData(journeyId: String): StubMapping =
+  def stubGetJourneyData(journeyId: String, journeyData: IncorporatedEntityJourneyData): StubMapping =
     stub(
       get(urlEqualTo(s"/incorporated-entity-identification/api/journey/$journeyId")),
       aResponse()
         .withStatus(200)
-        .withBody(s"""
-                     |{
-                     |    "companyProfile" : {
-                     |        "companyName" : "Test Company Ltd",
-                     |        "companyNumber" : "01234567",
-                     |        "unsanitisedCHROAddress" : {
-                     |            "address_line_1" : "testLine1",
-                     |            "address_line_2" : "test town",
-                     |            "care_of" : "test name",
-                     |            "country" : "United Kingdom",
-                     |            "locality" : "test city",
-                     |            "po_box" : "123",
-                     |            "postal_code" : "AA11AA",
-                     |            "premises" : "1",
-                     |            "region" : "test region"
-                     |        }
-                     |    },
-                     |    "ctutr" : "1234567890",
-                     |    "identifiersMatch" : true,
-                     |    "businessVerification" : {
-                     |        "verificationStatus" : "PASS"
-                     |    },
-                     |    "registration" : {
-                     |        "registrationStatus" : "REGISTERED",
-                     |        "registeredBusinessPartnerId" : "X00000123456789"
-                     |    }
-                     |}
-                   """.stripMargin)
+        .withBody(Json.toJson(journeyData).toString())
     )
 }

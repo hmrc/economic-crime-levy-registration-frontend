@@ -22,6 +22,7 @@ import play.api.http.Status.NO_CONTENT
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.http.{HttpClient, HttpResponse}
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 
 import scala.concurrent.Future
 
@@ -30,21 +31,18 @@ class EclRegistrationConnectorSpec extends SpecBase {
   val connector                  = new EclRegistrationConnector(appConfig, mockHttpClient)
   val eclRegistrationsUrl        = "http://localhost:14001/economic-crime-levy-registration/registrations"
 
-  override def afterEach(): Unit =
-    reset(mockHttpClient)
-
   "getRegistration" should {
     val expectedUrl = s"$eclRegistrationsUrl/$internalId"
 
-    "return a registration when the http client returns a registration" in {
+    "return a registration when the http client returns a registration" in forAll { registration: Registration =>
       when(
         mockHttpClient.GET[Option[Registration]](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
       )
-        .thenReturn(Future.successful(Some(testRegistration)))
+        .thenReturn(Future.successful(Some(registration)))
 
       val result = await(connector.getRegistration(internalId))
 
-      result shouldBe Some(testRegistration)
+      result shouldBe Some(registration)
 
       verify(mockHttpClient, times(1))
         .GET[Option[Registration]](
@@ -52,6 +50,8 @@ class EclRegistrationConnectorSpec extends SpecBase {
           any(),
           any()
         )(any(), any(), any())
+
+      reset(mockHttpClient)
     }
 
     "return none when the http client returns none" in {
@@ -69,6 +69,8 @@ class EclRegistrationConnectorSpec extends SpecBase {
           any(),
           any()
         )(any(), any(), any())
+
+      reset(mockHttpClient)
     }
   }
 
@@ -89,24 +91,28 @@ class EclRegistrationConnectorSpec extends SpecBase {
           ArgumentMatchers.eq(expectedUrl),
           any()
         )(any(), any(), any())
+
+      reset(mockHttpClient)
     }
   }
 
   "upsertRegistration" should {
-    "return the new or updated registration" in {
+    "return the new or updated registration" in forAll { registration: Registration =>
       val expectedUrl = eclRegistrationsUrl
 
       when(
         mockHttpClient
           .PUT[Registration, Registration](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any(), any())
       )
-        .thenReturn(Future.successful(testRegistration))
+        .thenReturn(Future.successful(registration))
 
-      val result = await(connector.upsertRegistration(testRegistration))
-      result shouldBe testRegistration
+      val result = await(connector.upsertRegistration(registration))
+      result shouldBe registration
 
       verify(mockHttpClient, times(1))
         .PUT[Registration, Registration](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any(), any())
+
+      reset(mockHttpClient)
     }
   }
 }

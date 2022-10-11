@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.pages.Page
 
 class NavigatorSpec extends SpecBase {
@@ -26,18 +27,20 @@ class NavigatorSpec extends SpecBase {
   val navigator = new Navigator
 
   "nextPage" should {
-    "go from a page that doesn't exist in the route map to Index in NormalMode" in {
-      case object UnknownPage extends Page
-      navigator.nextPage(UnknownPage, NormalMode, testRegistration) shouldBe routes.StartController.onPageLoad()
+    "go from a page that doesn't exist in the route map to Index in NormalMode" in forAll {
+      registration: Registration =>
+        case object UnknownPage extends Page
+        navigator.nextPage(UnknownPage, NormalMode, registration) shouldBe routes.StartController.onPageLoad()
     }
 
-    "go from a page that doesn't exist in the edit route map to CheckYourAnswers in CheckMode" in {
-      case object UnknownPage extends Page
-      navigator.nextPage(
-        UnknownPage,
-        CheckMode,
-        testRegistration
-      ) shouldBe routes.CheckYourAnswersController.onPageLoad()
+    "go from a page that doesn't exist in the edit route map to CheckYourAnswers in CheckMode" in forAll {
+      registration: Registration =>
+        case object UnknownPage extends Page
+        navigator.nextPage(
+          UnknownPage,
+          CheckMode,
+          registration
+        ) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
   }
 }

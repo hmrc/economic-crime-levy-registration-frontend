@@ -78,8 +78,6 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
   "getJourneyData" should {
     "return journey data for a given journey id" in forAll {
       (incorporatedEntityJourneyData: IncorporatedEntityJourneyData, journeyId: String) =>
-        println(incorporatedEntityJourneyData)
-
         val expectedUrl = s"$apiUrl/journey/$journeyId"
 
         when(
