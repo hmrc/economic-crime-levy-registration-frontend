@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, IncorporatedEntityCreateJourneyRequest, IncorporatedEntityJourneyData, ServiceNameLabels}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, ServiceNameLabels, SoleTraderEntityCreateJourneyRequest, SoleTraderEntityJourneyData}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -26,24 +26,23 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IncorporatedEntityIdentificationFrontendConnector @Inject() (
+class SoleTraderEntityIdentificationFrontendConnector @Inject() (
   appConfig: AppConfig,
   httpClient: HttpClient
 )(implicit
   val messagesApi: MessagesApi,
   ec: ExecutionContext
 ) {
-  private val apiUrl =
-    s"${appConfig.incorporatedEntityIdentificationFrontendUrl}/incorporated-entity-identification/api"
+  private val apiUrl = s"${appConfig.soleTraderEntityIdentificationFrontendUrl}/sole-trader-identification/api"
 
-  def createLimitedCompanyJourney()(implicit
+  def createSoleTraderJourney()(implicit
     hc: HeaderCarrier
   ): Future[GrsCreateJourneyResponse] = {
     val serviceNameLabels = ServiceNameLabels()
 
-    httpClient.POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-      s"$apiUrl/limited-company-journey",
-      IncorporatedEntityCreateJourneyRequest(
+    httpClient.POST[SoleTraderEntityCreateJourneyRequest, GrsCreateJourneyResponse](
+      s"$apiUrl/sole-trader-journey",
+      SoleTraderEntityCreateJourneyRequest(
         continueUrl = appConfig.grsContinueUrl,
         optServiceName = Some(serviceNameLabels.en.optServiceName),
         deskProServiceId = appConfig.appName,
@@ -54,6 +53,6 @@ class IncorporatedEntityIdentificationFrontendConnector @Inject() (
     )
   }
 
-  def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData] =
-    httpClient.GET[IncorporatedEntityJourneyData](s"$apiUrl/journey/$journeyId")
+  def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[SoleTraderEntityJourneyData] =
+    httpClient.GET[SoleTraderEntityJourneyData](s"$apiUrl/journey/$journeyId")
 }

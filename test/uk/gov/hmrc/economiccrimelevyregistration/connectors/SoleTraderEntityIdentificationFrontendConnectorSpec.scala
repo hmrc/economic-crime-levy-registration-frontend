@@ -25,23 +25,23 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitr
 
 import scala.concurrent.Future
 
-class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
+class SoleTraderEntityIdentificationFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new IncorporatedEntityIdentificationFrontendConnector(appConfig, mockHttpClient)
-  val apiUrl                     = s"${appConfig.incorporatedEntityIdentificationFrontendUrl}/incorporated-entity-identification/api"
+  val connector                  = new SoleTraderEntityIdentificationFrontendConnector(appConfig, mockHttpClient)
+  val apiUrl                     = s"${appConfig.soleTraderEntityIdentificationFrontendUrl}/sole-trader-identification/api"
 
-  "createLimitedCompanyJourney" should {
+  "createSoleTraderJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {
       (grsCreateJourneyResponse: GrsCreateJourneyResponse) =>
-        val expectedUrl = s"$apiUrl/limited-company-journey"
+        val expectedUrl = s"$apiUrl/sole-trader-journey"
 
-        val expectedIncorporatedEntityCreateJourneyRequest: IncorporatedEntityCreateJourneyRequest = {
+        val expectedSoleTraderEntityCreateJourneyRequest: SoleTraderEntityCreateJourneyRequest = {
           val serviceNameLabels = ServiceNameLabels(
             En("Register for Economic Crime Levy"),
             Cy("service.name")
           )
 
-          IncorporatedEntityCreateJourneyRequest(
+          SoleTraderEntityCreateJourneyRequest(
             continueUrl = "http://localhost:14000/register-for-economic-crime-levy/grs-continue",
             optServiceName = Some(serviceNameLabels.en.optServiceName),
             deskProServiceId = "economic-crime-levy-registration-frontend",
@@ -52,22 +52,22 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
         }
 
         when(
-          mockHttpClient.POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
+          mockHttpClient.POST[SoleTraderEntityCreateJourneyRequest, GrsCreateJourneyResponse](
             ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedIncorporatedEntityCreateJourneyRequest),
+            ArgumentMatchers.eq(expectedSoleTraderEntityCreateJourneyRequest),
             any()
           )(any(), any(), any(), any())
         )
           .thenReturn(Future.successful(grsCreateJourneyResponse))
 
-        val result = await(connector.createLimitedCompanyJourney())
+        val result = await(connector.createSoleTraderJourney())
 
         result shouldBe grsCreateJourneyResponse
 
         verify(mockHttpClient, times(1))
-          .POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
+          .POST[SoleTraderEntityCreateJourneyRequest, GrsCreateJourneyResponse](
             ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedIncorporatedEntityCreateJourneyRequest),
+            ArgumentMatchers.eq(expectedSoleTraderEntityCreateJourneyRequest),
             any()
           )(any(), any(), any(), any())
 
@@ -77,24 +77,26 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
 
   "getJourneyData" should {
     "return journey data for a given journey id" in forAll {
-      (incorporatedEntityJourneyData: IncorporatedEntityJourneyData, journeyId: String) =>
+      (soleTraderEntityJourneyData: SoleTraderEntityJourneyData, journeyId: String) =>
+        println(soleTraderEntityJourneyData)
+
         val expectedUrl = s"$apiUrl/journey/$journeyId"
 
         when(
-          mockHttpClient.GET[IncorporatedEntityJourneyData](
+          mockHttpClient.GET[SoleTraderEntityJourneyData](
             ArgumentMatchers.eq(expectedUrl),
             any(),
             any()
           )(any(), any(), any())
         )
-          .thenReturn(Future.successful(incorporatedEntityJourneyData))
+          .thenReturn(Future.successful(soleTraderEntityJourneyData))
 
         val result = await(connector.getJourneyData(journeyId))
 
-        result shouldBe incorporatedEntityJourneyData
+        result shouldBe soleTraderEntityJourneyData
 
         verify(mockHttpClient, times(1))
-          .GET[IncorporatedEntityJourneyData](
+          .GET[SoleTraderEntityJourneyData](
             ArgumentMatchers.eq(expectedUrl),
             any(),
             any()

@@ -61,7 +61,8 @@ abstract class ISpecBase
   ) ++ setWireMockPort(
     "auth",
     "economic-crime-levy-registration",
-    "incorporated-entity-identification-api"
+    "incorporated-entity-identification-frontend",
+    "sole-trader-identification-frontend"
   )
 
   val contextPath: String = "register-for-economic-crime-levy"

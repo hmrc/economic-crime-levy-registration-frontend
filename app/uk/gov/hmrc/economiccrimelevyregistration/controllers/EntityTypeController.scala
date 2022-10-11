@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Partnership, SoleTrader, UkLimitedCompany}
@@ -35,6 +35,7 @@ class EntityTypeController @Inject() (
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
   incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
+  soleTraderEntityIdentificationFrontendConnector: SoleTraderEntityIdentificationFrontendConnector,
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: EntityTypeFormProvider,
   view: EntityTypeView
@@ -62,7 +63,10 @@ class EntityTypeController @Inject() (
                   incorporatedEntityIdentificationFrontendConnector
                     .createLimitedCompanyJourney()
                     .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
-                case SoleTrader       => Future.successful(Ok("Ok Trader"))
+                case SoleTrader       =>
+                  soleTraderEntityIdentificationFrontendConnector
+                    .createSoleTraderJourney()
+                    .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
                 case Partnership      => Future.successful(Ok("Howdy Partner"))
               }
             }
