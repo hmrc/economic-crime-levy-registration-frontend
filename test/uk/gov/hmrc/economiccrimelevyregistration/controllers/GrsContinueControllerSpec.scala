@@ -60,7 +60,8 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val updatedRegistration: Registration = registration.copy(
             entityType = Some(UkLimitedCompany),
-            incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData)
+            incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData),
+            soleTraderEntityJourneyData = None
           )
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
@@ -83,7 +84,8 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val updatedRegistration: Registration = registration.copy(
             entityType = Some(SoleTrader),
-            soleTraderEntityJourneyData = Some(soleTraderEntityJourneyData)
+            soleTraderEntityJourneyData = Some(soleTraderEntityJourneyData),
+            incorporatedEntityJourneyData = None
           )
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))

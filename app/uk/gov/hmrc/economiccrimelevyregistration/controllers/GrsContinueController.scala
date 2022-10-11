@@ -20,11 +20,13 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class GrsContinueController @Inject() (
@@ -42,21 +44,26 @@ class GrsContinueController @Inject() (
       request.registration.entityType match {
         case Some(UkLimitedCompany) =>
           incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
-            eclRegistrationConnector
-              .upsertRegistration(request.registration.copy(incorporatedEntityJourneyData = Some(jd)))
-              .map { _ =>
-                Ok(Json.toJson(jd))
-              }
+            updateRegistrationWithJourneyData(incorporatedEntityJourneyData = Some(jd))
+              .map(_ => Ok(Json.toJson(jd)))
           }
 
         case Some(SoleTrader) =>
           soleTraderEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
-            eclRegistrationConnector
-              .upsertRegistration(request.registration.copy(soleTraderEntityJourneyData = Some(jd)))
-              .map { _ =>
-                Ok(Json.toJson(jd))
-              }
+            updateRegistrationWithJourneyData(soleTraderEntityJourneyData = Some(jd))
+              .map(_ => Ok(Json.toJson(jd)))
           }
       }
   }
+
+  private def updateRegistrationWithJourneyData(
+    incorporatedEntityJourneyData: Option[IncorporatedEntityJourneyData] = None,
+    soleTraderEntityJourneyData: Option[SoleTraderEntityJourneyData] = None
+  )(implicit request: RegistrationDataRequest[AnyContent]): Future[Registration] =
+    eclRegistrationConnector.upsertRegistration(
+      request.registration.copy(
+        incorporatedEntityJourneyData = incorporatedEntityJourneyData,
+        soleTraderEntityJourneyData = soleTraderEntityJourneyData
+      )
+    )
 }

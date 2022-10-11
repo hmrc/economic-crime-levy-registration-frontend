@@ -28,7 +28,7 @@ import scala.concurrent.Future
 class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
   val connector                  = new IncorporatedEntityIdentificationFrontendConnector(appConfig, mockHttpClient)
-  val apiUrl                     = s"${appConfig.incorporatedEntityIdentificationApiUrl}/incorporated-entity-identification/api"
+  val apiUrl                     = s"${appConfig.incorporatedEntityIdentificationFrontendUrl}/incorporated-entity-identification/api"
 
   "createLimitedCompanyJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {

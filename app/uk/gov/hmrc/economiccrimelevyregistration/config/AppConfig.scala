@@ -56,7 +56,8 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val timeout: Int   = configuration.get[Int]("timeout-dialog.timeout")
   val countdown: Int = configuration.get[Int]("timeout-dialog.countdown")
 
-  val eclRegistrationBaseUrl: String                 = servicesConfig.baseUrl("economic-crime-levy-registration")
-  val incorporatedEntityIdentificationApiUrl: String = servicesConfig.baseUrl("incorporated-entity-identification-api")
-  val soleTraderEntityIdentificationApiUrl: String   = servicesConfig.baseUrl("sole-trader-identification-api")
+  val eclRegistrationBaseUrl: String                      = servicesConfig.baseUrl("economic-crime-levy-registration")
+  val incorporatedEntityIdentificationFrontendUrl: String =
+    servicesConfig.baseUrl("incorporated-entity-identification-frontend")
+  val soleTraderEntityIdentificationFrontendUrl: String   = servicesConfig.baseUrl("sole-trader-identification-frontend")
 }
