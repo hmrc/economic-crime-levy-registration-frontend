@@ -18,7 +18,8 @@ class GrsContinueISpec extends ISpecBase {
         random[Registration]
           .copy(
             entityType = Some(UkLimitedCompany),
-            incorporatedEntityJourneyData = None
+            incorporatedEntityJourneyData = None,
+            soleTraderEntityJourneyData = None
           )
 
       stubGetRegistration(registration)
@@ -27,7 +28,10 @@ class GrsContinueISpec extends ISpecBase {
 
       val incorporatedEntityJourneyData = random[IncorporatedEntityJourneyData]
 
-      val updatedRegistration = registration.copy(incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData))
+      val updatedRegistration = registration.copy(
+        incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData),
+        soleTraderEntityJourneyData = None
+      )
 
       stubGetJourneyData(journeyId, incorporatedEntityJourneyData)
 
