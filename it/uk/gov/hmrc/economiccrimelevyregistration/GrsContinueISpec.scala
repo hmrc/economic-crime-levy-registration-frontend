@@ -5,8 +5,8 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, SoleTraderEntityJourneyData}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Partnership, Registration, SoleTrader, UkLimitedCompany}
 
 class GrsContinueISpec extends ISpecBase {
 
@@ -79,6 +79,41 @@ class GrsContinueISpec extends ISpecBase {
       status(result) shouldBe OK
 
       contentAsJson(result) shouldBe Json.toJson(soleTraderEntityJourneyData)
+    }
+
+    "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and (display the GRS journey data)" in {
+      stubAuthorised()
+
+      val registration =
+        random[Registration]
+          .copy(
+            entityType = Some(Partnership),
+            incorporatedEntityJourneyData = None,
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = None
+          )
+
+      stubGetRegistration(registration)
+
+      val journeyId: String = "test-journey-id"
+
+      val partnershipEntityJourneyData = random[PartnershipEntityJourneyData]
+
+      val updatedRegistration = registration.copy(
+        incorporatedEntityJourneyData = None,
+        soleTraderEntityJourneyData = None,
+        partnershipEntityJourneyData = Some(partnershipEntityJourneyData)
+      )
+
+      stubGetPartnershipEntityJourneyData(journeyId, partnershipEntityJourneyData)
+
+      stubUpsertRegistration(updatedRegistration)
+
+      val result = callRoute(FakeRequest(routes.GrsContinueController.continue(journeyId)))
+
+      status(result) shouldBe OK
+
+      contentAsJson(result) shouldBe Json.toJson(partnershipEntityJourneyData)
     }
   }
 

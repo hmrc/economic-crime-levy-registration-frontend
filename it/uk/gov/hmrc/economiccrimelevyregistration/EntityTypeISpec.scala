@@ -4,7 +4,7 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbit
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Partnership, Registration, SoleTrader, UkLimitedCompany}
 
 class EntityTypeISpec extends ISpecBase {
 
@@ -66,6 +66,27 @@ class EntityTypeISpec extends ISpecBase {
 
       redirectLocation(result) shouldBe Some("test-url")
     }
+  }
+
+  "save the selected entity type then redirect to the GRS Partnership journey when the Partnership option is selected" in {
+    stubAuthorised()
+
+    val registration = random[Registration]
+
+    stubGetRegistration(registration)
+    stubCreatePartnershipJourney()
+
+    val updatedRegistration = registration.copy(entityType = Some(Partnership))
+
+    stubUpsertRegistration(updatedRegistration)
+
+    val result = callRoute(
+      FakeRequest(routes.EntityTypeController.onSubmit()).withFormUrlEncodedBody(("value", "Partnership"))
+    )
+
+    status(result) shouldBe SEE_OTHER
+
+    redirectLocation(result) shouldBe Some("test-url")
   }
 
 }
