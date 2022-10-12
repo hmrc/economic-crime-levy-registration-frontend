@@ -33,7 +33,7 @@ class PartnershipEntityIdentificationFrontendConnector @Inject() (
   val messagesApi: MessagesApi,
   ec: ExecutionContext
 ) {
-  private val apiUrl = s"${appConfig.partnershipEntityIdentificationApiUrl}/partnership-identification/api"
+  private val apiUrl = s"${appConfig.partnershipEntityIdentificationFrontendUrl}/partnership-identification/api"
 
   def createLimitedLiabilityPartnershipJourney()(implicit
     hc: HeaderCarrier

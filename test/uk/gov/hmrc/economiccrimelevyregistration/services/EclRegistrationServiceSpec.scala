@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 import scala.concurrent.Future
 
@@ -27,23 +29,23 @@ class EclRegistrationServiceSpec extends SpecBase {
   val service                                                = new EclRegistrationService(mockEclRegistrationConnector)
 
   "getOrCreateRegistration" should {
-    "return a created registration when one does not exist" in {
+    "return a created registration when one does not exist" in forAll { registration: Registration =>
       when(mockEclRegistrationConnector.getRegistration(any())(any()))
         .thenReturn(Future.successful(None))
 
       when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-        .thenReturn(Future.successful(testRegistration))
+        .thenReturn(Future.successful(registration))
 
       val result = await(service.getOrCreateRegistration(internalId))
-      result shouldBe testRegistration
+      result shouldBe registration
     }
 
-    "return an existing registration" in {
+    "return an existing registration" in forAll { registration: Registration =>
       when(mockEclRegistrationConnector.getRegistration(any())(any()))
-        .thenReturn(Future.successful(Some(testRegistration)))
+        .thenReturn(Future.successful(Some(registration)))
 
       val result = await(service.getOrCreateRegistration(internalId))
-      result shouldBe testRegistration
+      result shouldBe registration
     }
   }
 }
