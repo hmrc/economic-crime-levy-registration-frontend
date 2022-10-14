@@ -22,7 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConn
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Partnership, Registration, SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, Registration, ScottishLimitedPartnership, ScottishPartnership, SoleTrader, UkLimitedCompany}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -55,7 +55,8 @@ class GrsContinueController @Inject() (
               .map(_ => Ok(Json.toJson(jd)))
           }
 
-        case Some(Partnership) =>
+        case Some(GeneralPartnership) | Some(ScottishPartnership) | Some(LimitedPartnership) |
+            Some(ScottishLimitedPartnership) | Some(LimitedLiabilityPartnership) =>
           partnershipEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(partnershipEntityJourneyData = Some(jd))
               .map(_ => Ok(Json.toJson(jd)))

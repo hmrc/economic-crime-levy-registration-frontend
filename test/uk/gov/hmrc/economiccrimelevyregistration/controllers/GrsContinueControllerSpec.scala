@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Partnership, Registration, SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LimitedLiabilityPartnership, Registration, SoleTrader, UkLimitedCompany}
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -106,14 +106,14 @@ class GrsContinueControllerSpec extends SpecBase {
 
     "retrieve the partnership entity GRS journey data and display the GRS result" in forAll {
       (journeyId: String, registration: Registration, partnershipEntityJourneyData: PartnershipEntityJourneyData) =>
-        new TestContext(registration.copy(entityType = Some(Partnership))) {
+        new TestContext(registration.copy(entityType = Some(LimitedLiabilityPartnership))) {
           when(
             mockPartnershipEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
           )
             .thenReturn(Future.successful(partnershipEntityJourneyData))
 
           val updatedRegistration: Registration = registration.copy(
-            entityType = Some(Partnership),
+            entityType = Some(LimitedLiabilityPartnership),
             partnershipEntityJourneyData = Some(partnershipEntityJourneyData),
             incorporatedEntityJourneyData = None,
             soleTraderEntityJourneyData = None

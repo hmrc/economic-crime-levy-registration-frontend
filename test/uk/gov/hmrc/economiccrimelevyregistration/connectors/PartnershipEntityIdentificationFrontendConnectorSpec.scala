@@ -22,6 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.HttpClient
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.models.LimitedLiabilityPartnership
 
 import scala.concurrent.Future
 
@@ -43,7 +44,6 @@ class PartnershipEntityIdentificationFrontendConnectorSpec extends SpecBase {
 
           PartnershipEntityCreateJourneyRequest(
             continueUrl = "http://localhost:14000/register-for-economic-crime-levy/grs-continue",
-            businessVerificationCheck = None,
             optServiceName = Some(serviceNameLabels.en.optServiceName),
             deskProServiceId = "economic-crime-levy-registration-frontend",
             signOutUrl = "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
@@ -61,7 +61,7 @@ class PartnershipEntityIdentificationFrontendConnectorSpec extends SpecBase {
         )
           .thenReturn(Future.successful(grsCreateJourneyResponse))
 
-        val result = await(connector.createLimitedLiabilityPartnershipJourney())
+        val result = await(connector.createPartnershipJourney(LimitedLiabilityPartnership))
 
         result shouldBe grsCreateJourneyResponse
 
@@ -79,8 +79,6 @@ class PartnershipEntityIdentificationFrontendConnectorSpec extends SpecBase {
   "getJourneyData" should {
     "return journey data for a given journey id" in forAll {
       (partnershipEntityJourneyData: PartnershipEntityJourneyData, journeyId: String) =>
-        println(partnershipEntityJourneyData)
-
         val expectedUrl = s"$apiUrl/journey/$journeyId"
 
         when(

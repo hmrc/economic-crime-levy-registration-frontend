@@ -18,10 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, ScottishLimitedPartnership, ScottishPartnership}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, PartnershipEntityCreateJourneyRequest, PartnershipEntityJourneyData, ServiceNameLabels}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
+import java.security.InvalidParameterException
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,16 +37,24 @@ class PartnershipEntityIdentificationFrontendConnector @Inject() (
 ) {
   private val apiUrl = s"${appConfig.partnershipEntityIdentificationFrontendUrl}/partnership-identification/api"
 
-  def createLimitedLiabilityPartnershipJourney()(implicit
-    hc: HeaderCarrier
-  ): Future[GrsCreateJourneyResponse] = {
+  def createPartnershipJourney(
+    partnershipType: EntityType
+  )(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] = {
     val serviceNameLabels = ServiceNameLabels()
 
+    val url: String = partnershipType match {
+      case GeneralPartnership          => s"$apiUrl/general-partnership-journey"
+      case ScottishPartnership         => s"$apiUrl/scottish-partnership-journey"
+      case LimitedPartnership          => s"$apiUrl/limited-partnership-journey"
+      case ScottishLimitedPartnership  => s"$apiUrl/scottish-limited-partnership-journey"
+      case LimitedLiabilityPartnership => s"$apiUrl/limited-liability-partnership-journey"
+      case e                           => throw new InvalidParameterException(s"$e is not a valid partnership type")
+    }
+
     httpClient.POST[PartnershipEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-      s"$apiUrl/limited-liability-partnership-journey",
+      url,
       PartnershipEntityCreateJourneyRequest(
         continueUrl = appConfig.grsContinueUrl,
-        businessVerificationCheck = None,
         optServiceName = Some(serviceNameLabels.en.optServiceName),
         deskProServiceId = appConfig.appName,
         signOutUrl = appConfig.grsSignOutUrl,

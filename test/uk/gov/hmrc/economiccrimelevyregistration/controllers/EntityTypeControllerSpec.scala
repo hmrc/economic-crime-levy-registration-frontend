@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Partnership, Registration, SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, LimitedLiabilityPartnership, Registration, SoleTrader, UkLimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.GrsCreateJourneyResponse
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 
@@ -119,16 +119,20 @@ class EntityTypeControllerSpec extends SpecBase {
     "save the selected entity type then redirect to the GRS Partnership journey when the Partnership option is selected" in forAll {
       registration: Registration =>
         new TestContext(registration) {
-          when(mockPartnershipEntityIdentificationFrontendConnector.createLimitedLiabilityPartnershipJourney()(any()))
+          when(
+            mockPartnershipEntityIdentificationFrontendConnector.createPartnershipJourney(any())(
+              any()
+            )
+          )
             .thenReturn(Future.successful(GrsCreateJourneyResponse("test-url")))
 
-          val updatedRegistration: Registration = registration.copy(entityType = Some(Partnership))
+          val updatedRegistration: Registration = registration.copy(entityType = Some(LimitedLiabilityPartnership))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "Partnership")))
+            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "LimitedLiabilityPartnership")))
 
           status(result) shouldBe SEE_OTHER
 

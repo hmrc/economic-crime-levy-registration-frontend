@@ -6,7 +6,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Partnership, Registration, SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LimitedLiabilityPartnership, Registration, SoleTrader, UkLimitedCompany}
 
 class GrsContinueISpec extends ISpecBase {
 
@@ -87,7 +87,7 @@ class GrsContinueISpec extends ISpecBase {
       val registration =
         random[Registration]
           .copy(
-            entityType = Some(Partnership),
+            entityType = Some(LimitedLiabilityPartnership),
             incorporatedEntityJourneyData = None,
             soleTraderEntityJourneyData = None,
             partnershipEntityJourneyData = None

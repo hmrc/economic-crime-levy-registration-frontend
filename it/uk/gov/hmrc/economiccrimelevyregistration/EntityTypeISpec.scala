@@ -4,7 +4,7 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbit
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Partnership, Registration, SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LimitedLiabilityPartnership, Registration, SoleTrader, UkLimitedCompany}
 
 class EntityTypeISpec extends ISpecBase {
 
@@ -76,12 +76,12 @@ class EntityTypeISpec extends ISpecBase {
     stubGetRegistration(registration)
     stubCreatePartnershipJourney()
 
-    val updatedRegistration = registration.copy(entityType = Some(Partnership))
+    val updatedRegistration = registration.copy(entityType = Some(LimitedLiabilityPartnership))
 
     stubUpsertRegistration(updatedRegistration)
 
     val result = callRoute(
-      FakeRequest(routes.EntityTypeController.onSubmit()).withFormUrlEncodedBody(("value", "Partnership"))
+      FakeRequest(routes.EntityTypeController.onSubmit()).withFormUrlEncodedBody(("value", "LimitedLiabilityPartnership"))
     )
 
     status(result) shouldBe SEE_OTHER
