@@ -16,4 +16,23 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
-trait EclTestData {}
+import org.scalacheck.{Arbitrary, Gen}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, ScottishLimitedPartnership, ScottishPartnership}
+
+trait EclTestData {
+
+  implicit val arbPartnershipType: Arbitrary[PartnershipType] = Arbitrary {
+    for {
+      partnershipType <- Gen.oneOf(
+                           Seq(
+                             LimitedPartnership,
+                             LimitedLiabilityPartnership,
+                             GeneralPartnership,
+                             ScottishPartnership,
+                             ScottishLimitedPartnership
+                           )
+                         )
+    } yield PartnershipType(partnershipType)
+  }
+
+}

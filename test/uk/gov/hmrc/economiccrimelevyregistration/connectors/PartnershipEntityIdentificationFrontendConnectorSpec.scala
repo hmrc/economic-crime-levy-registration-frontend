@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Gen
+import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.http.HttpClient
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
-import uk.gov.hmrc.economiccrimelevyregistration.models.LimitedLiabilityPartnership
 
 import scala.concurrent.Future
 
@@ -31,10 +33,19 @@ class PartnershipEntityIdentificationFrontendConnectorSpec extends SpecBase {
   val connector                  = new PartnershipEntityIdentificationFrontendConnector(appConfig, mockHttpClient)
   val apiUrl                     = s"${appConfig.partnershipEntityIdentificationFrontendUrl}/partnership-identification/api"
 
-  "createLimitedLiabilityPartnershipJourney" should {
+  "createPartnershipJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {
-      (grsCreateJourneyResponse: GrsCreateJourneyResponse) =>
-        val expectedUrl = s"$apiUrl/limited-liability-partnership-journey"
+      (grsCreateJourneyResponse: GrsCreateJourneyResponse, partnershipType: PartnershipType) =>
+        val entityType = partnershipType.entityType
+
+        val expectedUrl: String = entityType match {
+          case GeneralPartnership          => s"$apiUrl/general-partnership-journey"
+          case ScottishPartnership         => s"$apiUrl/scottish-partnership-journey"
+          case LimitedPartnership          => s"$apiUrl/limited-partnership-journey"
+          case ScottishLimitedPartnership  => s"$apiUrl/scottish-limited-partnership-journey"
+          case LimitedLiabilityPartnership => s"$apiUrl/limited-liability-partnership-journey"
+          case e                           => fail(s"$e is not a valid partnership type")
+        }
 
         val expectedPartnershipEntityCreateJourneyRequest: PartnershipEntityCreateJourneyRequest = {
           val serviceNameLabels = ServiceNameLabels(
@@ -62,7 +73,7 @@ class PartnershipEntityIdentificationFrontendConnectorSpec extends SpecBase {
         )
           .thenReturn(Future.successful(grsCreateJourneyResponse))
 
-        val result = await(connector.createPartnershipJourney(LimitedLiabilityPartnership))
+        val result = await(connector.createPartnershipJourney(entityType))
 
         result shouldBe grsCreateJourneyResponse
 
@@ -74,6 +85,16 @@ class PartnershipEntityIdentificationFrontendConnectorSpec extends SpecBase {
           )(any(), any(), any(), any())
 
         reset(mockHttpClient)
+    }
+
+    "throw an IllegalArgumentException if an entity type that is not a partnership is passed through" in forAll(
+      Gen.oneOf(Seq(UkLimitedCompany))
+    ) { invalidPartnershipType =>
+      val result = intercept[IllegalArgumentException] {
+        await(connector.createPartnershipJourney(invalidPartnershipType))
+      }
+
+      result.getMessage shouldBe s"$invalidPartnershipType is not a valid partnership type"
     }
   }
 

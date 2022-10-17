@@ -23,11 +23,12 @@ import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.Helpers._
+import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, LimitedLiabilityPartnership, Registration, SoleTrader, UkLimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.GrsCreateJourneyResponse
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration, SoleTrader, UkLimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 
 import scala.concurrent.Future
@@ -116,23 +117,27 @@ class EntityTypeControllerSpec extends SpecBase {
         }
     }
 
-    "save the selected entity type then redirect to the GRS Partnership journey when the Partnership option is selected" in forAll {
-      registration: Registration =>
+    "save the selected entity type then redirect to the GRS Partnership journey when a Partnership entity type is selected" in forAll {
+      (registration: Registration, partnershipType: PartnershipType) =>
         new TestContext(registration) {
+          val entityType: EntityType = partnershipType.entityType
+
           when(
-            mockPartnershipEntityIdentificationFrontendConnector.createPartnershipJourney(any())(
+            mockPartnershipEntityIdentificationFrontendConnector.createPartnershipJourney(
+              ArgumentMatchers.eq(entityType)
+            )(
               any()
             )
           )
             .thenReturn(Future.successful(GrsCreateJourneyResponse("test-url")))
 
-          val updatedRegistration: Registration = registration.copy(entityType = Some(LimitedLiabilityPartnership))
+          val updatedRegistration: Registration = registration.copy(entityType = Some(entityType))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "LimitedLiabilityPartnership")))
+            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
 
           status(result) shouldBe SEE_OTHER
 

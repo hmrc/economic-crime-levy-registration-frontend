@@ -18,12 +18,11 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, ScottishLimitedPartnership, ScottishPartnership}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, PartnershipEntityCreateJourneyRequest, PartnershipEntityJourneyData, ServiceNameLabels}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
-import java.security.InvalidParameterException
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -48,7 +47,7 @@ class PartnershipEntityIdentificationFrontendConnector @Inject() (
       case LimitedPartnership          => s"$apiUrl/limited-partnership-journey"
       case ScottishLimitedPartnership  => s"$apiUrl/scottish-limited-partnership-journey"
       case LimitedLiabilityPartnership => s"$apiUrl/limited-liability-partnership-journey"
-      case e                           => throw new InvalidParameterException(s"$e is not a valid partnership type")
+      case e                           => throw new IllegalArgumentException(s"$e is not a valid partnership type")
     }
 
     httpClient.POST[PartnershipEntityCreateJourneyRequest, GrsCreateJourneyResponse](
