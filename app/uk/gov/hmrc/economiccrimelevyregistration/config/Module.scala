@@ -17,18 +17,52 @@
 package uk.gov.hmrc.economiccrimelevyregistration.config
 
 import com.google.inject.AbstractModule
+import play.api.{Configuration, Environment}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs.{StubIncorporatedEntityIdentificationFrontendConnector, StubPartnershipIdentificationFrontendConnector, StubSoleTraderIdentificationFrontendConnector}
 
 import java.time.{Clock, ZoneOffset}
 
-class Module extends AbstractModule {
+class Module(environment: Environment, configuration: Configuration) extends AbstractModule {
 
   override def configure(): Unit = {
     bind(classOf[DataRetrievalAction])
       .to(classOf[RegistrationDataRetrievalAction])
       .asEagerSingleton()
+
     bind(classOf[AuthorisedAction]).to(classOf[BaseAuthorisedAction]).asEagerSingleton()
+
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
+
+    val grsStubEnabled = configuration.get[Boolean]("features.grsStubEnabled")
+
+    if (grsStubEnabled) {
+      bind(classOf[IncorporatedEntityIdentificationFrontendConnector])
+        .to(classOf[StubIncorporatedEntityIdentificationFrontendConnector])
+        .asEagerSingleton()
+
+      bind(classOf[PartnershipIdentificationFrontendConnector])
+        .to(classOf[StubPartnershipIdentificationFrontendConnector])
+        .asEagerSingleton()
+
+      bind(classOf[SoleTraderIdentificationFrontendConnector])
+        .to(classOf[StubSoleTraderIdentificationFrontendConnector])
+        .asEagerSingleton()
+    } else {
+      bind(classOf[IncorporatedEntityIdentificationFrontendConnector])
+        .to(classOf[IncorporatedEntityIdentificationFrontendConnectorImpl])
+        .asEagerSingleton()
+
+      bind(classOf[PartnershipIdentificationFrontendConnector])
+        .to(classOf[PartnershipIdentificationFrontendConnectorImpl])
+        .asEagerSingleton()
+
+      bind(classOf[SoleTraderIdentificationFrontendConnector])
+        .to(classOf[SoleTraderIdentificationFrontendConnectorImpl])
+        .asEagerSingleton()
+    }
+
   }
 
 }

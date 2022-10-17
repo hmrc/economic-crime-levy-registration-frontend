@@ -22,17 +22,24 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyRes
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-class SoleTraderEntityIdentificationFrontendConnector @Inject() (
+trait SoleTraderIdentificationFrontendConnector {
+  def createSoleTraderJourney()(implicit
+    hc: HeaderCarrier
+  ): Future[GrsCreateJourneyResponse]
+
+  def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[SoleTraderEntityJourneyData]
+}
+
+class SoleTraderIdentificationFrontendConnectorImpl @Inject() (
   appConfig: AppConfig,
   httpClient: HttpClient
 )(implicit
   val messagesApi: MessagesApi,
   ec: ExecutionContext
-) {
+) extends SoleTraderIdentificationFrontendConnector {
   private val apiUrl = s"${appConfig.soleTraderEntityIdentificationFrontendUrl}/sole-trader-identification/api"
 
   def createSoleTraderJourney()(implicit

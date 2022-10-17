@@ -65,4 +65,5 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val incorporatedEntityBvEnabled: Boolean = configuration.get[Boolean]("features.incorporatedEntityBvEnabled")
   val partnershipBvEnabled: Boolean        = configuration.get[Boolean]("features.partnershipBvEnabled")
   val soleTraderBvEnabled: Boolean         = configuration.get[Boolean]("features.soleTraderBvEnabled")
+
 }
