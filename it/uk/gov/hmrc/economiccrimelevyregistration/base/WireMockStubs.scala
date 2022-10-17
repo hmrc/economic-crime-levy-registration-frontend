@@ -120,9 +120,9 @@ trait WireMockStubs {
      """.stripMargin)
     )
 
-  def stubCreatePartnershipJourney(): StubMapping =
+  def stubCreatePartnershipJourney(url: String): StubMapping =
     stub(
-      post(urlEqualTo("/partnership-identification/api/limited-liability-partnership-journey"))
+      post(urlEqualTo(s"/partnership-identification/api/$url"))
         .withRequestBody(
           equalToJson(
             s"""

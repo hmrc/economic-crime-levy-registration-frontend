@@ -4,7 +4,7 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbit
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class EntityTypeISpec extends ISpecBase {
 
@@ -74,8 +74,17 @@ class EntityTypeISpec extends ISpecBase {
     val registration = random[Registration]
     val entityType   = random[PartnershipType].entityType
 
+    val partnershipCreateJourneyUrl: String = entityType match {
+      case GeneralPartnership          => "general-partnership-journey"
+      case ScottishPartnership         => "scottish-partnership-journey"
+      case LimitedPartnership          => "limited-partnership-journey"
+      case ScottishLimitedPartnership  => "scottish-limited-partnership-journey"
+      case LimitedLiabilityPartnership => "limited-liability-partnership-journey"
+      case e                           => fail(s"$e is not a valid partnership type")
+    }
+
     stubGetRegistration(registration)
-    stubCreatePartnershipJourney()
+    stubCreatePartnershipJourney(partnershipCreateJourneyUrl)
 
     val updatedRegistration = registration.copy(entityType = Some(entityType))
 
