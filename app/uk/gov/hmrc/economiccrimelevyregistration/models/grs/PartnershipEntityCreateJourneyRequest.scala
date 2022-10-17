@@ -20,7 +20,7 @@ import play.api.libs.json.{Json, OFormat}
 
 final case class PartnershipEntityCreateJourneyRequest(
   continueUrl: String,
-  businessVerificationCheck: Boolean = true,
+  businessVerificationCheck: Boolean,
   optServiceName: Option[String],
   deskProServiceId: String,
   signOutUrl: String,

@@ -61,4 +61,8 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
     servicesConfig.baseUrl("incorporated-entity-identification-frontend")
   val soleTraderEntityIdentificationFrontendUrl: String   = servicesConfig.baseUrl("sole-trader-identification-frontend")
   val partnershipEntityIdentificationFrontendUrl: String  = servicesConfig.baseUrl("partnership-identification-frontend")
+
+  val incorporatedEntityBvEnabled: Boolean = configuration.get[Boolean]("features.incorporatedEntityBvEnabled")
+  val partnershipBvEnabled: Boolean        = configuration.get[Boolean]("features.partnershipBvEnabled")
+  val soleTraderBvEnabled: Boolean         = configuration.get[Boolean]("features.soleTraderBvEnabled")
 }

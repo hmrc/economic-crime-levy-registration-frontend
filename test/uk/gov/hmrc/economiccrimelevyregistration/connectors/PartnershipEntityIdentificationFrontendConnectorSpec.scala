@@ -44,6 +44,7 @@ class PartnershipEntityIdentificationFrontendConnectorSpec extends SpecBase {
 
           PartnershipEntityCreateJourneyRequest(
             continueUrl = "http://localhost:14000/register-for-economic-crime-levy/grs-continue",
+            businessVerificationCheck = true,
             optServiceName = Some(serviceNameLabels.en.optServiceName),
             deskProServiceId = "economic-crime-levy-registration-frontend",
             signOutUrl = "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",

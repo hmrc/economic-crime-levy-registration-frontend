@@ -55,6 +55,7 @@ class PartnershipEntityIdentificationFrontendConnector @Inject() (
       url,
       PartnershipEntityCreateJourneyRequest(
         continueUrl = appConfig.grsContinueUrl,
+        businessVerificationCheck = appConfig.partnershipBvEnabled,
         optServiceName = Some(serviceNameLabels.en.optServiceName),
         deskProServiceId = appConfig.appName,
         signOutUrl = appConfig.grsSignOutUrl,
