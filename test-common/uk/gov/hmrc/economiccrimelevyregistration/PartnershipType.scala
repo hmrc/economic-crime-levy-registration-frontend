@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models.grs
+package uk.gov.hmrc.economiccrimelevyregistration
 
-import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 
-final case class SoleTraderEntityCreateJourneyRequest(
-  continueUrl: String,
-  businessVerificationCheck: Boolean,
-  optServiceName: Option[String],
-  deskProServiceId: String,
-  signOutUrl: String,
-  regime: String = "ECL",
-  accessibilityUrl: String,
-  labels: ServiceNameLabels
-)
-
-object SoleTraderEntityCreateJourneyRequest {
-  implicit val format: OFormat[SoleTraderEntityCreateJourneyRequest] =
-    Json.format[SoleTraderEntityCreateJourneyRequest]
-}
+case class PartnershipType(entityType: EntityType)

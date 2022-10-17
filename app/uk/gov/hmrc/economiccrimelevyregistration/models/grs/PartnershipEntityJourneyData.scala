@@ -18,18 +18,16 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.grs
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class SoleTraderEntityCreateJourneyRequest(
-  continueUrl: String,
-  businessVerificationCheck: Boolean,
-  optServiceName: Option[String],
-  deskProServiceId: String,
-  signOutUrl: String,
-  regime: String = "ECL",
-  accessibilityUrl: String,
-  labels: ServiceNameLabels
+final case class PartnershipEntityJourneyData(
+  sautr: String,
+  postcode: String,
+  identifiersMatch: Boolean,
+  businessVerification: BusinessVerificationResult,
+  registration: GrsRegistrationResult,
+  companyProfile: Option[CompanyProfile]
 )
 
-object SoleTraderEntityCreateJourneyRequest {
-  implicit val format: OFormat[SoleTraderEntityCreateJourneyRequest] =
-    Json.format[SoleTraderEntityCreateJourneyRequest]
+object PartnershipEntityJourneyData {
+  implicit val format: OFormat[PartnershipEntityJourneyData] =
+    Json.format[PartnershipEntityJourneyData]
 }

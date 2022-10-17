@@ -44,6 +44,7 @@ class SoleTraderEntityIdentificationFrontendConnector @Inject() (
       s"$apiUrl/sole-trader-journey",
       SoleTraderEntityCreateJourneyRequest(
         continueUrl = appConfig.grsContinueUrl,
+        businessVerificationCheck = appConfig.soleTraderBvEnabled,
         optServiceName = Some(serviceNameLabels.en.optServiceName),
         deskProServiceId = appConfig.appName,
         signOutUrl = appConfig.grsSignOutUrl,

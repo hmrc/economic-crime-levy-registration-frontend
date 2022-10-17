@@ -5,7 +5,7 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
 
 class GrsContinueISpec extends ISpecBase {
@@ -19,7 +19,8 @@ class GrsContinueISpec extends ISpecBase {
           .copy(
             entityType = Some(UkLimitedCompany),
             incorporatedEntityJourneyData = None,
-            soleTraderEntityJourneyData = None
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = None
           )
 
       stubGetRegistration(registration)
@@ -29,8 +30,7 @@ class GrsContinueISpec extends ISpecBase {
       val incorporatedEntityJourneyData = random[IncorporatedEntityJourneyData]
 
       val updatedRegistration = registration.copy(
-        incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData),
-        soleTraderEntityJourneyData = None
+        incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData)
       )
 
       stubGetIncorporatedEntityJourneyData(journeyId, incorporatedEntityJourneyData)
@@ -52,7 +52,8 @@ class GrsContinueISpec extends ISpecBase {
           .copy(
             entityType = Some(SoleTrader),
             incorporatedEntityJourneyData = None,
-            soleTraderEntityJourneyData = None
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = None
           )
 
       stubGetRegistration(registration)
@@ -62,7 +63,6 @@ class GrsContinueISpec extends ISpecBase {
       val soleTraderEntityJourneyData = random[SoleTraderEntityJourneyData]
 
       val updatedRegistration = registration.copy(
-        incorporatedEntityJourneyData = None,
         soleTraderEntityJourneyData = Some(soleTraderEntityJourneyData)
       )
 
@@ -75,6 +75,40 @@ class GrsContinueISpec extends ISpecBase {
       status(result) shouldBe OK
 
       contentAsJson(result) shouldBe Json.toJson(soleTraderEntityJourneyData)
+    }
+
+    "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and (display the GRS journey data)" in {
+      stubAuthorised()
+
+      val entityType   = random[PartnershipType].entityType
+      val registration =
+        random[Registration]
+          .copy(
+            entityType = Some(entityType),
+            incorporatedEntityJourneyData = None,
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = None
+          )
+
+      stubGetRegistration(registration)
+
+      val journeyId: String = "test-journey-id"
+
+      val partnershipEntityJourneyData = random[PartnershipEntityJourneyData]
+
+      val updatedRegistration = registration.copy(
+        partnershipEntityJourneyData = Some(partnershipEntityJourneyData)
+      )
+
+      stubGetPartnershipEntityJourneyData(journeyId, partnershipEntityJourneyData)
+
+      stubUpsertRegistration(updatedRegistration)
+
+      val result = callRoute(FakeRequest(routes.GrsContinueController.continue(journeyId)))
+
+      status(result) shouldBe OK
+
+      contentAsJson(result) shouldBe Json.toJson(partnershipEntityJourneyData)
     }
   }
 

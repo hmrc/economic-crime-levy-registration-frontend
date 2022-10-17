@@ -4,7 +4,7 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbit
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class EntityTypeISpec extends ISpecBase {
 
@@ -66,6 +66,37 @@ class EntityTypeISpec extends ISpecBase {
 
       redirectLocation(result) shouldBe Some("test-url")
     }
+  }
+
+  "save the selected entity type then redirect to the GRS Partnership journey when the Partnership option is selected" in {
+    stubAuthorised()
+
+    val registration = random[Registration]
+    val entityType   = random[PartnershipType].entityType
+
+    val partnershipCreateJourneyUrl: String = entityType match {
+      case GeneralPartnership          => "general-partnership-journey"
+      case ScottishPartnership         => "scottish-partnership-journey"
+      case LimitedPartnership          => "limited-partnership-journey"
+      case ScottishLimitedPartnership  => "scottish-limited-partnership-journey"
+      case LimitedLiabilityPartnership => "limited-liability-partnership-journey"
+      case e                           => fail(s"$e is not a valid partnership type")
+    }
+
+    stubGetRegistration(registration)
+    stubCreatePartnershipJourney(partnershipCreateJourneyUrl)
+
+    val updatedRegistration = registration.copy(entityType = Some(entityType))
+
+    stubUpsertRegistration(updatedRegistration)
+
+    val result = callRoute(
+      FakeRequest(routes.EntityTypeController.onSubmit()).withFormUrlEncodedBody(("value", entityType.toString))
+    )
+
+    status(result) shouldBe SEE_OTHER
+
+    redirectLocation(result) shouldBe Some("test-url")
   }
 
 }

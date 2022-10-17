@@ -16,32 +16,44 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Gen
+import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.http.HttpClient
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 
 import scala.concurrent.Future
 
-class SoleTraderEntityIdentificationFrontendConnectorSpec extends SpecBase {
+class PartnershipEntityIdentificationFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new SoleTraderEntityIdentificationFrontendConnector(appConfig, mockHttpClient)
-  val apiUrl                     = s"${appConfig.soleTraderEntityIdentificationFrontendUrl}/sole-trader-identification/api"
+  val connector                  = new PartnershipEntityIdentificationFrontendConnector(appConfig, mockHttpClient)
+  val apiUrl                     = s"${appConfig.partnershipEntityIdentificationFrontendUrl}/partnership-identification/api"
 
-  "createSoleTraderJourney" should {
+  "createPartnershipJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {
-      (grsCreateJourneyResponse: GrsCreateJourneyResponse) =>
-        val expectedUrl = s"$apiUrl/sole-trader-journey"
+      (grsCreateJourneyResponse: GrsCreateJourneyResponse, partnershipType: PartnershipType) =>
+        val entityType = partnershipType.entityType
 
-        val expectedSoleTraderEntityCreateJourneyRequest: SoleTraderEntityCreateJourneyRequest = {
+        val expectedUrl: String = entityType match {
+          case GeneralPartnership          => s"$apiUrl/general-partnership-journey"
+          case ScottishPartnership         => s"$apiUrl/scottish-partnership-journey"
+          case LimitedPartnership          => s"$apiUrl/limited-partnership-journey"
+          case ScottishLimitedPartnership  => s"$apiUrl/scottish-limited-partnership-journey"
+          case LimitedLiabilityPartnership => s"$apiUrl/limited-liability-partnership-journey"
+          case e                           => fail(s"$e is not a valid partnership type")
+        }
+
+        val expectedPartnershipEntityCreateJourneyRequest: PartnershipEntityCreateJourneyRequest = {
           val serviceNameLabels = ServiceNameLabels(
             En("Register for Economic Crime Levy"),
             Cy("service.name")
           )
 
-          SoleTraderEntityCreateJourneyRequest(
+          PartnershipEntityCreateJourneyRequest(
             continueUrl = "http://localhost:14000/register-for-economic-crime-levy/grs-continue",
             businessVerificationCheck = true,
             optServiceName = Some(serviceNameLabels.en.optServiceName),
@@ -53,51 +65,59 @@ class SoleTraderEntityIdentificationFrontendConnectorSpec extends SpecBase {
         }
 
         when(
-          mockHttpClient.POST[SoleTraderEntityCreateJourneyRequest, GrsCreateJourneyResponse](
+          mockHttpClient.POST[PartnershipEntityCreateJourneyRequest, GrsCreateJourneyResponse](
             ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedSoleTraderEntityCreateJourneyRequest),
+            ArgumentMatchers.eq(expectedPartnershipEntityCreateJourneyRequest),
             any()
           )(any(), any(), any(), any())
         )
           .thenReturn(Future.successful(grsCreateJourneyResponse))
 
-        val result = await(connector.createSoleTraderJourney())
+        val result = await(connector.createPartnershipJourney(entityType))
 
         result shouldBe grsCreateJourneyResponse
 
         verify(mockHttpClient, times(1))
-          .POST[SoleTraderEntityCreateJourneyRequest, GrsCreateJourneyResponse](
+          .POST[PartnershipEntityCreateJourneyRequest, GrsCreateJourneyResponse](
             ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedSoleTraderEntityCreateJourneyRequest),
+            ArgumentMatchers.eq(expectedPartnershipEntityCreateJourneyRequest),
             any()
           )(any(), any(), any(), any())
 
         reset(mockHttpClient)
     }
+
+    "throw an IllegalArgumentException if an entity type that is not a partnership is passed through" in forAll(
+      Gen.oneOf(Seq(UkLimitedCompany))
+    ) { invalidPartnershipType =>
+      val result = intercept[IllegalArgumentException] {
+        await(connector.createPartnershipJourney(invalidPartnershipType))
+      }
+
+      result.getMessage shouldBe s"$invalidPartnershipType is not a valid partnership type"
+    }
   }
 
   "getJourneyData" should {
     "return journey data for a given journey id" in forAll {
-      (soleTraderEntityJourneyData: SoleTraderEntityJourneyData, journeyId: String) =>
-        println(soleTraderEntityJourneyData)
-
+      (partnershipEntityJourneyData: PartnershipEntityJourneyData, journeyId: String) =>
         val expectedUrl = s"$apiUrl/journey/$journeyId"
 
         when(
-          mockHttpClient.GET[SoleTraderEntityJourneyData](
+          mockHttpClient.GET[PartnershipEntityJourneyData](
             ArgumentMatchers.eq(expectedUrl),
             any(),
             any()
           )(any(), any(), any())
         )
-          .thenReturn(Future.successful(soleTraderEntityJourneyData))
+          .thenReturn(Future.successful(partnershipEntityJourneyData))
 
         val result = await(connector.getJourneyData(journeyId))
 
-        result shouldBe soleTraderEntityJourneyData
+        result shouldBe partnershipEntityJourneyData
 
         verify(mockHttpClient, times(1))
-          .GET[SoleTraderEntityJourneyData](
+          .GET[PartnershipEntityJourneyData](
             ArgumentMatchers.eq(expectedUrl),
             any(),
             any()

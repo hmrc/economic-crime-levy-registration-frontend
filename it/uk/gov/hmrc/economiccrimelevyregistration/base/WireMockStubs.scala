@@ -10,7 +10,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 
 trait WireMockStubs {
 
@@ -113,8 +113,43 @@ trait WireMockStubs {
         ),
       aResponse()
         .withStatus(201)
-        .withBody(
-          s"""
+        .withBody(s"""
+             |{
+             |    "journeyStartUrl": "test-url"
+             |}
+     """.stripMargin)
+    )
+
+  def stubCreatePartnershipJourney(url: String): StubMapping =
+    stub(
+      post(urlEqualTo(s"/partnership-identification/api/$url"))
+        .withRequestBody(
+          equalToJson(
+            s"""
+               |{
+               |  "continueUrl" : "http://localhost:14000/register-for-economic-crime-levy/grs-continue",
+               |  "optServiceName" : "Register for Economic Crime Levy",
+               |  "deskProServiceId" : "economic-crime-levy-registration-frontend",
+               |  "signOutUrl" : "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
+               |  "regime" : "ECL",
+               |  "accessibilityUrl" : "/accessibility-statement/register-for-economic-crime-levy",
+               |  "labels" : {
+               |    "en" : {
+               |      "optServiceName" : "Register for Economic Crime Levy"
+               |    },
+               |    "cy" : {
+               |      "optServiceName" : "service.name"
+               |    }
+               |  }
+               |}
+           """.stripMargin,
+            true,
+            true
+          )
+        ),
+      aResponse()
+        .withStatus(201)
+        .withBody(s"""
              |{
              |    "journeyStartUrl": "test-url"
              |}
@@ -147,4 +182,13 @@ trait WireMockStubs {
         .withStatus(200)
         .withBody(Json.toJson(journeyData).toString())
     )
+
+  def stubGetPartnershipEntityJourneyData(journeyId: String, journeyData: PartnershipEntityJourneyData): StubMapping =
+    stub(
+      get(urlEqualTo(s"/partnership-identification/api/journey/$journeyId")),
+      aResponse()
+        .withStatus(200)
+        .withBody(Json.toJson(journeyData).toString())
+    )
+
 }

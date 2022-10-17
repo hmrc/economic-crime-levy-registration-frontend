@@ -18,11 +18,11 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -35,6 +35,7 @@ class GrsContinueController @Inject() (
   getRegistrationData: DataRetrievalAction,
   incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
   soleTraderEntityIdentificationFrontendConnector: SoleTraderEntityIdentificationFrontendConnector,
+  partnershipEntityIdentificationFrontendConnector: PartnershipEntityIdentificationFrontendConnector,
   eclRegistrationConnector: EclRegistrationConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController {
@@ -53,17 +54,28 @@ class GrsContinueController @Inject() (
             updateRegistrationWithJourneyData(soleTraderEntityJourneyData = Some(jd))
               .map(_ => Ok(Json.toJson(jd)))
           }
+
+        case Some(GeneralPartnership) | Some(ScottishPartnership) | Some(LimitedPartnership) |
+            Some(ScottishLimitedPartnership) | Some(LimitedLiabilityPartnership) =>
+          partnershipEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
+            updateRegistrationWithJourneyData(partnershipEntityJourneyData = Some(jd))
+              .map(_ => Ok(Json.toJson(jd)))
+          }
+
+        case None => throw new IllegalStateException("No entity type found in registration data")
       }
   }
 
   private def updateRegistrationWithJourneyData(
     incorporatedEntityJourneyData: Option[IncorporatedEntityJourneyData] = None,
-    soleTraderEntityJourneyData: Option[SoleTraderEntityJourneyData] = None
+    soleTraderEntityJourneyData: Option[SoleTraderEntityJourneyData] = None,
+    partnershipEntityJourneyData: Option[PartnershipEntityJourneyData] = None
   )(implicit request: RegistrationDataRequest[AnyContent]): Future[Registration] =
     eclRegistrationConnector.upsertRegistration(
       request.registration.copy(
         incorporatedEntityJourneyData = incorporatedEntityJourneyData,
-        soleTraderEntityJourneyData = soleTraderEntityJourneyData
+        soleTraderEntityJourneyData = soleTraderEntityJourneyData,
+        partnershipEntityJourneyData = partnershipEntityJourneyData
       )
     )
 }
