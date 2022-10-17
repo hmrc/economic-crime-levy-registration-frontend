@@ -18,9 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.SoleTraderIdentificationFrontendConnector
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, SoleTraderEntityJourneyData}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.Inject

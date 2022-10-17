@@ -32,7 +32,12 @@ class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
   val messagesApi: MessagesApi,
   ec: ExecutionContext
 ) extends IncorporatedEntityIdentificationFrontendConnector {
-  override def createLimitedCompanyJourney()(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] = ???
+  override def createLimitedCompanyJourney()(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] =
+    Future.successful(
+      GrsCreateJourneyResponse(
+        journeyStartUrl = "/register-for-economic-crime-levy/test-only/incorporated-entity-stub-data"
+      )
+    )
 
   override def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData] =
     ???
