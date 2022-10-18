@@ -19,21 +19,20 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.IncorporatedEntityIdentificationFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, CompanyProfile, GrsCreateJourneyResponse, GrsRegistrationResult, GrsRegistrationResultFailures, IncorporatedEntityAddress, IncorporatedEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, GrsCreateJourneyResponse, IncorporatedEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
-import java.time.Instant
-import java.util.Date
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
   appConfig: AppConfig,
   httpClient: HttpClient
 )(implicit
-  val messagesApi: MessagesApi,
-  ec: ExecutionContext
-) extends IncorporatedEntityIdentificationFrontendConnector {
+  val messagesApi: MessagesApi
+) extends IncorporatedEntityIdentificationFrontendConnector
+    with GrsStubData {
   override def createLimitedCompanyJourney()(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] =
     Future.successful(
       GrsCreateJourneyResponse(
@@ -42,11 +41,7 @@ class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
     )
 
   override def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData] = {
-
-    val (jid, _): (String, String) = journeyId.split("-").toList match {
-      case List(a, b) => (a, b)
-      case _          => throw new IllegalStateException("Invalid journeyId")
-    }
+    val (jid, _): (String, String) = parseJourneyId(journeyId)
 
     jid match {
       case "1" =>
@@ -98,57 +93,11 @@ class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
   ): Future[IncorporatedEntityJourneyData] =
     Future.successful(
       IncorporatedEntityJourneyData(
-        companyProfile = CompanyProfile(
-          companyName = "Test Company Ltd",
-          companyNumber = "01234567",
-          dateOfIncorporation = Date.from(Instant.parse("2007-12-03T10:15:30.00Z")),
-          unsanitisedCHROAddress = IncorporatedEntityAddress(
-            address_line_1 = "testLine1",
-            address_line_2 = "test town",
-            care_of = "test name",
-            country = "United Kingdom",
-            locality = "test city",
-            po_box = "123",
-            postal_code = "AA11AA",
-            premises = "1",
-            region = "test region"
-          )
-        ),
+        companyProfile = companyProfile,
         ctutr = "1234567890",
         identifiersMatch = identifiersMatch,
-        businessVerification = verificationStatus match {
-          case Some(data) => Some(BusinessVerificationResult(verificationStatus = data))
-          case None       => None
-        },
-        registration = registrationStatus match {
-          case "REGISTERED" =>
-            GrsRegistrationResult(
-              registrationStatus = registrationStatus,
-              registeredBusinessPartnerId = Some("X00000123456789"),
-              failures = None
-            )
-
-          case "REGISTRATION_NOT_CALLED" =>
-            GrsRegistrationResult(
-              registrationStatus = registrationStatus,
-              registeredBusinessPartnerId = None,
-              failures = None
-            )
-
-          case "REGISTRATION_FAILED" =>
-            GrsRegistrationResult(
-              registrationStatus = registrationStatus,
-              registeredBusinessPartnerId = None,
-              failures = Some(
-                Seq(
-                  GrsRegistrationResultFailures(
-                    code = "E001",
-                    reason = "An error of type 'test' occurred"
-                  )
-                )
-              )
-            )
-        }
+        businessVerification = verificationStatus.map(BusinessVerificationResult(_)),
+        registration = registrationResult(registrationStatus)
       )
     )
 }

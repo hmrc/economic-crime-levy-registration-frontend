@@ -19,21 +19,22 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.SoleTraderIdentificationFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, FullName, GrsCreateJourneyResponse, GrsRegistrationResult, GrsRegistrationResultFailures, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, FullName, GrsCreateJourneyResponse, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import java.time.Instant
 import java.util.Date
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class StubSoleTraderIdentificationFrontendConnector @Inject() (
   appConfig: AppConfig,
   httpClient: HttpClient
 )(implicit
-  val messagesApi: MessagesApi,
-  ec: ExecutionContext
-) extends SoleTraderIdentificationFrontendConnector {
+  val messagesApi: MessagesApi
+) extends SoleTraderIdentificationFrontendConnector
+    with GrsStubData {
   override def createSoleTraderJourney()(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] =
     Future.successful(
       GrsCreateJourneyResponse(
@@ -42,10 +43,7 @@ class StubSoleTraderIdentificationFrontendConnector @Inject() (
     )
 
   override def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[SoleTraderEntityJourneyData] = {
-    val (jid, _): (String, String) = journeyId.split("-").toList match {
-      case List(a, b) => (a, b)
-      case _          => throw new IllegalStateException("Invalid journeyId")
-    }
+    val (jid, _): (String, String) = parseJourneyId(journeyId)
 
     jid match {
       case "1" =>
@@ -106,39 +104,8 @@ class StubSoleTraderIdentificationFrontendConnector @Inject() (
         nino = "BB111111B",
         sautr = "1234567890",
         identifiersMatch = identifiersMatch,
-        businessVerification = verificationStatus match {
-          case Some(data) => Some(BusinessVerificationResult(verificationStatus = data))
-          case None       => None
-        },
-        registration = registrationStatus match {
-          case "REGISTERED" =>
-            GrsRegistrationResult(
-              registrationStatus = registrationStatus,
-              registeredBusinessPartnerId = Some("X00000123456789"),
-              failures = None
-            )
-
-          case "REGISTRATION_NOT_CALLED" =>
-            GrsRegistrationResult(
-              registrationStatus = registrationStatus,
-              registeredBusinessPartnerId = None,
-              failures = None
-            )
-
-          case "REGISTRATION_FAILED" =>
-            GrsRegistrationResult(
-              registrationStatus = registrationStatus,
-              registeredBusinessPartnerId = None,
-              failures = Some(
-                Seq(
-                  GrsRegistrationResultFailures(
-                    code = "E001",
-                    reason = "An error of type 'test' occurred"
-                  )
-                )
-              )
-            )
-        }
+        businessVerification = verificationStatus.map(BusinessVerificationResult(_)),
+        registration = registrationResult(registrationStatus)
       )
     )
 }
