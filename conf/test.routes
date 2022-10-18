@@ -1,2 +1,2 @@
-GET        /incorporated-entity-stub-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.IncorporatedEntityStubDataController.onPageLoad()
-POST       /incorporated-entity-stub-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.IncorporatedEntityStubDataController.onSubmit()
+GET        /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onPageLoad()
+POST       /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onSubmit()

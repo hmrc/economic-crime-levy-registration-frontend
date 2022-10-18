@@ -20,16 +20,16 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.forms.JourneyIdFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.testonly.views.html.IncorporatedEntityStubDataView
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.views.html.StubGrsJourneyDataView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class IncorporatedEntityStubDataController @Inject() (
+class StubGrsJourneyDataController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   journeyIdFormProvider: JourneyIdFormProvider,
-  view: IncorporatedEntityStubDataView
+  view: StubGrsJourneyDataView
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -40,7 +40,12 @@ class IncorporatedEntityStubDataController @Inject() (
   }
 
   def onSubmit(): Action[AnyContent] = Action { implicit request =>
-    ???
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => BadRequest(view(formWithErrors)),
+        journeyId => Redirect(s"/register-for-economic-crime-levy/grs-continue?journeyId=$journeyId")
+      )
   }
 
 }
