@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.forms.JourneyIdFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.views.html.StubGrsJourneyDataView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -28,6 +29,8 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class StubGrsJourneyDataController @Inject() (
   val controllerComponents: MessagesControllerComponents,
+  authorise: AuthorisedAction,
+  getRegistrationData: DataRetrievalAction,
   journeyIdFormProvider: JourneyIdFormProvider,
   view: StubGrsJourneyDataView
 ) extends FrontendBaseController
@@ -39,12 +42,15 @@ class StubGrsJourneyDataController @Inject() (
     Ok(view(form))
   }
 
-  def onSubmit(): Action[AnyContent] = Action { implicit request =>
+  def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     form
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(view(formWithErrors)),
-        journeyId => Redirect(s"/register-for-economic-crime-levy/grs-continue?journeyId=$journeyId")
+        journeyId =>
+          Redirect(
+            s"/register-for-economic-crime-levy/grs-continue?journeyId=$journeyId-${request.registration.entityType.get.toString}"
+          )
       )
   }
 

@@ -41,49 +41,43 @@ class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
       )
     )
 
-  override def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData] =
-    journeyId match {
+  override def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData] = {
+
+    val (jid, _): (String, String) = journeyId.split("-").toList match {
+      case List(a, b) => (a, b)
+      case _          => throw new IllegalStateException("Invalid journeyId")
+    }
+
+    jid match {
       case "1" =>
-        buildJourneyData(
-          identifiersMatch = true,
-          registrationStatus = "REGISTERED",
-          verificationStatus = Some("CT_ENROLLED")
-        )
-      case "2" =>
         buildJourneyData(
           identifiersMatch = true,
           registrationStatus = "REGISTRATION_NOT_CALLED",
           verificationStatus = Some("FAIL")
         )
-      case "3" =>
+      case "2" =>
         buildJourneyData(
           identifiersMatch = false,
           registrationStatus = "REGISTRATION_NOT_CALLED",
           verificationStatus = Some("UNCHALLENGED")
         )
-      case "4" =>
+      case "3" =>
         buildJourneyData(
           identifiersMatch = true,
           registrationStatus = "REGISTRATION_FAILED",
           verificationStatus = Some("PASS")
         )
-      case "5" =>
-        buildJourneyData(
-          identifiersMatch = true,
-          registrationStatus = "REGISTRATION_FAILED",
-          verificationStatus = Some("CT_ENROLLED")
-        )
-      case "6" =>
+      case "4" =>
         buildJourneyData(
           identifiersMatch = true,
           registrationStatus = "REGISTERED"
         )
-      case "7" =>
+      case "5" =>
         buildJourneyData(
           identifiersMatch = false,
           registrationStatus = "REGISTRATION_NOT_CALLED"
         )
-      case "8" =>
+      case "6" =>
         buildJourneyData(
           identifiersMatch = true,
           registrationStatus = "REGISTRATION_FAILED"
@@ -95,6 +89,7 @@ class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
           verificationStatus = Some("PASS")
         )
     }
+  }
 
   private def buildJourneyData(
     identifiersMatch: Boolean,
