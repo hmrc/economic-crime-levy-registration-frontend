@@ -1,2 +1,5 @@
 GET        /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onPageLoad()
 POST       /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onSubmit()
+
+GET        /clear-all                    uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.TestOnlyController.clearAllData()
+GET        /registration-data            uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.TestOnlyController.getRegistrationData()
