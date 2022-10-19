@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.IncorporatedEntityIdentificationFrontendConnector
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, GrsCreateJourneyResponse, IncorporatedEntityJourneyData}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
@@ -32,7 +33,8 @@ class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
 )(implicit
   val messagesApi: MessagesApi
 ) extends IncorporatedEntityIdentificationFrontendConnector
-    with GrsStubData {
+    with GrsStubData[IncorporatedEntityJourneyData] {
+
   override def createLimitedCompanyJourney()(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] =
     Future.successful(
       GrsCreateJourneyResponse(
@@ -40,56 +42,14 @@ class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
       )
     )
 
-  override def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData] = {
-    val (jid, _): (String, String) = parseJourneyId(journeyId)
+  override def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData] =
+    handleJourneyId(journeyId)
 
-    jid match {
-      case "1" =>
-        buildJourneyData(
-          identifiersMatch = true,
-          registrationStatus = "REGISTRATION_NOT_CALLED",
-          verificationStatus = Some("FAIL")
-        )
-      case "2" =>
-        buildJourneyData(
-          identifiersMatch = false,
-          registrationStatus = "REGISTRATION_NOT_CALLED",
-          verificationStatus = Some("UNCHALLENGED")
-        )
-      case "3" =>
-        buildJourneyData(
-          identifiersMatch = true,
-          registrationStatus = "REGISTRATION_FAILED",
-          verificationStatus = Some("PASS")
-        )
-      case "4" =>
-        buildJourneyData(
-          identifiersMatch = true,
-          registrationStatus = "REGISTERED"
-        )
-      case "5" =>
-        buildJourneyData(
-          identifiersMatch = false,
-          registrationStatus = "REGISTRATION_NOT_CALLED"
-        )
-      case "6" =>
-        buildJourneyData(
-          identifiersMatch = true,
-          registrationStatus = "REGISTRATION_FAILED"
-        )
-      case _   =>
-        buildJourneyData(
-          identifiersMatch = true,
-          registrationStatus = "REGISTERED",
-          verificationStatus = Some("PASS")
-        )
-    }
-  }
-
-  private def buildJourneyData(
+  override def buildJourneyData(
     identifiersMatch: Boolean,
     registrationStatus: String,
-    verificationStatus: Option[String] = None
+    verificationStatus: Option[String] = None,
+    entityType: EntityType
   ): Future[IncorporatedEntityJourneyData] =
     Future.successful(
       IncorporatedEntityJourneyData(

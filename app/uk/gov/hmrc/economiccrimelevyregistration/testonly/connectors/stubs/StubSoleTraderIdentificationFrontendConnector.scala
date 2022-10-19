@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.SoleTraderIdentificationFrontendConnector
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, FullName, GrsCreateJourneyResponse, SoleTraderEntityJourneyData}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
@@ -34,7 +35,8 @@ class StubSoleTraderIdentificationFrontendConnector @Inject() (
 )(implicit
   val messagesApi: MessagesApi
 ) extends SoleTraderIdentificationFrontendConnector
-    with GrsStubData {
+    with GrsStubData[SoleTraderEntityJourneyData] {
+
   override def createSoleTraderJourney()(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] =
     Future.successful(
       GrsCreateJourneyResponse(
@@ -42,63 +44,20 @@ class StubSoleTraderIdentificationFrontendConnector @Inject() (
       )
     )
 
-  override def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[SoleTraderEntityJourneyData] = {
-    val (jid, _): (String, String) = parseJourneyId(journeyId)
+  override def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[SoleTraderEntityJourneyData] =
+    handleJourneyId(journeyId)
 
-    jid match {
-      case "1" =>
-        buildJourneyData(
-          identifiersMatch = true,
-          registrationStatus = "REGISTRATION_NOT_CALLED",
-          verificationStatus = Some("FAIL")
-        )
-      case "2" =>
-        buildJourneyData(
-          identifiersMatch = false,
-          registrationStatus = "REGISTRATION_NOT_CALLED",
-          verificationStatus = Some("UNCHALLENGED")
-        )
-      case "3" =>
-        buildJourneyData(
-          identifiersMatch = true,
-          registrationStatus = "REGISTRATION_FAILED",
-          verificationStatus = Some("PASS")
-        )
-      case "4" =>
-        buildJourneyData(
-          identifiersMatch = true,
-          registrationStatus = "REGISTERED"
-        )
-      case "5" =>
-        buildJourneyData(
-          identifiersMatch = false,
-          registrationStatus = "REGISTRATION_NOT_CALLED"
-        )
-      case "6" =>
-        buildJourneyData(
-          identifiersMatch = true,
-          registrationStatus = "REGISTRATION_FAILED"
-        )
-      case _   =>
-        buildJourneyData(
-          identifiersMatch = true,
-          registrationStatus = "REGISTERED",
-          verificationStatus = Some("PASS")
-        )
-
-    }
-  }
-
-  private def buildJourneyData(
+  override def buildJourneyData(
     identifiersMatch: Boolean,
     registrationStatus: String,
-    verificationStatus: Option[String] = None
+    verificationStatus: Option[String] = None,
+    entityType: EntityType
   ): Future[SoleTraderEntityJourneyData] =
     Future.successful(
       SoleTraderEntityJourneyData(
         fullName = FullName(
           firstName = "John",
-          lastName = "Test"
+          lastName = "Doe"
         ),
         dateOfBirth = Date.from(Instant.parse("1975-01-31T00:00:00.00Z")),
         nino = "BB111111B",

@@ -15,104 +15,174 @@
  *@
 
 @this(
-formHelper: FormWithCSRF,
-govukErrorSummary: GovukErrorSummary,
-govukInput: GovukInput,
-govukButton: GovukButton,
-layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
+        formHelper: FormWithCSRF,
+        govukErrorSummary: GovukErrorSummary,
+        govukInput: GovukInput,
+        govukButton: GovukButton,
+        govukTable: GovukTable,
+        govukInsetText: GovukInsetText,
+        layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(
-pageTitle = title("Grs Journey Stub Data"),
-showBackLink = true
+    pageTitle = title("Stub GRS Journey Data"),
+    showBackLink = true,
+    isWelshTranslationAvailable = Some(false)
 ) {
 
-<h1 class="govuk-heading-xl">GRS Stub</h1>
+    <h1 class="govuk-heading-xl">Stub GRS Journey Data</h1>
 
-@formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.routes.StubGrsJourneyDataController.onSubmit()) {
+    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.routes.StubGrsJourneyDataController.onSubmit()) {
 
-@if(form.errors.nonEmpty) {
-@govukErrorSummary(ErrorSummaryViewModel(form))
-}
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
 
-@govukInput(
-InputViewModel(
-field = form("value"),
-label = LabelViewModel(messages("Enter a journey ID:")).asPageHeading()
-)
-)
+        @govukInput(
+            InputViewModel(
+                field = form("value"),
+                label = LabelViewModel(messages("Enter a journey ID"))
+            ).withHint(Hint(content = Text("Use the default '0' for successful registration and verification")))
+        )
 
-@govukButton(
-ButtonViewModel("Submit")
-)
-}
+        @govukButton(
+            ButtonViewModel("Save and continue")
+        )
+    }
 
-<p class="govuk-body"><b>NOTE</b>: Any journey ID value other than those explicitly defined in the following tables will
-    result in an overall success (<i>other</i>).</p>
+    @govukInsetText(InsetText(
+        content = Text("Any journey ID value other than those explicitly defined in the following tables will result in successful registration and verification, e.g. 0.")
+    ))
 
-<p class="govuk-body">The following journey identifiers represent GRS journeys with BV <b>enabled</b></p>
+    <p class="govuk-body">The following journey IDs represent GRS journeys with BV <b>enabled</b>.</p>
 
-<table class="govuk-table" border="3">
-    <tr>
-        <td><b>Journey ID</b></td>
-        <td><b>Identifiers Match</b></td>
-        <td><b>Registration Status</b></td>
-        <td><b>Verification Status</b></td>
-    </tr>
-    <tr>
-        <td>(<i>other</i>)</td>
-        <td>Yes</td>
-        <td>REGISTERED</td>
-        <td>PASS</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>Yes</td>
-        <td>REGISTRATION_NOT_CALLED</td>
-        <td>FAIL</td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td>No</td>
-        <td>REGISTRATION_NOT_CALLED</td>
-        <td>UNCHALLENGED</td>
-    </tr>
-    <tr>
-        <td>3</td>
-        <td>Yes</td>
-        <td>REGISTRATION_FAILED</td>
-        <td>PASS</td>
-    </tr>
-</table>
+    @govukTable(Table(
+        rows = Seq(
+            Seq(
+                TableRow(
+                    content = Text("(other) e.g. 0")
+                ),
+                TableRow(
+                    content = Text("Yes")
+                ),
+                TableRow(
+                    content = Text("REGISTERED")
+                ),
+                TableRow(
+                    content = Text("PASS")
+                )
+            ),
+            Seq(
+                TableRow(
+                    content = Text("1")
+                ),
+                TableRow(
+                    content = Text("Yes")
+                ),
+                TableRow(
+                    content = Text("REGISTRATION_NOT_CALLED")
+                ),
+                TableRow(
+                    content = Text("FAIL")
+                )
+            ),
+            Seq(
+                TableRow(
+                    content = Text("2")
+                ),
+                TableRow(
+                    content = Text("No")
+                ),
+                TableRow(
+                    content = Text("REGISTRATION_NOT_CALLED")
+                ),
+                TableRow(
+                    content = Text("UNCHALLENGED")
+                )
+            ),
+            Seq(
+                TableRow(
+                    content = Text("3")
+                ),
+                TableRow(
+                    content = Text("Yes")
+                ),
+                TableRow(
+                    content = Text("REGISTRATION_FAILED")
+                ),
+                TableRow(
+                    content = Text("PASS")
+                )
+            )
+        ),
+        head = Some(Seq(
+            HeadCell(
+                content = Text("Journey ID")
+            ),
+            HeadCell(
+                content = Text("Identifiers Match")
+            ),
+            HeadCell(
+                content = Text("Registration Status")
+            ),
+            HeadCell(
+                content = Text("Verification Status")
+            )
+        ))
+    ))
 
-<p class="govuk-body">The following journey identifiers represent GRS journeys with BV <b>disabled</b></p>
+    <p class="govuk-body govuk-!-margin-top-8">The following journey IDs represent GRS journeys with BV <b>disabled</b>
+        and therefore no verification status is present.</p>
 
-<table class="govuk-table" border="3">
-    <tr>
-        <td><b>Journey ID</b></td>
-        <td><b>Identifiers Match</b></td>
-        <td><b>Registration Status</b></td>
-        <td><b>Verification Status</b></td>
-    </tr>
-    <tr>
-        <td>4</td>
-        <td>Yes</td>
-        <td>REGISTERED</td>
-        <td>N/A</td>
-    </tr>
-    <tr>
-        <td>5</td>
-        <td>No</td>
-        <td>REGISTRATION_NOT_CALLED</td>
-        <td>N/A</td>
-    </tr>
-    <tr>
-        <td>6</td>
-        <td>Yes</td>
-        <td>REGISTRATION_FAILED</td>
-        <td>N/A</td>
-    </tr>
-</table>
+    @govukTable(Table(
+        rows = Seq(
+            Seq(
+                TableRow(
+                    content = Text("4")
+                ),
+                TableRow(
+                    content = Text("Yes")
+                ),
+                TableRow(
+                    content = Text("REGISTERED")
+                )
+            ),
+            Seq(
+                TableRow(
+                    content = Text("5")
+                ),
+                TableRow(
+                    content = Text("No")
+                ),
+                TableRow(
+                    content = Text("REGISTRATION_NOT_CALLED")
+                )
+            ),
+            Seq(
+                TableRow(
+                    content = Text("6")
+                ),
+                TableRow(
+                    content = Text("Yes")
+                ),
+                TableRow(
+                    content = Text("REGISTRATION_FAILED")
+                )
+            )
+        ),
+        head = Some(Seq(
+            HeadCell(
+                content = Text("Journey ID")
+            ),
+            HeadCell(
+                content = Text("Identifiers Match")
+            ),
+            HeadCell(
+                content = Text("Registration Status")
+            )
+        ))
+    ))
+
 }

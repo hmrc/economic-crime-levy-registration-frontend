@@ -39,7 +39,7 @@ class StubGrsJourneyDataController @Inject() (
   val form: Form[String] = journeyIdFormProvider()
 
   def onPageLoad(): Action[AnyContent] = Action { implicit request =>
-    Ok(view(form))
+    Ok(view(form.fill("0")))
   }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
