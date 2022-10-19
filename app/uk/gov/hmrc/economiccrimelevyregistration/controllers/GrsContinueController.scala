@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
@@ -34,8 +34,8 @@ class GrsContinueController @Inject() (
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
   incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
-  soleTraderEntityIdentificationFrontendConnector: SoleTraderEntityIdentificationFrontendConnector,
-  partnershipEntityIdentificationFrontendConnector: PartnershipEntityIdentificationFrontendConnector,
+  soleTraderIdentificationFrontendConnector: SoleTraderIdentificationFrontendConnector,
+  partnershipIdentificationFrontendConnector: PartnershipIdentificationFrontendConnector,
   eclRegistrationConnector: EclRegistrationConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController {
@@ -50,14 +50,14 @@ class GrsContinueController @Inject() (
           }
 
         case Some(SoleTrader) =>
-          soleTraderEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
+          soleTraderIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(soleTraderEntityJourneyData = Some(jd))
               .map(_ => Ok(Json.toJson(jd)))
           }
 
         case Some(GeneralPartnership) | Some(ScottishPartnership) | Some(LimitedPartnership) |
             Some(ScottishLimitedPartnership) | Some(LimitedLiabilityPartnership) =>
-          partnershipEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
+          partnershipIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(partnershipEntityJourneyData = Some(jd))
               .map(_ => Ok(Json.toJson(jd)))
           }

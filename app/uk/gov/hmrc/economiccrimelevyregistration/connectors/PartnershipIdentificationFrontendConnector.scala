@@ -18,22 +18,29 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, PartnershipEntityCreateJourneyRequest, PartnershipEntityJourneyData, ServiceNameLabels}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, PartnershipEntityCreateJourneyRequest, PartnershipEntityJourneyData, ServiceNameLabels}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-class PartnershipEntityIdentificationFrontendConnector @Inject() (
+trait PartnershipIdentificationFrontendConnector {
+  def createPartnershipJourney(
+    partnershipType: EntityType
+  )(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse]
+
+  def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[PartnershipEntityJourneyData]
+}
+
+class PartnershipIdentificationFrontendConnectorImpl @Inject() (
   appConfig: AppConfig,
   httpClient: HttpClient
 )(implicit
   val messagesApi: MessagesApi,
   ec: ExecutionContext
-) {
+) extends PartnershipIdentificationFrontendConnector {
   private val apiUrl = s"${appConfig.partnershipEntityIdentificationFrontendUrl}/partnership-identification/api"
 
   def createPartnershipJourney(

@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, ScottishLimitedPartnership, ScottishPartnership, SoleTrader, UkLimitedCompany}
@@ -35,8 +35,8 @@ class EntityTypeController @Inject() (
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
   incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
-  soleTraderEntityIdentificationFrontendConnector: SoleTraderEntityIdentificationFrontendConnector,
-  partnershipEntityIdentificationFrontendConnector: PartnershipEntityIdentificationFrontendConnector,
+  soleTraderIdentificationFrontendConnector: SoleTraderIdentificationFrontendConnector,
+  partnershipIdentificationFrontendConnector: PartnershipIdentificationFrontendConnector,
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: EntityTypeFormProvider,
   view: EntityTypeView
@@ -66,13 +66,13 @@ class EntityTypeController @Inject() (
                     .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
 
                 case SoleTrader =>
-                  soleTraderEntityIdentificationFrontendConnector
+                  soleTraderIdentificationFrontendConnector
                     .createSoleTraderJourney()
                     .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
 
                 case GeneralPartnership | ScottishPartnership | LimitedPartnership | ScottishLimitedPartnership |
                     LimitedLiabilityPartnership =>
-                  partnershipEntityIdentificationFrontendConnector
+                  partnershipIdentificationFrontendConnector
                     .createPartnershipJourney(entityType)
                     .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
               }

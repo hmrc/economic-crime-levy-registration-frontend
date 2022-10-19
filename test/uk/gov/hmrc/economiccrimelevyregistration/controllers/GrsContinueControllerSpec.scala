@@ -24,7 +24,7 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipEntityIdentificationFrontendConnector, SoleTraderEntityIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
 
@@ -34,11 +34,11 @@ class GrsContinueControllerSpec extends SpecBase {
   val mockIncorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector =
     mock[IncorporatedEntityIdentificationFrontendConnector]
 
-  val mockSoleTraderEntityIdentificationFrontendConnector: SoleTraderEntityIdentificationFrontendConnector =
-    mock[SoleTraderEntityIdentificationFrontendConnector]
+  val mockSoleTraderIdentificationFrontendConnector: SoleTraderIdentificationFrontendConnector =
+    mock[SoleTraderIdentificationFrontendConnector]
 
-  val mockPartnershipEntityIdentificationFrontendConnector: PartnershipEntityIdentificationFrontendConnector =
-    mock[PartnershipEntityIdentificationFrontendConnector]
+  val mockPartnershipIdentificationFrontendConnector: PartnershipIdentificationFrontendConnector =
+    mock[PartnershipIdentificationFrontendConnector]
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
@@ -48,8 +48,8 @@ class GrsContinueControllerSpec extends SpecBase {
       fakeAuthorisedAction,
       fakeDataRetrievalAction(registrationData),
       mockIncorporatedEntityIdentificationFrontendConnector,
-      mockSoleTraderEntityIdentificationFrontendConnector,
-      mockPartnershipEntityIdentificationFrontendConnector,
+      mockSoleTraderIdentificationFrontendConnector,
+      mockPartnershipIdentificationFrontendConnector,
       mockEclRegistrationConnector
     )
   }
@@ -84,7 +84,7 @@ class GrsContinueControllerSpec extends SpecBase {
       (journeyId: String, registration: Registration, soleTraderEntityJourneyData: SoleTraderEntityJourneyData) =>
         new TestContext(registration.copy(entityType = Some(SoleTrader))) {
           when(
-            mockSoleTraderEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+            mockSoleTraderIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
           )
             .thenReturn(Future.successful(soleTraderEntityJourneyData))
 
@@ -115,7 +115,7 @@ class GrsContinueControllerSpec extends SpecBase {
         val entityType = partnershipType.entityType
         new TestContext(registration.copy(entityType = Some(entityType))) {
           when(
-            mockPartnershipEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+            mockPartnershipIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
           )
             .thenReturn(Future.successful(partnershipEntityJourneyData))
 

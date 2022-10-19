@@ -27,7 +27,7 @@ import scala.concurrent.Future
 
 class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new IncorporatedEntityIdentificationFrontendConnector(appConfig, mockHttpClient)
+  val connector                  = new IncorporatedEntityIdentificationFrontendConnectorImpl(appConfig, mockHttpClient)
   val apiUrl                     = s"${appConfig.incorporatedEntityIdentificationFrontendUrl}/incorporated-entity-identification/api"
 
   "createLimitedCompanyJourney" should {

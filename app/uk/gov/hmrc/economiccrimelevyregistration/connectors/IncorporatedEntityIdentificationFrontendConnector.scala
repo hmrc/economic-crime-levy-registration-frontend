@@ -22,17 +22,21 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyRes
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-class IncorporatedEntityIdentificationFrontendConnector @Inject() (
+trait IncorporatedEntityIdentificationFrontendConnector {
+  def createLimitedCompanyJourney()(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse]
+  def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData]
+}
+
+class IncorporatedEntityIdentificationFrontendConnectorImpl @Inject() (
   appConfig: AppConfig,
   httpClient: HttpClient
 )(implicit
   val messagesApi: MessagesApi,
   ec: ExecutionContext
-) {
+) extends IncorporatedEntityIdentificationFrontendConnector {
   private val apiUrl =
     s"${appConfig.incorporatedEntityIdentificationFrontendUrl}/incorporated-entity-identification/api"
 
