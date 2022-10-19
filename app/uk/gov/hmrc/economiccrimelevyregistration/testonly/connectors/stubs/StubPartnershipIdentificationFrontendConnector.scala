@@ -60,8 +60,8 @@ class StubPartnershipIdentificationFrontendConnector @Inject() (
           case _                                        =>
             Some(companyProfile)
         },
-        sautr = "1234567890",
-        postcode = "AA11AA",
+        sautr = Some("1234567890"),
+        postcode = Some("AA11AA"),
         identifiersMatch = identifiersMatch,
         businessVerification = verificationStatus.map(BusinessVerificationResult(_)),
         registration = registrationResult(registrationStatus)

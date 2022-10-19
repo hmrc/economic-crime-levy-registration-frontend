@@ -60,8 +60,8 @@ class StubSoleTraderIdentificationFrontendConnector @Inject() (
           lastName = "Doe"
         ),
         dateOfBirth = Date.from(Instant.parse("1975-01-31T00:00:00.00Z")),
-        nino = "BB111111B",
-        sautr = "1234567890",
+        nino = Some("BB111111B"),
+        sautr = Some("1234567890"),
         identifiersMatch = identifiersMatch,
         businessVerification = verificationStatus.map(BusinessVerificationResult(_)),
         registration = registrationResult(registrationStatus)
