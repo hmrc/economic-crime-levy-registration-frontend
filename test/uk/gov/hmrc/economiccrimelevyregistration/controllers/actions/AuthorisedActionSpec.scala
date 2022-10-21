@@ -27,6 +27,7 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, EnrolmentsWithoutEcl}
 import uk.gov.hmrc.http.UnauthorizedException
 
@@ -44,7 +45,7 @@ class AuthorisedActionSpec extends SpecBase {
     Future(Ok("Test"))
   }
 
-  val eclEnrolmentKey                                            = "HMRC-ECL-ORG"
+  val eclEnrolmentKey                                            = EclEnrolment.Key
   val expectedRetrievals: Retrieval[Option[String] ~ Enrolments] = Retrievals.internalId and Retrievals.allEnrolments
 
   "invokeBlock" should {

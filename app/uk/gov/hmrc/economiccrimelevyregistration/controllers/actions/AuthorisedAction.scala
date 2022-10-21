@@ -24,6 +24,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.http.UnauthorizedException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
@@ -47,7 +48,7 @@ class BaseAuthorisedAction @Inject() (
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
     authorised().retrieve(internalId and allEnrolments) { case internalIdOpt ~ enrolments =>
       val internalId                      = internalIdOpt.getOrElse(throw new UnauthorizedException("Unable to retrieve internalId"))
-      val eclEnrolment: Option[Enrolment] = enrolments.enrolments.find(_.key == "HMRC-ECL-ORG")
+      val eclEnrolment: Option[Enrolment] = enrolments.enrolments.find(_.key == EclEnrolment.Key)
 
       eclEnrolment.fold(block(AuthorisedRequest(request, internalId)))(_ =>
         Future.successful(Ok("Already registered - user already has enrolment"))

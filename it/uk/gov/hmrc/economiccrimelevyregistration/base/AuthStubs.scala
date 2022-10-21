@@ -3,6 +3,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
+import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 
 trait AuthStubs {
 
@@ -23,8 +24,7 @@ trait AuthStubs {
         ),
       aResponse()
         .withStatus(200)
-        .withBody(
-          s"""
+        .withBody(s"""
              |{
              |  "internalId": "test-id",
              |  "allEnrolments": []
@@ -49,18 +49,16 @@ trait AuthStubs {
         ),
       aResponse()
         .withStatus(200)
-        .withBody(
-          s"""
+        .withBody(s"""
              |{
              |  "internalId": "test-id",
              |  "allEnrolments": [{
-             |    "key":"HMRC-ECL-ORG",
-             |    "identifiers": [{ "key":"EtmpRegistrationNumber", "value": "X00000123456789" }],
+             |    "key":"${EclEnrolment.Key}",
+             |    "identifiers": [{ "key":"${EclEnrolment.Identifier}", "value": "X00000123456789" }],
              |    "state": "activated"
              |  }]
              |}
            """.stripMargin)
     )
-
 
 }
