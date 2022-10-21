@@ -36,7 +36,10 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData)
       )
 
-      stubGetIncorporatedEntityJourneyData(journeyId, incorporatedEntityJourneyData)
+      stubGetGrsJourneyData(
+        s"/incorporated-entity-identification/api/journey/$journeyId",
+        incorporatedEntityJourneyData
+      )
 
       stubUpsertRegistration(updatedRegistration)
 
@@ -67,7 +70,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         soleTraderEntityJourneyData = Some(soleTraderEntityJourneyData)
       )
 
-      stubGetSoleTraderEntityJourneyData(journeyId, soleTraderEntityJourneyData)
+      stubGetGrsJourneyData(s"/sole-trader-identification/api/journey/$journeyId", soleTraderEntityJourneyData)
 
       stubUpsertRegistration(updatedRegistration)
 
@@ -99,7 +102,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         partnershipEntityJourneyData = Some(partnershipEntityJourneyData)
       )
 
-      stubGetPartnershipEntityJourneyData(journeyId, partnershipEntityJourneyData)
+      stubGetGrsJourneyData(s"/partnership-identification/api/journey/$journeyId", partnershipEntityJourneyData)
 
       stubUpsertRegistration(updatedRegistration)
 

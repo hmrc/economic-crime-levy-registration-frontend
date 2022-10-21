@@ -36,7 +36,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       val registration = random[Registration]
 
       stubGetRegistration(registration)
-      stubCreateLimitedCompanyJourney()
+      stubCreateGrsJourney("/incorporated-entity-identification/api/limited-company-journey")
 
       val updatedRegistration = registration.copy(entityType = Some(UkLimitedCompany))
 
@@ -57,7 +57,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       val registration = random[Registration]
 
       stubGetRegistration(registration)
-      stubCreateSoleTraderJourney()
+      stubCreateGrsJourney("/sole-trader-identification/api/sole-trader-journey")
 
       val updatedRegistration = registration.copy(entityType = Some(SoleTrader))
 
@@ -79,7 +79,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     val registration = random[Registration]
     val entityType   = random[PartnershipType].entityType
 
-    val partnershipCreateJourneyUrl: String = entityType match {
+    val urlPartnershipType: String = entityType match {
       case GeneralPartnership          => "general-partnership-journey"
       case ScottishPartnership         => "scottish-partnership-journey"
       case LimitedPartnership          => "limited-partnership-journey"
@@ -89,7 +89,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     }
 
     stubGetRegistration(registration)
-    stubCreatePartnershipJourney(partnershipCreateJourneyUrl)
+    stubCreateGrsJourney(s"/partnership-identification/api/$urlPartnershipType")
 
     val updatedRegistration = registration.copy(entityType = Some(entityType))
 
