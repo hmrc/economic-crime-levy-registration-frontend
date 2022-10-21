@@ -4,13 +4,18 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbit
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
 
-class GrsContinueISpec extends ISpecBase {
+class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
+
+  val journeyId: String = "test-journey-id"
 
   s"GET /$contextPath/grs-continue" should {
+    behave like authorisedActionRoute(routes.GrsContinueController.continue(journeyId))
+
     "retrieve the incorporated entity GRS journey data, update the registration with the GRS journey data and (display the GRS journey data)" in {
       stubAuthorised()
 
@@ -25,15 +30,16 @@ class GrsContinueISpec extends ISpecBase {
 
       stubGetRegistration(registration)
 
-      val journeyId: String = "test-journey-id"
-
       val incorporatedEntityJourneyData = random[IncorporatedEntityJourneyData]
 
       val updatedRegistration = registration.copy(
         incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData)
       )
 
-      stubGetIncorporatedEntityJourneyData(journeyId, incorporatedEntityJourneyData)
+      stubGetGrsJourneyData(
+        s"/incorporated-entity-identification/api/journey/$journeyId",
+        incorporatedEntityJourneyData
+      )
 
       stubUpsertRegistration(updatedRegistration)
 
@@ -58,15 +64,13 @@ class GrsContinueISpec extends ISpecBase {
 
       stubGetRegistration(registration)
 
-      val journeyId: String = "test-journey-id"
-
       val soleTraderEntityJourneyData = random[SoleTraderEntityJourneyData]
 
       val updatedRegistration = registration.copy(
         soleTraderEntityJourneyData = Some(soleTraderEntityJourneyData)
       )
 
-      stubGetSoleTraderEntityJourneyData(journeyId, soleTraderEntityJourneyData)
+      stubGetGrsJourneyData(s"/sole-trader-identification/api/journey/$journeyId", soleTraderEntityJourneyData)
 
       stubUpsertRegistration(updatedRegistration)
 
@@ -92,15 +96,13 @@ class GrsContinueISpec extends ISpecBase {
 
       stubGetRegistration(registration)
 
-      val journeyId: String = "test-journey-id"
-
       val partnershipEntityJourneyData = random[PartnershipEntityJourneyData]
 
       val updatedRegistration = registration.copy(
         partnershipEntityJourneyData = Some(partnershipEntityJourneyData)
       )
 
-      stubGetPartnershipEntityJourneyData(journeyId, partnershipEntityJourneyData)
+      stubGetGrsJourneyData(s"/partnership-identification/api/journey/$journeyId", partnershipEntityJourneyData)
 
       stubUpsertRegistration(updatedRegistration)
 

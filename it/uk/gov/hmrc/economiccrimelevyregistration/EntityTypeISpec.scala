@@ -3,12 +3,15 @@ package uk.gov.hmrc.economiccrimelevyregistration
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbitrary, random}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class EntityTypeISpec extends ISpecBase {
+class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET /$contextPath/select-entity-type"  should {
+    behave like authorisedActionRoute(routes.EntityTypeController.onPageLoad())
+
     "respond with 200 status and the select entity type HTML view" in {
       stubAuthorised()
 
@@ -25,13 +28,15 @@ class EntityTypeISpec extends ISpecBase {
   }
 
   s"POST /$contextPath/select-entity-type" should {
+    behave like authorisedActionRoute(routes.EntityTypeController.onPageLoad())
+
     "save the selected entity type then redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
       stubAuthorised()
 
       val registration = random[Registration]
 
       stubGetRegistration(registration)
-      stubCreateLimitedCompanyJourney()
+      stubCreateGrsJourney("/incorporated-entity-identification/api/limited-company-journey")
 
       val updatedRegistration = registration.copy(entityType = Some(UkLimitedCompany))
 
@@ -52,7 +57,7 @@ class EntityTypeISpec extends ISpecBase {
       val registration = random[Registration]
 
       stubGetRegistration(registration)
-      stubCreateSoleTraderJourney()
+      stubCreateGrsJourney("/sole-trader-identification/api/sole-trader-journey")
 
       val updatedRegistration = registration.copy(entityType = Some(SoleTrader))
 
@@ -74,7 +79,7 @@ class EntityTypeISpec extends ISpecBase {
     val registration = random[Registration]
     val entityType   = random[PartnershipType].entityType
 
-    val partnershipCreateJourneyUrl: String = entityType match {
+    val urlPartnershipType: String = entityType match {
       case GeneralPartnership          => "general-partnership-journey"
       case ScottishPartnership         => "scottish-partnership-journey"
       case LimitedPartnership          => "limited-partnership-journey"
@@ -84,7 +89,7 @@ class EntityTypeISpec extends ISpecBase {
     }
 
     stubGetRegistration(registration)
-    stubCreatePartnershipJourney(partnershipCreateJourneyUrl)
+    stubCreateGrsJourney(s"/partnership-identification/api/$urlPartnershipType")
 
     val updatedRegistration = registration.copy(entityType = Some(entityType))
 
