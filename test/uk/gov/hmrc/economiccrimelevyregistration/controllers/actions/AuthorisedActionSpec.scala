@@ -16,12 +16,18 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{BodyParsers, Request, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, EnrolmentsWithoutEcl}
 import uk.gov.hmrc.http.UnauthorizedException
 
 import scala.concurrent.Future
@@ -38,14 +44,19 @@ class AuthorisedActionSpec extends SpecBase {
     Future(Ok("Test"))
   }
 
+  val eclEnrolmentKey                                            = "HMRC-ECL-ORG"
+  val expectedRetrievals: Retrieval[Option[String] ~ Enrolments] = Retrievals.internalId and Retrievals.allEnrolments
+
   "invokeBlock" should {
-    "execute the block and return the result if authorised" in {
-      when(mockAuthConnector.authorise[Option[String]](any(), any())(any(), any())).thenReturn(Future(Some("id")))
+    "execute the block and return the result if authorised" in forAll {
+      (internalId: String, enrolmentsWithoutEcl: EnrolmentsWithoutEcl) =>
+        when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
+          .thenReturn(Future(Some(internalId) and enrolmentsWithoutEcl.enrolments))
 
-      val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
+        val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
-      status(result)          shouldBe OK
-      contentAsString(result) shouldBe "Test"
+        status(result)          shouldBe OK
+        contentAsString(result) shouldBe "Test"
     }
 
     "redirect the user to sign in when there is no active session" in {
@@ -80,13 +91,28 @@ class AuthorisedActionSpec extends SpecBase {
     }
 
     "throw an UnauthorizedException if there is no internal id" in {
-      when(mockAuthConnector.authorise[Option[String]](any(), any())(any(), any())).thenReturn(Future(None))
+      when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
+        .thenReturn(Future(None and Enrolments(Set.empty)))
 
       val result = intercept[UnauthorizedException] {
         await(authorisedAction.invokeBlock(fakeRequest, testAction))
       }
 
       result.message shouldBe "Unable to retrieve internalId"
+    }
+
+    "redirect the user to the already registered page if they have the ECL enrolment" in forAll {
+      (internalId: String, enrolmentsWithEcl: EnrolmentsWithEcl) =>
+        when(
+          mockAuthConnector
+            .authorise(any(), ArgumentMatchers.eq(Retrievals.internalId and Retrievals.allEnrolments))(any(), any())
+        )
+          .thenReturn(Future(Some(internalId) and enrolmentsWithEcl.enrolments))
+
+        val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
+
+        status(result)          shouldBe OK
+        contentAsString(result) shouldBe "Already registered - user already has enrolment"
     }
   }
 

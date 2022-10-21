@@ -114,6 +114,9 @@ abstract class ISpecBase
     }
   }
 
-  def html(result: Future[Result]): String = Jsoup.parse(contentAsString(result)).html()
+  def html(result: Future[Result]): String = {
+    contentType(result) shouldBe Some("text/html")
+    Jsoup.parse(contentAsString(result)).html()
+  }
 
 }

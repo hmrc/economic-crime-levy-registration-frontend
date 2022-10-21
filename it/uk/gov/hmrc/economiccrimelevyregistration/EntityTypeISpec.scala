@@ -3,12 +3,15 @@ package uk.gov.hmrc.economiccrimelevyregistration
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbitrary, random}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class EntityTypeISpec extends ISpecBase {
+class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET /$contextPath/select-entity-type"  should {
+    behave like authorisedActionRoute(routes.EntityTypeController.onPageLoad())
+
     "respond with 200 status and the select entity type HTML view" in {
       stubAuthorised()
 
@@ -25,6 +28,8 @@ class EntityTypeISpec extends ISpecBase {
   }
 
   s"POST /$contextPath/select-entity-type" should {
+    behave like authorisedActionRoute(routes.EntityTypeController.onPageLoad())
+
     "save the selected entity type then redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
       stubAuthorised()
 

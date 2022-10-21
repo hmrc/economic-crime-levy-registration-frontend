@@ -17,7 +17,13 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
 import org.scalacheck.{Arbitrary, Gen}
+import uk.gov.hmrc.auth.core.{Enrolment, Enrolments}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, ScottishLimitedPartnership, ScottishPartnership}
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+
+case class EnrolmentsWithEcl(enrolments: Enrolments)
+
+case class EnrolmentsWithoutEcl(enrolments: Enrolments)
 
 trait EclTestData {
 
@@ -33,6 +39,18 @@ trait EclTestData {
                            )
                          )
     } yield PartnershipType(partnershipType)
+  }
+
+  implicit val arbEnrolmentsWithEcl: Arbitrary[EnrolmentsWithEcl] = Arbitrary {
+    for {
+      enrolments  <- Arbitrary.arbitrary[Enrolments]
+      enrolment   <- Arbitrary.arbitrary[Enrolment]
+      eclEnrolment = enrolment.copy(key = "HMRC-ECL-ORG")
+    } yield EnrolmentsWithEcl(enrolments.copy(enrolments.enrolments + eclEnrolment))
+  }
+
+  implicit val arbEnrolmentsWithoutEcl: Arbitrary[EnrolmentsWithoutEcl] = Arbitrary {
+    Arbitrary.arbitrary[Enrolments].retryUntil(!_.enrolments.exists(_.key == "HMRC-ECL-ORG")).map(EnrolmentsWithoutEcl)
   }
 
 }
