@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models.eacd
+package uk.gov.hmrc.economiccrimelevyregistration.models
 
-object EclEnrolment {
-  val ServiceName   = "HMRC-ECL-ORG"
-  val IdentifierKey = "EtmpRegistrationNumber"
+import play.api.libs.json.{Json, OFormat}
+
+final case class KeyValue(key: String, value: String)
+
+object KeyValue {
+  implicit val format: OFormat[KeyValue] = Json.format[KeyValue]
 }

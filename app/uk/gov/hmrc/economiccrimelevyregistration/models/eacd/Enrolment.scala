@@ -16,7 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models.eacd
 
-object EclEnrolment {
-  val ServiceName   = "HMRC-ECL-ORG"
-  val IdentifierKey = "EtmpRegistrationNumber"
+import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.economiccrimelevyregistration.models.KeyValue
+
+final case class Enrolment(
+  service: String,
+  identifiers: Seq[KeyValue]
+)
+
+object Enrolment {
+  implicit val format: OFormat[Enrolment] = Json.format[Enrolment]
 }

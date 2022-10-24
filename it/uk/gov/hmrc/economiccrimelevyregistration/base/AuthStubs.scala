@@ -53,8 +53,8 @@ trait AuthStubs {
              |{
              |  "internalId": "test-id",
              |  "allEnrolments": [{
-             |    "key":"${EclEnrolment.Key}",
-             |    "identifiers": [{ "key":"${EclEnrolment.Identifier}", "value": "X00000123456789" }],
+             |    "key":"${EclEnrolment.ServiceName}",
+             |    "identifiers": [{ "key":"${EclEnrolment.IdentifierKey}", "value": "X00000123456789" }],
              |    "state": "activated"
              |  }]
              |}

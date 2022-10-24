@@ -17,16 +17,26 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
 import org.scalacheck.{Arbitrary, Gen}
-import uk.gov.hmrc.auth.core.{Enrolment, Enrolments}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, ScottishLimitedPartnership, ScottishPartnership}
+import uk.gov.hmrc.auth.core.{Enrolments, Enrolment => AuthEnrolment}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GeneralPartnership, KeyValue, LimitedLiabilityPartnership, LimitedPartnership, ScottishLimitedPartnership, ScottishPartnership}
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
-import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
+import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
+
+import java.time.Instant
 
 case class EnrolmentsWithEcl(enrolments: Enrolments)
 
 case class EnrolmentsWithoutEcl(enrolments: Enrolments)
 
+case class GroupEnrolmentsResponseWithEcl(groupEnrolmentsResponse: GroupEnrolmentsResponse)
+
+case class GroupEnrolmentsResponseWithoutEcl(groupEnrolmentsResponse: GroupEnrolmentsResponse)
+
 trait EclTestData {
+
+  implicit val arbInstant: Arbitrary[Instant] = Arbitrary {
+    Instant.now()
+  }
 
   implicit val arbPartnershipType: Arbitrary[PartnershipType] = Arbitrary {
     for {
@@ -45,16 +55,40 @@ trait EclTestData {
   implicit val arbEnrolmentsWithEcl: Arbitrary[EnrolmentsWithEcl] = Arbitrary {
     for {
       enrolments  <- Arbitrary.arbitrary[Enrolments]
-      enrolment   <- Arbitrary.arbitrary[Enrolment]
-      eclEnrolment = enrolment.copy(key = EclEnrolment.Key)
+      enrolment   <- Arbitrary.arbitrary[AuthEnrolment]
+      eclEnrolment = enrolment.copy(key = EclEnrolment.ServiceName)
     } yield EnrolmentsWithEcl(enrolments.copy(enrolments.enrolments + eclEnrolment))
   }
 
   implicit val arbEnrolmentsWithoutEcl: Arbitrary[EnrolmentsWithoutEcl] = Arbitrary {
     Arbitrary
       .arbitrary[Enrolments]
-      .retryUntil(!_.enrolments.exists(_.key == EclEnrolment.Key))
+      .retryUntil(!_.enrolments.exists(_.key == EclEnrolment.ServiceName))
       .map(EnrolmentsWithoutEcl)
+  }
+
+  implicit val arbGroupEnrolmentsResponseWithEcl: Arbitrary[GroupEnrolmentsResponseWithEcl] = Arbitrary {
+    for {
+      enrolmentsWithEcl <- Arbitrary.arbitrary[EnrolmentsWithEcl]
+    } yield GroupEnrolmentsResponseWithEcl(
+      GroupEnrolmentsResponse(
+        enrolmentsWithEcl.enrolments.enrolments
+          .map(e => Enrolment(e.key, e.identifiers.map(i => KeyValue(i.key, i.value))))
+          .toSeq
+      )
+    )
+  }
+
+  implicit val arbGroupEnrolmentsResponseWithoutEcl: Arbitrary[GroupEnrolmentsResponseWithoutEcl] = Arbitrary {
+    for {
+      enrolmentsWithoutEcl <- Arbitrary.arbitrary[EnrolmentsWithoutEcl]
+    } yield GroupEnrolmentsResponseWithoutEcl(
+      GroupEnrolmentsResponse(
+        enrolmentsWithoutEcl.enrolments.enrolments
+          .map(e => Enrolment(e.key, e.identifiers.map(i => KeyValue(i.key, i.value))))
+          .toSeq
+      )
+    )
   }
 
 }

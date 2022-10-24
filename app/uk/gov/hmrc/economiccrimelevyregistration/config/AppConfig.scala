@@ -66,4 +66,5 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val partnershipBvEnabled: Boolean        = configuration.get[Boolean]("features.partnershipBvEnabled")
   val soleTraderBvEnabled: Boolean         = configuration.get[Boolean]("features.soleTraderBvEnabled")
 
+  val enrolmentStoreProxyUrl: String = servicesConfig.baseUrl("enrolment-store-proxy")
 }

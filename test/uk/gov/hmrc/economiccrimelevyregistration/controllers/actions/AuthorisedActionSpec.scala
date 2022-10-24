@@ -45,7 +45,7 @@ class AuthorisedActionSpec extends SpecBase {
     Future(Ok("Test"))
   }
 
-  val eclEnrolmentKey                                            = EclEnrolment.Key
+  val eclEnrolmentKey                                            = EclEnrolment.ServiceName
   val expectedRetrievals: Retrieval[Option[String] ~ Enrolments] = Retrievals.internalId and Retrievals.allEnrolments
 
   "invokeBlock" should {
