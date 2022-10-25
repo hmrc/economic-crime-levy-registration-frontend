@@ -40,7 +40,7 @@ class PackageSpec extends SpecBase {
       readOptionOfNotFoundOrNoContent[Foo].read("", "/", HttpResponse(status = NOT_FOUND, body = "")) shouldBe None
     }
 
-    "return the deserialized response body when the HTTP status is 200" in {
+    "return the deserialized response body when the HTTP status is 200 OK" in {
       readOptionOfNotFoundOrNoContent[Foo]
         .read(
           "",
@@ -49,7 +49,7 @@ class PackageSpec extends SpecBase {
         ) shouldBe Some(Foo("bar"))
     }
 
-    "throw an upstream error response when the HTTP status is a different 4XX or 5XX" in forAll(
+    "throw an UpstreamErrorResponse exception when the HTTP status is some other 4XX or 5XX" in forAll(
       Gen.oneOf(INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE, BAD_REQUEST, FORBIDDEN)
     ) { httpStatus =>
       intercept[UpstreamErrorResponse] {
