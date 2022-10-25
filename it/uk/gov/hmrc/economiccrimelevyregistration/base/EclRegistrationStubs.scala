@@ -10,7 +10,7 @@ trait EclRegistrationStubs {
 
   def stubGetRegistration(registration: Registration): StubMapping =
     stub(
-      get(urlEqualTo("/economic-crime-levy-registration/registrations/test-id")),
+      get(urlEqualTo("/economic-crime-levy-registration/registrations/test-internal-id")),
       aResponse()
         .withStatus(200)
         .withBody(Json.toJson(registration).toString())

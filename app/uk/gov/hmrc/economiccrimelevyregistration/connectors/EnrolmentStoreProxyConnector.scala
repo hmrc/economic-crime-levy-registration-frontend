@@ -18,8 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResponse
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,6 +34,6 @@ class EnrolmentStoreProxyConnector @Inject() (appConfig: AppConfig, httpClient: 
   def getEnrolmentsForGroup(groupId: String)(implicit hc: HeaderCarrier): Future[Option[GroupEnrolmentsResponse]] =
     httpClient.GET[Option[GroupEnrolmentsResponse]](
       s"$enrolmentStoreUrl/groups/$groupId/enrolments"
-    )
+    )(readOptionOfNotFoundOrNoContent[GroupEnrolmentsResponse], hc, ec)
 
 }

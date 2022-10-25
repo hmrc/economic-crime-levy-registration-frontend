@@ -23,7 +23,6 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EnrolmentStoreProxyService
@@ -63,10 +62,7 @@ class BaseAuthorisedAction @Inject() (
                 case false => block(AuthorisedRequest(request, internalId))
               }
         }
-    }(hc(request), executionContext) recover {
-      case _: NoActiveSession        =>
-        Redirect(config.signInUrl, Map("continue" -> Seq(s"${config.host}${request.uri}")))
-      case _: AuthorisationException =>
-        Redirect(routes.UnauthorisedController.onPageLoad())
+    }(hc(request), executionContext) recover { case _: NoActiveSession =>
+      Redirect(config.signInUrl, Map("continue" -> Seq(s"${config.host}${request.uri}")))
     }
 }

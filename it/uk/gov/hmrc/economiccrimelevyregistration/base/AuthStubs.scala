@@ -15,7 +15,7 @@ trait AuthStubs {
             s"""
                |{
                |  "authorise": [],
-               |  "retrieve": [ "internalId", "allEnrolments" ]
+               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier" ]
                |}
            """.stripMargin,
             true,
@@ -26,7 +26,8 @@ trait AuthStubs {
         .withStatus(200)
         .withBody(s"""
              |{
-             |  "internalId": "test-id",
+             |  "internalId": "test-internal-id",
+             |  "groupIdentifier": "test-group-id",
              |  "allEnrolments": []
              |}
            """.stripMargin)
@@ -40,7 +41,7 @@ trait AuthStubs {
             s"""
                |{
                |  "authorise": [],
-               |  "retrieve": [ "internalId", "allEnrolments" ]
+               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier" ]
                |}
            """.stripMargin,
             true,
@@ -51,7 +52,8 @@ trait AuthStubs {
         .withStatus(200)
         .withBody(s"""
              |{
-             |  "internalId": "test-id",
+             |  "internalId": "test-internal-id",
+             |  "groupIdentifier": "test-group-id",
              |  "allEnrolments": [{
              |    "key":"${EclEnrolment.ServiceName}",
              |    "identifiers": [{ "key":"${EclEnrolment.IdentifierKey}", "value": "X00000123456789" }],

@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-    layout: templates.Layout
-)
+package uk.gov.hmrc.economiccrimelevyregistration
 
-@()(implicit request: Request[_], messages: Messages)
+import play.api.http.Status.{NOT_FOUND, NO_CONTENT}
+import uk.gov.hmrc.http.{HttpReads, HttpResponse}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
-@layout(
-    pageTitle = title(messages("unauthorised.title")),
-    timeout   = false
-) {
-
-    <h1 class="govuk-heading-xl">@messages("unauthorised.heading")</h1>
-
-    <p class="govuk-body">@messages("unauthorised.guidance")</p>
+package object connectors {
+  def readOptionOfNotFoundOrNoContent[A: HttpReads]: HttpReads[Option[A]] = HttpReads[HttpResponse]
+    .flatMap(_.status match {
+      case NOT_FOUND | NO_CONTENT => HttpReads.pure(None)
+      case _                      =>
+        HttpReads[A].map(Some.apply)
+    })
 }

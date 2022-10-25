@@ -64,7 +64,8 @@ abstract class ISpecBase
     "economic-crime-levy-registration",
     "incorporated-entity-identification-frontend",
     "sole-trader-identification-frontend",
-    "partnership-identification-frontend"
+    "partnership-identification-frontend",
+    "enrolment-store-proxy"
   )
 
   val contextPath: String = "register-for-economic-crime-levy"

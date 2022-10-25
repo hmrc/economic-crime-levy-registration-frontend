@@ -30,6 +30,7 @@ class StartISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the start HTML view" in {
       stubAuthorised()
+      stubNoGroupEnrolment()
 
       val registration = random[Registration]
 
