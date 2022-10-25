@@ -14,6 +14,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the select entity type HTML view" in {
       stubAuthorised()
+      stubNoGroupEnrolment()
 
       val registration = random[Registration]
 
@@ -32,6 +33,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
     "save the selected entity type then redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
       stubAuthorised()
+      stubNoGroupEnrolment()
 
       val registration = random[Registration]
 
@@ -53,6 +55,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
     "save the selected entity type then redirect to the GRS Sole Trader journey when the Sole Trader option is selected" in {
       stubAuthorised()
+      stubNoGroupEnrolment()
 
       val registration = random[Registration]
 
@@ -75,6 +78,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
   "save the selected entity type then redirect to the GRS Partnership journey when the Partnership option is selected" in {
     stubAuthorised()
+    stubNoGroupEnrolment()
 
     val registration = random[Registration]
     val entityType   = random[PartnershipType].entityType

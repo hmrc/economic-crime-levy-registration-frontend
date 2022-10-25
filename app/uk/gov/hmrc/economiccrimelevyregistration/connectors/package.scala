@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models.eacd
+package uk.gov.hmrc.economiccrimelevyregistration
 
-object EclEnrolment {
-  val ServiceName: String   = "HMRC-ECL-ORG"
-  val IdentifierKey: String = "EtmpRegistrationNumber"
+import play.api.http.Status.{NOT_FOUND, NO_CONTENT}
+import uk.gov.hmrc.http.{HttpReads, HttpResponse}
+import uk.gov.hmrc.http.HttpReads.Implicits._
+
+package object connectors {
+  def readOptionOfNotFoundOrNoContent[A: HttpReads]: HttpReads[Option[A]] = HttpReads[HttpResponse]
+    .flatMap(_.status match {
+      case NOT_FOUND | NO_CONTENT => HttpReads.pure(None)
+      case _                      =>
+        HttpReads[A].map(Some.apply)
+    })
 }

@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.http.Status.NO_CONTENT
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.http.{HttpClient, HttpResponse}
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 
 import scala.concurrent.Future
 
@@ -32,29 +32,33 @@ class EclRegistrationConnectorSpec extends SpecBase {
   val eclRegistrationsUrl        = "http://localhost:14001/economic-crime-levy-registration/registrations"
 
   "getRegistration" should {
-    val expectedUrl = s"$eclRegistrationsUrl/$internalId"
 
-    "return a registration when the http client returns a registration" in forAll { registration: Registration =>
-      when(
-        mockHttpClient.GET[Option[Registration]](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
-      )
-        .thenReturn(Future.successful(Some(registration)))
+    "return a registration when the http client returns a registration" in forAll {
+      (internalId: String, registration: Registration) =>
+        val expectedUrl = s"$eclRegistrationsUrl/$internalId"
 
-      val result = await(connector.getRegistration(internalId))
+        when(
+          mockHttpClient.GET[Option[Registration]](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
+        )
+          .thenReturn(Future.successful(Some(registration)))
 
-      result shouldBe Some(registration)
+        val result = await(connector.getRegistration(internalId))
 
-      verify(mockHttpClient, times(1))
-        .GET[Option[Registration]](
-          ArgumentMatchers.eq(expectedUrl),
-          any(),
-          any()
-        )(any(), any(), any())
+        result shouldBe Some(registration)
 
-      reset(mockHttpClient)
+        verify(mockHttpClient, times(1))
+          .GET[Option[Registration]](
+            ArgumentMatchers.eq(expectedUrl),
+            any(),
+            any()
+          )(any(), any(), any())
+
+        reset(mockHttpClient)
     }
 
-    "return none when the http client returns none" in {
+    "return none when the http client returns none" in forAll { internalId: String =>
+      val expectedUrl = s"$eclRegistrationsUrl/$internalId"
+
       when(
         mockHttpClient.GET[Option[Registration]](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
       )
@@ -75,7 +79,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
   }
 
   "deleteRegistration" should {
-    "return unit when the http client successfully returns a http response" in {
+    "return unit when the http client successfully returns a http response" in forAll { internalId: String =>
       val expectedUrl = s"$eclRegistrationsUrl/$internalId"
 
       val response = HttpResponse(NO_CONTENT, "", Map.empty)

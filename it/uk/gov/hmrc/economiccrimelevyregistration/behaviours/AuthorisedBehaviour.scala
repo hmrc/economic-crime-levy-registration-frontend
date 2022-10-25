@@ -10,13 +10,25 @@ trait AuthorisedBehaviour {
   self: ISpecBase =>
 
   def authorisedActionRoute(call: Call): Unit =
-    "go to already registered page if the user has the ECL enrolment" in {
-      stubAuthorisedWithEclEnrolment()
+    "authorisedAction" should {
+      "go to already registered page if the user has the ECL enrolment" in {
+        stubAuthorisedWithEclEnrolment()
 
-      val result: Future[Result] = callRoute(FakeRequest(call))
+        val result: Future[Result] = callRoute(FakeRequest(call))
 
-      status(result)          shouldBe OK
-      contentAsString(result) shouldBe "Already registered - user already has enrolment"
+        status(result)          shouldBe OK
+        contentAsString(result) shouldBe "Already registered - user already has enrolment"
+      }
+
+      "go to the group already registered if the user does not have the ECL enrolment but the group does" in {
+        stubAuthorised()
+        stubWithGroupEclEnrolment()
+
+        val result: Future[Result] = callRoute(FakeRequest(call))
+
+        status(result)          shouldBe OK
+        contentAsString(result) shouldBe "Group already has the enrolment - assign the enrolment to the user"
+      }
     }
 
 }
