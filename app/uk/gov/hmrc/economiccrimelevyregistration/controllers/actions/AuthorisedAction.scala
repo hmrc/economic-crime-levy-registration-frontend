@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
-import uk.gov.hmrc.http.UnauthorizedException
+import uk.gov.hmrc.economiccrimelevyregistration.services.EnrolmentStoreProxyService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,6 +38,7 @@ trait AuthorisedAction
 
 class BaseAuthorisedAction @Inject() (
   override val authConnector: AuthConnector,
+  enrolmentStoreProxyService: EnrolmentStoreProxyService,
   config: AppConfig,
   val parser: BodyParsers.Default
 )(implicit val executionContext: ExecutionContext)
@@ -46,13 +47,22 @@ class BaseAuthorisedAction @Inject() (
     with AuthorisedFunctions {
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
-    authorised().retrieve(internalId and allEnrolments) { case internalIdOpt ~ enrolments =>
-      val internalId                      = internalIdOpt.getOrElse(throw new UnauthorizedException("Unable to retrieve internalId"))
-      val eclEnrolment: Option[Enrolment] = enrolments.enrolments.find(_.key == EclEnrolment.ServiceName)
+    authorised().retrieve(internalId and allEnrolments and groupIdentifier) {
+      case optInternalId ~ enrolments ~ optGroupId =>
+        val internalId                      = optInternalId.getOrElse(throw new IllegalStateException("Unable to retrieve internalId"))
+        val groupId                         = optGroupId.getOrElse(throw new IllegalStateException("Unable to retrieve groupIdentifier"))
+        val eclEnrolment: Option[Enrolment] = enrolments.enrolments.find(_.key == EclEnrolment.ServiceName)
 
-      eclEnrolment.fold(block(AuthorisedRequest(request, internalId)))(_ =>
-        Future.successful(Ok("Already registered - user already has enrolment"))
-      )
+        eclEnrolment match {
+          case Some(_) => Future.successful(Ok("Already registered - user already has enrolment"))
+          case None    =>
+            enrolmentStoreProxyService
+              .groupHasEnrolment(groupId)(hc(request))
+              .flatMap {
+                case true  => Future.successful(Ok("Group already has the enrolment - assign the enrolment to the user"))
+                case false => block(AuthorisedRequest(request, internalId))
+              }
+        }
     }(hc(request), executionContext) recover {
       case _: NoActiveSession        =>
         Redirect(config.signInUrl, Map("continue" -> Seq(s"${config.host}${request.uri}")))
