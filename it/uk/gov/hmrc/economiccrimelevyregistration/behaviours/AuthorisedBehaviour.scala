@@ -29,6 +29,15 @@ trait AuthorisedBehaviour {
         status(result)          shouldBe OK
         contentAsString(result) shouldBe "Group already has the enrolment - assign the enrolment to the user"
       }
+
+      "go to the agent not supported page if the user has an agent affinity group" in {
+        stubAuthorisedWithAgentAffinityGroup()
+
+        val result: Future[Result] = callRoute(FakeRequest(call))
+
+        status(result)          shouldBe OK
+        contentAsString(result) shouldBe "Agent account not supported - must be an organisation or individual"
+      }
     }
 
 }
