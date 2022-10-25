@@ -2,23 +2,24 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.http.Status.{NO_CONTENT, OK}
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 
-trait EnrolmentStoreProxyStubs {
+trait EnrolmentStoreProxyStubs { self: WireMockStubs =>
 
   def stubNoGroupEnrolment(): StubMapping =
     stub(
-      get(urlEqualTo("/enrolment-store/groups/test-group-id/enrolments")),
+      get(urlEqualTo(s"/enrolment-store/groups/$testGroupId/enrolments")),
       aResponse()
-        .withStatus(204)
+        .withStatus(NO_CONTENT)
     )
 
   def stubWithGroupEclEnrolment(): StubMapping =
     stub(
-      get(urlEqualTo("/enrolment-store/groups/test-group-id/enrolments")),
+      get(urlEqualTo(s"/enrolment-store/groups/$testGroupId/enrolments")),
       aResponse()
-        .withStatus(200)
+        .withStatus(OK)
         .withBody(s"""
             |{
             |    "startRecord": 1,
@@ -34,7 +35,7 @@ trait EnrolmentStoreProxyStubs {
             |           "identifiers": [
             |              {
             |                 "key": "EtmpRegistrationNumber",
-            |                 "value": "X00000123456789"
+            |                 "value": "$testEclRegistrationNumber"
             |              }
             |           ]
             |        }

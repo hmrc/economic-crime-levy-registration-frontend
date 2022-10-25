@@ -2,10 +2,11 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.http.Status.{CREATED, OK}
 import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
 
-trait GrsStubs {
+trait GrsStubs { self: WireMockStubs =>
 
   def stubCreateGrsJourney(url: String): StubMapping =
     stub(
@@ -36,7 +37,7 @@ trait GrsStubs {
           )
         ),
       aResponse()
-        .withStatus(201)
+        .withStatus(CREATED)
         .withBody(s"""
              |{
              |    "journeyStartUrl": "test-url"
@@ -48,7 +49,7 @@ trait GrsStubs {
     stub(
       get(urlEqualTo(url)),
       aResponse()
-        .withStatus(200)
+        .withStatus(OK)
         .withBody(Json.toJson(journeyData).toString())
     )
 

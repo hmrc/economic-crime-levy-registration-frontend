@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration
 
 import org.scalacheck.{Arbitrary, Gen}
 import uk.gov.hmrc.auth.core.{Enrolments, Enrolment => AuthEnrolment}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{GeneralPartnership, KeyValue, LimitedLiabilityPartnership, LimitedPartnership, ScottishLimitedPartnership, ScottishPartnership}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
 
@@ -90,5 +90,11 @@ trait EclTestData {
       )
     )
   }
+
+  def alphaNumericString: String = Gen.alphaNumStr.sample.get
+
+  val testInternalId: String            = alphaNumericString
+  val testGroupId: String               = alphaNumericString
+  val testEclRegistrationNumber: String = alphaNumericString
 
 }

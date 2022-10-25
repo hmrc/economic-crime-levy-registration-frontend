@@ -2,17 +2,18 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-trait EclRegistrationStubs {
+trait EclRegistrationStubs { self: WireMockStubs =>
 
   def stubGetRegistration(registration: Registration): StubMapping =
     stub(
-      get(urlEqualTo("/economic-crime-levy-registration/registrations/test-internal-id")),
+      get(urlEqualTo(s"/economic-crime-levy-registration/registrations/$testInternalId")),
       aResponse()
-        .withStatus(200)
+        .withStatus(OK)
         .withBody(Json.toJson(registration).toString())
     )
 
@@ -23,7 +24,7 @@ trait EclRegistrationStubs {
           equalToJson(Json.toJson(registration).toString(), true, true)
         ),
       aResponse()
-        .withStatus(200)
+        .withStatus(OK)
         .withBody(Json.toJson(registration).toString())
     )
 
