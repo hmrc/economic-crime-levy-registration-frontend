@@ -50,7 +50,7 @@ class PackageSpec extends SpecBase {
     }
 
     "throw an UpstreamErrorResponse exception when the HTTP status is some other 4XX or 5XX" in forAll(
-      Gen.oneOf(INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE, BAD_REQUEST, FORBIDDEN)
+      Gen.choose(400, 599).suchThat(_ != 404)
     ) { httpStatus =>
       intercept[UpstreamErrorResponse] {
         readOptionOfNotFoundOrNoContent[Foo]
