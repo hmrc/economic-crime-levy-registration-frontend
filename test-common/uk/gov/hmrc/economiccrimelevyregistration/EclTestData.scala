@@ -72,9 +72,7 @@ trait EclTestData {
       enrolmentsWithEcl <- Arbitrary.arbitrary[EnrolmentsWithEcl]
     } yield GroupEnrolmentsResponseWithEcl(
       GroupEnrolmentsResponse(
-        enrolmentsWithEcl.enrolments.enrolments
-          .map(e => Enrolment(e.key, e.identifiers.map(i => KeyValue(i.key, i.value))))
-          .toSeq
+        authEnrolmentsToEnrolments(enrolmentsWithEcl.enrolments)
       )
     )
   }
@@ -84,12 +82,15 @@ trait EclTestData {
       enrolmentsWithoutEcl <- Arbitrary.arbitrary[EnrolmentsWithoutEcl]
     } yield GroupEnrolmentsResponseWithoutEcl(
       GroupEnrolmentsResponse(
-        enrolmentsWithoutEcl.enrolments.enrolments
-          .map(e => Enrolment(e.key, e.identifiers.map(i => KeyValue(i.key, i.value))))
-          .toSeq
+        authEnrolmentsToEnrolments(enrolmentsWithoutEcl.enrolments)
       )
     )
   }
+
+  private def authEnrolmentsToEnrolments(authEnrolments: Enrolments) =
+    authEnrolments.enrolments
+      .map(e => Enrolment(e.key, e.identifiers.map(i => KeyValue(i.key, i.value))))
+      .toSeq
 
   def alphaNumericString: String = Gen.alphaNumStr.sample.get
 
