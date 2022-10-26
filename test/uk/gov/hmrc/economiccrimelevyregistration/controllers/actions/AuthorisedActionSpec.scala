@@ -195,13 +195,24 @@ class AuthorisedActionSpec extends SpecBase {
 
     "throw an IllegalStateException if there is no affinity group" in {
       when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
-        .thenReturn(Future(Some("") and Enrolments(Set.empty) and Some("") and None and None))
+        .thenReturn(Future(Some("") and Enrolments(Set.empty) and Some("") and None and Some(User)))
 
       val result = intercept[IllegalStateException] {
         await(authorisedAction.invokeBlock(fakeRequest, testAction))
       }
 
       result.getMessage shouldBe "Unable to retrieve affinityGroup"
+    }
+
+    "throw an IllegalStateException if there is no credential role" in {
+      when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
+        .thenReturn(Future(Some("") and Enrolments(Set.empty) and Some("") and Some(Organisation) and None))
+
+      val result = intercept[IllegalStateException] {
+        await(authorisedAction.invokeBlock(fakeRequest, testAction))
+      }
+
+      result.getMessage shouldBe "Unable to retrieve credentialRole"
     }
   }
 
