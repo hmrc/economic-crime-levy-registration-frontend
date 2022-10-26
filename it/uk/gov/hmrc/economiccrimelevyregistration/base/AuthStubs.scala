@@ -16,7 +16,7 @@ trait AuthStubs { self: WireMockStubs =>
             s"""
                |{
                |  "authorise": [],
-               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier" ]
+               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier", "affinityGroup" ]
                |}
            """.stripMargin,
             true,
@@ -29,6 +29,35 @@ trait AuthStubs { self: WireMockStubs =>
              |{
              |  "internalId": "$testInternalId",
              |  "groupIdentifier": "$testGroupId",
+             |  "affinityGroup": "Organisation",
+             |  "allEnrolments": []
+             |}
+           """.stripMargin)
+    )
+
+  def stubAuthorisedWithAgentAffinityGroup(): StubMapping =
+    stub(
+      post(urlEqualTo("/auth/authorise"))
+        .withRequestBody(
+          equalToJson(
+            s"""
+               |{
+               |  "authorise": [],
+               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier", "affinityGroup" ]
+               |}
+           """.stripMargin,
+            true,
+            true
+          )
+        ),
+      aResponse()
+        .withStatus(OK)
+        .withBody(
+          s"""
+             |{
+             |  "internalId": "$testInternalId",
+             |  "groupIdentifier": "$testGroupId",
+             |  "affinityGroup": "Agent",
              |  "allEnrolments": []
              |}
            """.stripMargin)
@@ -42,7 +71,7 @@ trait AuthStubs { self: WireMockStubs =>
             s"""
                |{
                |  "authorise": [],
-               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier" ]
+               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier", "affinityGroup" ]
                |}
            """.stripMargin,
             true,
@@ -55,6 +84,7 @@ trait AuthStubs { self: WireMockStubs =>
              |{
              |  "internalId": "$testInternalId",
              |  "groupIdentifier": "$testGroupId",
+             |  "affinityGroup": "Organisation",
              |  "allEnrolments": [{
              |    "key":"${EclEnrolment.ServiceName}",
              |    "identifiers": [{ "key":"${EclEnrolment.IdentifierKey}", "value": "$testEclRegistrationNumber" }],

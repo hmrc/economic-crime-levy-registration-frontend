@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 import com.google.inject.Inject
 import play.api.mvc.Results._
 import play.api.mvc._
+import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
@@ -46,23 +47,35 @@ class BaseAuthorisedAction @Inject() (
     with AuthorisedFunctions {
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
-    authorised().retrieve(internalId and allEnrolments and groupIdentifier) {
-      case optInternalId ~ enrolments ~ optGroupId =>
-        val internalId                      = optInternalId.getOrElse(throw new IllegalStateException("Unable to retrieve internalId"))
-        val groupId                         = optGroupId.getOrElse(throw new IllegalStateException("Unable to retrieve groupIdentifier"))
+    authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup) {
+      case optInternalId ~ enrolments ~ optGroupId ~ optAffinityGroup =>
+        val internalId: String           = optInternalId.getOrElseFail("Unable to retrieve internalId")
+        val groupId: String              = optGroupId.getOrElseFail("Unable to retrieve groupIdentifier")
+        val affinityGroup: AffinityGroup = optAffinityGroup.getOrElseFail("Unable to retrieve affinityGroup")
+
         val eclEnrolment: Option[Enrolment] = enrolments.enrolments.find(_.key == EclEnrolment.ServiceName)
 
-        eclEnrolment match {
-          case Some(_) => Future.successful(Ok("Already registered - user already has enrolment"))
-          case None    =>
-            enrolmentStoreProxyService
-              .groupHasEnrolment(groupId)(hc(request))
-              .flatMap {
-                case true  => Future.successful(Ok("Group already has the enrolment - assign the enrolment to the user"))
-                case false => block(AuthorisedRequest(request, internalId))
-              }
+        affinityGroup match {
+          case Agent => Future.successful(Ok("Agent account not supported - must be an organisation or individual"))
+          case _     =>
+            eclEnrolment match {
+              case Some(_) => Future.successful(Ok("Already registered - user already has enrolment"))
+              case None    =>
+                enrolmentStoreProxyService
+                  .groupHasEnrolment(groupId)(hc(request))
+                  .flatMap {
+                    case true  =>
+                      Future.successful(Ok("Group already has the enrolment - assign the enrolment to the user"))
+                    case false => block(AuthorisedRequest(request, internalId))
+                  }
+            }
         }
+
     }(hc(request), executionContext) recover { case _: NoActiveSession =>
       Redirect(config.signInUrl, Map("continue" -> Seq(s"${config.host}${request.uri}")))
     }
+
+  implicit class OptionOps[T](o: Option[T]) {
+    def getOrElseFail(failureMessage: String): T = o.getOrElse(throw new IllegalStateException(failureMessage))
+  }
 }
