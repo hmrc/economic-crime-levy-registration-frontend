@@ -47,27 +47,32 @@ class BaseAuthorisedAction @Inject() (
     with AuthorisedFunctions {
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
-    authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup) {
-      case optInternalId ~ enrolments ~ optGroupId ~ optAffinityGroup =>
-        val internalId: String           = optInternalId.getOrElseFail("Unable to retrieve internalId")
-        val groupId: String              = optGroupId.getOrElseFail("Unable to retrieve groupIdentifier")
-        val affinityGroup: AffinityGroup = optAffinityGroup.getOrElseFail("Unable to retrieve affinityGroup")
+    authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup and credentialRole) {
+      case optInternalId ~ enrolments ~ optGroupId ~ optAffinityGroup ~ optCredentialRole =>
+        val internalId: String             = optInternalId.getOrElseFail("Unable to retrieve internalId")
+        val groupId: String                = optGroupId.getOrElseFail("Unable to retrieve groupIdentifier")
+        val affinityGroup: AffinityGroup   = optAffinityGroup.getOrElseFail("Unable to retrieve affinityGroup")
+        val credentialRole: CredentialRole = optCredentialRole.getOrElseFail("Unable to retrieve credentialRole")
 
         val eclEnrolment: Option[Enrolment] = enrolments.enrolments.find(_.key == EclEnrolment.ServiceName)
 
         affinityGroup match {
           case Agent => Future.successful(Ok("Agent account not supported - must be an organisation or individual"))
           case _     =>
-            eclEnrolment match {
-              case Some(_) => Future.successful(Ok("Already registered - user already has enrolment"))
-              case None    =>
-                enrolmentStoreProxyService
-                  .groupHasEnrolment(groupId)(hc(request))
-                  .flatMap {
-                    case true  =>
-                      Future.successful(Ok("Group already has the enrolment - assign the enrolment to the user"))
-                    case false => block(AuthorisedRequest(request, internalId))
-                  }
+            credentialRole match {
+              case Assistant => Future.successful(Ok("User is not an Admin - request an admin to perform registration"))
+              case _         =>
+                eclEnrolment match {
+                  case Some(_) => Future.successful(Ok("Already registered - user already has enrolment"))
+                  case None    =>
+                    enrolmentStoreProxyService
+                      .groupHasEnrolment(groupId)(hc(request))
+                      .flatMap {
+                        case true  =>
+                          Future.successful(Ok("Group already has the enrolment - assign the enrolment to the user"))
+                        case false => block(AuthorisedRequest(request, internalId))
+                      }
+                }
             }
         }
 
