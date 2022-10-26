@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{BodyParsers, Request, Result}
 import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
+import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Organisation}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
@@ -48,15 +48,20 @@ class AuthorisedActionSpec extends SpecBase {
 
   val eclEnrolmentKey: String = EclEnrolment.ServiceName
 
-  val expectedRetrievals: Retrieval[Option[String] ~ Enrolments ~ Option[String] ~ Option[AffinityGroup]] =
-    Retrievals.internalId and Retrievals.allEnrolments and Retrievals.groupIdentifier and Retrievals.affinityGroup
+  val expectedRetrievals
+    : Retrieval[Option[String] ~ Enrolments ~ Option[String] ~ Option[AffinityGroup] ~ Option[CredentialRole]] =
+    Retrievals.internalId and Retrievals.allEnrolments and Retrievals.groupIdentifier and Retrievals.affinityGroup and Retrievals.credentialRole
 
   "invokeBlock" should {
     "execute the block and return the result if authorised" in forAll {
       (internalId: String, enrolmentsWithoutEcl: EnrolmentsWithoutEcl, groupId: String) =>
         when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
           .thenReturn(
-            Future(Some(internalId) and enrolmentsWithoutEcl.enrolments and Some(groupId) and Some(Organisation))
+            Future(
+              Some(internalId) and enrolmentsWithoutEcl.enrolments and Some(groupId) and Some(Organisation) and Some(
+                User
+              )
+            )
           )
 
         when(mockEnrolmentStoreProxyService.groupHasEnrolment(ArgumentMatchers.eq(groupId))(any()))
@@ -87,7 +92,9 @@ class AuthorisedActionSpec extends SpecBase {
             .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
         )
           .thenReturn(
-            Future(Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Organisation))
+            Future(
+              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Organisation) and Some(User)
+            )
           )
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
@@ -107,7 +114,11 @@ class AuthorisedActionSpec extends SpecBase {
             .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
         )
           .thenReturn(
-            Future(Some(internalId) and enrolmentsWithoutEcl.enrolments and Some(groupId) and Some(Organisation))
+            Future(
+              Some(internalId) and enrolmentsWithoutEcl.enrolments and Some(groupId) and Some(Organisation) and Some(
+                User
+              )
+            )
           )
 
         when(mockEnrolmentStoreProxyService.groupHasEnrolment(ArgumentMatchers.eq(groupId))(any()))
@@ -126,7 +137,9 @@ class AuthorisedActionSpec extends SpecBase {
             .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
         )
           .thenReturn(
-            Future(Some(internalId) and enrolmentsWithoutEcl.enrolments and Some(groupId) and Some(Agent))
+            Future(
+              Some(internalId) and enrolmentsWithoutEcl.enrolments and Some(groupId) and Some(Agent) and Some(User)
+            )
           )
 
         when(mockEnrolmentStoreProxyService.groupHasEnrolment(ArgumentMatchers.eq(groupId))(any()))
@@ -138,9 +151,29 @@ class AuthorisedActionSpec extends SpecBase {
         contentAsString(result) shouldBe "Agent account not supported - must be an organisation or individual"
     }
 
+    "redirect the user to the assistant not supported page if they have an assistant credential role" in forAll {
+      (internalId: String, enrolmentsWithEcl: EnrolmentsWithEcl, groupId: String) =>
+        when(
+          mockAuthConnector
+            .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
+        )
+          .thenReturn(
+            Future(
+              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Organisation) and Some(
+                Assistant
+              )
+            )
+          )
+
+        val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
+
+        status(result)          shouldBe OK
+        contentAsString(result) shouldBe "User is not an Admin - request an admin to perform registration"
+    }
+
     "throw an IllegalStateException if there is no internal id" in {
       when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
-        .thenReturn(Future(None and Enrolments(Set.empty) and Some("") and Some(Organisation)))
+        .thenReturn(Future(None and Enrolments(Set.empty) and Some("") and Some(Organisation) and Some(User)))
 
       val result = intercept[IllegalStateException] {
         await(authorisedAction.invokeBlock(fakeRequest, testAction))
@@ -151,7 +184,7 @@ class AuthorisedActionSpec extends SpecBase {
 
     "throw an IllegalStateException if there is no group id" in {
       when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
-        .thenReturn(Future(Some("") and Enrolments(Set.empty) and None and Some(Organisation)))
+        .thenReturn(Future(Some("") and Enrolments(Set.empty) and None and Some(Organisation) and Some(User)))
 
       val result = intercept[IllegalStateException] {
         await(authorisedAction.invokeBlock(fakeRequest, testAction))
@@ -162,7 +195,7 @@ class AuthorisedActionSpec extends SpecBase {
 
     "throw an IllegalStateException if there is no affinity group" in {
       when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
-        .thenReturn(Future(Some("") and Enrolments(Set.empty) and Some("") and None))
+        .thenReturn(Future(Some("") and Enrolments(Set.empty) and Some("") and None and None))
 
       val result = intercept[IllegalStateException] {
         await(authorisedAction.invokeBlock(fakeRequest, testAction))

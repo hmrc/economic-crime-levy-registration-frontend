@@ -16,7 +16,7 @@ trait AuthStubs { self: WireMockStubs =>
             s"""
                |{
                |  "authorise": [],
-               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier", "affinityGroup" ]
+               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier", "affinityGroup", "credentialRole" ]
                |}
            """.stripMargin,
             true,
@@ -30,6 +30,7 @@ trait AuthStubs { self: WireMockStubs =>
              |  "internalId": "$testInternalId",
              |  "groupIdentifier": "$testGroupId",
              |  "affinityGroup": "Organisation",
+             |  "credentialRole": "User",
              |  "allEnrolments": []
              |}
            """.stripMargin)
@@ -43,7 +44,7 @@ trait AuthStubs { self: WireMockStubs =>
             s"""
                |{
                |  "authorise": [],
-               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier", "affinityGroup" ]
+               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier", "affinityGroup", "credentialRole" ]
                |}
            """.stripMargin,
             true,
@@ -58,6 +59,7 @@ trait AuthStubs { self: WireMockStubs =>
              |  "internalId": "$testInternalId",
              |  "groupIdentifier": "$testGroupId",
              |  "affinityGroup": "Agent",
+             |  "credentialRole": "User",
              |  "allEnrolments": []
              |}
            """.stripMargin)
@@ -71,7 +73,7 @@ trait AuthStubs { self: WireMockStubs =>
             s"""
                |{
                |  "authorise": [],
-               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier", "affinityGroup" ]
+               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier", "affinityGroup", "credentialRole" ]
                |}
            """.stripMargin,
             true,
@@ -85,6 +87,7 @@ trait AuthStubs { self: WireMockStubs =>
              |  "internalId": "$testInternalId",
              |  "groupIdentifier": "$testGroupId",
              |  "affinityGroup": "Organisation",
+             |  "credentialRole": "User",
              |  "allEnrolments": [{
              |    "key":"${EclEnrolment.ServiceName}",
              |    "identifiers": [{ "key":"${EclEnrolment.IdentifierKey}", "value": "$testEclRegistrationNumber" }],
@@ -92,6 +95,39 @@ trait AuthStubs { self: WireMockStubs =>
              |  }]
              |}
            """.stripMargin)
+    )
+
+  def stubAuthorisedWithAssistantCredentialRole(): StubMapping =
+    stub(
+      post(urlEqualTo("/auth/authorise"))
+        .withRequestBody(
+          equalToJson(
+            s"""
+               |{
+               |  "authorise": [],
+               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier", "affinityGroup", "credentialRole" ]
+               |}
+         """.stripMargin,
+            true,
+            true
+          )
+        ),
+      aResponse()
+        .withStatus(OK)
+        .withBody(
+          s"""
+             |{
+             |  "internalId": "$testInternalId",
+             |  "groupIdentifier": "$testGroupId",
+             |  "affinityGroup": "Organisation",
+             |  "credentialRole": "Assistant",
+             |  "allEnrolments": [{
+             |    "key":"${EclEnrolment.ServiceName}",
+             |    "identifiers": [{ "key":"${EclEnrolment.IdentifierKey}", "value": "$testEclRegistrationNumber" }],
+             |    "state": "activated"
+             |  }]
+             |}
+         """.stripMargin)
     )
 
 }

@@ -38,6 +38,15 @@ trait AuthorisedBehaviour {
         status(result)          shouldBe OK
         contentAsString(result) shouldBe "Agent account not supported - must be an organisation or individual"
       }
+
+      "go to the assistant not supported page if the user has an assistant credential role" in {
+        stubAuthorisedWithAssistantCredentialRole()
+
+        val result: Future[Result] = callRoute(FakeRequest(call))
+
+        status(result)          shouldBe OK
+        contentAsString(result) shouldBe "User is not an Admin - request an admin to perform registration"
+      }
     }
 
 }
