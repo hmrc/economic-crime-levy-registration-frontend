@@ -34,7 +34,7 @@ trait EnrolmentStoreProxyStubs { self: WireMockStubs =>
             |           "activationDate": "2023-10-13T17:36:00.000Z",
             |           "identifiers": [
             |              {
-            |                 "key": "EtmpRegistrationNumber",
+            |                 "key": "${EclEnrolment.IdentifierKey}",
             |                 "value": "$testEclRegistrationNumber"
             |              }
             |           ]
