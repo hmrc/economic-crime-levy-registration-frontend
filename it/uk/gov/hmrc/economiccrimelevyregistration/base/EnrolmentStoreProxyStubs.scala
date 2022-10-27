@@ -35,7 +35,7 @@ trait EnrolmentStoreProxyStubs { self: WireMockStubs =>
             |           "identifiers": [
             |              {
             |                 "key": "${EclEnrolment.IdentifierKey}",
-            |                 "value": "$testEclRegistrationNumber"
+            |                 "value": "$testEclRegistrationReference"
             |              }
             |           ]
             |        }

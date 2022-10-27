@@ -94,8 +94,8 @@ trait EclTestData {
 
   def alphaNumericString: String = Gen.alphaNumStr.sample.get
 
-  val testInternalId: String            = alphaNumericString
-  val testGroupId: String               = alphaNumericString
-  val testEclRegistrationNumber: String = alphaNumericString
+  val testInternalId: String               = alphaNumericString
+  val testGroupId: String                  = alphaNumericString
+  val testEclRegistrationReference: String = alphaNumericString
 
 }
