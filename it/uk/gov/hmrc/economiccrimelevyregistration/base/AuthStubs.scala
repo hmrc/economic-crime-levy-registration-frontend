@@ -90,7 +90,7 @@ trait AuthStubs { self: WireMockStubs =>
              |  "credentialRole": "User",
              |  "allEnrolments": [{
              |    "key":"${EclEnrolment.ServiceName}",
-             |    "identifiers": [{ "key":"${EclEnrolment.IdentifierKey}", "value": "$testEclRegistrationNumber" }],
+             |    "identifiers": [{ "key":"${EclEnrolment.IdentifierKey}", "value": "$testEclRegistrationReference" }],
              |    "state": "activated"
              |  }]
              |}
@@ -123,7 +123,7 @@ trait AuthStubs { self: WireMockStubs =>
              |  "credentialRole": "Assistant",
              |  "allEnrolments": [{
              |    "key":"${EclEnrolment.ServiceName}",
-             |    "identifiers": [{ "key":"${EclEnrolment.IdentifierKey}", "value": "$testEclRegistrationNumber" }],
+             |    "identifiers": [{ "key":"${EclEnrolment.IdentifierKey}", "value": "$testEclRegistrationReference" }],
              |    "state": "activated"
              |  }]
              |}
