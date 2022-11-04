@@ -34,17 +34,17 @@ class EnrolmentStoreProxyConnectorSpec extends SpecBase {
   "getEnrolmentsForGroup" should {
 
     "return a list of enrolments for the specified group when the http client returns a list of enrolments" in forAll {
-      (groupId: String, groupEnrolments: GroupEnrolmentsResponse) =>
+      (groupId: String, groupEnrolments: Option[GroupEnrolmentsResponse]) =>
         val expectedUrl = s"$enrolmentStoreUrl/groups/$groupId/enrolments"
         when(
           mockHttpClient
             .GET[Option[GroupEnrolmentsResponse]](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
         )
-          .thenReturn(Future.successful(Some(groupEnrolments)))
+          .thenReturn(Future.successful(groupEnrolments))
 
         val result = await(connector.getEnrolmentsForGroup(groupId))
 
-        result shouldBe Some(groupEnrolments)
+        result shouldBe groupEnrolments
 
         verify(mockHttpClient, times(1))
           .GET[Option[GroupEnrolmentsResponse]](
