@@ -51,7 +51,8 @@ class StubPartnershipIdentificationFrontendConnector @Inject() (
     identifiersMatch: Boolean,
     registrationStatus: String,
     verificationStatus: Option[String] = None,
-    entityType: EntityType
+    entityType: EntityType,
+    businessPartnerId: String
   ): Future[PartnershipEntityJourneyData] =
     Future.successful(
       PartnershipEntityJourneyData(
@@ -64,7 +65,7 @@ class StubPartnershipIdentificationFrontendConnector @Inject() (
         postcode = Some("AA11AA"),
         identifiersMatch = identifiersMatch,
         businessVerification = verificationStatus.map(BusinessVerificationResult(_)),
-        registration = registrationResult(registrationStatus)
+        registration = registrationResult(registrationStatus, businessPartnerId)
       )
     )
 }

@@ -42,9 +42,16 @@
 
         @govukInput(
             InputViewModel(
-                field = form("value"),
+                field = form("journeyId"),
                 label = LabelViewModel(messages("Enter a journey ID"))
             ).withHint(Hint(content = Text("Use the default '0' for successful registration and verification")))
+        )
+
+        @govukInput(
+            InputViewModel(
+                field = form("businessPartnerId"),
+                label = LabelViewModel(messages("Enter a business partner ID"))
+            ).withHint(Hint(content = Text("This will be ignored if you have specified a scenario which does not return a business partner ID")))
         )
 
         @govukButton(

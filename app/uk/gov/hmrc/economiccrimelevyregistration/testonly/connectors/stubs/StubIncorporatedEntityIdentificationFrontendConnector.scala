@@ -49,7 +49,8 @@ class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
     identifiersMatch: Boolean,
     registrationStatus: String,
     verificationStatus: Option[String] = None,
-    entityType: EntityType
+    entityType: EntityType,
+    businessPartnerId: String
   ): Future[IncorporatedEntityJourneyData] =
     Future.successful(
       IncorporatedEntityJourneyData(
@@ -57,7 +58,7 @@ class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
         ctutr = "1234567890",
         identifiersMatch = identifiersMatch,
         businessVerification = verificationStatus.map(BusinessVerificationResult(_)),
-        registration = registrationResult(registrationStatus)
+        registration = registrationResult(registrationStatus, businessPartnerId)
       )
     )
 }

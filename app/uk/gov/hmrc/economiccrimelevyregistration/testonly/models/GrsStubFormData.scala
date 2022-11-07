@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.testonly.forms
+package uk.gov.hmrc.economiccrimelevyregistration.testonly.models
 
-import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-
-class JourneyIdFormProvider extends Mappings {
-
-  def apply(): Form[String] =
-    Form(
-      "value" -> text()
-    )
-}
+case class GrsStubFormData(
+  journeyId: String,
+  businessPartnerId: String
+)
