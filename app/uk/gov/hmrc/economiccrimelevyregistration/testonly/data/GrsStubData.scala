@@ -29,11 +29,12 @@ trait GrsStubData[T] {
     identifiersMatch: Boolean,
     registrationStatus: String,
     verificationStatus: Option[String] = None,
-    entityType: EntityType
+    entityType: EntityType,
+    businessPartnerId: String
   ): Future[T]
 
   def handleJourneyId(journeyId: String): Future[T] = {
-    val (jId, entityType): (String, EntityType) = parseJourneyId(journeyId)
+    val (jId, entityType, businessPartnerId): (String, EntityType, String) = parseJourneyId(journeyId)
 
     jId match {
       case "1" =>
@@ -41,46 +42,53 @@ trait GrsStubData[T] {
           identifiersMatch = true,
           registrationStatus = "REGISTRATION_NOT_CALLED",
           verificationStatus = Some("FAIL"),
-          entityType = entityType
+          entityType = entityType,
+          businessPartnerId = businessPartnerId
         )
       case "2" =>
         buildJourneyData(
           identifiersMatch = false,
           registrationStatus = "REGISTRATION_NOT_CALLED",
           verificationStatus = Some("UNCHALLENGED"),
-          entityType = entityType
+          entityType = entityType,
+          businessPartnerId = businessPartnerId
         )
       case "3" =>
         buildJourneyData(
           identifiersMatch = true,
           registrationStatus = "REGISTRATION_FAILED",
           verificationStatus = Some("PASS"),
-          entityType = entityType
+          entityType = entityType,
+          businessPartnerId = businessPartnerId
         )
       case "4" =>
         buildJourneyData(
           identifiersMatch = true,
           registrationStatus = "REGISTERED",
-          entityType = entityType
+          entityType = entityType,
+          businessPartnerId = businessPartnerId
         )
       case "5" =>
         buildJourneyData(
           identifiersMatch = false,
           registrationStatus = "REGISTRATION_NOT_CALLED",
-          entityType = entityType
+          entityType = entityType,
+          businessPartnerId = businessPartnerId
         )
       case "6" =>
         buildJourneyData(
           identifiersMatch = true,
           registrationStatus = "REGISTRATION_FAILED",
-          entityType = entityType
+          entityType = entityType,
+          businessPartnerId = businessPartnerId
         )
       case _   =>
         buildJourneyData(
           identifiersMatch = true,
           registrationStatus = "REGISTERED",
           verificationStatus = Some("PASS"),
-          entityType = entityType
+          entityType = entityType,
+          businessPartnerId = businessPartnerId
         )
 
     }
@@ -103,9 +111,9 @@ trait GrsStubData[T] {
     )
   )
 
-  private val registered = GrsRegistrationResult(
+  private def registered(businessPartnerId: String) = GrsRegistrationResult(
     registrationStatus = "REGISTERED",
-    registeredBusinessPartnerId = Some("X00000123456789"),
+    registeredBusinessPartnerId = Some(businessPartnerId),
     failures = None
   )
 
@@ -128,16 +136,16 @@ trait GrsStubData[T] {
     )
   )
 
-  def registrationResult(registrationStatus: String): GrsRegistrationResult =
+  def registrationResult(registrationStatus: String, businessPartnerId: String): GrsRegistrationResult =
     registrationStatus match {
-      case "REGISTERED"              => registered
+      case "REGISTERED"              => registered(businessPartnerId)
       case "REGISTRATION_NOT_CALLED" => registrationNotCalled
       case "REGISTRATION_FAILED"     => registrationFailed
     }
 
-  def parseJourneyId(journeyId: String): (String, EntityType) =
+  def parseJourneyId(journeyId: String): (String, EntityType, String) =
     journeyId.split("-").toList match {
-      case List(a, b) => (a, EntityType.enumerable.value(b).get)
-      case _          => throw new IllegalStateException("Invalid journeyId")
+      case List(a, b, c) => (a, EntityType.enumerable.value(b).get, c)
+      case _             => throw new IllegalStateException("Invalid journeyId")
     }
 }

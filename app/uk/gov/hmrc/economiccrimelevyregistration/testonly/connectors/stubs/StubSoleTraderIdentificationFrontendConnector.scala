@@ -51,7 +51,8 @@ class StubSoleTraderIdentificationFrontendConnector @Inject() (
     identifiersMatch: Boolean,
     registrationStatus: String,
     verificationStatus: Option[String] = None,
-    entityType: EntityType
+    entityType: EntityType,
+    businessPartnerId: String
   ): Future[SoleTraderEntityJourneyData] =
     Future.successful(
       SoleTraderEntityJourneyData(
@@ -64,7 +65,7 @@ class StubSoleTraderIdentificationFrontendConnector @Inject() (
         sautr = Some("1234567890"),
         identifiersMatch = identifiersMatch,
         businessVerification = verificationStatus.map(BusinessVerificationResult(_)),
-        registration = registrationResult(registrationStatus)
+        registration = registrationResult(registrationStatus, businessPartnerId)
       )
     )
 }
