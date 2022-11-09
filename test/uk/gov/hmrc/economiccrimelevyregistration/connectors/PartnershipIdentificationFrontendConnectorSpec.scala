@@ -19,7 +19,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.scalacheck.Gen
 import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
@@ -87,14 +86,12 @@ class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
         reset(mockHttpClient)
     }
 
-    "throw an IllegalArgumentException if an entity type that is not a partnership is passed through" in forAll(
-      Gen.oneOf(Seq(UkLimitedCompany))
-    ) { invalidPartnershipType =>
+    "throw an IllegalArgumentException if an entity type that is not a partnership is passed through" in {
       val result = intercept[IllegalArgumentException] {
-        await(connector.createPartnershipJourney(invalidPartnershipType))
+        await(connector.createPartnershipJourney(UkLimitedCompany))
       }
 
-      result.getMessage shouldBe s"$invalidPartnershipType is not a valid partnership type"
+      result.getMessage shouldBe "UkLimitedCompany is not a valid partnership type"
     }
   }
 
