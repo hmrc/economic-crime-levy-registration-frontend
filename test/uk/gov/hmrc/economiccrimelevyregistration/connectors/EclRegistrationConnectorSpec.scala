@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.http.Status.NO_CONTENT
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclSubscriptionStatus, Registration}
 import uk.gov.hmrc.http.{HttpClient, HttpResponse}
 
 import scala.concurrent.Future
@@ -117,6 +117,31 @@ class EclRegistrationConnectorSpec extends SpecBase {
         .PUT[Registration, Registration](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any(), any())
 
       reset(mockHttpClient)
+    }
+  }
+
+  "getSubscriptionStatus" should {
+    "return an EclSubscriptionStatus when the http client returns an EclSubscriptionStatus" in forAll {
+      (businessPartnerId: String, eclSubscriptionStatus: EclSubscriptionStatus) =>
+        val expectedUrl = s"$eclRegistrationsUrl/subscription-status/$businessPartnerId"
+
+        when(
+          mockHttpClient.GET[EclSubscriptionStatus](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
+        )
+          .thenReturn(Future.successful(eclSubscriptionStatus))
+
+        val result = await(connector.getSubscriptionStatus(businessPartnerId))
+
+        result shouldBe eclSubscriptionStatus
+
+        verify(mockHttpClient, times(1))
+          .GET[EclSubscriptionStatus](
+            ArgumentMatchers.eq(expectedUrl),
+            any(),
+            any()
+          )(any(), any(), any())
+
+        reset(mockHttpClient)
     }
   }
 }

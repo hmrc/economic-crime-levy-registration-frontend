@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclSubscriptionStatus, Registration}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
@@ -48,4 +48,8 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
       )
       .map(_ => ())
 
+  def getSubscriptionStatus(businessPartnerId: String)(implicit hc: HeaderCarrier): Future[EclSubscriptionStatus] =
+    httpClient.GET[EclSubscriptionStatus](
+      s"$eclRegistrationsUrl/subscription-status/$businessPartnerId"
+    )
 }
