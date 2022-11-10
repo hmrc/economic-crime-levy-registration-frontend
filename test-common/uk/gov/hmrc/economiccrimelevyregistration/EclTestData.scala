@@ -21,6 +21,7 @@ import uk.gov.hmrc.auth.core.{Enrolments, Enrolment => AuthEnrolment}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, GrsRegistrationResult, IncorporatedEntityJourneyData}
 
 import java.time.Instant
 
@@ -31,6 +32,10 @@ case class EnrolmentsWithoutEcl(enrolments: Enrolments)
 case class GroupEnrolmentsResponseWithEcl(groupEnrolmentsResponse: GroupEnrolmentsResponse)
 
 case class GroupEnrolmentsResponseWithoutEcl(groupEnrolmentsResponse: GroupEnrolmentsResponse)
+
+case class IncorporatedEntityJourneyDataWithSuccessfulRegistration(
+  incorporatedEntityJourneyData: IncorporatedEntityJourneyData
+)
 
 trait EclTestData {
 
@@ -86,6 +91,14 @@ trait EclTestData {
       )
     )
   }
+
+  def successfulGrsRegistrationResult(businessPartnerId: String): GrsRegistrationResult =
+    GrsRegistrationResult("SUCCESSFUL", registeredBusinessPartnerId = Some(businessPartnerId), None)
+
+  val failedRegistrationResult: GrsRegistrationResult =
+    GrsRegistrationResult("REGISTRATION_FAILED", None, None)
+
+  val failedBvResult: Option[BusinessVerificationResult] = Some(BusinessVerificationResult("FAIL"))
 
   private def authEnrolmentsToEnrolments(authEnrolments: Enrolments) =
     authEnrolments.enrolments

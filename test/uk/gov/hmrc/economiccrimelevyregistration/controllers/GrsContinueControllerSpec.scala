@@ -25,8 +25,8 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrader, UkLimitedCompany}
 
 import scala.concurrent.Future
 
@@ -53,22 +53,39 @@ class GrsContinueControllerSpec extends SpecBase {
       mockEclRegistrationConnector
     )
   }
-  "continue" should {
 
-    "retrieve the incorporated entity GRS journey data and display the GRS result" in forAll {
-      (journeyId: String, registration: Registration, incorporatedEntityJourneyData: IncorporatedEntityJourneyData) =>
+  "continue" should {
+    "retrieve the incorporated entity GRS journey data and continue if registration was successful and the business partner is not already subscribed to ECL" in forAll {
+      (
+        journeyId: String,
+        registration: Registration,
+        incorporatedEntityJourneyData: IncorporatedEntityJourneyData,
+        businessPartnerId: String
+      ) =>
         new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+          val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
+            incorporatedEntityJourneyData.copy(
+              identifiersMatch = true,
+              registration = successfulGrsRegistrationResult(businessPartnerId),
+              businessVerification = None
+            )
+
           when(
             mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
           )
-            .thenReturn(Future.successful(incorporatedEntityJourneyData))
+            .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
 
           val updatedRegistration: Registration = registration.copy(
             entityType = Some(UkLimitedCompany),
-            incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData),
+            incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
             soleTraderEntityJourneyData = None,
             partnershipEntityJourneyData = None
           )
+
+          when(
+            mockEclRegistrationConnector.getSubscriptionStatus(ArgumentMatchers.eq(businessPartnerId))(any())
+          ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
+
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
@@ -76,7 +93,155 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsJson(result) shouldBe Json.toJson(incorporatedEntityJourneyData)
+          contentAsString(result) shouldBe "Success - you can continue registering for ECL"
+        }
+    }
+
+    "retrieve the incorporated entity GRS journey data and display the BV failed result if the business verification status is FAIL" in forAll {
+      (
+        journeyId: String,
+        registration: Registration,
+        incorporatedEntityJourneyData: IncorporatedEntityJourneyData
+      ) =>
+        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+          val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
+            incorporatedEntityJourneyData.copy(identifiersMatch = true, businessVerification = failedBvResult)
+
+          when(
+            mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
+
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(UkLimitedCompany),
+            incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = None
+          )
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+
+          status(result) shouldBe OK
+
+          contentAsString(result) shouldBe "Failed business verification"
+        }
+    }
+
+    "retrieve the incorporated entity GRS journey data and display the registration failed result if the registration status is REGISTRATION_FAILED" in forAll {
+      (
+        journeyId: String,
+        registration: Registration,
+        incorporatedEntityJourneyData: IncorporatedEntityJourneyData
+      ) =>
+        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+          val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
+            incorporatedEntityJourneyData.copy(
+              identifiersMatch = true,
+              registration = failedRegistrationResult,
+              businessVerification = None
+            )
+
+          when(
+            mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
+
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(UkLimitedCompany),
+            incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = None
+          )
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+
+          status(result) shouldBe OK
+
+          contentAsString(result) shouldBe "Registration failed"
+        }
+    }
+
+    "retrieve the incorporated entity GRS journey data and display the matching failed result if identifiers match is false" in forAll {
+      (
+        journeyId: String,
+        registration: Registration,
+        incorporatedEntityJourneyData: IncorporatedEntityJourneyData
+      ) =>
+        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+          val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
+            incorporatedEntityJourneyData.copy(identifiersMatch = false)
+
+          when(
+            mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
+
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(UkLimitedCompany),
+            incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = None
+          )
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+
+          status(result) shouldBe OK
+
+          contentAsString(result) shouldBe "Identifiers do not match"
+        }
+    }
+
+    "retrieve the incorporated entity GRS journey data and display the already subscribed result if the business partner is already subscribed to ECL" in forAll {
+      (
+        journeyId: String,
+        registration: Registration,
+        incorporatedEntityJourneyData: IncorporatedEntityJourneyData,
+        businessPartnerId: String,
+        eclRegistrationReference: String
+      ) =>
+        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+          val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
+            incorporatedEntityJourneyData.copy(
+              identifiersMatch = true,
+              registration = successfulGrsRegistrationResult(businessPartnerId),
+              businessVerification = None
+            )
+
+          when(
+            mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
+
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(UkLimitedCompany),
+            incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = None
+          )
+
+          when(
+            mockEclRegistrationConnector.getSubscriptionStatus(ArgumentMatchers.eq(businessPartnerId))(any())
+          ).thenReturn(Future.successful(EclSubscriptionStatus(Subscribed(eclRegistrationReference))))
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+
+          status(result) shouldBe OK
+
+          contentAsString(
+            result
+          ) shouldBe s"Business is already subscribed to ECL with registration reference $eclRegistrationReference"
         }
     }
 
