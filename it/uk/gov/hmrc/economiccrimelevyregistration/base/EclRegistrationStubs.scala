@@ -28,4 +28,15 @@ trait EclRegistrationStubs { self: WireMockStubs =>
         .withBody(Json.toJson(registration).toString())
     )
 
+  def stubGetSubscriptionStatus(businessPartnerId: String): StubMapping =
+    stub(
+      get(urlEqualTo(s"/economic-crime-levy-registration/subscription-status/$businessPartnerId")),
+      aResponse()
+        .withStatus(OK)
+        .withBody(s"""
+             |{
+             |  "subscriptionStatus": "NotSubscribed"
+             |}
+           """.stripMargin)
+    )
 }

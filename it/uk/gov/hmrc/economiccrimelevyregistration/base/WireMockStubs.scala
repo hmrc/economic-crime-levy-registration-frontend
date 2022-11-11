@@ -7,4 +7,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 
-trait WireMockStubs extends EclTestData with AuthStubs with GrsStubs with EclRegistrationStubs with EnrolmentStoreProxyStubs
+trait WireMockStubs
+    extends EclTestData
+    with AuthStubs
+    with GrsStubs
+    with EclRegistrationStubs
+    with EnrolmentStoreProxyStubs

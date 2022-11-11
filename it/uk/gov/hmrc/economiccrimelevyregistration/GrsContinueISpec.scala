@@ -1,7 +1,6 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbitrary, random}
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -11,12 +10,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, SoleTrade
 
 class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
-  val journeyId: String = "test-journey-id"
+  val journeyId: String         = "test-journey-id"
+  val businessPartnerId: String = "test-business-partner-id"
 
   s"GET /$contextPath/grs-continue" should {
     behave like authorisedActionRoute(routes.GrsContinueController.continue(journeyId))
 
-    "retrieve the incorporated entity GRS journey data, update the registration with the GRS journey data and (display the GRS journey data)" in {
+    "retrieve the incorporated entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
       stubAuthorised()
       stubNoGroupEnrolment()
 
@@ -33,25 +33,32 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       val incorporatedEntityJourneyData = random[IncorporatedEntityJourneyData]
 
+      val updatedIncorporatedEntityJourneyData = incorporatedEntityJourneyData.copy(
+        identifiersMatch = true,
+        registration = successfulGrsRegistrationResult(businessPartnerId),
+        businessVerification = None
+      )
+
       val updatedRegistration = registration.copy(
-        incorporatedEntityJourneyData = Some(incorporatedEntityJourneyData)
+        incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData)
       )
 
       stubGetGrsJourneyData(
         s"/incorporated-entity-identification/api/journey/$journeyId",
-        incorporatedEntityJourneyData
+        updatedIncorporatedEntityJourneyData
       )
 
       stubUpsertRegistration(updatedRegistration)
+      stubGetSubscriptionStatus(updatedIncorporatedEntityJourneyData.registration.registeredBusinessPartnerId.get)
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(journeyId)))
 
       status(result) shouldBe OK
 
-      contentAsJson(result) shouldBe Json.toJson(incorporatedEntityJourneyData)
+      contentAsString(result) shouldBe "Success - you can continue registering for ECL"
     }
 
-    "retrieve the sole trader entity GRS journey data, update the registration with the GRS journey data and (display the GRS journey data)" in {
+    "retrieve the sole trader entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
       stubAuthorised()
       stubNoGroupEnrolment()
 
@@ -68,22 +75,29 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       val soleTraderEntityJourneyData = random[SoleTraderEntityJourneyData]
 
-      val updatedRegistration = registration.copy(
-        soleTraderEntityJourneyData = Some(soleTraderEntityJourneyData)
+      val updatedSoleTraderEntityJourneyData = soleTraderEntityJourneyData.copy(
+        identifiersMatch = true,
+        registration = successfulGrsRegistrationResult(businessPartnerId),
+        businessVerification = None
       )
 
-      stubGetGrsJourneyData(s"/sole-trader-identification/api/journey/$journeyId", soleTraderEntityJourneyData)
+      val updatedRegistration = registration.copy(
+        soleTraderEntityJourneyData = Some(updatedSoleTraderEntityJourneyData)
+      )
+
+      stubGetGrsJourneyData(s"/sole-trader-identification/api/journey/$journeyId", updatedSoleTraderEntityJourneyData)
 
       stubUpsertRegistration(updatedRegistration)
+      stubGetSubscriptionStatus(updatedSoleTraderEntityJourneyData.registration.registeredBusinessPartnerId.get)
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(journeyId)))
 
       status(result) shouldBe OK
 
-      contentAsJson(result) shouldBe Json.toJson(soleTraderEntityJourneyData)
+      contentAsString(result) shouldBe "Success - you can continue registering for ECL"
     }
 
-    "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and (display the GRS journey data)" in {
+    "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
       stubAuthorised()
       stubNoGroupEnrolment()
 
@@ -101,19 +115,26 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       val partnershipEntityJourneyData = random[PartnershipEntityJourneyData]
 
-      val updatedRegistration = registration.copy(
-        partnershipEntityJourneyData = Some(partnershipEntityJourneyData)
+      val updatedPartnershipEntityJourneyData = partnershipEntityJourneyData.copy(
+        identifiersMatch = true,
+        registration = successfulGrsRegistrationResult(businessPartnerId),
+        businessVerification = None
       )
 
-      stubGetGrsJourneyData(s"/partnership-identification/api/journey/$journeyId", partnershipEntityJourneyData)
+      val updatedRegistration = registration.copy(
+        partnershipEntityJourneyData = Some(updatedPartnershipEntityJourneyData)
+      )
+
+      stubGetGrsJourneyData(s"/partnership-identification/api/journey/$journeyId", updatedPartnershipEntityJourneyData)
 
       stubUpsertRegistration(updatedRegistration)
+      stubGetSubscriptionStatus(updatedPartnershipEntityJourneyData.registration.registeredBusinessPartnerId.get)
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(journeyId)))
 
       status(result) shouldBe OK
 
-      contentAsJson(result) shouldBe Json.toJson(partnershipEntityJourneyData)
+      contentAsString(result) shouldBe "Success - you can continue registering for ECL"
     }
   }
 
