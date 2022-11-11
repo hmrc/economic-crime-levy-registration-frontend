@@ -53,14 +53,14 @@ class GrsContinueController @Inject() (
         case Some(SoleTrader) =>
           soleTraderIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(soleTraderEntityJourneyData = Some(jd))
-              .map(_ => Ok(Json.toJson(jd)))
+              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration))
           }
 
         case Some(GeneralPartnership) | Some(ScottishPartnership) | Some(LimitedPartnership) |
             Some(ScottishLimitedPartnership) | Some(LimitedLiabilityPartnership) =>
           partnershipIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(partnershipEntityJourneyData = Some(jd))
-              .map(_ => Ok(Json.toJson(jd)))
+              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration))
           }
 
         case None => throw new IllegalStateException("No entity type found in registration data")
