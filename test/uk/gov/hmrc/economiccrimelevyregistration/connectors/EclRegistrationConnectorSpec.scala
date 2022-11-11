@@ -29,13 +29,13 @@ import scala.concurrent.Future
 class EclRegistrationConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
   val connector                  = new EclRegistrationConnector(appConfig, mockHttpClient)
-  val eclRegistrationsUrl        = "http://localhost:14001/economic-crime-levy-registration/registrations"
+  val eclRegistrationUrl         = "http://localhost:14001/economic-crime-levy-registration"
 
   "getRegistration" should {
 
     "return a registration when the http client returns a registration" in forAll {
       (internalId: String, registration: Registration) =>
-        val expectedUrl = s"$eclRegistrationsUrl/$internalId"
+        val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId"
 
         when(
           mockHttpClient.GET[Option[Registration]](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
@@ -57,7 +57,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
     }
 
     "return none when the http client returns none" in forAll { internalId: String =>
-      val expectedUrl = s"$eclRegistrationsUrl/$internalId"
+      val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId"
 
       when(
         mockHttpClient.GET[Option[Registration]](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
@@ -80,7 +80,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
   "deleteRegistration" should {
     "return unit when the http client successfully returns a http response" in forAll { internalId: String =>
-      val expectedUrl = s"$eclRegistrationsUrl/$internalId"
+      val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId"
 
       val response = HttpResponse(NO_CONTENT, "", Map.empty)
 
@@ -102,7 +102,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
   "upsertRegistration" should {
     "return the new or updated registration" in forAll { registration: Registration =>
-      val expectedUrl = eclRegistrationsUrl
+      val expectedUrl = s"$eclRegistrationUrl/registrations"
 
       when(
         mockHttpClient
@@ -123,7 +123,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
   "getSubscriptionStatus" should {
     "return an EclSubscriptionStatus when the http client returns an EclSubscriptionStatus" in forAll {
       (businessPartnerId: String, eclSubscriptionStatus: EclSubscriptionStatus) =>
-        val expectedUrl = s"$eclRegistrationsUrl/subscription-status/$businessPartnerId"
+        val expectedUrl = s"$eclRegistrationUrl/subscription-status/$businessPartnerId"
 
         when(
           mockHttpClient.GET[EclSubscriptionStatus](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
