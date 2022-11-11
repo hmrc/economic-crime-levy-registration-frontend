@@ -27,29 +27,29 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit ec: ExecutionContext) {
 
-  private val eclRegistrationsUrl: String =
-    s"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration/registrations"
+  private val eclRegistrationUrl: String =
+    s"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
 
   def getRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Option[Registration]] =
     httpClient.GET[Option[Registration]](
-      s"$eclRegistrationsUrl/$internalId"
+      s"$eclRegistrationUrl/registrations/$internalId"
     )
 
   def upsertRegistration(registration: Registration)(implicit hc: HeaderCarrier): Future[Registration] =
     httpClient.PUT[Registration, Registration](
-      eclRegistrationsUrl,
+      s"$eclRegistrationUrl/registrations",
       registration
     )
 
   def deleteRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
     httpClient
       .DELETE[HttpResponse](
-        s"$eclRegistrationsUrl/$internalId"
+        s"$eclRegistrationUrl/registrations/$internalId"
       )
       .map(_ => ())
 
   def getSubscriptionStatus(businessPartnerId: String)(implicit hc: HeaderCarrier): Future[EclSubscriptionStatus] =
     httpClient.GET[EclSubscriptionStatus](
-      s"$eclRegistrationsUrl/subscription-status/$businessPartnerId"
+      s"$eclRegistrationUrl/subscription-status/$businessPartnerId"
     )
 }
