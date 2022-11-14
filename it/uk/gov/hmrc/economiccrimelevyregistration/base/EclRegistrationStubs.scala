@@ -5,7 +5,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclSubscriptionStatus, Registration}
 
 trait EclRegistrationStubs { self: WireMockStubs =>
 
@@ -28,15 +28,11 @@ trait EclRegistrationStubs { self: WireMockStubs =>
         .withBody(Json.toJson(registration).toString())
     )
 
-  def stubGetSubscriptionStatus(businessPartnerId: String): StubMapping =
+  def stubGetSubscriptionStatus(businessPartnerId: String, eclSubscriptionStatus: EclSubscriptionStatus): StubMapping =
     stub(
       get(urlEqualTo(s"/economic-crime-levy-registration/subscription-status/$businessPartnerId")),
       aResponse()
         .withStatus(OK)
-        .withBody(s"""
-             |{
-             |  "subscriptionStatus": "NotSubscribed"
-             |}
-           """.stripMargin)
+        .withBody(Json.toJson(eclSubscriptionStatus).toString())
     )
 }
