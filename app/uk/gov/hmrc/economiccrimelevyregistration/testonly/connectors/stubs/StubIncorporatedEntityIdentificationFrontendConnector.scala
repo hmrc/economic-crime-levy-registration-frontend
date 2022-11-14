@@ -20,7 +20,7 @@ import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.IncorporatedEntityIdentificationFrontendConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, GrsCreateJourneyResponse, IncorporatedEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, GrsCreateJourneyResponse, IncorporatedEntityJourneyData, RegistrationStatus, VerificationStatus}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -47,8 +47,8 @@ class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
 
   override def buildJourneyData(
     identifiersMatch: Boolean,
-    registrationStatus: String,
-    verificationStatus: Option[String] = None,
+    registrationStatus: RegistrationStatus,
+    verificationStatus: Option[VerificationStatus] = None,
     entityType: EntityType,
     businessPartnerId: String
   ): Future[IncorporatedEntityJourneyData] =

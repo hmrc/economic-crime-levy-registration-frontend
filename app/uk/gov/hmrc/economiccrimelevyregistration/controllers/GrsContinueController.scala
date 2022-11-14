@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -46,20 +46,20 @@ class GrsContinueController @Inject() (
         case Some(UkLimitedCompany) =>
           incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(incorporatedEntityJourneyData = Some(jd))
-              .map(_ => Ok(Json.toJson(jd)))
+              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration))
           }
 
         case Some(SoleTrader) =>
           soleTraderIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(soleTraderEntityJourneyData = Some(jd))
-              .map(_ => Ok(Json.toJson(jd)))
+              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration))
           }
 
         case Some(GeneralPartnership) | Some(ScottishPartnership) | Some(LimitedPartnership) |
             Some(ScottishLimitedPartnership) | Some(LimitedLiabilityPartnership) =>
           partnershipIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(partnershipEntityJourneyData = Some(jd))
-              .map(_ => Ok(Json.toJson(jd)))
+              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration))
           }
 
         case None => throw new IllegalStateException("No entity type found in registration data")
@@ -78,4 +78,26 @@ class GrsContinueController @Inject() (
         partnershipEntityJourneyData = partnershipEntityJourneyData
       )
     )
+
+  private def handleGrsAndBvResult(
+    identifiersMatch: Boolean,
+    bvResult: Option[BusinessVerificationResult],
+    grsResult: GrsRegistrationResult
+  )(implicit hc: HeaderCarrier): Future[Result] =
+    (identifiersMatch, bvResult, grsResult.registrationStatus, grsResult.registeredBusinessPartnerId) match {
+      case (false, _, _, _)                                  => Future.successful(Ok("Identifiers do not match"))
+      case (_, Some(BusinessVerificationResult(Fail)), _, _) =>
+        Future.successful(Ok("Failed business verification"))
+      case (_, _, _, Some(businessPartnerId))                =>
+        eclRegistrationConnector.getSubscriptionStatus(businessPartnerId).map {
+          case EclSubscriptionStatus(NotSubscribed)                        => Ok("Success - you can continue registering for ECL")
+          case EclSubscriptionStatus(Subscribed(eclRegistrationReference)) =>
+            Ok(s"Business is already subscribed to ECL with registration reference $eclRegistrationReference")
+        }
+      case (_, _, RegistrationFailed, _)                     => Future.successful(Ok("Registration failed"))
+      case _                                                 =>
+        throw new IllegalStateException(
+          s"Invalid result received from GRS: identifiersMatch: $identifiersMatch, registration: $grsResult, businessVerification: $bvResult"
+        )
+    }
 }
