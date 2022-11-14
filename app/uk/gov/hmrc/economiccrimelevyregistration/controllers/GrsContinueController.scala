@@ -85,17 +85,17 @@ class GrsContinueController @Inject() (
     grsResult: GrsRegistrationResult
   )(implicit hc: HeaderCarrier): Future[Result] =
     (identifiersMatch, bvResult, grsResult.registrationStatus, grsResult.registeredBusinessPartnerId) match {
-      case (false, _, _, _)                                    => Future.successful(Ok("Identifiers do not match"))
-      case (_, Some(BusinessVerificationResult("FAIL")), _, _) =>
+      case (false, _, _, _)                                  => Future.successful(Ok("Identifiers do not match"))
+      case (_, Some(BusinessVerificationResult(Fail)), _, _) =>
         Future.successful(Ok("Failed business verification"))
-      case (_, _, _, Some(businessPartnerId))                  =>
+      case (_, _, _, Some(businessPartnerId))                =>
         eclRegistrationConnector.getSubscriptionStatus(businessPartnerId).map {
           case EclSubscriptionStatus(NotSubscribed)                        => Ok("Success - you can continue registering for ECL")
           case EclSubscriptionStatus(Subscribed(eclRegistrationReference)) =>
             Ok(s"Business is already subscribed to ECL with registration reference $eclRegistrationReference")
         }
-      case (_, _, "REGISTRATION_FAILED", _)                    => Future.successful(Ok("Registration failed"))
-      case _                                                   =>
+      case (_, _, RegistrationFailed, _)                     => Future.successful(Ok("Registration failed"))
+      case _                                                 =>
         throw new IllegalStateException(
           s"Invalid result received from GRS: identifiersMatch: $identifiersMatch, registration: $grsResult, businessVerification: $bvResult"
         )

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.testonly.data
 
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{CompanyProfile, GrsRegistrationResult, GrsRegistrationResultFailures, IncorporatedEntityAddress}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 
 import java.time.Instant
 import java.util.Date
@@ -27,8 +27,8 @@ trait GrsStubData[T] {
 
   def buildJourneyData(
     identifiersMatch: Boolean,
-    registrationStatus: String,
-    verificationStatus: Option[String] = None,
+    registrationStatus: RegistrationStatus,
+    verificationStatus: Option[VerificationStatus] = None,
     entityType: EntityType,
     businessPartnerId: String
   ): Future[T]
@@ -40,53 +40,53 @@ trait GrsStubData[T] {
       case "1" =>
         buildJourneyData(
           identifiersMatch = true,
-          registrationStatus = "REGISTRATION_NOT_CALLED",
-          verificationStatus = Some("FAIL"),
+          registrationStatus = RegistrationNotCalled,
+          verificationStatus = Some(Fail),
           entityType = entityType,
           businessPartnerId = businessPartnerId
         )
       case "2" =>
         buildJourneyData(
           identifiersMatch = false,
-          registrationStatus = "REGISTRATION_NOT_CALLED",
-          verificationStatus = Some("UNCHALLENGED"),
+          registrationStatus = RegistrationNotCalled,
+          verificationStatus = Some(Unchallenged),
           entityType = entityType,
           businessPartnerId = businessPartnerId
         )
       case "3" =>
         buildJourneyData(
           identifiersMatch = true,
-          registrationStatus = "REGISTRATION_FAILED",
-          verificationStatus = Some("PASS"),
+          registrationStatus = RegistrationFailed,
+          verificationStatus = Some(Pass),
           entityType = entityType,
           businessPartnerId = businessPartnerId
         )
       case "4" =>
         buildJourneyData(
           identifiersMatch = true,
-          registrationStatus = "REGISTERED",
+          registrationStatus = Registered,
           entityType = entityType,
           businessPartnerId = businessPartnerId
         )
       case "5" =>
         buildJourneyData(
           identifiersMatch = false,
-          registrationStatus = "REGISTRATION_NOT_CALLED",
+          registrationStatus = RegistrationNotCalled,
           entityType = entityType,
           businessPartnerId = businessPartnerId
         )
       case "6" =>
         buildJourneyData(
           identifiersMatch = true,
-          registrationStatus = "REGISTRATION_FAILED",
+          registrationStatus = RegistrationFailed,
           entityType = entityType,
           businessPartnerId = businessPartnerId
         )
       case _   =>
         buildJourneyData(
           identifiersMatch = true,
-          registrationStatus = "REGISTERED",
-          verificationStatus = Some("PASS"),
+          registrationStatus = Registered,
+          verificationStatus = Some(Pass),
           entityType = entityType,
           businessPartnerId = businessPartnerId
         )
@@ -111,19 +111,19 @@ trait GrsStubData[T] {
   )
 
   private def registered(businessPartnerId: String) = GrsRegistrationResult(
-    registrationStatus = "REGISTERED",
+    registrationStatus = Registered,
     registeredBusinessPartnerId = Some(businessPartnerId),
     failures = None
   )
 
   private val registrationNotCalled = GrsRegistrationResult(
-    registrationStatus = "REGISTRATION_NOT_CALLED",
+    registrationStatus = RegistrationNotCalled,
     registeredBusinessPartnerId = None,
     failures = None
   )
 
   private val registrationFailed = GrsRegistrationResult(
-    registrationStatus = "REGISTRATION_FAILED",
+    registrationStatus = RegistrationFailed,
     registeredBusinessPartnerId = None,
     failures = Some(
       Seq(
@@ -135,11 +135,11 @@ trait GrsStubData[T] {
     )
   )
 
-  def registrationResult(registrationStatus: String, businessPartnerId: String): GrsRegistrationResult =
+  def registrationResult(registrationStatus: RegistrationStatus, businessPartnerId: String): GrsRegistrationResult =
     registrationStatus match {
-      case "REGISTERED"              => registered(businessPartnerId)
-      case "REGISTRATION_NOT_CALLED" => registrationNotCalled
-      case "REGISTRATION_FAILED"     => registrationFailed
+      case Registered            => registered(businessPartnerId)
+      case RegistrationNotCalled => registrationNotCalled
+      case RegistrationFailed    => registrationFailed
     }
 
   def parseJourneyId(journeyId: String): (String, EntityType, String) =
