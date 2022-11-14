@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 
 import scala.concurrent.Future
 
@@ -643,6 +643,42 @@ class GrsContinueControllerSpec extends SpecBase {
           }
 
           result.getMessage shouldBe "No entity type found in registration data"
+        }
+    }
+
+    "throw an IllegalStateException if an invalid result is received from GRS" in forAll {
+      (journeyId: String, incorporatedEntityJourneyData: IncorporatedEntityJourneyData, registration: Registration) =>
+        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+          val identifiersMatch: Boolean                = true
+          val noBv: Option[BusinessVerificationResult] = None
+
+          val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
+            incorporatedEntityJourneyData.copy(
+              identifiersMatch = identifiersMatch,
+              registration = registrationNotCalled,
+              businessVerification = noBv
+            )
+
+          when(
+            mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
+
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(UkLimitedCompany),
+            incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = None
+          )
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: IllegalStateException = intercept[IllegalStateException] {
+            await(controller.continue(journeyId)(fakeRequest))
+          }
+
+          result.getMessage shouldBe s"Invalid result received from GRS: identifiersMatch: $identifiersMatch, registration: $registrationNotCalled, businessVerification: $noBv"
         }
     }
 

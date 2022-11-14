@@ -98,6 +98,9 @@ trait EclTestData {
   val failedRegistrationResult: GrsRegistrationResult =
     GrsRegistrationResult("REGISTRATION_FAILED", None, None)
 
+  val registrationNotCalled: GrsRegistrationResult =
+    GrsRegistrationResult("REGISTRATION_NOT_CALLED", None, None)
+
   val failedBvResult: Option[BusinessVerificationResult] = Some(BusinessVerificationResult("FAIL"))
 
   private def authEnrolmentsToEnrolments(authEnrolments: Enrolments) =

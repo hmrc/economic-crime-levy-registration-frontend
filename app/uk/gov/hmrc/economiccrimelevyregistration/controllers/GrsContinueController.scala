@@ -95,5 +95,9 @@ class GrsContinueController @Inject() (
             Ok(s"Business is already subscribed to ECL with registration reference $eclRegistrationReference")
         }
       case (_, _, "REGISTRATION_FAILED", _)                    => Future.successful(Ok("Registration failed"))
+      case _                                                   =>
+        throw new IllegalStateException(
+          s"Invalid result received from GRS: identifiersMatch: $identifiersMatch, registration: $grsResult, businessVerification: $bvResult"
+        )
     }
 }
