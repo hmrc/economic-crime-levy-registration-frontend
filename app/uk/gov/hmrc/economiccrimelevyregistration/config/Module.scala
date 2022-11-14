@@ -20,7 +20,7 @@ import com.google.inject.AbstractModule
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
-import uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs.{StubIncorporatedEntityIdentificationFrontendConnector, StubPartnershipIdentificationFrontendConnector, StubSoleTraderIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs._
 
 import java.time.{Clock, ZoneOffset}
 

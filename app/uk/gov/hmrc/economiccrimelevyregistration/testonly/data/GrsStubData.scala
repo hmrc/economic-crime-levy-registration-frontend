@@ -90,7 +90,6 @@ trait GrsStubData[T] {
           entityType = entityType,
           businessPartnerId = businessPartnerId
         )
-
     }
   }
 
