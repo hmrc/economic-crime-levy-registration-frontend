@@ -14,18 +14,50 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+
 @this(
-    layout: templates.Layout
+        layout: templates.Layout,
+        button: GovukButton
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle    = title(messages("start.title")),
-    showBackLink = false
+    pageTitle = title(messages("start.title"))
 ) {
 
-    <h1 class="govuk-heading-xl">@messages("start.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("start.heading")</h1>
 
-    <p class="govuk-body">@messages("start.guidance")</p>
+    <p class="govuk-body">@messages("start.p1")</p>
+    <p class="govuk-body">@Html(messages("start.p2", messages("start.p2.link")))</p>
+    <p class="govuk-body">@messages("start.p3", EclTaxYear.yearDue)</p>
+
+    @button(
+        ButtonViewModel(messages("site.start"))
+                .asLink(UkRevenueController.onPageLoad().url)
+                .asStartButton()
+                .withAttribute("id" -> "start")
+                .withCssClass("govuk-!-margin-top-2 govuk-!-margin-bottom-8")
+    )
+
+    <h2 class="govuk-heading-m">@messages("start.beforeYouStart")</h2>
+
+    <p class="govuk-body">@messages("start.provide")</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("start.provide.b1")</li>
+        <li>@messages("start.provide.b2")</li>
+        <li>@messages("start.provide.b3")</li>
+        <li>@messages("start.provide.b4")</li>
+        <li>@messages("start.provide.b5")</li>
+    </ul>
+
+    <h2 class="govuk-heading-m">@messages("start.doNotUse")</h2>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("start.doNotUse.b1")</li>
+        <li>@messages("start.doNotUse.b2")</li>
+    </ul>
+
 }

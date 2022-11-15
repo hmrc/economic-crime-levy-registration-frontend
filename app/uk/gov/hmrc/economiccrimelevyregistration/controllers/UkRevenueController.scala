@@ -16,21 +16,37 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.StartView
+import uk.gov.hmrc.economiccrimelevyregistration.connectors._
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class StartController @Inject() (
+class UkRevenueController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  view: StartView
-) extends FrontendBaseController
+  authorise: AuthorisedAction,
+  getRegistrationData: DataRetrievalAction,
+  eclRegistrationConnector: EclRegistrationConnector,
+  formProvider: UkRevenueFormProvider,
+  view: UkRevenueView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(view())
+  val form: Form[Boolean] = formProvider()
+
+  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    Ok(view(form))
+  }
+
+  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+    ???
   }
 }

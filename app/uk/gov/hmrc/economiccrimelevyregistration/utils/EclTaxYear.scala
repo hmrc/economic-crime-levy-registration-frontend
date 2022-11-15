@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,31 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-    layout: templates.Layout,
-    govukButton: GovukButton
-)
+package uk.gov.hmrc.economiccrimelevyregistration.utils
 
-@()(implicit request: Request[_], messages: Messages)
+import uk.gov.hmrc.time.TaxYear
 
-@layout(
-    pageTitle    = title(messages("signedOut.title")),
-    timeout      = false,
-    showSignOut  = false
-) {
+object EclTaxYear {
 
-    <h1 class="govuk-heading-xl">@messages("signedOut.heading")</h1>
+  val yearDue: String              = TaxYear.current.finishYear.toString
+  val currentFinancialYear: String = TaxYear.current.startYear.toString
 
-    <p class="govuk-body">@messages("signedOut.guidance")</p>
-
-    <p class="govuk-body">
-        @govukButton(
-            Button(
-                element = Some(messages("site.signIn")),
-                href    = Some(StartController.onPageLoad().url)
-            )
-        )
-    </p>
 }

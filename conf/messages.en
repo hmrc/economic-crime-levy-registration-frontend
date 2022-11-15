@@ -6,6 +6,7 @@ site.change = Change
 site.no = No
 site.yes = Yes
 site.continue = Continue
+site.saveAndContinue = Save and continue
 site.start = Start now
 site.startAgain = Start again
 site.signIn = Sign in
@@ -35,9 +36,28 @@ error.number = Please enter a valid number
 error.required = Please enter a value
 error.summary.title = There is a problem
 
-start.title = economic-crime-levy-registration-frontend
-start.heading = economic-crime-levy-registration-frontend
-start.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
+start.title = Register for the Economic Crime Levy
+start.heading = Register for the Economic Crime Levy
+start.p1 = Use this service if you are an organisation or entity registered with HMRC for Anti-Money Laundering (AML) supervision and you need to register for the Economic Crime Levy (ECL).
+start.p2 = Check if you {0}.
+start.p2.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">need to pay the levy</a>
+start.p3 = You will be able to submit a return and pay the levy after you have registered. You must pay the levy by 30 September {0}. You will be charged interest if you make a late payment.
+start.beforeYouStart = Before you start
+start.provide = You will need to provide:
+start.provide.b1 = information about your UK revenue for the last financial year
+start.provide.b2 = the date when your organisation started AML-regulated activities, if you started in the past financial year
+start.provide.b3 = details about your organisation so we can confirm your identity
+start.provide.b4 = the details of up to 2 people in your organisation who can act as a point of contact for any activities related to the ECL
+start.provide.b5 = the business sector your organisation operates in
+start.doNotUse = Do not use this service if:
+start.doNotUse.b1 = the Financial Conduct Authority (FCA) or the Gambling Commission (GC) supervises your AML activities
+start.doNotUse.b2 = your UK revenue is less than £10.2 million per year
+
+ukRevenue.title = What was your UK revenue in {0}?
+ukRevenue.heading = What was your UK revenue in {0}?
+ukRevenue.legend = You do not need to pay the levy if your UK revenue was less than £10.2 million in {0}.
+ukRevenue.lessThan = Less than £10.2 million
+ukRevenue.moreThanOrEqualTo = Equal to or more than £10.2 million
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers

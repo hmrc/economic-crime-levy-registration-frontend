@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,31 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-    layout: templates.Layout,
-    govukButton: GovukButton
-)
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-@()(implicit request: Request[_], messages: Messages)
+import play.api.data.FormError
+import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.BooleanFieldBehaviours
 
-@layout(
-    pageTitle    = title(messages("signedOut.title")),
-    timeout      = false,
-    showSignOut  = false
-) {
+class UkRevenueFormProviderSpec extends BooleanFieldBehaviours {
+  val form = new UkRevenueFormProvider()()
 
-    <h1 class="govuk-heading-xl">@messages("signedOut.heading")</h1>
+  "value" should {
+    val fieldName   = "value"
+    val requiredKey = "ukRevenue.error.required"
 
-    <p class="govuk-body">@messages("signedOut.guidance")</p>
+    behave like booleanField(form, fieldName, FormError(fieldName, "error.boolean"))
 
-    <p class="govuk-body">
-        @govukButton(
-            Button(
-                element = Some(messages("site.signIn")),
-                href    = Some(StartController.onPageLoad().url)
-            )
-        )
-    </p>
+    behave like mandatoryField(form, fieldName, FormError(fieldName, requiredKey))
+  }
 }

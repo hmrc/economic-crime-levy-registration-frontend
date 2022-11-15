@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.test.FakeRequest
-import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
-class StartISpec extends ISpecBase {
-
-  s"GET /$contextPath/" should {
-    "respond with 200 status and the start HTML view" in {
-      val result = callRoute(FakeRequest(routes.StartController.onPageLoad()))
-
-      status(result) shouldBe OK
-      html(result)     should include("economic-crime-levy-registration-frontend")
-    }
-  }
-
+class UkRevenueFormProvider extends Mappings {
+  def apply(): Form[Boolean] = Form(("value", boolean("ukRevenue.error.required")))
 }
