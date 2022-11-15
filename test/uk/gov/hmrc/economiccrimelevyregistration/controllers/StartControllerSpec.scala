@@ -29,24 +29,18 @@ class StartControllerSpec extends SpecBase {
 
   val view: StartView = app.injector.instanceOf[StartView]
 
-  class TestContext(registrationData: Registration) {
-    val controller = new StartController(
-      mcc,
-      fakeAuthorisedAction,
-      fakeDataRetrievalAction(registrationData),
-      view
-    )
-  }
+  val controller = new StartController(
+    mcc,
+    view
+  )
 
   "onPageLoad" should {
-    "return OK and the correct view" in forAll { registration: Registration =>
-      new TestContext(registration) {
-        val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+    "return OK and the correct view" in {
+      val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
-        status(result) shouldBe OK
+      status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view()(fakeRequest, messages).toString
-      }
+      contentAsString(result) shouldBe view()(fakeRequest, messages).toString
     }
   }
 

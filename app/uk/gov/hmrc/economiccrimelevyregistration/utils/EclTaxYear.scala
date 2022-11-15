@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration
+package uk.gov.hmrc.economiccrimelevyregistration.utils
 
-import play.api.test.FakeRequest
-import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.time.TaxYear
 
-class StartISpec extends ISpecBase {
+object EclTaxYear {
 
-  s"GET /$contextPath/" should {
-    "respond with 200 status and the start HTML view" in {
-      val result = callRoute(FakeRequest(routes.StartController.onPageLoad()))
-
-      status(result) shouldBe OK
-      html(result)     should include("economic-crime-levy-registration-frontend")
-    }
-  }
+  val yearDue: String = TaxYear.current.finishYear.toString
 
 }
