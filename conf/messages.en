@@ -6,6 +6,7 @@ site.change = Change
 site.no = No
 site.yes = Yes
 site.continue = Continue
+site.saveAndContinue = Save and continue
 site.start = Start now
 site.startAgain = Start again
 site.signIn = Sign in
@@ -51,6 +52,12 @@ start.provide.b5 = the business sector your organisation operates in
 start.doNotUse = Do not use this service if:
 start.doNotUse.b1 = the Financial Conduct Authority (FCA) or the Gambling Commission (GC) supervises your AML activities
 start.doNotUse.b2 = your UK revenue is less than £10.2 million per year
+
+ukRevenue.title = What was your UK revenue in {0}?
+ukRevenue.heading = What was your UK revenue in {0}?
+ukRevenue.legend = You do not need to pay the levy if your UK revenue was less than £10.2 million in {0}.
+ukRevenue.lessThan = Less than £10.2 million
+ukRevenue.moreThanOrEqualTo = Equal to or more than £10.2 million
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers

@@ -28,7 +28,7 @@
         alphaBanner: StandardAlphaBanner
 )
 
-@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, isWelshTranslationAvailable: Option[Boolean] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: String, backLinkUrl: Option[String] = None, timeout: Boolean = true, showSignOut: Boolean = true, isWelshTranslationAvailable: Option[Boolean] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = @{
     if(timeout) {
@@ -50,12 +50,6 @@
     <script src='@controllers.routes.Assets.versioned("javascripts/application.min.js")'></script>
 }
 
-@backLink = @{
-    if(showBackLink) {
-        Some("#")
-    } else None
-}
-
 @content = {
 @contentBlock
 
@@ -72,6 +66,6 @@
     isWelshTranslationAvailable = isWelshTranslationAvailable.getOrElse(appConfig.languageTranslationEnabled),
     additionalScriptsBlock = Some(additionalScripts),
     additionalHeadBlock = head,
-    backLinkUrl = backLink,
+    backLinkUrl = backLinkUrl,
     phaseBanner = Some(alphaBanner(appConfig.feedbackUrl))
 )(content)

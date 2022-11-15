@@ -1,18 +1,21 @@
 # microservice specific routes
 
-->          /hmrc-frontend                  hmrcfrontend.Routes
+->          /hmrc-frontend                   hmrcfrontend.Routes
 
-GET         /assets/*file                   controllers.Assets.versioned(path = "/public", file: Asset)
+GET         /assets/*file                    controllers.Assets.versioned(path = "/public", file: Asset)
 
-GET         /                               uk.gov.hmrc.economiccrimelevyregistration.controllers.StartController.onPageLoad()
+GET         /                                uk.gov.hmrc.economiccrimelevyregistration.controllers.StartController.onPageLoad()
 
-GET         /select-entity-type             uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
-POST        /select-entity-type             uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
+GET         /what-was-your-uk-revenue        uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad()
+POST        /what-was-your-uk-revenue        uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit()
 
-GET         /grs-continue                   uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
+GET         /select-entity-type              uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
+POST        /select-entity-type              uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
 
-GET         /check-your-answers             uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
+GET         /grs-continue                    uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
 
-GET         /account/sign-out-survey        uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
-GET         /account/sign-out               uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
-GET         /account/signed-out             uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()
+GET         /check-your-answers              uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
+
+GET         /account/sign-out-survey         uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
+GET         /account/sign-out                uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
+GET         /account/signed-out              uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()

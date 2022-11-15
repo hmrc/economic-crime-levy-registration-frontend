@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.StartView
 
 import scala.concurrent.Future

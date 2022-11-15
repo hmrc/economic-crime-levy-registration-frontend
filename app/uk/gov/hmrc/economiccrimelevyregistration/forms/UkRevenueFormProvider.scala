@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.utils
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import uk.gov.hmrc.time.TaxYear
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
-object EclTaxYear {
-
-  val yearDue: String              = TaxYear.current.finishYear.toString
-  val currentFinancialYear: String = TaxYear.current.startYear.toString
-
+class UkRevenueFormProvider extends Mappings {
+  def apply(): Form[Boolean] = Form(("value", boolean("ukRevenue.error.required")))
 }
