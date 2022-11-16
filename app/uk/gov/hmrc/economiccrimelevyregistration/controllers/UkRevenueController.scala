@@ -24,6 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,7 +59,7 @@ class UkRevenueController @Inject() (
               if (meetsRevenueThreshold) {
                 Future.successful(Ok("Proceed"))
               } else {
-                Future.successful(Redirect("you-do-not-need-to-register"))
+                Future.successful(Redirect(NotLiableController.onPageLoad().url))
               }
             }
       )

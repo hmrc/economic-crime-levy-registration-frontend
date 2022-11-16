@@ -7,6 +7,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes._
 
 class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -51,7 +52,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some("you-do-not-need-to-register")
+      redirectLocation(result) shouldBe Some(NotLiableController.onPageLoad().url)
     }
 
     s"POST /$contextPath/what-was-your-uk-revenue" should {

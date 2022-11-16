@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.NotLiableView
 
@@ -26,11 +27,12 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class NotLiableController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  view: NotLiableView
+  view: NotLiableView,
+  config: AppConfig
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(view())
+    Ok(view(config.exitSurveyUrl))
   }
 }

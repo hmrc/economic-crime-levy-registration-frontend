@@ -28,6 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes._
 
 import scala.concurrent.Future
 
@@ -76,7 +77,7 @@ class UkRevenueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some("you-do-not-need-to-register")
+          redirectLocation(result) shouldBe Some(NotLiableController.onPageLoad().url)
         }
     }
 

@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 class NotLiableControllerSpec extends SpecBase {
   val view: NotLiableView = app.injector.instanceOf[NotLiableView]
-  val controller          = new NotLiableController(mcc, view)
+  val controller          = new NotLiableController(mcc, view, appConfig)
 
   "onPageLoad" should {
     "return OK and the correct view" in {
@@ -34,7 +34,7 @@ class NotLiableControllerSpec extends SpecBase {
 
       status(result) shouldBe OK
 
-      contentAsString(result) shouldBe view()(fakeRequest, messages).toString
+      contentAsString(result) shouldBe view(appConfig.exitSurveyUrl)(fakeRequest, messages).toString
     }
   }
 }
