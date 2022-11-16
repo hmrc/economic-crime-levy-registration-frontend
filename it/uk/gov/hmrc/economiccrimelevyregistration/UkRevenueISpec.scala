@@ -31,4 +31,51 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
+  s"POST /$contextPath/what-was-your-uk-revenue" should {
+    behave like authorisedActionRoute(routes.UkRevenueController.onPageLoad())
+
+    "save the selected Uk revenue option then display 'Ineligible' when the LessThan option is selected" in {
+      stubAuthorised()
+
+      val registration = random[Registration]
+
+      stubGetRegistration(registration)
+
+      val updatedRegistration = registration.copy(meetsRevenueThreshold = Some(false))
+
+      stubUpsertRegistration(updatedRegistration)
+
+      val result = callRoute(
+        FakeRequest(routes.UkRevenueController.onSubmit()).withFormUrlEncodedBody(("value", "false"))
+      )
+
+      status(result) shouldBe OK
+
+      contentAsString(result) shouldBe "Ineligible"
+    }
+
+    s"POST /$contextPath/what-was-your-uk-revenue" should {
+      behave like authorisedActionRoute(routes.UkRevenueController.onPageLoad())
+
+      "save the selected Uk revenue option then display 'Proceed' when the EqualToOrGreaterThan option is selected" in {
+        stubAuthorised()
+
+        val registration = random[Registration]
+
+        stubGetRegistration(registration)
+
+        val updatedRegistration = registration.copy(meetsRevenueThreshold = Some(true))
+
+        stubUpsertRegistration(updatedRegistration)
+
+        val result = callRoute(
+          FakeRequest(routes.UkRevenueController.onSubmit()).withFormUrlEncodedBody(("value", "true"))
+        )
+
+        status(result) shouldBe OK
+
+        contentAsString(result) shouldBe "Proceed"
+      }
+    }
+  }
 }

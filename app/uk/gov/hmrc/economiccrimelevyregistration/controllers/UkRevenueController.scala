@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UkRevenueController @Inject() (
@@ -47,6 +47,20 @@ class UkRevenueController @Inject() (
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
-    ???
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        meetsRevenueThreshold =>
+          eclRegistrationConnector
+            .upsertRegistration(request.registration.copy(meetsRevenueThreshold = Some(meetsRevenueThreshold)))
+            .flatMap { _ =>
+              if (meetsRevenueThreshold) {
+                Future.successful(Ok("Proceed"))
+              } else {
+                Future.successful(Ok("Ineligible"))
+              }
+            }
+      )
   }
 }

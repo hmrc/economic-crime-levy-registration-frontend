@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.Result
@@ -59,4 +62,50 @@ class UkRevenueControllerSpec extends SpecBase {
     }
   }
 
+  "onSubmit" should {
+    "save the selected Uk revenue option then display 'Ineligible' when the LessThan option is selected" in forAll {
+      registration: Registration =>
+        new TestContext(registration) {
+          val updatedRegistration: Registration = registration.copy(meetsRevenueThreshold = Some(false))
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] =
+            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "false")))
+
+          status(result) shouldBe OK
+
+          contentAsString(result) shouldBe "Ineligible"
+        }
+    }
+
+    "save the selected Uk revenue option then display 'Proceed' when the EqualToOrMoreThan option is selected" in forAll {
+      registration: Registration =>
+        new TestContext(registration) {
+          val updatedRegistration: Registration = registration.copy(meetsRevenueThreshold = Some(true))
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] =
+            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "true")))
+
+          status(result) shouldBe OK
+
+          contentAsString(result) shouldBe "Proceed"
+        }
+    }
+
+    "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
+      new TestContext(registration) {
+        val result: Future[Result]        = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
+        val formWithErrors: Form[Boolean] = form.bind(Map("value" -> ""))
+
+        status(result) shouldBe BAD_REQUEST
+
+        contentAsString(result) shouldBe view(formWithErrors)(fakeRequest, messages).toString
+      }
+    }
+  }
 }
