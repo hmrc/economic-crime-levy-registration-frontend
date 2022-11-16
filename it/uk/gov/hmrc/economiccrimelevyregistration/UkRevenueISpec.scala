@@ -34,7 +34,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
   s"POST /$contextPath/what-was-your-uk-revenue" should {
     behave like authorisedActionRoute(routes.UkRevenueController.onPageLoad())
 
-    "save the selected Uk revenue option then display 'Ineligible' when the LessThan option is selected" in {
+    "save the selected Uk revenue option then redirect to the 'you do not need to register' page when the LessThan option is selected" in {
       stubAuthorised()
 
       val registration = random[Registration]
@@ -49,9 +49,9 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
         FakeRequest(routes.UkRevenueController.onSubmit()).withFormUrlEncodedBody(("value", "false"))
       )
 
-      status(result) shouldBe OK
+      status(result) shouldBe SEE_OTHER
 
-      contentAsString(result) shouldBe "Ineligible"
+      redirectLocation(result) shouldBe Some("you-do-not-need-to-register")
     }
 
     s"POST /$contextPath/what-was-your-uk-revenue" should {

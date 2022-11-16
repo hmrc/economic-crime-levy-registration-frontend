@@ -63,7 +63,7 @@ class UkRevenueControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the selected Uk revenue option then display 'Ineligible' when the LessThan option is selected" in forAll {
+    "save the selected Uk revenue option then redirect to the 'you do not need to register' page when the LessThan option is selected" in forAll {
       registration: Registration =>
         new TestContext(registration) {
           val updatedRegistration: Registration = registration.copy(meetsRevenueThreshold = Some(false))
@@ -74,9 +74,9 @@ class UkRevenueControllerSpec extends SpecBase {
           val result: Future[Result] =
             controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "false")))
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(result) shouldBe "Ineligible"
+          redirectLocation(result) shouldBe Some("you-do-not-need-to-register")
         }
     }
 

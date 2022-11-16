@@ -58,7 +58,7 @@ class UkRevenueController @Inject() (
               if (meetsRevenueThreshold) {
                 Future.successful(Ok("Proceed"))
               } else {
-                Future.successful(Ok("Ineligible"))
+                Future.successful(Redirect("you-do-not-need-to-register"))
               }
             }
       )

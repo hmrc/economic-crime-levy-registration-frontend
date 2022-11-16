@@ -9,6 +9,8 @@ GET         /                                uk.gov.hmrc.economiccrimelevyregist
 GET         /what-was-your-uk-revenue        uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad()
 POST        /what-was-your-uk-revenue        uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit()
 
+GET         /you-do-not-need-to-register     uk.gov.hmrc.economiccrimelevyregistration.controllers.NotLiableController.onPageLoad()
+
 GET         /select-entity-type              uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
 POST        /select-entity-type              uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
 
