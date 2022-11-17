@@ -78,6 +78,8 @@ amlSupervisor.Hmrc = HMRC
 amlSupervisor.GamblingCommission = Gambling Commission (GC)
 amlSupervisor.FinancialConductAuthority = Financial Conduct Authority (FCA)
 amlSupervisor.Other = Other
+amlSupervisor.selectFromList = Select the name of your professional body from the list
+amlSupervisor.selectFromListAutocomplete = Enter the name of your professional body or select from the list
 amlSupervisor.error.required = Select an AML supervisor
 
 checkYourAnswers.title = Check your answers

@@ -16,10 +16,38 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.data.Form
+import play.api.data.Forms.{mapping, optional}
+import play.api.data.{Form, Forms}
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisor
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, Other}
 
 class AmlSupervisorFormProvider extends Mappings {
-  def apply(): Form[AmlSupervisor] = Form(("value", enumerable[AmlSupervisor]("amlSupervisor.error.required")))
+
+  def apply(appConfig: AppConfig): Form[AmlSupervisor] = Form(
+    mapping(
+      "value"                 -> enumerable[AmlSupervisorType]("amlSupervisor.error.required"),
+      "otherProfessionalBody" -> optional(Forms.text)
+    )(AmlSupervisor.apply)(AmlSupervisor.unapply)
+      .verifying { amlSupervisor =>
+        amlSupervisor.supervisorType match {
+          case Other =>
+            amlSupervisor.otherProfessionalBody match {
+              case Some(opb) => appConfig.amlProfessionalBodySupervisors.contains(opb)
+              case None      => false
+            }
+          case _     => true
+        }
+      }
+      .transform[AmlSupervisor](
+        amlSupervisor =>
+          if (amlSupervisor.supervisorType != Other) {
+            amlSupervisor.copy(otherProfessionalBody = None)
+          } else {
+            identity(amlSupervisor)
+          },
+        identity
+      )
+  )
+
 }

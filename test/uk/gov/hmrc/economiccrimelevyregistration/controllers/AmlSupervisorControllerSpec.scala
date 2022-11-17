@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisorType, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 
 import scala.concurrent.Future
@@ -35,7 +35,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
   val view: AmlSupervisorView                 = app.injector.instanceOf[AmlSupervisorView]
   val formProvider: AmlSupervisorFormProvider = new AmlSupervisorFormProvider()
-  val form: Form[AmlSupervisor]               = formProvider()
+  val form: Form[AmlSupervisorType]               = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 

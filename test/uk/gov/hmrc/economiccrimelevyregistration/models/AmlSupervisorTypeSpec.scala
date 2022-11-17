@@ -20,9 +20,9 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitr
 import play.api.libs.json.{JsBoolean, JsError, JsString, Json}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 
-class AmlSupervisorSpec extends SpecBase {
+class AmlSupervisorTypeSpec extends SpecBase {
   "writes" should {
-    "return the Aml supervisor serialized to its JSON representation" in forAll { (amlSupervisor: AmlSupervisor) =>
+    "return the Aml supervisor serialized to its JSON representation" in forAll { (amlSupervisor: AmlSupervisorType) =>
       val result = Json.toJson(amlSupervisor)
 
       result shouldBe JsString(amlSupervisor.toString)
@@ -30,20 +30,20 @@ class AmlSupervisorSpec extends SpecBase {
   }
 
   "reads" should {
-    "return the Aml supervisor deserialized from its JSON representation" in forAll { (amlSupervisor: AmlSupervisor) =>
+    "return the Aml supervisor deserialized from its JSON representation" in forAll { (amlSupervisor: AmlSupervisorType) =>
       val json = Json.toJson(amlSupervisor)
 
-      json.as[AmlSupervisor] shouldBe amlSupervisor
+      json.as[AmlSupervisorType] shouldBe amlSupervisor
     }
 
     "return a JsError when passed an invalid string value" in {
-      val result = Json.fromJson[AmlSupervisor](JsString("Test"))
+      val result = Json.fromJson[AmlSupervisorType](JsString("Test"))
 
       result shouldBe JsError("Test is not a valid AmlSupervisor")
     }
 
     "return a JsError when passed a type that is not a string" in {
-      val result = Json.fromJson[AmlSupervisor](JsBoolean(true))
+      val result = Json.fromJson[AmlSupervisorType](JsBoolean(true))
 
       result shouldBe a[JsError]
     }

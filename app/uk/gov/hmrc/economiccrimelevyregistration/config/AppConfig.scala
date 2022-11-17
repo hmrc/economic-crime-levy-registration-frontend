@@ -67,4 +67,6 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val soleTraderBvEnabled: Boolean         = configuration.get[Boolean]("features.soleTraderBvEnabled")
 
   val enrolmentStoreProxyUrl: String = servicesConfig.baseUrl("enrolment-store-proxy")
+
+  val amlProfessionalBodySupervisors: Seq[String] = configuration.get[Seq[String]]("amlProfessionalBodySupervisors")
 }

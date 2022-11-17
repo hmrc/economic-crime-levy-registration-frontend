@@ -14,12 +14,16 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+
 @this(
         layout: templates.Layout,
         formHelper: FormWithCSRF,
         errorSummary: GovukErrorSummary,
         radios: GovukRadios,
-        button: GovukButton
+        select: GovukSelect,
+        button: GovukButton,
+        appConfig: AppConfig
 )
 
 @(form: Form[AmlSupervisor])(implicit request: Request[_], messages: Messages)
@@ -38,7 +42,7 @@
             RadiosViewModel(
                 field = form("value"),
                 legend = LegendViewModel(messages("amlSupervisor.body")),
-                items = AmlSupervisor.options
+                items = AmlSupervisorType.options(appConfig, select)
             )
         )
 
