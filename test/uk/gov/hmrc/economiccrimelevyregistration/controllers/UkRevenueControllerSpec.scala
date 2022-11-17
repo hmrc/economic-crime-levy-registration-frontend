@@ -81,7 +81,7 @@ class UkRevenueControllerSpec extends SpecBase {
         }
     }
 
-    "save the selected Uk revenue option then display 'Proceed' when the EqualToOrMoreThan option is selected" in forAll {
+    "save the selected Uk revenue option then redirect to the 'who is your AML Supervisor?' page when the EqualToOrMoreThan option is selected" in forAll {
       registration: Registration =>
         new TestContext(registration) {
           val updatedRegistration: Registration = registration.copy(meetsRevenueThreshold = Some(true))
@@ -92,9 +92,9 @@ class UkRevenueControllerSpec extends SpecBase {
           val result: Future[Result] =
             controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "true")))
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(result) shouldBe "Proceed"
+          redirectLocation(result) shouldBe Some(AmlSupervisorController.onPageLoad().url)
         }
     }
 

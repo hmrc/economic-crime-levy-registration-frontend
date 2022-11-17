@@ -58,7 +58,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
     s"POST /$contextPath/what-was-your-uk-revenue" should {
       behave like authorisedActionRoute(routes.UkRevenueController.onPageLoad())
 
-      "save the selected Uk revenue option then display 'Proceed' when the EqualToOrGreaterThan option is selected" in {
+      "save the selected Uk revenue option then redirect to the 'who is your AML Supervisor?' page when the EqualToOrGreaterThan option is selected" in {
         stubAuthorised()
 
         val registration = random[Registration]
@@ -73,9 +73,9 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
           FakeRequest(routes.UkRevenueController.onSubmit()).withFormUrlEncodedBody(("value", "true"))
         )
 
-        status(result) shouldBe OK
+        status(result) shouldBe SEE_OTHER
 
-        contentAsString(result) shouldBe "Proceed"
+        redirectLocation(result) shouldBe Some(AmlSupervisorController.onPageLoad().url)
       }
     }
   }

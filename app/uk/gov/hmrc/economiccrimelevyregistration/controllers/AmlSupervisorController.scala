@@ -21,47 +21,33 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
+import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UkRevenueController @Inject() (
+class AmlSupervisorController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
-  formProvider: UkRevenueFormProvider,
-  view: UkRevenueView
+  formProvider: AmlSupervisorFormProvider,
+  view: AmlSupervisorView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form: Form[Boolean] = formProvider()
+  val form: Form[AmlSupervisor] = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(view(form))
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        meetsRevenueThreshold =>
-          eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(meetsRevenueThreshold = Some(meetsRevenueThreshold)))
-            .flatMap { _ =>
-              if (meetsRevenueThreshold) {
-                Future.successful(Redirect(AmlSupervisorController.onPageLoad().url))
-              } else {
-                Future.successful(Redirect(NotLiableController.onPageLoad().url))
-              }
-            }
-      )
+    ???
   }
 }
