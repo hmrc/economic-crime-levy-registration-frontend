@@ -47,6 +47,7 @@ class UkRevenueControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
+      fakeNavigator,
       view
     )
   }
@@ -64,37 +65,20 @@ class UkRevenueControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the selected Uk revenue option then redirect to the 'you do not need to register' page when the LessThan option is selected" in forAll {
-      registration: Registration =>
+    "save the selected Uk revenue option then redirect to the next page" in forAll {
+      (registration: Registration, meetsRevenueThreshold: Boolean) =>
         new TestContext(registration) {
-          val updatedRegistration: Registration = registration.copy(meetsRevenueThreshold = Some(false))
+          val updatedRegistration: Registration = registration.copy(meetsRevenueThreshold = Some(meetsRevenueThreshold))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "false")))
+            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", meetsRevenueThreshold.toString)))
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(NotLiableController.onPageLoad().url)
-        }
-    }
-
-    "save the selected Uk revenue option then redirect to the 'who is your AML Supervisor?' page when the EqualToOrMoreThan option is selected" in forAll {
-      registration: Registration =>
-        new TestContext(registration) {
-          val updatedRegistration: Registration = registration.copy(meetsRevenueThreshold = Some(true))
-
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
-
-          val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "true")))
-
-          status(result) shouldBe SEE_OTHER
-
-          redirectLocation(result) shouldBe Some(AmlSupervisorController.onPageLoad().url)
+          redirectLocation(result) shouldBe Some(onwardRoute.url)
         }
     }
 

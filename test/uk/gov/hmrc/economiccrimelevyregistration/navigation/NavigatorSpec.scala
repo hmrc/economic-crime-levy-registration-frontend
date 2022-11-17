@@ -20,13 +20,36 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitr
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.pages.Page
+import uk.gov.hmrc.economiccrimelevyregistration.pages.{Page, UkRevenuePage}
 
 class NavigatorSpec extends SpecBase {
 
   val navigator = new Navigator
 
   "nextPage" should {
+    "go to the AML Supervisor page from the UK revenue page in NormalMode when the entity meets the revenue threshold" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(meetsRevenueThreshold = Some(true))
+
+        navigator.nextPage(UkRevenuePage, NormalMode, updatedRegistration) shouldBe routes.AmlSupervisorController
+          .onPageLoad()
+    }
+
+    "go to the not liable page from the UK revenue page in NormalMode when the entity does not meet the revenue threshold" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(meetsRevenueThreshold = Some(false))
+
+        navigator.nextPage(UkRevenuePage, NormalMode, updatedRegistration) shouldBe routes.NotLiableController
+          .onPageLoad()
+    }
+
+    "go to the start page when the registration data does not contain the data required to trigger the correct routing" in forAll {
+      (page: Page, internalId: String) =>
+        val registration = Registration.empty(internalId)
+
+        navigator.nextPage(page, NormalMode, registration) shouldBe routes.StartController.onPageLoad()
+    }
+
     "go from a page that doesn't exist in the route map to Index in NormalMode" in forAll {
       registration: Registration =>
         case object UnknownPage extends Page

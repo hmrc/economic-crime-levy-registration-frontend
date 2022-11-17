@@ -22,6 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
+import uk.gov.hmrc.economiccrimelevyregistration.pages.{Page, UkRevenuePage}
 
 import java.time.Instant
 
@@ -90,6 +91,10 @@ trait EclTestData {
         authEnrolmentsToEnrolments(enrolmentsWithoutEcl.enrolments)
       )
     )
+  }
+
+  implicit val arbPage: Arbitrary[Page] = Arbitrary {
+    Gen.oneOf(Seq(UkRevenuePage))
   }
 
   def successfulGrsRegistrationResult(businessPartnerId: String): GrsRegistrationResult =

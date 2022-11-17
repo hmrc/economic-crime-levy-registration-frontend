@@ -24,7 +24,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes._
+import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.Navigator
+import uk.gov.hmrc.economiccrimelevyregistration.pages.UkRevenuePage
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,6 +38,7 @@ class UkRevenueController @Inject() (
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: UkRevenueFormProvider,
+  navigator: Navigator,
   view: UkRevenueView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -55,12 +58,8 @@ class UkRevenueController @Inject() (
         meetsRevenueThreshold =>
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(meetsRevenueThreshold = Some(meetsRevenueThreshold)))
-            .flatMap { _ =>
-              if (meetsRevenueThreshold) {
-                Future.successful(Redirect(AmlSupervisorController.onPageLoad().url))
-              } else {
-                Future.successful(Redirect(NotLiableController.onPageLoad().url))
-              }
+            .map { updatedRegistration =>
+              Redirect(navigator.nextPage(UkRevenuePage, NormalMode, updatedRegistration))
             }
       )
   }

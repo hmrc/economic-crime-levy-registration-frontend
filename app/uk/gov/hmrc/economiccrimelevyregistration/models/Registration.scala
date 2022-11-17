@@ -30,4 +30,13 @@ final case class Registration(
 
 object Registration {
   implicit val format: OFormat[Registration] = Json.format[Registration]
+
+  def empty(internalId: String): Registration = Registration(
+    internalId = internalId,
+    entityType = None,
+    meetsRevenueThreshold = None,
+    incorporatedEntityJourneyData = None,
+    soleTraderEntityJourneyData = None,
+    partnershipEntityJourneyData = None
+  )
 }
