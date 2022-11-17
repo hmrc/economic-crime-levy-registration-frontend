@@ -63,7 +63,8 @@ ukRevenue.error.required = Select your UK turnover for {0}
 notLiable.title = You do not need to register
 notLiable.heading = You do not need to register for the Economic Crime Levy
 notLiable.body = You do not need to register to pay the Economic Crime Levy (ECL) because your UK revenue for {0} does not exceed £10.2 million.
-notLiable.inset = <p>You will need to register for the ECL in the future if your UK revenue equals or exceeds £10.2 million.</p><p>The {0} has more information on who needs to pay the levy.</p>
+notLiable.inset.p1 = You will need to register for the ECL in the future if your UK revenue equals or exceeds £10.2 million.
+notLiable.inset.p2 = The {0} has more information on who needs to pay the levy.
 notLiable.inset.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">Economic Crime Levy guidance</a>
 notLiable.feedback.heading = Tell us what you think
 notLiable.feedback.p1 = This is a new service and we want to know what you think of it.

@@ -14,14 +14,21 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 @import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 @this(
         layout: templates.Layout,
-        govukInsetText : GovukInsetText
+        govukInsetText : GovukInsetText,
+        appConfig: AppConfig
 )
 
-@(feedbackUrl: String)(implicit request: Request[_], messages: Messages)
+@()(implicit request: Request[_], messages: Messages)
+
+@insetTextHtml = {
+<p>@messages("notLiable.inset.p1")</p>
+<p>@Html(messages("notLiable.inset.p2", messages("notLiable.inset.link")))</p>
+}
 
 @layout(
     pageTitle = title(messages("notLiable.title")),
@@ -33,13 +40,13 @@
     <p class="govuk-body">@messages("notLiable.body", EclTaxYear.currentFinancialYear)</p>
 
     @govukInsetText(InsetText(
-        content = HtmlContent(messages("notLiable.inset", messages("notLiable.inset.link")))
+        content = HtmlContent(insetTextHtml)
     ))
 
     <h2 class="govuk-heading-m">@messages("notLiable.feedback.heading")</h2>
 
     <p class="govuk-body">@messages("notLiable.feedback.p1")</p>
 
-    <p class="govuk-body">@Html(messages("notLiable.feedback.p2", messages("notLiable.feedback.link", feedbackUrl)))</p>
+    <p class="govuk-body">@Html(messages("notLiable.feedback.p2", messages("notLiable.feedback.link", appConfig.exitSurveyUrl)))</p>
 
 }
