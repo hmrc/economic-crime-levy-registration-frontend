@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
+import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.OptionFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType}
 
-class AmlSupervisorFormProviderSpec extends OptionFieldBehaviours {
-  val form = new AmlSupervisorFormProvider()()
+class AmlSupervisorFormProviderSpec extends OptionFieldBehaviours with SpecBase {
+  val form: Form[AmlSupervisor] = new AmlSupervisorFormProvider()(appConfig)
 
   "value" should {
     val fieldName   = "value"

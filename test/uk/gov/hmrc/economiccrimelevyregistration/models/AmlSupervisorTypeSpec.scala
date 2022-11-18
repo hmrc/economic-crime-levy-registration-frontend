@@ -30,10 +30,11 @@ class AmlSupervisorTypeSpec extends SpecBase {
   }
 
   "reads" should {
-    "return the Aml supervisor deserialized from its JSON representation" in forAll { (amlSupervisor: AmlSupervisorType) =>
-      val json = Json.toJson(amlSupervisor)
+    "return the Aml supervisor deserialized from its JSON representation" in forAll {
+      (amlSupervisor: AmlSupervisorType) =>
+        val json = Json.toJson(amlSupervisor)
 
-      json.as[AmlSupervisorType] shouldBe amlSupervisor
+        json.as[AmlSupervisorType] shouldBe amlSupervisor
     }
 
     "return a JsError when passed an invalid string value" in {
