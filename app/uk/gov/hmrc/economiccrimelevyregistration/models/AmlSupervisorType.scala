@@ -63,7 +63,7 @@ object AmlSupervisorType {
           content = Text(messages("amlSupervisor.selectFromList"))
         )
       ).asAccessibleAutocomplete(
-        Some(AccessibleAutocomplete(defaultValue = Some(""), showAllValues = true, autoSelect = false))
+        Some(AccessibleAutocomplete(defaultValue = Some(""), showAllValues = true, autoSelect = true))
       )
     )
 

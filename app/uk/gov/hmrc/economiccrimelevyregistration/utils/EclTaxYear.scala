@@ -16,11 +16,20 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.utils
 
-import uk.gov.hmrc.time.TaxYear
+import java.time.LocalDate
+import scala.annotation.tailrec
 
 object EclTaxYear {
 
-  val yearDue: String              = TaxYear.current.finishYear.toString
-  val currentFinancialYear: String = TaxYear.current.startYear.toString
+  val yearDue: String              = calculateYearDue().toString
+  val currentFinancialYear: String = (yearDue.toInt - 1).toString
+
+  @tailrec
+  def calculateYearDue(yearDue: Int = 2023, currentDate: LocalDate = LocalDate.now()): Int =
+    if (currentDate.isAfter(LocalDate.of(yearDue, 9, 30))) {
+      calculateYearDue(yearDue + 1, currentDate)
+    } else {
+      yearDue
+    }
 
 }

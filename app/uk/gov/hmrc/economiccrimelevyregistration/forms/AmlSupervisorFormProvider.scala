@@ -16,31 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.data.Forms.{mapping, optional}
-import play.api.data.validation.{Constraint, Invalid, Valid}
+import play.api.data.Forms.mapping
 import play.api.data.{Form, Forms}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, Other}
+import uk.gov.voa.play.form.ConditionalMappings.mandatoryIfEqual
 
 class AmlSupervisorFormProvider extends Mappings {
-
-  def amlSupervisorConstraint(appConfig: AppConfig): Constraint[AmlSupervisor] = Constraint[AmlSupervisor] {
-    amlSupervisor: AmlSupervisor =>
-      amlSupervisor.supervisorType match {
-        case Other =>
-          amlSupervisor.otherProfessionalBody match {
-            case Some(opb) =>
-              if (appConfig.amlProfessionalBodySupervisors.contains(opb)) {
-                Valid
-              } else {
-                Invalid("amlSupervisor.selectFromList")
-              }
-            case None      => Invalid("amlSupervisor.selectFromList")
-          }
-        case _     => Valid
-      }
-  }
 
   def sanitiseOtherProfessionalBody: AmlSupervisor => AmlSupervisor = amlSupervisor =>
     amlSupervisor.supervisorType match {
@@ -51,9 +34,12 @@ class AmlSupervisorFormProvider extends Mappings {
   def apply(appConfig: AppConfig): Form[AmlSupervisor] = Form(
     mapping(
       "value"                 -> enumerable[AmlSupervisorType]("amlSupervisor.error.required"),
-      "otherProfessionalBody" -> optional(Forms.text)
+      "otherProfessionalBody" -> mandatoryIfEqual(
+        "value",
+        Other.toString,
+        Forms.text.verifying("amlSupervisor.selectFromList", appConfig.amlProfessionalBodySupervisors.contains(_))
+      )
     )(AmlSupervisor.apply)(AmlSupervisor.unapply)
-      .verifying(amlSupervisorConstraint(appConfig))
       .transform[AmlSupervisor](
         sanitiseOtherProfessionalBody,
         identity
