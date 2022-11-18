@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Forms.{mapping, optional}
+import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.data.{Form, Forms}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
@@ -24,28 +25,37 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSuper
 
 class AmlSupervisorFormProvider extends Mappings {
 
+  def amlSupervisorConstraint(appConfig: AppConfig): Constraint[AmlSupervisor] = Constraint[AmlSupervisor] {
+    amlSupervisor: AmlSupervisor =>
+      amlSupervisor.supervisorType match {
+        case Other =>
+          amlSupervisor.otherProfessionalBody match {
+            case Some(opb) =>
+              if (appConfig.amlProfessionalBodySupervisors.contains(opb)) {
+                Valid
+              } else {
+                Invalid("amlSupervisor.selectFromList")
+              }
+            case None      => Invalid("amlSupervisor.selectFromList")
+          }
+        case _     => Valid
+      }
+  }
+
+  def sanitiseOtherProfessionalBody: AmlSupervisor => AmlSupervisor = amlSupervisor =>
+    amlSupervisor.supervisorType match {
+      case Other => amlSupervisor
+      case _     => amlSupervisor.copy(otherProfessionalBody = None)
+    }
+
   def apply(appConfig: AppConfig): Form[AmlSupervisor] = Form(
     mapping(
       "value"                 -> enumerable[AmlSupervisorType]("amlSupervisor.error.required"),
       "otherProfessionalBody" -> optional(Forms.text)
     )(AmlSupervisor.apply)(AmlSupervisor.unapply)
-      .verifying { amlSupervisor =>
-        amlSupervisor.supervisorType match {
-          case Other =>
-            amlSupervisor.otherProfessionalBody match {
-              case Some(opb) => appConfig.amlProfessionalBodySupervisors.contains(opb)
-              case None      => false
-            }
-          case _     => true
-        }
-      }
+      .verifying(amlSupervisorConstraint(appConfig))
       .transform[AmlSupervisor](
-        amlSupervisor =>
-          if (amlSupervisor.supervisorType != Other) {
-            amlSupervisor.copy(otherProfessionalBody = None)
-          } else {
-            identity(amlSupervisor)
-          },
+        sanitiseOtherProfessionalBody,
         identity
       )
   )

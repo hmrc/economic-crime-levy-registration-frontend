@@ -24,6 +24,8 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
+import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
+import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accessibleautocomplete.AccessibleAutocomplete
 
 sealed trait AmlSupervisorType
 
@@ -43,7 +45,9 @@ object AmlSupervisorType {
 
   def options(appConfig: AppConfig, govukSelect: GovukSelect)(implicit messages: Messages): Seq[RadioItem] = {
     val amlProfessionalBodySuperviserOptions: Seq[SelectItem] =
-      appConfig.amlProfessionalBodySupervisors.map { opb =>
+      SelectItem(
+        text = ""
+      ) +: appConfig.amlProfessionalBodySupervisors.map { opb =>
         SelectItem(
           value = Some(opb),
           text = messages(s"amlSupervisor.opb.$opb")
@@ -58,6 +62,8 @@ object AmlSupervisorType {
         label = Label(
           content = Text(messages("amlSupervisor.selectFromList"))
         )
+      ).asAccessibleAutocomplete(
+        Some(AccessibleAutocomplete(defaultValue = Some(""), showAllValues = true, autoSelect = false))
       )
     )
 
