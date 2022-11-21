@@ -21,12 +21,16 @@ import scala.annotation.tailrec
 
 object EclTaxYear {
 
+  private val startYear = LocalDate.now().getYear
+  private val monthDue  = 9
+  private val dayDue    = 30
+
   val yearDue: String              = calculateYearDue().toString
   val currentFinancialYear: String = (yearDue.toInt - 1).toString
 
   @tailrec
-  def calculateYearDue(yearDue: Int = 2023, currentDate: LocalDate = LocalDate.now()): Int =
-    if (currentDate.isAfter(LocalDate.of(yearDue, 9, 30))) {
+  def calculateYearDue(yearDue: Int = startYear, currentDate: LocalDate = LocalDate.now()): Int =
+    if (currentDate.isAfter(LocalDate.of(yearDue, monthDue, dayDue))) {
       calculateYearDue(yearDue + 1, currentDate)
     } else {
       yearDue

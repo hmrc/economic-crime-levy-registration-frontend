@@ -39,11 +39,12 @@
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0", "otherProfessionalBody" -> "otherProfessionalBody")))
         }
+
         @radios(
             RadiosViewModel(
                 field = form("value"),
                 legend = LegendViewModel(messages("amlSupervisor.body")),
-                items = AmlSupervisorType.options(appConfig, select)
+                items = AmlSupervisorType.options(appConfig, select, form.errors)
             )
         )
 

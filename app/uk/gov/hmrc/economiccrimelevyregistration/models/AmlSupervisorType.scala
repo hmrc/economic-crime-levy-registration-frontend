@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
+import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json._
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
@@ -25,6 +26,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
 import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
+import uk.gov.hmrc.govukfrontend.views.viewmodels.errormessage.ErrorMessage
 import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accessibleautocomplete.AccessibleAutocomplete
 
 sealed trait AmlSupervisorType
@@ -43,8 +45,10 @@ object AmlSupervisorType {
     Other
   )
 
-  def options(appConfig: AppConfig, govukSelect: GovukSelect)(implicit messages: Messages): Seq[RadioItem] = {
-    val amlProfessionalBodySuperviserOptions: Seq[SelectItem] =
+  def options(appConfig: AppConfig, govukSelect: GovukSelect, formErrors: Seq[FormError])(implicit
+    messages: Messages
+  ): Seq[RadioItem] = {
+    val amlProfessionalBodySupervisorOptions: Seq[SelectItem] =
       SelectItem(
         text = ""
       ) +: appConfig.amlProfessionalBodySupervisors.map { opb =>
@@ -58,10 +62,13 @@ object AmlSupervisorType {
       Select(
         id = "otherProfessionalBody",
         name = "otherProfessionalBody",
-        items = amlProfessionalBodySuperviserOptions,
+        items = amlProfessionalBodySupervisorOptions,
         label = Label(
           content = Text(messages("amlSupervisor.selectFromList"))
-        )
+        ),
+        errorMessage = if (formErrors.exists(_.key == "otherProfessionalBody")) {
+          Some(ErrorMessage(content = Text(messages("amlSupervisor.selectFromList"))))
+        } else { None }
       ).asAccessibleAutocomplete(
         Some(AccessibleAutocomplete(defaultValue = Some(""), showAllValues = true, autoSelect = true))
       )

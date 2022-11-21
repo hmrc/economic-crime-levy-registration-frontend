@@ -102,31 +102,6 @@ amlSupervisor.opb.LawSociety = Law Society
 amlSupervisor.opb.LawSocietyOfScotland = Law Society of Scotland
 amlSupervisor.opb.LawSocietyForNorthernIreland = Law Society for Northern Ireland
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-checkYourAnswers.title = Check your answers
-checkYourAnswers.heading = Check your answers
-
-signedOut.title = For your security, we signed you out
-signedOut.heading = For your security, we signed you out
-signedOut.guidance = We did not save your answers.
-
 entityType.title = What is your entity type?
 entityType.UkLimitedCompany = UK Limited Company
 entityType.SoleTrader = Sole Trader
@@ -136,3 +111,10 @@ entityType.LimitedPartnership = Limited Partnership
 entityType.ScottishLimitedPartnership = Scottish Limited Partnership
 entityType.LimitedLiabilityPartnership = Limited Liability Partnership
 entityType.error.required = Please select your entity type
+
+checkYourAnswers.title = Check your answers
+checkYourAnswers.heading = Check your answers
+
+signedOut.title = For your security, we signed you out
+signedOut.heading = For your security, we signed you out
+signedOut.guidance = We did not save your answers.
