@@ -68,7 +68,8 @@ class AmlSupervisorControllerSpec extends SpecBase {
         new TestContext(registration.copy(amlSupervisor = Some(amlSupervisor))) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
-          status(result)          shouldBe OK
+          status(result) shouldBe OK
+
           contentAsString(result) shouldBe view(form.fill(amlSupervisor))(fakeRequest, messages).toString
         }
     }
