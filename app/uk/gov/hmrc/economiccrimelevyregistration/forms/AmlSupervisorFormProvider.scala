@@ -25,12 +25,6 @@ import uk.gov.voa.play.form.ConditionalMappings.mandatoryIfEqual
 
 class AmlSupervisorFormProvider extends Mappings {
 
-  def sanitiseOtherProfessionalBody: AmlSupervisor => AmlSupervisor = amlSupervisor =>
-    amlSupervisor.supervisorType match {
-      case Other => amlSupervisor
-      case _     => amlSupervisor.copy(otherProfessionalBody = None)
-    }
-
   def apply(appConfig: AppConfig): Form[AmlSupervisor] = Form(
     mapping(
       "value"                 -> enumerable[AmlSupervisorType]("amlSupervisor.error.required"),
@@ -40,10 +34,6 @@ class AmlSupervisorFormProvider extends Mappings {
         Forms.text.verifying("amlSupervisor.selectFromList", appConfig.amlProfessionalBodySupervisors.contains(_))
       )
     )(AmlSupervisor.apply)(AmlSupervisor.unapply)
-      .transform[AmlSupervisor](
-        sanitiseOtherProfessionalBody,
-        identity
-      )
   )
 
 }
