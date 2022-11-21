@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
+import org.scalacheck.{Arbitrary, Gen}
 import play.api.data.{Form, FormError}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.OptionFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class AmlSupervisorFormProviderSpec extends OptionFieldBehaviours with SpecBase {
   val form: Form[AmlSupervisor] = new AmlSupervisorFormProvider()(appConfig)
@@ -36,5 +37,41 @@ class AmlSupervisorFormProviderSpec extends OptionFieldBehaviours with SpecBase 
     )
 
     behave like mandatoryField(form, fieldName, FormError(fieldName, requiredKey))
+  }
+
+  "otherProfessionalBody" should {
+    "produce a form error if no professional body is provided when the Other option is selected" in {
+      val result: Form[AmlSupervisor] = form.bind(Map("value" -> Other.toString, "otherProfessionalBody" -> ""))
+
+      result.errors.map(_.key) should contain("otherProfessionalBody")
+    }
+
+    "always be None if any option other than Other is selected" in forAll(
+      Gen.oneOf(appConfig.amlProfessionalBodySupervisors),
+      Gen.oneOf(Hmrc, GamblingCommission, FinancialConductAuthority)
+    ) { (otherProfessionalBody, supervisor) =>
+      val result: Form[AmlSupervisor] =
+        form.bind(Map("value" -> supervisor.toString, "otherProfessionalBody" -> otherProfessionalBody))
+
+      result.value shouldBe Some(AmlSupervisor(supervisor, None))
+    }
+
+    "produce a form error if an option is provided that is not in the list of professional bodies" in forAll(
+      Arbitrary.arbitrary[String].retryUntil(s => !appConfig.amlProfessionalBodySupervisors.contains(s))
+    ) { invalidProfessionalBody =>
+      val result: Form[AmlSupervisor] =
+        form.bind(Map("value" -> Other.toString, "otherProfessionalBody" -> invalidProfessionalBody))
+
+      result.errors.map(_.key) should contain("otherProfessionalBody")
+    }
+
+    "be the selected professional body when the Other option is selected" in forAll(
+      Gen.oneOf(appConfig.amlProfessionalBodySupervisors)
+    ) { otherProfessionalBody =>
+      val result: Form[AmlSupervisor] =
+        form.bind(Map("value" -> Other.toString, "otherProfessionalBody" -> otherProfessionalBody))
+
+      result.value shouldBe Some(AmlSupervisor(Other, Some(otherProfessionalBody)))
+    }
   }
 }
