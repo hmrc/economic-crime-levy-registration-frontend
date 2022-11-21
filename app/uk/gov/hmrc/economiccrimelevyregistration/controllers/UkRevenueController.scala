@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.Navigator
 import uk.gov.hmrc.economiccrimelevyregistration.pages.UkRevenuePage
-import uk.gov.hmrc.economiccrimelevyregistration.utils.FormUtils.prepareForm
+import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -48,7 +48,7 @@ class UkRevenueController @Inject() (
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(prepareForm(form, request.registration.meetsRevenueThreshold)))
+    Ok(view(form.prepare(request.registration.meetsRevenueThreshold)))
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>

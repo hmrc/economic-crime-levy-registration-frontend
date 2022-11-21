@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.utils
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
 import play.api.data.Forms.text
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 
-class FormUtilsSpec extends SpecBase {
+class FormImplicitsSpec extends SpecBase {
 
   val testForm: Form[String] = Form(
     "value" -> text
   )
 
-  "prepareForm" should {
+  "prepare" should {
     "return a form filled with the data if it exists" in forAll { value: String =>
-      val result = FormUtils.prepareForm(testForm, Some(value))
+      val result = testForm.prepare(Some(value))
 
       result.value shouldBe Some(value)
     }
 
     "return an empty form if the data does not exist" in {
-      val result = FormUtils.prepareForm(testForm, None)
+      val result = testForm.prepare(None)
 
       result.value shouldBe None
     }
