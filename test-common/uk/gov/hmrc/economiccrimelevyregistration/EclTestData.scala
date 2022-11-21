@@ -20,6 +20,7 @@ import org.scalacheck.{Arbitrary, Gen}
 import uk.gov.hmrc.auth.core.{Enrolments, Enrolment => AuthEnrolment}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.pages.{Page, UkRevenuePage}
@@ -95,6 +96,16 @@ trait EclTestData {
 
   implicit val arbPage: Arbitrary[Page] = Arbitrary {
     Gen.oneOf(Seq(UkRevenuePage))
+  }
+
+  def arbAmlSupervisor(appConfig: AppConfig): Arbitrary[AmlSupervisor] = Arbitrary {
+    for {
+      amlSupervisorType     <- Arbitrary.arbitrary[AmlSupervisorType]
+      otherProfessionalBody <- Gen.oneOf(appConfig.amlProfessionalBodySupervisors)
+    } yield amlSupervisorType match {
+      case Other => AmlSupervisor(Other, Some(otherProfessionalBody))
+      case _     => AmlSupervisor(amlSupervisorType, None)
+    }
   }
 
   def successfulGrsRegistrationResult(businessPartnerId: String): GrsRegistrationResult =

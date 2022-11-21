@@ -17,8 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.Result
@@ -39,6 +38,8 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
+  implicit val arbAmlSupervisor: Arbitrary[AmlSupervisor] = arbAmlSupervisor(appConfig)
+
   class TestContext(registrationData: Registration) {
     val controller = new AmlSupervisorController(
       mcc,
@@ -52,14 +53,24 @@ class AmlSupervisorControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view" in { registration: Registration =>
-      new TestContext(registration) {
+    "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
+      new TestContext(registration.copy(amlSupervisor = None)) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
         status(result) shouldBe OK
 
         contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
       }
+    }
+
+    "populate the view correctly when the question has previously been answered" in forAll {
+      (registration: Registration, amlSupervisor: AmlSupervisor) =>
+        new TestContext(registration.copy(amlSupervisor = Some(amlSupervisor))) {
+          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+
+          status(result)          shouldBe OK
+          contentAsString(result) shouldBe view(form.fill(amlSupervisor))(fakeRequest, messages).toString
+        }
     }
   }
 

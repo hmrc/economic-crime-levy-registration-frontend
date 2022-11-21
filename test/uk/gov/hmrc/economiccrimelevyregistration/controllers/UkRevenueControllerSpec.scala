@@ -52,14 +52,24 @@ class UkRevenueControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view" in { registration: Registration =>
-      new TestContext(registration) {
+    "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
+      new TestContext(registration.copy(meetsRevenueThreshold = None)) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
         status(result) shouldBe OK
 
         contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
       }
+    }
+
+    "populate the view correctly when the question has previously been answered" in forAll {
+      (registration: Registration, meetsRevenueThreshold: Boolean) =>
+        new TestContext(registration.copy(meetsRevenueThreshold = Some(meetsRevenueThreshold))) {
+          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+
+          status(result)          shouldBe OK
+          contentAsString(result) shouldBe view(form.fill(meetsRevenueThreshold))(fakeRequest, messages).toString
+        }
     }
   }
 

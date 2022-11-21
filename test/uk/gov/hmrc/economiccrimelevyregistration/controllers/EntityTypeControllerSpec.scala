@@ -65,7 +65,7 @@ class EntityTypeControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view" in { registration: Registration =>
+    "return OK and the correct view" in forAll { registration: Registration =>
       new TestContext(registration) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 

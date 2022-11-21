@@ -20,13 +20,13 @@ import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json._
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSelect
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.errormessage.ErrorMessage
 import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
-import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
-import uk.gov.hmrc.govukfrontend.views.viewmodels.errormessage.ErrorMessage
 import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accessibleautocomplete.AccessibleAutocomplete
 
 sealed trait AmlSupervisorType
@@ -113,4 +113,8 @@ object AmlSupervisorType {
   }
 }
 
-case class AmlSupervisor(supervisorType: AmlSupervisorType, otherProfessionalBody: Option[String])
+final case class AmlSupervisor(supervisorType: AmlSupervisorType, otherProfessionalBody: Option[String])
+
+object AmlSupervisor {
+  implicit val format: OFormat[AmlSupervisor] = Json.format[AmlSupervisor]
+}

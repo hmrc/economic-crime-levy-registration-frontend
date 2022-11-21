@@ -30,6 +30,6 @@ class EclRegistrationService @Inject() (eclRegistrationConnector: EclRegistratio
   def getOrCreateRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] =
     eclRegistrationConnector.getRegistration(internalId).flatMap {
       case Some(registration) => Future.successful(registration)
-      case None               => eclRegistrationConnector.upsertRegistration(Registration(internalId, None, None, None, None, None))
+      case None               => eclRegistrationConnector.upsertRegistration(Registration.empty(internalId))
     }
 }

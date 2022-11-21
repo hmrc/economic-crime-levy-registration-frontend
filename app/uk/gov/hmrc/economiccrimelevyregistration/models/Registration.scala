@@ -23,6 +23,7 @@ final case class Registration(
   internalId: String,
   entityType: Option[EntityType],
   meetsRevenueThreshold: Option[Boolean],
+  amlSupervisor: Option[AmlSupervisor],
   incorporatedEntityJourneyData: Option[IncorporatedEntityJourneyData],
   soleTraderEntityJourneyData: Option[SoleTraderEntityJourneyData],
   partnershipEntityJourneyData: Option[PartnershipEntityJourneyData]
@@ -35,6 +36,7 @@ object Registration {
     internalId = internalId,
     entityType = None,
     meetsRevenueThreshold = None,
+    amlSupervisor = None,
     incorporatedEntityJourneyData = None,
     soleTraderEntityJourneyData = None,
     partnershipEntityJourneyData = None

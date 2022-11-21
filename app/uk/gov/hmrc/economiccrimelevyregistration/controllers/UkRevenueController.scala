@@ -47,7 +47,12 @@ class UkRevenueController @Inject() (
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form))
+    val preparedForm = request.registration.meetsRevenueThreshold match {
+      case None        => form
+      case Some(value) => form.fill(value)
+    }
+
+    Ok(view(preparedForm))
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
