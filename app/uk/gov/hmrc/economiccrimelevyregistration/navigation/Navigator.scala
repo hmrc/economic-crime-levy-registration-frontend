@@ -19,20 +19,28 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.pages.Page
+import uk.gov.hmrc.economiccrimelevyregistration.pages.{Page, UkRevenuePage}
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class Navigator @Inject() () {
 
-  private val normalRoutes: Page => Registration => Call = { case _ =>
-    _ => routes.StartController.onPageLoad()
+  private val normalRoutes: Page => Registration => Call = {
+    case UkRevenuePage => ukRevenueRoute
+    case _             => _ => routes.StartController.onPageLoad()
   }
 
   private val checkRouteMap: Page => Registration => Call = { case _ =>
     _ => routes.CheckYourAnswersController.onPageLoad()
   }
+
+  private def ukRevenueRoute(registration: Registration): Call =
+    registration.meetsRevenueThreshold match {
+      case Some(true)  => routes.AmlSupervisorController.onPageLoad()
+      case Some(false) => routes.NotLiableController.onPageLoad()
+      case _           => routes.StartController.onPageLoad()
+    }
 
   def nextPage(page: Page, mode: Mode, registration: Registration): Call = mode match {
     case NormalMode =>

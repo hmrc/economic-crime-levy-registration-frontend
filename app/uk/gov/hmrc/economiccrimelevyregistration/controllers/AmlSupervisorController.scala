@@ -19,36 +19,35 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.Navigator
-import uk.gov.hmrc.economiccrimelevyregistration.pages.UkRevenuePage
+import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UkRevenueController @Inject() (
+class AmlSupervisorController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
-  formProvider: UkRevenueFormProvider,
-  navigator: Navigator,
-  view: UkRevenueView
+  formProvider: AmlSupervisorFormProvider,
+  appConfig: AppConfig,
+  view: AmlSupervisorView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form: Form[Boolean] = formProvider()
+  val form: Form[AmlSupervisor] = formProvider(appConfig)
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.meetsRevenueThreshold)))
+    Ok(view(form.prepare(request.registration.amlSupervisor)))
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
@@ -56,12 +55,7 @@ class UkRevenueController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        meetsRevenueThreshold =>
-          eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(meetsRevenueThreshold = Some(meetsRevenueThreshold)))
-            .map { updatedRegistration =>
-              Redirect(navigator.nextPage(UkRevenuePage, NormalMode, updatedRegistration))
-            }
+        success => Future.successful(Ok(success.toString))
       )
   }
 }

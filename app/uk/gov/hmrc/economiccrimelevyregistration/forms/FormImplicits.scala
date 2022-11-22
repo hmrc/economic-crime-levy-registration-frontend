@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.pages
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-trait Page
+import play.api.data.Form
 
-case object UkRevenuePage extends Page
+object FormImplicits {
+
+  implicit class FormOps[T](f: Form[T]) {
+    def prepare(data: Option[T]): Form[T] = data match {
+      case Some(value) => f.fill(value)
+      case None        => f
+    }
+  }
+
+}

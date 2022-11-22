@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.Result
@@ -43,13 +46,14 @@ class UkRevenueControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
+      fakeNavigator,
       view
     )
   }
 
   "onPageLoad" should {
-    "return OK and the correct view" in { registration: Registration =>
-      new TestContext(registration) {
+    "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
+      new TestContext(registration.copy(meetsRevenueThreshold = None)) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
         status(result) shouldBe OK
@@ -57,6 +61,45 @@ class UkRevenueControllerSpec extends SpecBase {
         contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
       }
     }
+
+    "populate the view correctly when the question has previously been answered" in forAll {
+      (registration: Registration, meetsRevenueThreshold: Boolean) =>
+        new TestContext(registration.copy(meetsRevenueThreshold = Some(meetsRevenueThreshold))) {
+          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+
+          status(result)          shouldBe OK
+          contentAsString(result) shouldBe view(form.fill(meetsRevenueThreshold))(fakeRequest, messages).toString
+        }
+    }
   }
 
+  "onSubmit" should {
+    "save the selected Uk revenue option then redirect to the next page" in forAll {
+      (registration: Registration, meetsRevenueThreshold: Boolean) =>
+        new TestContext(registration) {
+          val updatedRegistration: Registration = registration.copy(meetsRevenueThreshold = Some(meetsRevenueThreshold))
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] =
+            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", meetsRevenueThreshold.toString)))
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(onwardRoute.url)
+        }
+    }
+
+    "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
+      new TestContext(registration) {
+        val result: Future[Result]        = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
+        val formWithErrors: Form[Boolean] = form.bind(Map("value" -> ""))
+
+        status(result) shouldBe BAD_REQUEST
+
+        contentAsString(result) shouldBe view(formWithErrors)(fakeRequest, messages).toString
+      }
+    }
+  }
 }
