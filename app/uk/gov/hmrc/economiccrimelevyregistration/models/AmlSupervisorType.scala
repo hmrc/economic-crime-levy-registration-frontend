@@ -75,21 +75,16 @@ object AmlSupervisorType {
     )
 
     values.zipWithIndex.map { case (value, index) =>
-      value match {
-        case Other =>
-          RadioItem(
-            content = Text(messages(s"amlSupervisor.${value.toString}")),
-            value = Some(value.toString),
-            id = Some(s"value_$index"),
-            conditionalHtml = Some(selectAmlProfessionalBody)
-          )
-        case _     =>
-          RadioItem(
-            content = Text(messages(s"amlSupervisor.${value.toString}")),
-            value = Some(value.toString),
-            id = Some(s"value_$index")
-          )
-      }
+      RadioItem(
+        content = Text(messages(s"amlSupervisor.${value.toString}")),
+        value = Some(value.toString),
+        id = Some(s"value_$index"),
+        conditionalHtml = if (value == Other) {
+          Some(selectAmlProfessionalBody)
+        } else {
+          None
+        }
+      )
 
     }
   }

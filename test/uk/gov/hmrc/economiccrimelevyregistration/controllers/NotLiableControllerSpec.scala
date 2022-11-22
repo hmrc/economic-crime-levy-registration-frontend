@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 class NotLiableControllerSpec extends SpecBase {
   val view: NotLiableView = app.injector.instanceOf[NotLiableView]
-  val controller          = new NotLiableController(mcc, view)
+  val controller          = new NotLiableController(mcc, fakeAuthorisedAction, view)
 
   "onPageLoad" should {
     "return OK and the correct view" in {
