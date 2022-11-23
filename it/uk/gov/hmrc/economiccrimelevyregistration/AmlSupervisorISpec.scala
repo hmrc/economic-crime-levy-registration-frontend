@@ -9,12 +9,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET /$contextPath/who-is-your-aml-supervisor" should {
+  s"GET ${routes.AmlSupervisorController.onPageLoad().url}" should {
     behave like authorisedActionRoute(routes.AmlSupervisorController.onPageLoad())
 
     "respond with 200 status and the AML supervisor HTML view" in {
-      stubAuthorised()
-      stubNoGroupEnrolment()
+      stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
 

@@ -26,21 +26,26 @@
 
 @(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
 
+@legendHtml = {
+    <h1 class="govuk-heading-l">@messages("ukRevenue.heading", EclTaxYear.currentFinancialYear)</h1>
+@messages("ukRevenue.legend", EclTaxYear.currentFinancialYear)
+}
+
 @layout(
     pageTitle = titleWithForm(form, messages("ukRevenue.title", EclTaxYear.currentFinancialYear)),
     backLinkUrl = Some(StartController.onPageLoad().url)
 ) {
-    <h1 class="govuk-heading-l">@messages("ukRevenue.heading", EclTaxYear.currentFinancialYear)</h1>
+
 
     @formHelper(action = UkRevenueController.onSubmit()) {
         @if(form.errors.nonEmpty) {
-            @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
+            @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "less-than")))
         }
 
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(messages("ukRevenue.legend", EclTaxYear.currentFinancialYear)),
+                legend = LegendViewModel(HtmlContent(legendHtml)),
                 items = Seq(
                     RadioItem(
                         id = Some("less-than"),

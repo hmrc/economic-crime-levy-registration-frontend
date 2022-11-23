@@ -11,12 +11,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes._
 
 class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET /$contextPath/what-was-your-uk-revenue" should {
+  s"GET ${routes.UkRevenueController.onPageLoad().url}" should {
     behave like authorisedActionRoute(routes.UkRevenueController.onPageLoad())
 
     "respond with 200 status and the uk revenue HTML view" in {
-      stubAuthorised()
-      stubNoGroupEnrolment()
+      stubAuthorisedWithNoGroupEnrolment()
 
       val expectedTaxYear = EclTaxYear.currentFinancialYear
 
@@ -32,11 +31,11 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST /$contextPath/what-was-your-uk-revenue" should {
-    behave like authorisedActionRoute(routes.UkRevenueController.onPageLoad())
+  s"POST ${routes.UkRevenueController.onSubmit().url}"  should {
+    behave like authorisedActionRoute(routes.UkRevenueController.onSubmit())
 
     "save the selected Uk revenue option then redirect to the 'you do not need to register' page when the LessThan option is selected" in {
-      stubAuthorised()
+      stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
 
@@ -55,28 +54,24 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       redirectLocation(result) shouldBe Some(NotLiableController.onPageLoad().url)
     }
 
-    s"POST /$contextPath/what-was-your-uk-revenue" should {
-      behave like authorisedActionRoute(routes.UkRevenueController.onPageLoad())
+    "save the selected Uk revenue option then redirect to the 'who is your AML Supervisor?' page when the EqualToOrGreaterThan option is selected" in {
+      stubAuthorisedWithNoGroupEnrolment()
 
-      "save the selected Uk revenue option then redirect to the 'who is your AML Supervisor?' page when the EqualToOrGreaterThan option is selected" in {
-        stubAuthorised()
+      val registration = random[Registration]
 
-        val registration = random[Registration]
+      stubGetRegistration(registration)
 
-        stubGetRegistration(registration)
+      val updatedRegistration = registration.copy(meetsRevenueThreshold = Some(true))
 
-        val updatedRegistration = registration.copy(meetsRevenueThreshold = Some(true))
+      stubUpsertRegistration(updatedRegistration)
 
-        stubUpsertRegistration(updatedRegistration)
+      val result = callRoute(
+        FakeRequest(routes.UkRevenueController.onSubmit()).withFormUrlEncodedBody(("value", "true"))
+      )
 
-        val result = callRoute(
-          FakeRequest(routes.UkRevenueController.onSubmit()).withFormUrlEncodedBody(("value", "true"))
-        )
+      status(result) shouldBe SEE_OTHER
 
-        status(result) shouldBe SEE_OTHER
-
-        redirectLocation(result) shouldBe Some(AmlSupervisorController.onPageLoad().url)
-      }
+      redirectLocation(result) shouldBe Some(AmlSupervisorController.onPageLoad().url)
     }
   }
 }

@@ -28,12 +28,17 @@
 
 @(form: Form[AmlSupervisor])(implicit request: Request[_], messages: Messages)
 
+@legendHtml = {
+    <h1 class="govuk-heading-l">@messages("amlSupervisor.heading")</h1>
+@messages("amlSupervisor.body")
+}
+
 @layout(
     pageTitle = titleWithForm(form, messages("amlSupervisor.title")),
     backLinkUrl = Some(UkRevenueController.onPageLoad().url),
     autoCompleteEnabled = true
 ) {
-    <h1 class="govuk-heading-l">@messages("amlSupervisor.heading")</h1>
+
 
     @formHelper(action = AmlSupervisorController.onSubmit()) {
         @if(form.errors.nonEmpty) {
@@ -43,7 +48,7 @@
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(messages("amlSupervisor.body")),
+                legend = LegendViewModel(HtmlContent(legendHtml)),
                 items = AmlSupervisorType.options(appConfig, select, form.errors)
             )
         )

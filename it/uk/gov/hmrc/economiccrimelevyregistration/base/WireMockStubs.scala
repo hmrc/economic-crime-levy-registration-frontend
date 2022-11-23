@@ -5,6 +5,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.base
 
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 
 trait WireMockStubs
@@ -12,4 +13,10 @@ trait WireMockStubs
     with AuthStubs
     with GrsStubs
     with EclRegistrationStubs
-    with EnrolmentStoreProxyStubs
+    with EnrolmentStoreProxyStubs {
+
+  def stubAuthorisedWithNoGroupEnrolment(): StubMapping = {
+    stubAuthorised()
+    stubNoGroupEnrolment()
+  }
+}

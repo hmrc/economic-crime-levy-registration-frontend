@@ -18,7 +18,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 class UkRevenueFormProvider extends Mappings {
-  def apply(): Form[Boolean] = Form(("value", boolean("ukRevenue.error.required")))
+  def apply(): Form[Boolean] = Form(
+    ("value", boolean("ukRevenue.error.required", args = Seq(EclTaxYear.currentFinancialYear)))
+  )
 }
