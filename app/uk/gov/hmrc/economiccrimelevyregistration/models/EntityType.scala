@@ -30,6 +30,7 @@ case object ScottishPartnership extends EntityType
 case object LimitedPartnership extends EntityType
 case object ScottishLimitedPartnership extends EntityType
 case object LimitedLiabilityPartnership extends EntityType
+case object OtherEntityType extends EntityType
 
 object EntityType {
 
@@ -40,7 +41,8 @@ object EntityType {
     ScottishPartnership,
     LimitedPartnership,
     ScottishLimitedPartnership,
-    LimitedLiabilityPartnership
+    LimitedLiabilityPartnership,
+    OtherEntityType
   )
 
   def options(implicit messages: Messages): Seq[RadioItem] =
@@ -65,6 +67,7 @@ object EntityType {
           case "LimitedPartnership"          => JsSuccess(LimitedPartnership)
           case "ScottishLimitedPartnership"  => JsSuccess(ScottishLimitedPartnership)
           case "LimitedLiabilityPartnership" => JsSuccess(LimitedLiabilityPartnership)
+          case "OtherEntityType"             => JsSuccess(OtherEntityType)
           case s                             => JsError(s"$s is not a valid EntityType")
         }
       case e: JsError          => e

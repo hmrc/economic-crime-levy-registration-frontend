@@ -25,6 +25,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.Navigator
+import uk.gov.hmrc.economiccrimelevyregistration.pages.AmlSupervisorPage
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -39,6 +41,7 @@ class AmlSupervisorController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: AmlSupervisorFormProvider,
   appConfig: AppConfig,
+  navigator: Navigator,
   view: AmlSupervisorView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -55,7 +58,12 @@ class AmlSupervisorController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        success => Future.successful(Ok(success.toString))
+        amlSupervisor =>
+          eclRegistrationConnector
+            .upsertRegistration(request.registration.copy(amlSupervisor = Some(amlSupervisor)))
+            .map { updatedRegistration =>
+              Redirect(navigator.nextPage(AmlSupervisorPage, NormalMode, updatedRegistration))
+            }
       )
   }
 }

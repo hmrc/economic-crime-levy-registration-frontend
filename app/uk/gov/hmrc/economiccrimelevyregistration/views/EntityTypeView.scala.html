@@ -25,7 +25,9 @@
 @(form: Form[EntityType])(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle = titleWithForm(form, messages("entityType.title"))
+    pageTitle = titleWithForm(form, messages("entityType.title")),
+    backLinkUrl = Some(AmlSupervisorController.onPageLoad().url)
+
 ) {
     @formHelper(action = EntityTypeController.onSubmit()) {
         @if(form.errors.nonEmpty) {
@@ -40,8 +42,7 @@
         )
 
         @button(
-            ButtonViewModel(messages("site.continue"))
+            ButtonViewModel(messages("site.saveAndContinue"))
         )
     }
 }
-

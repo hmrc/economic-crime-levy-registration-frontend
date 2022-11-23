@@ -75,6 +75,8 @@ class EntityTypeController @Inject() (
                   partnershipIdentificationFrontendConnector
                     .createPartnershipJourney(entityType)
                     .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
+
+                case OtherEntityType => ???
               }
             }
       )

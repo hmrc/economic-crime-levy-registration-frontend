@@ -62,6 +62,8 @@ class GrsContinueController @Inject() (
               .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration))
           }
 
+        case Some(OtherEntityType) => ???
+
         case None => throw new IllegalStateException("No entity type found in registration data")
       }
   }
