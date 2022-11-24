@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.BooleanFieldBehaviours
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 class UkRevenueFormProviderSpec extends BooleanFieldBehaviours {
   val form = new UkRevenueFormProvider()()
@@ -26,8 +27,16 @@ class UkRevenueFormProviderSpec extends BooleanFieldBehaviours {
     val fieldName   = "value"
     val requiredKey = "ukRevenue.error.required"
 
-    behave like booleanField(form, fieldName, FormError(fieldName, "error.boolean"))
+    behave like booleanField(
+      form,
+      fieldName,
+      FormError(fieldName, "error.boolean", args = Seq(EclTaxYear.currentFinancialYear))
+    )
 
-    behave like mandatoryField(form, fieldName, FormError(fieldName, requiredKey))
+    behave like mandatoryField(
+      form,
+      fieldName,
+      FormError(fieldName, requiredKey, args = Seq(EclTaxYear.currentFinancialYear))
+    )
   }
 }
