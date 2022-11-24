@@ -23,16 +23,15 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 sealed trait EntityType
 
-case object UkLimitedCompany extends EntityType
-case object SoleTrader extends EntityType
-case object GeneralPartnership extends EntityType
-case object ScottishPartnership extends EntityType
-case object LimitedPartnership extends EntityType
-case object ScottishLimitedPartnership extends EntityType
-case object LimitedLiabilityPartnership extends EntityType
-case object OtherEntityType extends EntityType
-
 object EntityType {
+  case object UkLimitedCompany extends EntityType
+  case object SoleTrader extends EntityType
+  case object GeneralPartnership extends EntityType
+  case object ScottishPartnership extends EntityType
+  case object LimitedPartnership extends EntityType
+  case object ScottishLimitedPartnership extends EntityType
+  case object LimitedLiabilityPartnership extends EntityType
+  case object Other extends EntityType
 
   val values: Seq[EntityType] = Seq(
     UkLimitedCompany,
@@ -42,7 +41,7 @@ object EntityType {
     LimitedPartnership,
     ScottishLimitedPartnership,
     LimitedLiabilityPartnership,
-    OtherEntityType
+    Other
   )
 
   def options(implicit messages: Messages): Seq[RadioItem] =
@@ -67,7 +66,7 @@ object EntityType {
           case "LimitedPartnership"          => JsSuccess(LimitedPartnership)
           case "ScottishLimitedPartnership"  => JsSuccess(ScottishLimitedPartnership)
           case "LimitedLiabilityPartnership" => JsSuccess(LimitedLiabilityPartnership)
-          case "OtherEntityType"             => JsSuccess(OtherEntityType)
+          case "Other"                       => JsSuccess(Other)
           case s                             => JsError(s"$s is not a valid EntityType")
         }
       case e: JsError          => e

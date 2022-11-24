@@ -22,6 +22,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -76,7 +77,7 @@ class EntityTypeController @Inject() (
                     .createPartnershipJourney(entityType)
                     .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
 
-                case OtherEntityType => ???
+                case Other => ???
               }
             }
       )

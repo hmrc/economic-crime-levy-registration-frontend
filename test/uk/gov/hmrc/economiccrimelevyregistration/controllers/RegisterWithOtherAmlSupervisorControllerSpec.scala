@@ -21,7 +21,8 @@ import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.Helpers.{contentAsString, status}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, FinancialConductAuthority, GamblingCommission, Hmrc, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{FinancialConductAuthorityView, GamblingCommissionView}
 
 import scala.concurrent.Future

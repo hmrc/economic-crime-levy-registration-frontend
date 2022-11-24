@@ -20,7 +20,8 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitr
 import org.scalacheck.Gen
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, CheckMode, FinancialConductAuthority, GamblingCommission, Hmrc, NormalMode, Other, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.pages.{AmlSupervisorPage, Page, UkRevenuePage}
 
 class NavigatorSpec extends SpecBase {

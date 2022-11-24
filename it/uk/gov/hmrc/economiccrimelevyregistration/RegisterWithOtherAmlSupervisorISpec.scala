@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbitrary, random}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbitrary, random}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, FinancialConductAuthority, GamblingCommission, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, Registration}
 
 class RegisterWithOtherAmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 

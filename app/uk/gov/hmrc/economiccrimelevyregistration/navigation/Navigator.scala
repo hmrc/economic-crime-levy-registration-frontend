@@ -18,7 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, CheckMode, FinancialConductAuthority, GamblingCommission, Hmrc, Mode, NormalMode, Other, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{FinancialConductAuthority, GamblingCommission, Hmrc, Other}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.pages.{AmlSupervisorPage, Page, UkRevenuePage}
 
 import javax.inject.{Inject, Singleton}

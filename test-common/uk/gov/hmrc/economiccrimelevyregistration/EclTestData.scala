@@ -21,6 +21,7 @@ import uk.gov.hmrc.auth.core.{Enrolments, Enrolment => AuthEnrolment}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.pages.{Page, UkRevenuePage}
@@ -103,8 +104,8 @@ trait EclTestData {
       amlSupervisorType     <- Arbitrary.arbitrary[AmlSupervisorType]
       otherProfessionalBody <- Gen.oneOf(appConfig.amlProfessionalBodySupervisors)
     } yield amlSupervisorType match {
-      case Other => AmlSupervisor(Other, Some(otherProfessionalBody))
-      case _     => AmlSupervisor(amlSupervisorType, None)
+      case AmlSupervisorType.Other => AmlSupervisor(AmlSupervisorType.Other, Some(otherProfessionalBody))
+      case _                       => AmlSupervisor(amlSupervisorType, None)
     }
   }
 

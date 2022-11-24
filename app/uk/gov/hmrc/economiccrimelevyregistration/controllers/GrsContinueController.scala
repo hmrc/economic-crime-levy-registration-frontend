@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
@@ -62,7 +63,7 @@ class GrsContinueController @Inject() (
               .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration))
           }
 
-        case Some(OtherEntityType) => ???
+        case Some(Other) => ???
 
         case None => throw new IllegalStateException("No entity type found in registration data")
       }

@@ -20,7 +20,8 @@ import play.api.data.Forms.mapping
 import play.api.data.{Form, Forms}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, Other}
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType}
 import uk.gov.voa.play.form.ConditionalMappings.mandatoryIfEqual
 
 class AmlSupervisorFormProvider extends Mappings {
