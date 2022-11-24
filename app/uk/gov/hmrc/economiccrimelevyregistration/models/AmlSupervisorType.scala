@@ -31,12 +31,11 @@ import uk.gov.hmrc.hmrcfrontend.views.viewmodels.accessibleautocomplete.Accessib
 
 sealed trait AmlSupervisorType
 
-case object Hmrc extends AmlSupervisorType
-case object GamblingCommission extends AmlSupervisorType
-case object FinancialConductAuthority extends AmlSupervisorType
-case object Other extends AmlSupervisorType
-
 object AmlSupervisorType {
+  case object Hmrc extends AmlSupervisorType
+  case object GamblingCommission extends AmlSupervisorType
+  case object FinancialConductAuthority extends AmlSupervisorType
+  case object Other extends AmlSupervisorType
 
   val values: Seq[AmlSupervisorType] = Seq(
     Hmrc,

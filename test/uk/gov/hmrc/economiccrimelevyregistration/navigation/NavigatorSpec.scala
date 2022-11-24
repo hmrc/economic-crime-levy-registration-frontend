@@ -17,10 +17,12 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import org.scalacheck.Gen
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.pages.{Page, UkRevenuePage}
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
+import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.pages.{AmlSupervisorPage, Page, UkRevenuePage}
 
 class NavigatorSpec extends SpecBase {
 
@@ -41,6 +43,34 @@ class NavigatorSpec extends SpecBase {
 
         navigator.nextPage(UkRevenuePage, NormalMode, updatedRegistration) shouldBe routes.NotLiableController
           .onPageLoad()
+    }
+
+    "go to the register with your AML Supervisor page in NormalMode when either the Gambling Commission or Financial Conduct Authority AML Supervisor option is selected" in forAll {
+      registration: Registration =>
+        val supervisorType      = Gen.oneOf[AmlSupervisorType](Seq(GamblingCommission, FinancialConductAuthority)).sample.get
+        val amlSupervisor       = AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = None)
+        val updatedRegistration = registration.copy(amlSupervisor = Some(amlSupervisor))
+
+        navigator.nextPage(
+          AmlSupervisorPage,
+          NormalMode,
+          updatedRegistration
+        ) shouldBe routes.RegisterWithOtherAmlSupervisorController.onPageLoad()
+    }
+
+    "go to the select entity type page in NormalMode when either the HMRC or Other AML Supervisor option is selected" in forAll {
+      registration: Registration =>
+        val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
+        val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample
+        val amlSupervisor         =
+          AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = otherProfessionalBody)
+        val updatedRegistration   = registration.copy(amlSupervisor = Some(amlSupervisor))
+
+        navigator.nextPage(
+          AmlSupervisorPage,
+          NormalMode,
+          updatedRegistration
+        ) shouldBe routes.EntityTypeController.onPageLoad()
     }
 
     "go to the start page when the registration data does not contain the data required to trigger the correct routing" in forAll {

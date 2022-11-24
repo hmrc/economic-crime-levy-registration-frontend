@@ -18,8 +18,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.pages.{Page, UkRevenuePage}
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{FinancialConductAuthority, GamblingCommission, Hmrc, Other}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.pages.{AmlSupervisorPage, Page, UkRevenuePage}
 
 import javax.inject.{Inject, Singleton}
 
@@ -27,8 +28,9 @@ import javax.inject.{Inject, Singleton}
 class Navigator @Inject() () {
 
   private val normalRoutes: Page => Registration => Call = {
-    case UkRevenuePage => ukRevenueRoute
-    case _             => _ => routes.StartController.onPageLoad()
+    case UkRevenuePage     => ukRevenueRoute
+    case AmlSupervisorPage => amlSupervisorRoute
+    case _                 => _ => routes.StartController.onPageLoad()
   }
 
   private val checkRouteMap: Page => Registration => Call = { case _ =>
@@ -40,6 +42,17 @@ class Navigator @Inject() () {
       case Some(true)  => routes.AmlSupervisorController.onPageLoad()
       case Some(false) => routes.NotLiableController.onPageLoad()
       case _           => routes.StartController.onPageLoad()
+    }
+
+  private def amlSupervisorRoute(registration: Registration): Call =
+    registration.amlSupervisor match {
+      case Some(amlSupervisor) =>
+        amlSupervisor.supervisorType match {
+          case GamblingCommission | FinancialConductAuthority =>
+            routes.RegisterWithOtherAmlSupervisorController.onPageLoad()
+          case Hmrc | Other                                   => routes.EntityTypeController.onPageLoad()
+        }
+      case _                   => routes.StartController.onPageLoad()
     }
 
   def nextPage(page: Page, mode: Mode, registration: Registration): Call = mode match {

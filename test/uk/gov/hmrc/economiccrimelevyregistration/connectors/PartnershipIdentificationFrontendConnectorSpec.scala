@@ -21,8 +21,8 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
-import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.http.HttpClient
 
 import scala.concurrent.Future

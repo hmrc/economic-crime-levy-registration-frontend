@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.models.grs
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import play.api.libs.json.{JsBoolean, JsError, JsString, Json}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus._
 
 class VerificationStatusSpec extends SpecBase {
   "writes" should {

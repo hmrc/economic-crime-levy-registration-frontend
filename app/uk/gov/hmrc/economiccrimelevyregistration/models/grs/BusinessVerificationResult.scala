@@ -20,13 +20,13 @@ import play.api.libs.json._
 
 sealed trait VerificationStatus
 
-case object Pass extends VerificationStatus
-case object Fail extends VerificationStatus
-case object Unchallenged extends VerificationStatus
-case object CtEnrolled extends VerificationStatus
-case object SaEnrolled extends VerificationStatus
-
 object VerificationStatus {
+  case object Pass extends VerificationStatus
+  case object Fail extends VerificationStatus
+  case object Unchallenged extends VerificationStatus
+  case object CtEnrolled extends VerificationStatus
+  case object SaEnrolled extends VerificationStatus
+
   implicit val format: Format[VerificationStatus] = new Format[VerificationStatus] {
     override def reads(json: JsValue): JsResult[VerificationStatus] = json.validate[String] match {
       case JsSuccess(value, _) =>

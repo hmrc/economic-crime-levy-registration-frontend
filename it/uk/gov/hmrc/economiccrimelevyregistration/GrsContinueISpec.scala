@@ -5,20 +5,21 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclSubscriptionStatus, NotSubscribed, Registration, SoleTrader, Subscribed, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclSubscriptionStatus, Registration}
 
 class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
   val journeyId: String         = "test-journey-id"
   val businessPartnerId: String = "test-business-partner-id"
 
-  s"GET /$contextPath/grs-continue" should {
+  s"GET ${routes.GrsContinueController.continue(journeyId).url}" should {
     behave like authorisedActionRoute(routes.GrsContinueController.continue(journeyId))
 
     "retrieve the incorporated entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
-      stubAuthorised()
-      stubNoGroupEnrolment()
+      stubAuthorisedWithNoGroupEnrolment()
 
       val registration =
         random[Registration]
@@ -62,8 +63,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
     }
 
     "retrieve the incorporated entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {
-      stubAuthorised()
-      stubNoGroupEnrolment()
+      stubAuthorisedWithNoGroupEnrolment()
 
       val registration =
         random[Registration]
@@ -107,8 +107,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
     }
 
     "retrieve the sole trader entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
-      stubAuthorised()
-      stubNoGroupEnrolment()
+      stubAuthorisedWithNoGroupEnrolment()
 
       val registration =
         random[Registration]
@@ -149,8 +148,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
     }
 
     "retrieve the sole trader entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {
-      stubAuthorised()
-      stubNoGroupEnrolment()
+      stubAuthorisedWithNoGroupEnrolment()
 
       val registration =
         random[Registration]
@@ -191,8 +189,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
     }
 
     "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
-      stubAuthorised()
-      stubNoGroupEnrolment()
+      stubAuthorisedWithNoGroupEnrolment()
 
       val entityType   = random[PartnershipType].entityType
       val registration =
@@ -234,8 +231,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
     }
 
     "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {
-      stubAuthorised()
-      stubNoGroupEnrolment()
+      stubAuthorisedWithNoGroupEnrolment()
 
       val entityType = random[PartnershipType].entityType
       val registration =

@@ -18,16 +18,21 @@ package uk.gov.hmrc.economiccrimelevyregistration
 
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
-class StartISpec extends ISpecBase {
+class NotLiableISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.StartController.onPageLoad().url}" should {
+  s"GET ${routes.NotLiableController.onPageLoad().url}" should {
+    behave like authorisedActionRoute(routes.NotLiableController.onPageLoad())
+
     "respond with 200 status and the start HTML view" in {
-      val result = callRoute(FakeRequest(routes.StartController.onPageLoad()))
+      stubAuthorisedWithNoGroupEnrolment()
+
+      val result = callRoute(FakeRequest(routes.NotLiableController.onPageLoad()))
 
       status(result) shouldBe OK
-      html(result)     should include("Register for the Economic Crime Levy")
+      html(result)     should include("You do not need to register")
     }
   }
 

@@ -20,6 +20,7 @@ import org.scalacheck.{Arbitrary, Gen}
 import play.api.data.{Form, FormError}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.OptionFieldBehaviours
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class AmlSupervisorFormProviderSpec extends OptionFieldBehaviours with SpecBase {

@@ -19,3 +19,4 @@ package uk.gov.hmrc.economiccrimelevyregistration.pages
 trait Page
 
 case object UkRevenuePage extends Page
+case object AmlSupervisorPage extends Page

@@ -14,8 +14,10 @@ POST        /who-is-your-aml-supervisor      uk.gov.hmrc.economiccrimelevyregist
 
 GET         /you-do-not-need-to-register     uk.gov.hmrc.economiccrimelevyregistration.controllers.NotLiableController.onPageLoad()
 
-GET         /select-entity-type              uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
-POST        /select-entity-type              uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
+GET         /register-with-your-aml-supervisor    uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterWithOtherAmlSupervisorController.onPageLoad()
+
+GET         /what-is-your-entity-type        uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
+POST        /what-is-your-entity-type        uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
 
 GET         /grs-continue                    uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
 

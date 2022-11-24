@@ -24,6 +24,8 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 
@@ -642,7 +644,7 @@ class GrsContinueControllerSpec extends SpecBase {
             await(controller.continue(journeyId)(fakeRequest))
           }
 
-          result.getMessage shouldBe "No entity type found in registration data"
+          result.getMessage shouldBe "No valid entity type found in registration data"
         }
     }
 

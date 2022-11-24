@@ -19,8 +19,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.PartnershipIdentificationFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, GrsCreateJourneyResponse, PartnershipEntityJourneyData, RegistrationStatus, VerificationStatus}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, GeneralPartnership, ScottishPartnership}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 

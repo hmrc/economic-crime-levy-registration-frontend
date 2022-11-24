@@ -5,16 +5,16 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET /$contextPath/select-entity-type"  should {
+  s"GET ${routes.EntityTypeController.onPageLoad().url}" should {
     behave like authorisedActionRoute(routes.EntityTypeController.onPageLoad())
 
     "respond with 200 status and the select entity type HTML view" in {
-      stubAuthorised()
-      stubNoGroupEnrolment()
+      stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
 
@@ -28,12 +28,11 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST /$contextPath/select-entity-type" should {
-    behave like authorisedActionRoute(routes.EntityTypeController.onPageLoad())
+  s"POST ${routes.EntityTypeController.onSubmit().url}" should {
+    behave like authorisedActionRoute(routes.EntityTypeController.onSubmit())
 
     "save the selected entity type then redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
-      stubAuthorised()
-      stubNoGroupEnrolment()
+      stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
 
@@ -54,8 +53,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     }
 
     "save the selected entity type then redirect to the GRS Sole Trader journey when the Sole Trader option is selected" in {
-      stubAuthorised()
-      stubNoGroupEnrolment()
+      stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
 
@@ -77,8 +75,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   "save the selected entity type then redirect to the GRS Partnership journey when the Partnership option is selected" in {
-    stubAuthorised()
-    stubNoGroupEnrolment()
+    stubAuthorisedWithNoGroupEnrolment()
 
     val registration = random[Registration]
     val entityType   = random[PartnershipType].entityType

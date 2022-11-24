@@ -48,6 +48,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
       mockEclRegistrationConnector,
       formProvider,
       appConfig,
+      fakeNavigator,
       view
     )
   }
