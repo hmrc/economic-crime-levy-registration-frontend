@@ -17,6 +17,8 @@
 package uk.gov.hmrc.economiccrimelevyregistration.testonly.data
 
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 
 import java.time.Instant

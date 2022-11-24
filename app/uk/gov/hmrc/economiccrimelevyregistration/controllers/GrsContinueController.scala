@@ -22,6 +22,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.http.HeaderCarrier

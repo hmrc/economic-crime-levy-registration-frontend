@@ -20,11 +20,11 @@ import play.api.libs.json._
 
 sealed trait RegistrationStatus
 
-case object Registered extends RegistrationStatus
-case object RegistrationFailed extends RegistrationStatus
-case object RegistrationNotCalled extends RegistrationStatus
-
 object RegistrationStatus {
+  case object Registered extends RegistrationStatus
+  case object RegistrationFailed extends RegistrationStatus
+  case object RegistrationNotCalled extends RegistrationStatus
+
   implicit val format: Format[RegistrationStatus] = new Format[RegistrationStatus] {
     override def reads(json: JsValue): JsResult[RegistrationStatus] = json.validate[String] match {
       case JsSuccess(value, _) =>

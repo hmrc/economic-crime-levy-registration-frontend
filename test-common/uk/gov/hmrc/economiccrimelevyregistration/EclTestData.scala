@@ -23,6 +23,8 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitr
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.pages.{Page, UkRevenuePage}
 
