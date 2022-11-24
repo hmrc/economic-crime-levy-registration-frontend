@@ -644,7 +644,7 @@ class GrsContinueControllerSpec extends SpecBase {
             await(controller.continue(journeyId)(fakeRequest))
           }
 
-          result.getMessage shouldBe "No entity type found in registration data"
+          result.getMessage shouldBe "No valid entity type found in registration data"
         }
     }
 
