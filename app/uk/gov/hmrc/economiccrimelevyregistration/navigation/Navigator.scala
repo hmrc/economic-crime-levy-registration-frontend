@@ -46,10 +46,13 @@ class Navigator @Inject() () {
 
   private def amlSupervisorRoute(registration: Registration): Call =
     registration.amlSupervisor match {
-      case Some(AmlSupervisor(GamblingCommission, _)) | Some(AmlSupervisor(FinancialConductAuthority, _)) =>
-        routes.RegisterWithOtherAmlSupervisorController.onPageLoad()
-      case Some(AmlSupervisor(Hmrc, _)) | Some(AmlSupervisor(Other, _))                                   => routes.EntityTypeController.onPageLoad()
-      case _                                                                                              => routes.StartController.onPageLoad()
+      case Some(amlSupervisor) =>
+        amlSupervisor.supervisorType match {
+          case GamblingCommission | FinancialConductAuthority =>
+            routes.RegisterWithOtherAmlSupervisorController.onPageLoad()
+          case Hmrc | Other                                   => routes.EntityTypeController.onPageLoad()
+        }
+      case _                   => routes.StartController.onPageLoad()
     }
 
   def nextPage(page: Page, mode: Mode, registration: Registration): Call = mode match {
