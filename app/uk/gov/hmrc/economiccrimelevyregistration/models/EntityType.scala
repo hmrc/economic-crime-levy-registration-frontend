@@ -35,12 +35,12 @@ object EntityType {
 
   val values: Seq[EntityType] = Seq(
     UkLimitedCompany,
-    SoleTrader,
-    GeneralPartnership,
-    ScottishPartnership,
+    LimitedLiabilityPartnership,
     LimitedPartnership,
     ScottishLimitedPartnership,
-    LimitedLiabilityPartnership,
+    GeneralPartnership,
+    ScottishPartnership,
+    SoleTrader,
     Other
   )
 

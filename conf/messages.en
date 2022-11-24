@@ -117,9 +117,9 @@ entityType.SoleTrader = Sole trader
 entityType.GeneralPartnership = General partnership
 entityType.ScottishPartnership = Scottish partnership
 entityType.LimitedPartnership = Limited partnership
-entityType.ScottishLimitedPartnership = Scottish limited liability Partnership
+entityType.ScottishLimitedPartnership = Scottish limited liability partnership
 entityType.LimitedLiabilityPartnership = Limited liability partnership
-entityType.OtherEntityType = Other
+entityType.Other = Other
 entityType.error.required = Please select your entity type
 
 checkYourAnswers.title = Check your answers
