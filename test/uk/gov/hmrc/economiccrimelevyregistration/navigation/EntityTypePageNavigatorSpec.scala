@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.pages
+package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-trait Page
+import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 
-case object UkRevenuePage extends Page
-case object AmlSupervisorPage extends Page
+class EntityTypePageNavigatorSpec extends SpecBase {
+
+  //val pageNavigator = new EntityTypePageNavigator()
+
+  "navigate" should {}
+
+  "navigateAsync" should {}
+}

@@ -17,11 +17,15 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.pages.Page
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-class FakeNavigator(desiredRoute: Call) extends Navigator {
+class UkRevenuePageNavigator extends PageNavigator {
 
-  override def nextPage(page: Page, mode: Mode, registration: Registration): Call =
-    desiredRoute
+  override protected def navigateInNormalMode(registration: Registration): Call =
+    registration.meetsRevenueThreshold match {
+      case Some(true)  => routes.AmlSupervisorController.onPageLoad()
+      case Some(false) => routes.NotLiableController.onPageLoad()
+      case _           => routes.StartController.onPageLoad()
+    }
 }

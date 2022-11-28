@@ -21,21 +21,28 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.Result
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 
 import scala.concurrent.Future
+
+class FakeUkRevenuePageNavigator(desiredRoute: Call) extends UkRevenuePageNavigator {
+  override def navigate(mode: Mode, registration: Registration): Call =
+    desiredRoute
+}
 
 class UkRevenueControllerSpec extends SpecBase {
 
   val view: UkRevenueView                 = app.injector.instanceOf[UkRevenueView]
   val formProvider: UkRevenueFormProvider = new UkRevenueFormProvider()
   val form: Form[Boolean]                 = formProvider()
+  val fakeUkRevenuePageNavigator          = new FakeUkRevenuePageNavigator(onwardRoute)
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
@@ -46,7 +53,7 @@ class UkRevenueControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
-      fakeNavigator,
+      fakeUkRevenuePageNavigator,
       view
     )
   }

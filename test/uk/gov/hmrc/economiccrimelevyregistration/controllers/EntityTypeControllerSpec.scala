@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.Result
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
@@ -29,7 +29,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConn
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.GrsCreateJourneyResponse
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 
 import scala.concurrent.Future
@@ -39,6 +40,7 @@ class EntityTypeControllerSpec extends SpecBase {
   val view: EntityTypeView                 = app.injector.instanceOf[EntityTypeView]
   val formProvider: EntityTypeFormProvider = new EntityTypeFormProvider()
   val form: Form[EntityType]               = formProvider()
+  val fakeEntityTypePageNavigator          = new FakeEntityTypePageNavigator(onwardRoute)
 
   val mockIncorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector =
     mock[IncorporatedEntityIdentificationFrontendConnector]
@@ -51,16 +53,24 @@ class EntityTypeControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
+  class FakeEntityTypePageNavigator(desiredRoute: Call)
+      extends EntityTypePageNavigator(
+        mockIncorporatedEntityIdentificationFrontendConnector,
+        mockSoleTraderIdentificationFrontendConnector,
+        mockPartnershipIdentificationFrontendConnector
+      ) {
+    override def navigateAsync(mode: Mode, registration: Registration): Future[Call] =
+      Future.successful(desiredRoute)
+  }
+
   class TestContext(registrationData: Registration) {
     val controller = new EntityTypeController(
       mcc,
       fakeAuthorisedAction,
       fakeDataRetrievalAction(registrationData),
-      mockIncorporatedEntityIdentificationFrontendConnector,
-      mockSoleTraderIdentificationFrontendConnector,
-      mockPartnershipIdentificationFrontendConnector,
       mockEclRegistrationConnector,
       formProvider,
+      fakeEntityTypePageNavigator,
       view
     )
   }

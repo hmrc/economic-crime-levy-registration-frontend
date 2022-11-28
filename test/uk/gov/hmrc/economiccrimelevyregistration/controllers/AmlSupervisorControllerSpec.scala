@@ -20,21 +20,28 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitr
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.Result
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 
 import scala.concurrent.Future
+
+class FakeAmlSupervisorPageNavigator(desiredRoute: Call) extends AmlSupervisorPageNavigator {
+  override def navigate(mode: Mode, registration: Registration): Call =
+    desiredRoute
+}
 
 class AmlSupervisorControllerSpec extends SpecBase {
 
   val view: AmlSupervisorView                 = app.injector.instanceOf[AmlSupervisorView]
   val formProvider: AmlSupervisorFormProvider = new AmlSupervisorFormProvider()
   val form: Form[AmlSupervisor]               = formProvider(appConfig)
+  val fakeAmlSupervisorPageNavigator          = new FakeAmlSupervisorPageNavigator(onwardRoute)
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
@@ -48,7 +55,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
       mockEclRegistrationConnector,
       formProvider,
       appConfig,
-      fakeNavigator,
+      fakeAmlSupervisorPageNavigator,
       view
     )
   }

@@ -26,7 +26,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enro
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
-import uk.gov.hmrc.economiccrimelevyregistration.pages.{Page, UkRevenuePage}
 
 import java.time.Instant
 
@@ -95,10 +94,6 @@ trait EclTestData {
         authEnrolmentsToEnrolments(enrolmentsWithoutEcl.enrolments)
       )
     )
-  }
-
-  implicit val arbPage: Arbitrary[Page] = Arbitrary {
-    Gen.oneOf(Seq(UkRevenuePage))
   }
 
   def arbAmlSupervisor(appConfig: AppConfig): Arbitrary[AmlSupervisor] = Arbitrary {
