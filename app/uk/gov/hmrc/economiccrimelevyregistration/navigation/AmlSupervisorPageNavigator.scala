@@ -33,4 +33,6 @@ class AmlSupervisorPageNavigator extends PageNavigator {
         }
       case _                   => routes.StartController.onPageLoad()
     }
+
+  override protected def navigateInCheckMode(registration: Registration): Call = ???
 }

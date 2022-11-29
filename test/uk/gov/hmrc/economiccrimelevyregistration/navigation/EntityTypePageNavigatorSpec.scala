@@ -22,7 +22,6 @@ class EntityTypePageNavigatorSpec extends SpecBase {
 
   //val pageNavigator = new EntityTypePageNavigator()
 
-  "navigate" should {}
+  "nextPage" should {}
 
-  "navigateAsync" should {}
 }

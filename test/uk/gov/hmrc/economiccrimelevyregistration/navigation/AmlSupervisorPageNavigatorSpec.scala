@@ -27,15 +27,14 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
 
   val pageNavigator = new AmlSupervisorPageNavigator
 
-  "navigate" should {
-
+  "nextPage" should {
     "go to the register with your AML Supervisor page in NormalMode when either the Gambling Commission or Financial Conduct Authority AML Supervisor option is selected" in forAll {
       registration: Registration =>
         val supervisorType      = Gen.oneOf[AmlSupervisorType](Seq(GamblingCommission, FinancialConductAuthority)).sample.get
         val amlSupervisor       = AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = None)
         val updatedRegistration = registration.copy(amlSupervisor = Some(amlSupervisor))
 
-        pageNavigator.navigate(NormalMode, updatedRegistration) shouldBe routes.RegisterWithOtherAmlSupervisorController
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.RegisterWithOtherAmlSupervisorController
           .onPageLoad()
     }
 
@@ -47,14 +46,8 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = otherProfessionalBody)
         val updatedRegistration   = registration.copy(amlSupervisor = Some(amlSupervisor))
 
-        pageNavigator.navigate(NormalMode, updatedRegistration) shouldBe routes.EntityTypeController.onPageLoad()
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.EntityTypeController.onPageLoad()
     }
-
   }
 
-  "navigateAsync" should {
-
-    "" in {}
-
-  }
 }

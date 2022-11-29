@@ -16,17 +16,18 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.Call
+import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
-trait PageNavigator {
-  def nextPage(mode: Mode, registration: Registration): Call = mode match {
+import scala.concurrent.Future
+
+trait AsyncPageNavigator {
+  def nextPage(mode: Mode, registration: Registration)(implicit request: RequestHeader): Future[Call] = mode match {
     case NormalMode => navigateInNormalMode(registration)
     case CheckMode  => navigateInCheckMode(registration)
   }
 
-  protected def navigateInNormalMode(registration: Registration): Call
+  protected def navigateInNormalMode(registration: Registration)(implicit request: RequestHeader): Future[Call]
 
-  protected def navigateInCheckMode(registration: Registration): Call
-
+  protected def navigateInCheckMode(registration: Registration): Future[Call]
 }

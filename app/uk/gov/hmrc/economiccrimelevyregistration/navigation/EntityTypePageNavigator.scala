@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.Call
+import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,10 +30,13 @@ class EntityTypePageNavigator @Inject() (
   incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
   soleTraderIdentificationFrontendConnector: SoleTraderIdentificationFrontendConnector,
   partnershipIdentificationFrontendConnector: PartnershipIdentificationFrontendConnector
-)(implicit hc: HeaderCarrier, ec: ExecutionContext)
-    extends PageNavigator {
+)(implicit ec: ExecutionContext)
+    extends AsyncPageNavigator
+    with FrontendHeaderCarrierProvider {
 
-  override protected def navigateInNormalModeAsync(registration: Registration): Future[Call] =
+  override protected def navigateInNormalMode(
+    registration: Registration
+  )(implicit request: RequestHeader): Future[Call] =
     registration.entityType match {
       case Some(entityType) =>
         entityType match {
@@ -57,4 +60,6 @@ class EntityTypePageNavigator @Inject() (
         }
       case _                => Future.successful(routes.StartController.onPageLoad())
     }
+
+  override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
 }

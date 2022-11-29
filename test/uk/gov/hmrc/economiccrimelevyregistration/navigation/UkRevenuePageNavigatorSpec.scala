@@ -25,13 +25,12 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
 
   val pageNavigator = new UkRevenuePageNavigator
 
-  "navigate" should {
-
+  "nextPage" should {
     "go to the AML Supervisor page from the UK revenue page in NormalMode when the entity meets the revenue threshold" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(meetsRevenueThreshold = Some(true))
 
-        pageNavigator.navigate(NormalMode, updatedRegistration) shouldBe routes.AmlSupervisorController
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.AmlSupervisorController
           .onPageLoad()
     }
 
@@ -39,11 +38,9 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration = registration.copy(meetsRevenueThreshold = Some(false))
 
-        pageNavigator.navigate(NormalMode, updatedRegistration) shouldBe routes.NotLiableController
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.NotLiableController
           .onPageLoad()
     }
-
   }
 
-  "navigateAsync" should {}
 }

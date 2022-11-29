@@ -17,9 +17,12 @@
 package uk.gov.hmrc.economiccrimelevyregistration.config
 
 import com.google.inject.AbstractModule
+import com.google.inject.binder.LinkedBindingBuilder
+import com.google.inject.name.Names
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
+import uk.gov.hmrc.economiccrimelevyregistration.navigation._
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs._
 
 import java.time.{Clock, ZoneOffset}
@@ -34,6 +37,18 @@ class Module(environment: Environment, configuration: Configuration) extends Abs
     bind(classOf[AuthorisedAction]).to(classOf[BaseAuthorisedAction]).asEagerSingleton()
 
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
+
+    def bindPageNavigatorWithName(name: String): LinkedBindingBuilder[PageNavigator] =
+      bind(classOf[PageNavigator])
+        .annotatedWith(Names.named(name))
+
+    def bindAsyncPageNavigatorWithName(name: String): LinkedBindingBuilder[AsyncPageNavigator] =
+      bind(classOf[AsyncPageNavigator])
+        .annotatedWith(Names.named(name))
+
+    bindPageNavigatorWithName("UkRevenuePageNavigator").to(classOf[UkRevenuePageNavigator]).asEagerSingleton()
+    bindPageNavigatorWithName("AmlSupervisorPageNavigator").to(classOf[AmlSupervisorPageNavigator]).asEagerSingleton()
+    bindAsyncPageNavigatorWithName("EntityTypePageNavigator").to(classOf[EntityTypePageNavigator]).asEagerSingleton()
 
     val grsStubEnabled = configuration.get[Boolean]("features.grsStubEnabled")
 

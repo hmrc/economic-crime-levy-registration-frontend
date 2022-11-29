@@ -16,17 +16,18 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import com.google.inject.name.Named
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
-import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,7 +39,7 @@ class UkRevenueController @Inject() (
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: UkRevenueFormProvider,
-  pageNavigator: UkRevenuePageNavigator,
+  @Named("UkRevenuePageNavigator") pageNavigator: PageNavigator,
   view: UkRevenueView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -59,7 +60,7 @@ class UkRevenueController @Inject() (
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(meetsRevenueThreshold = Some(meetsRevenueThreshold)))
             .map { updatedRegistration =>
-              Redirect(pageNavigator.navigate(NormalMode, updatedRegistration))
+              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
             }
       )
   }

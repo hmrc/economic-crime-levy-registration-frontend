@@ -28,4 +28,6 @@ class UkRevenuePageNavigator extends PageNavigator {
       case Some(false) => routes.NotLiableController.onPageLoad()
       case _           => routes.StartController.onPageLoad()
     }
+
+  override protected def navigateInCheckMode(registration: Registration): Call = ???
 }
