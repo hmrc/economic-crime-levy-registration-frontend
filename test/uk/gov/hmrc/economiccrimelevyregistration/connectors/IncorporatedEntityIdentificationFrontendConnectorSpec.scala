@@ -37,17 +37,17 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
 
         val expectedIncorporatedEntityCreateJourneyRequest: IncorporatedEntityCreateJourneyRequest = {
           val serviceNameLabels = ServiceNameLabels(
-            En("Register for Economic Crime Levy"),
+            En("Register for the Economic Crime Levy"),
             Cy("service.name")
           )
 
           IncorporatedEntityCreateJourneyRequest(
-            continueUrl = "http://localhost:14000/register-for-economic-crime-levy/grs-continue",
+            continueUrl = "http://localhost:14000/register-for-the-economic-crime-levy/grs-continue",
             businessVerificationCheck = true,
             optServiceName = Some(serviceNameLabels.en.optServiceName),
             deskProServiceId = "economic-crime-levy-registration-frontend",
-            signOutUrl = "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
-            accessibilityUrl = "/accessibility-statement/register-for-economic-crime-levy",
+            signOutUrl = "http://localhost:14000/register-for-the-economic-crime-levy/account/sign-out-survey",
+            accessibilityUrl = "/accessibility-statement/register-for-the-economic-crime-levy",
             labels = serviceNameLabels
           )
         }

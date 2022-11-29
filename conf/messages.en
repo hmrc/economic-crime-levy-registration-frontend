@@ -1,4 +1,4 @@
-service.name = Register for Economic Crime Levy
+service.name = Register for the Economic Crime Levy
 
 site.back = Back
 site.remove = Remove
@@ -58,7 +58,7 @@ ukRevenue.heading = What was your UK revenue in {0}?
 ukRevenue.legend = You do not need to pay the levy if your UK revenue was less than £10.2 million in {0}.
 ukRevenue.lessThan = Less than £10.2 million
 ukRevenue.moreThanOrEqualTo = Equal to or more than £10.2 million
-ukRevenue.error.required = Select your UK turnover for {0}
+ukRevenue.error.required = Select your UK revenue for {0}
 
 notLiable.title = You do not need to register
 notLiable.heading = You do not need to register for the Economic Crime Levy
