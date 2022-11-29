@@ -17,15 +17,19 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.Result
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 
 import scala.concurrent.Future
@@ -38,6 +42,10 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
+  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator {
+    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+  }
+
   implicit val arbAmlSupervisor: Arbitrary[AmlSupervisor] = arbAmlSupervisor(appConfig)
 
   class TestContext(registrationData: Registration) {
@@ -48,7 +56,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
       mockEclRegistrationConnector,
       formProvider,
       appConfig,
-      fakePageNavigator,
+      pageNavigator,
       view
     )
   }
@@ -73,6 +81,42 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
           contentAsString(result) shouldBe view(form.fill(amlSupervisor))(fakeRequest, messages).toString
         }
+    }
+  }
+
+  "onSubmit" should {
+    "save the selected AML supervisor option then redirect to the next page" in forAll {
+      (registration: Registration, amlSupervisor: AmlSupervisor) =>
+        new TestContext(registration) {
+          val updatedRegistration: Registration = registration.copy(amlSupervisor = Some(amlSupervisor))
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val formData: Seq[(String, String)] = amlSupervisor match {
+            case AmlSupervisor(Other, Some(otherProfessionalBody)) =>
+              Seq(("value", Other.toString), ("otherProfessionalBody", otherProfessionalBody))
+            case _                                                 => Seq(("value", amlSupervisor.supervisorType.toString))
+          }
+
+          val result: Future[Result] =
+            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(formData: _*))
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(onwardRoute.url)
+        }
+    }
+
+    "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
+      new TestContext(registration) {
+        val result: Future[Result]              = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
+        val formWithErrors: Form[AmlSupervisor] = form.bind(Map("value" -> ""))
+
+        status(result) shouldBe BAD_REQUEST
+
+        contentAsString(result) shouldBe view(formWithErrors)(fakeRequest, messages).toString
+      }
     }
   }
 

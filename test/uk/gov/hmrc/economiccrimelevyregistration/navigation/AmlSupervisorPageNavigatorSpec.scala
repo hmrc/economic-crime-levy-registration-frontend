@@ -28,7 +28,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
   val pageNavigator = new AmlSupervisorPageNavigator
 
   "nextPage" should {
-    "go to the register with your AML Supervisor page in NormalMode when either the Gambling Commission or Financial Conduct Authority AML Supervisor option is selected" in forAll {
+    "return a Call to the register with your AML Supervisor page in NormalMode when either the Gambling Commission or Financial Conduct Authority AML Supervisor option is selected" in forAll {
       registration: Registration =>
         val supervisorType      = Gen.oneOf[AmlSupervisorType](Seq(GamblingCommission, FinancialConductAuthority)).sample.get
         val amlSupervisor       = AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = None)
@@ -38,7 +38,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           .onPageLoad()
     }
 
-    "go to the select entity type page in NormalMode when either the HMRC or Other AML Supervisor option is selected" in forAll {
+    "return a Call to the entity type page in NormalMode when either the HMRC or Other AML Supervisor option is selected" in forAll {
       registration: Registration =>
         val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
         val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample

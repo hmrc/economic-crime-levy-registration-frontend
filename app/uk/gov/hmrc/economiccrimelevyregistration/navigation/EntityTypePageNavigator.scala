@@ -21,6 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.{IncorporatedEntityI
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.http.HttpVerbs.GET
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
@@ -43,18 +44,18 @@ class EntityTypePageNavigator @Inject() (
           case UkLimitedCompany =>
             incorporatedEntityIdentificationFrontendConnector
               .createLimitedCompanyJourney()
-              .map(createJourneyResponse => Call("GET", createJourneyResponse.journeyStartUrl))
+              .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
 
           case SoleTrader =>
             soleTraderIdentificationFrontendConnector
               .createSoleTraderJourney()
-              .map(createJourneyResponse => Call("GET", createJourneyResponse.journeyStartUrl))
+              .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
 
           case GeneralPartnership | ScottishPartnership | LimitedPartnership | ScottishLimitedPartnership |
               LimitedLiabilityPartnership =>
             partnershipIdentificationFrontendConnector
               .createPartnershipJourney(entityType)
-              .map(createJourneyResponse => Call("GET", createJourneyResponse.journeyStartUrl))
+              .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
 
           case Other => ???
         }

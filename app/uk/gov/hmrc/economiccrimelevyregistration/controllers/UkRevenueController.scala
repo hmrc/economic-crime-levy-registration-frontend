@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import com.google.inject.name.Named
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -25,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -39,7 +38,7 @@ class UkRevenueController @Inject() (
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: UkRevenueFormProvider,
-  @Named("UkRevenuePageNavigator") pageNavigator: PageNavigator,
+  pageNavigator: UkRevenuePageNavigator,
   view: UkRevenueView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController

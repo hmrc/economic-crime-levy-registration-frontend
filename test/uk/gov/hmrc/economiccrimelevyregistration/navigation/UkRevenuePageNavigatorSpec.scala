@@ -26,7 +26,7 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
   val pageNavigator = new UkRevenuePageNavigator
 
   "nextPage" should {
-    "go to the AML Supervisor page from the UK revenue page in NormalMode when the entity meets the revenue threshold" in forAll {
+    "return a Call to the AML Supervisor page from the UK revenue page in NormalMode when the entity meets the revenue threshold" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(meetsRevenueThreshold = Some(true))
 
@@ -34,7 +34,7 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
           .onPageLoad()
     }
 
-    "go to the not liable page from the UK revenue page in NormalMode when the entity does not meet the revenue threshold" in forAll {
+    "return a Call to the not liable page from the UK revenue page in NormalMode when the entity does not meet the revenue threshold" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(meetsRevenueThreshold = Some(false))
 

@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import com.google.inject.name.Named
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -24,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.AsyncPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -38,7 +37,7 @@ class EntityTypeController @Inject() (
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: EntityTypeFormProvider,
-  @Named("EntityTypePageNavigator") pageNavigator: AsyncPageNavigator,
+  pageNavigator: EntityTypePageNavigator,
   view: EntityTypeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController

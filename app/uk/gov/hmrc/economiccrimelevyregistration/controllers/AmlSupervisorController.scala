@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import com.google.inject.name.Named
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -26,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -41,7 +40,7 @@ class AmlSupervisorController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: AmlSupervisorFormProvider,
   appConfig: AppConfig,
-  @Named("AmlSupervisorPageNavigator") pageNavigator: PageNavigator,
+  pageNavigator: AmlSupervisorPageNavigator,
   view: AmlSupervisorView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
