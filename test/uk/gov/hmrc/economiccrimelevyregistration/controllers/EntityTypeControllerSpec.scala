@@ -24,7 +24,7 @@ import play.api.http.Status.OK
 import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
@@ -63,14 +63,25 @@ class EntityTypeControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view" in forAll { registration: Registration =>
-      new TestContext(registration) {
+    "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
+      new TestContext(registration.copy(entityType = None)) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
         status(result) shouldBe OK
 
         contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
       }
+    }
+
+    "populate the view correctly when the question has previously been answered" in forAll {
+      (registration: Registration, entityType: EntityType) =>
+        new TestContext(registration.copy(entityType = Some(entityType))) {
+          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+
+          status(result) shouldBe OK
+
+          contentAsString(result) shouldBe view(form.fill(entityType))(fakeRequest, messages).toString
+        }
     }
   }
 
