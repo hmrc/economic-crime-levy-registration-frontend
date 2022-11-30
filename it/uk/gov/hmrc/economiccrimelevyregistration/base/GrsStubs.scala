@@ -15,16 +15,16 @@ trait GrsStubs { self: WireMockStubs =>
           equalToJson(
             s"""
                |{
-               |  "continueUrl" : "http://localhost:14000/register-for-economic-crime-levy/grs-continue",
+               |  "continueUrl" : "http://localhost:14000/register-for-the-economic-crime-levy/grs-continue",
                |  "businessVerificationCheck" : true,
-               |  "optServiceName" : "Register for Economic Crime Levy",
+               |  "optServiceName" : "Register for the Economic Crime Levy",
                |  "deskProServiceId" : "economic-crime-levy-registration-frontend",
-               |  "signOutUrl" : "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
+               |  "signOutUrl" : "http://localhost:14000/register-for-the-economic-crime-levy/account/sign-out-survey",
                |  "regime" : "ECL",
-               |  "accessibilityUrl" : "/accessibility-statement/register-for-economic-crime-levy",
+               |  "accessibilityUrl" : "/accessibility-statement/register-for-the-economic-crime-levy",
                |  "labels" : {
                |    "en" : {
-               |      "optServiceName" : "Register for Economic Crime Levy"
+               |      "optServiceName" : "Register for the Economic Crime Levy"
                |    },
                |    "cy" : {
                |      "optServiceName" : "service.name"

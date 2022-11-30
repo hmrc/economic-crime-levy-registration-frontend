@@ -62,7 +62,6 @@ class Module(environment: Environment, configuration: Configuration) extends Abs
         .to(classOf[SoleTraderIdentificationFrontendConnectorImpl])
         .asEagerSingleton()
     }
-
   }
 
 }

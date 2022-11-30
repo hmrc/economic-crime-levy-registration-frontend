@@ -37,17 +37,17 @@ class SoleTraderIdentificationFrontendConnectorSpec extends SpecBase {
 
         val expectedSoleTraderEntityCreateJourneyRequest: SoleTraderEntityCreateJourneyRequest = {
           val serviceNameLabels = ServiceNameLabels(
-            En("Register for Economic Crime Levy"),
+            En("Register for the Economic Crime Levy"),
             Cy("service.name")
           )
 
           SoleTraderEntityCreateJourneyRequest(
-            continueUrl = "http://localhost:14000/register-for-economic-crime-levy/grs-continue",
+            continueUrl = "http://localhost:14000/register-for-the-economic-crime-levy/grs-continue",
             businessVerificationCheck = true,
             optServiceName = Some(serviceNameLabels.en.optServiceName),
             deskProServiceId = "economic-crime-levy-registration-frontend",
-            signOutUrl = "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
-            accessibilityUrl = "/accessibility-statement/register-for-economic-crime-levy",
+            signOutUrl = "http://localhost:14000/register-for-the-economic-crime-levy/account/sign-out-survey",
+            accessibilityUrl = "/accessibility-statement/register-for-the-economic-crime-levy",
             labels = serviceNameLabels
           )
         }

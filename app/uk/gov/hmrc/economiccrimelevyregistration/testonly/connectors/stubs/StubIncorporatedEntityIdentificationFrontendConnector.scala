@@ -38,7 +38,7 @@ class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
   override def createLimitedCompanyJourney()(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] =
     Future.successful(
       GrsCreateJourneyResponse(
-        journeyStartUrl = "/register-for-economic-crime-levy/test-only/stub-grs-journey-data"
+        journeyStartUrl = "/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data"
       )
     )
 

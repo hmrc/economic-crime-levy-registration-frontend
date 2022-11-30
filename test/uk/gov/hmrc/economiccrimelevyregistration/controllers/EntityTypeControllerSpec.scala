@@ -21,15 +21,13 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.Result
+import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
-import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.GrsCreateJourneyResponse
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 
 import scala.concurrent.Future
@@ -40,14 +38,15 @@ class EntityTypeControllerSpec extends SpecBase {
   val formProvider: EntityTypeFormProvider = new EntityTypeFormProvider()
   val form: Form[EntityType]               = formProvider()
 
-  val mockIncorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector =
-    mock[IncorporatedEntityIdentificationFrontendConnector]
-
-  val mockSoleTraderIdentificationFrontendConnector: SoleTraderIdentificationFrontendConnector =
-    mock[SoleTraderIdentificationFrontendConnector]
-
-  val mockPartnershipIdentificationFrontendConnector: PartnershipIdentificationFrontendConnector =
+  val pageNavigator: EntityTypePageNavigator = new EntityTypePageNavigator(
+    mock[IncorporatedEntityIdentificationFrontendConnector],
+    mock[SoleTraderIdentificationFrontendConnector],
     mock[PartnershipIdentificationFrontendConnector]
+  ) {
+    override protected def navigateInNormalMode(
+      registration: Registration
+    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
+  }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
@@ -56,18 +55,16 @@ class EntityTypeControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedAction,
       fakeDataRetrievalAction(registrationData),
-      mockIncorporatedEntityIdentificationFrontendConnector,
-      mockSoleTraderIdentificationFrontendConnector,
-      mockPartnershipIdentificationFrontendConnector,
       mockEclRegistrationConnector,
       formProvider,
+      pageNavigator,
       view
     )
   }
 
   "onPageLoad" should {
-    "return OK and the correct view" in forAll { registration: Registration =>
-      new TestContext(registration) {
+    "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
+      new TestContext(registration.copy(entityType = None)) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
         status(result) shouldBe OK
@@ -75,63 +72,23 @@ class EntityTypeControllerSpec extends SpecBase {
         contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
       }
     }
+
+    "populate the view correctly when the question has previously been answered" in forAll {
+      (registration: Registration, entityType: EntityType) =>
+        new TestContext(registration.copy(entityType = Some(entityType))) {
+          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+
+          status(result) shouldBe OK
+
+          contentAsString(result) shouldBe view(form.fill(entityType))(fakeRequest, messages).toString
+        }
+    }
   }
 
   "onSubmit" should {
-    "save the selected entity type then redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in forAll {
-      registration: Registration =>
+    "save the selected entity type then redirect to the next page" in forAll {
+      (registration: Registration, entityType: EntityType) =>
         new TestContext(registration) {
-          when(mockIncorporatedEntityIdentificationFrontendConnector.createLimitedCompanyJourney()(any()))
-            .thenReturn(Future.successful(GrsCreateJourneyResponse("test-url")))
-
-          val updatedRegistration: Registration = registration.copy(entityType = Some(UkLimitedCompany))
-
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
-
-          val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "UkLimitedCompany")))
-
-          status(result) shouldBe SEE_OTHER
-
-          redirectLocation(result) shouldBe Some("test-url")
-        }
-    }
-
-    "save the selected entity type then redirect to the GRS Sole Trader journey when the Sole Trader option is selected" in forAll {
-      registration: Registration =>
-        new TestContext(registration) {
-          when(mockSoleTraderIdentificationFrontendConnector.createSoleTraderJourney()(any()))
-            .thenReturn(Future.successful(GrsCreateJourneyResponse("test-url")))
-
-          val updatedRegistration: Registration = registration.copy(entityType = Some(SoleTrader))
-
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
-
-          val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "SoleTrader")))
-
-          status(result) shouldBe SEE_OTHER
-
-          redirectLocation(result) shouldBe Some("test-url")
-        }
-    }
-
-    "save the selected entity type then redirect to the GRS Partnership journey when a Partnership entity type is selected" in forAll {
-      (registration: Registration, partnershipType: PartnershipType) =>
-        new TestContext(registration) {
-          val entityType: EntityType = partnershipType.entityType
-
-          when(
-            mockPartnershipIdentificationFrontendConnector.createPartnershipJourney(
-              ArgumentMatchers.eq(entityType)
-            )(
-              any()
-            )
-          )
-            .thenReturn(Future.successful(GrsCreateJourneyResponse("test-url")))
-
           val updatedRegistration: Registration = registration.copy(entityType = Some(entityType))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
@@ -142,7 +99,7 @@ class EntityTypeControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some("test-url")
+          redirectLocation(result) shouldBe Some(onwardRoute.url)
         }
     }
 

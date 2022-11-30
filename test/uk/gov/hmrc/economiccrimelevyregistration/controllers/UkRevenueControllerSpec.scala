@@ -21,12 +21,13 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.Result
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 
 import scala.concurrent.Future
@@ -39,6 +40,10 @@ class UkRevenueControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
+  val pageNavigator: UkRevenuePageNavigator = new UkRevenuePageNavigator {
+    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+  }
+
   class TestContext(registrationData: Registration) {
     val controller = new UkRevenueController(
       mcc,
@@ -46,7 +51,7 @@ class UkRevenueControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
-      fakeNavigator,
+      pageNavigator,
       view
     )
   }

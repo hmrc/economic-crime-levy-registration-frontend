@@ -22,8 +22,9 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
+import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -35,11 +36,9 @@ class EntityTypeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
-  incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
-  soleTraderIdentificationFrontendConnector: SoleTraderIdentificationFrontendConnector,
-  partnershipIdentificationFrontendConnector: PartnershipIdentificationFrontendConnector,
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: EntityTypeFormProvider,
+  pageNavigator: EntityTypePageNavigator,
   view: EntityTypeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -48,7 +47,7 @@ class EntityTypeController @Inject() (
   val form: Form[EntityType] = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form))
+    Ok(view(form.prepare(request.registration.entityType)))
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
@@ -59,26 +58,8 @@ class EntityTypeController @Inject() (
         entityType =>
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(entityType = Some(entityType)))
-            .flatMap { _ =>
-              entityType match {
-                case UkLimitedCompany =>
-                  incorporatedEntityIdentificationFrontendConnector
-                    .createLimitedCompanyJourney()
-                    .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
-
-                case SoleTrader =>
-                  soleTraderIdentificationFrontendConnector
-                    .createSoleTraderJourney()
-                    .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
-
-                case GeneralPartnership | ScottishPartnership | LimitedPartnership | ScottishLimitedPartnership |
-                    LimitedLiabilityPartnership =>
-                  partnershipIdentificationFrontendConnector
-                    .createPartnershipJourney(entityType)
-                    .map(createJourneyResponse => Redirect(createJourneyResponse.journeyStartUrl))
-
-                case Other => ???
-              }
+            .flatMap { updatedRegistration =>
+              pageNavigator.nextPage(NormalMode, updatedRegistration).map(Redirect)
             }
       )
   }

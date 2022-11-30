@@ -50,7 +50,7 @@ class StubGrsJourneyDataController @Inject() (
         formWithErrors => BadRequest(view(formWithErrors)),
         grsStubFormData =>
           Redirect(
-            s"/register-for-economic-crime-levy/grs-continue?journeyId=${grsStubFormData.journeyId}-${request.registration.entityType.get.toString}-${grsStubFormData.businessPartnerId}"
+            s"/register-for-the-economic-crime-levy/grs-continue?journeyId=${grsStubFormData.journeyId}-${request.registration.entityType.get.toString}-${grsStubFormData.businessPartnerId}"
           )
       )
   }

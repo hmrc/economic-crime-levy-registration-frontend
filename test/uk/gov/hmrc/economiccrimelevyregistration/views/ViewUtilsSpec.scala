@@ -32,13 +32,13 @@ class ViewUtilsSpec extends SpecBase {
     "return a correctly formatted title when a form has no errors" in {
       ViewUtils.titleWithForm(testForm, testTitle, None)(
         messages
-      ) shouldBe "Test Title - Register for Economic Crime Levy - GOV.UK"
+      ) shouldBe "Test Title - Register for the Economic Crime Levy - GOV.UK"
     }
 
     "return a correctly formatted title when a form has errors" in {
       ViewUtils.titleWithForm(testForm.withError(key = "testErrorKey", message = "testErrorMessage"), testTitle, None)(
         messages
-      ) shouldBe "Error: Test Title - Register for Economic Crime Levy - GOV.UK"
+      ) shouldBe "Error: Test Title - Register for the Economic Crime Levy - GOV.UK"
     }
   }
 
@@ -46,13 +46,13 @@ class ViewUtilsSpec extends SpecBase {
     "return a correctly formatted title when there is no section" in {
       ViewUtils.title(testTitle, None)(
         messages
-      ) shouldBe "Test Title - Register for Economic Crime Levy - GOV.UK"
+      ) shouldBe "Test Title - Register for the Economic Crime Levy - GOV.UK"
     }
 
     "return a correctly formatted title when there is a section" in {
       ViewUtils.title(testTitle, Some("Test Section"))(
         messages
-      ) shouldBe "Test Title - Test Section - Register for Economic Crime Levy - GOV.UK"
+      ) shouldBe "Test Title - Test Section - Register for the Economic Crime Levy - GOV.UK"
     }
   }
 

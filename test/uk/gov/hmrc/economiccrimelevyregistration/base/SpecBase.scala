@@ -30,8 +30,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{FakeAuthorisedAction, FakeDataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.FakeNavigator
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpVerbs.GET
 
 import scala.concurrent.ExecutionContext
 
@@ -61,9 +61,7 @@ trait SpecBase
 
   def fakeDataRetrievalAction(data: Registration) = new FakeDataRetrievalAction(data)
 
-  def onwardRoute: Call = Call("GET", "/foo")
-
-  val fakeNavigator = new FakeNavigator(onwardRoute)
+  def onwardRoute: Call = Call(GET, "/foo")
 
   val mcc: DefaultMessagesControllerComponents = {
     val stub = stubControllerComponents()

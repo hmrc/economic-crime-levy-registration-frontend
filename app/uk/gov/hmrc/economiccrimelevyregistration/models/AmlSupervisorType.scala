@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import play.api.data.FormError
+import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.libs.json._
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
@@ -44,7 +44,11 @@ object AmlSupervisorType {
     Other
   )
 
-  def options(appConfig: AppConfig, govukSelect: GovukSelect, formErrors: Seq[FormError])(implicit
+  def options(
+    appConfig: AppConfig,
+    govukSelect: GovukSelect,
+    form: Form[AmlSupervisor]
+  )(implicit
     messages: Messages
   ): Seq[RadioItem] = {
     val amlProfessionalBodySupervisorOptions: Seq[SelectItem] =
@@ -53,7 +57,11 @@ object AmlSupervisorType {
       ) +: appConfig.amlProfessionalBodySupervisors.map { opb =>
         SelectItem(
           value = Some(opb),
-          text = messages(s"amlSupervisor.opb.$opb")
+          text = messages(s"amlSupervisor.opb.$opb"),
+          selected = form.value match {
+            case Some(AmlSupervisor(_, Some(value))) => value == opb
+            case _                                   => false
+          }
         )
       }
 
@@ -65,7 +73,7 @@ object AmlSupervisorType {
         label = Label(
           content = Text(messages("amlSupervisor.selectFromList"))
         ),
-        errorMessage = if (formErrors.exists(_.key == "otherProfessionalBody")) {
+        errorMessage = if (form.errors.exists(_.key == "otherProfessionalBody")) {
           Some(ErrorMessage(content = Text(messages("amlSupervisor.selectFromList"))))
         } else { None }
       ).asAccessibleAutocomplete(
@@ -84,7 +92,6 @@ object AmlSupervisorType {
           None
         }
       )
-
     }
   }
 

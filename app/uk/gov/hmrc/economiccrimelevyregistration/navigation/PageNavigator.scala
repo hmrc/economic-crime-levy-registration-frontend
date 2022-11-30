@@ -17,11 +17,16 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.pages.Page
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
-class FakeNavigator(desiredRoute: Call) extends Navigator {
+trait PageNavigator {
+  def nextPage(mode: Mode, registration: Registration): Call = mode match {
+    case NormalMode => navigateInNormalMode(registration)
+    case CheckMode  => navigateInCheckMode(registration)
+  }
 
-  override def nextPage(page: Page, mode: Mode, registration: Registration): Call =
-    desiredRoute
+  protected def navigateInNormalMode(registration: Registration): Call
+
+  protected def navigateInCheckMode(registration: Registration): Call
+
 }
