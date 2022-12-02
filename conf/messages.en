@@ -122,6 +122,13 @@ entityType.LimitedLiabilityPartnership = Limited liability partnership
 entityType.Other = Other
 entityType.error.required = Please select your entity type
 
+amlRegulated.title = Did you start AML-regulated activity in FY {0}?
+amlRegulated.heading = Did you start AML-regulated activity in FY {0}?
+amlRegulated.legend = The UK financial year starts on 1 April and ends on 31 March of the following year.
+amlRegulated.yes = Yes
+amlRegulated.no = No
+amlRegulated.error.required = Select an answer
+
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 

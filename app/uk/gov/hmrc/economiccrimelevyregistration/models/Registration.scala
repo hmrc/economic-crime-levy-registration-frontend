@@ -26,7 +26,8 @@ final case class Registration(
   amlSupervisor: Option[AmlSupervisor],
   incorporatedEntityJourneyData: Option[IncorporatedEntityJourneyData],
   soleTraderEntityJourneyData: Option[SoleTraderEntityJourneyData],
-  partnershipEntityJourneyData: Option[PartnershipEntityJourneyData]
+  partnershipEntityJourneyData: Option[PartnershipEntityJourneyData],
+  startedAmlRegulatedActivity: Option[Boolean]
 )
 
 object Registration {
@@ -39,6 +40,7 @@ object Registration {
     amlSupervisor = None,
     incorporatedEntityJourneyData = None,
     soleTraderEntityJourneyData = None,
-    partnershipEntityJourneyData = None
+    partnershipEntityJourneyData = None,
+    startedAmlRegulatedActivity = None
   )
 }
