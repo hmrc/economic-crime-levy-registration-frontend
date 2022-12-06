@@ -32,7 +32,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmlRegulatedController @Inject()(
+class AmlRegulatedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
@@ -57,7 +57,9 @@ class AmlRegulatedController @Inject()(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         startedAmlRegulatedActivity =>
           eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(startedAmlRegulatedActivity = Some(startedAmlRegulatedActivity)))
+            .upsertRegistration(
+              request.registration.copy(startedAmlRegulatedActivity = Some(startedAmlRegulatedActivity))
+            )
             .map { updatedRegistration =>
               Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
             }
