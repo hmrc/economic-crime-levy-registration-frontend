@@ -92,9 +92,9 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(result) shouldBe "Success - you can continue registering for ECL"
+          redirectLocation(result) shouldBe Some(routes.AmlRegulatedController.onPageLoad().url)
         }
     }
 
@@ -282,9 +282,9 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(result) shouldBe "Success - you can continue registering for ECL"
+          redirectLocation(result) shouldBe Some(routes.AmlRegulatedController.onPageLoad().url)
         }
     }
 
@@ -474,9 +474,9 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(result) shouldBe "Success - you can continue registering for ECL"
+          redirectLocation(result) shouldBe Some(routes.AmlRegulatedController.onPageLoad().url)
         }
     }
 

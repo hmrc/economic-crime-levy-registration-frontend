@@ -57,9 +57,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(journeyId)))
 
-      status(result) shouldBe OK
+      status(result) shouldBe SEE_OTHER
 
-      contentAsString(result) shouldBe "Success - you can continue registering for ECL"
+      redirectLocation(result) shouldBe Some(routes.AmlRegulatedController.onPageLoad().url)
     }
 
     "retrieve the incorporated entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {
@@ -142,9 +142,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(journeyId)))
 
-      status(result) shouldBe OK
+      status(result) shouldBe SEE_OTHER
 
-      contentAsString(result) shouldBe "Success - you can continue registering for ECL"
+      redirectLocation(result) shouldBe Some(routes.AmlRegulatedController.onPageLoad().url)
     }
 
     "retrieve the sole trader entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {
@@ -225,9 +225,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(journeyId)))
 
-      status(result) shouldBe OK
+      status(result) shouldBe SEE_OTHER
 
-      contentAsString(result) shouldBe "Success - you can continue registering for ECL"
+      redirectLocation(result) shouldBe Some(routes.AmlRegulatedController.onPageLoad().url)
     }
 
     "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {

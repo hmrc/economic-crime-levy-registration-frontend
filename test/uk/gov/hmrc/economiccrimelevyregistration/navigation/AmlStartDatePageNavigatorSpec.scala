@@ -21,24 +21,18 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
-class AmlRegulatedPageNavigatorSpec extends SpecBase {
+import java.time.LocalDate
 
-  val pageNavigator = new AmlRegulatedPageNavigator
+class AmlStartDatePageNavigatorSpec extends SpecBase {
+
+  val pageNavigator = new AmlStartDatePageNavigator
 
   "nextPage" should {
-    "return a Call to the Aml start date page from the Aml regulated activity started in current financial year page in NormalMode when the 'Yes' option is selected" in forAll {
-      registration: Registration =>
-        val updatedRegistration = registration.copy(startedAmlRegulatedActivity = Some(true))
-
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.AmlStartDateController.onPageLoad()
-    }
-
-    "return a Call to the SIC code page from the Aml regulated activity started in current financial year page in NormalMode when the 'No' option is selected" in forAll {
-      registration: Registration =>
-        val updatedRegistration = registration.copy(startedAmlRegulatedActivity = Some(false))
+    "return a Call to the SIC code page from the Aml start date page in NormalMode when a valid date has been provided" in forAll {
+      (registration: Registration, amlStartDate: LocalDate) =>
+        val updatedRegistration = registration.copy(amlStartDate = Some(amlStartDate))
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe ???
     }
   }
-
 }

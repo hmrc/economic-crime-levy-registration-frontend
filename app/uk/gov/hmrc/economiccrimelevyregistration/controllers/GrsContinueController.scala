@@ -94,7 +94,7 @@ class GrsContinueController @Inject() (
         Future.successful(Ok("Failed business verification"))
       case (_, _, _, Some(businessPartnerId))                =>
         eclRegistrationConnector.getSubscriptionStatus(businessPartnerId).map {
-          case EclSubscriptionStatus(NotSubscribed)                        => Ok("Success - you can continue registering for ECL")
+          case EclSubscriptionStatus(NotSubscribed)                        => Redirect(routes.AmlRegulatedController.onPageLoad())
           case EclSubscriptionStatus(Subscribed(eclRegistrationReference)) =>
             Ok(s"Business is already subscribed to ECL with registration reference $eclRegistrationReference")
         }

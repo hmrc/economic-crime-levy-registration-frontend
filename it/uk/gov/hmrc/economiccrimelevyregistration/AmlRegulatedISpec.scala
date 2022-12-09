@@ -34,7 +34,7 @@ class AmlRegulatedISpec extends ISpecBase with AuthorisedBehaviour {
   s"POST ${routes.AmlRegulatedController.onSubmit().url}"  should {
     behave like authorisedActionRoute(routes.AmlRegulatedController.onSubmit())
 
-    "save the selected Aml regulated option then redirect to the '???' page when the No option is selected" in {
+    "save the selected Aml regulated option then redirect to the SIC code page when the No option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
@@ -51,10 +51,10 @@ class AmlRegulatedISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(NotLiableController.onPageLoad().url)
+      redirectLocation(result) shouldBe ???
     }
 
-    "save the selected Aml regulated option then redirect to the '???' page when the Yes option is selected" in {
+    "save the selected Aml regulated option then redirect to the Aml start date page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
@@ -71,7 +71,7 @@ class AmlRegulatedISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(AmlSupervisorController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(AmlStartDateController.onPageLoad().url)
     }
   }
 }

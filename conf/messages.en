@@ -129,6 +129,14 @@ amlRegulated.yes = Yes
 amlRegulated.no = No
 amlRegulated.error.required = Select an answer
 
+amlStartDate.title = What date did your AML-regulated activity start?
+amlStartDate.heading = What date did your AML-regulated activity start?
+amlStartDate.hint = For example, 13 10 2022
+amlStartDate.error.invalid = (TBC) Start date is invalid
+amlStartDate.error.allRequired = Enter a date
+amlStartDate.error.twoRequired = (TBC) twoRequired
+amlStartDate.error.required = (TBC) required
+
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 
