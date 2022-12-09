@@ -25,7 +25,7 @@ class AmlStartDateFormProviderSpec extends DateBehaviours {
 
   "value" should {
     val fieldName   = "value"
-    val requiredKey = "amlStartDate.error.required"
+    val requiredKey = "amlStartDate.error.allRequired"
 
     behave like dateField(
       form,
@@ -37,6 +37,14 @@ class AmlStartDateFormProviderSpec extends DateBehaviours {
       form,
       fieldName,
       requiredKey
+    )
+
+    behave like dateFieldWithMin(form, fieldName, EclTaxYear.currentFinancialYearStartDate,
+      FormError(fieldName, "amlStartDate.error.notWithinFinancialYear")
+    )
+
+    behave like dateFieldWithMax(form, fieldName, EclTaxYear.currentFinancialYearEndDate,
+      FormError(fieldName, "amlStartDate.error.notWithinFinancialYear")
     )
   }
 }

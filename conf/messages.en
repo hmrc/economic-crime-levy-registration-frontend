@@ -136,7 +136,7 @@ amlStartDate.error.invalid = (TBC) Start date is invalid
 amlStartDate.error.allRequired = Enter a date
 amlStartDate.error.twoRequired = (TBC) twoRequired
 amlStartDate.error.required = (TBC) required
-
+amlStartDate.error.notWithinFinancialYear = (TBC) The start date does not fall within the current financial year
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 

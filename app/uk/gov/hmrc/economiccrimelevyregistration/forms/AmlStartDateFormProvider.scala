@@ -17,11 +17,21 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
+import play.api.data.validation.{Constraint, Invalid, Valid}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
 
 class AmlStartDateFormProvider extends Mappings {
+  val dateIsWithinCurrentFinancialYear: Constraint[LocalDate] = Constraint[LocalDate] {
+    date: LocalDate => if (date.isBefore(EclTaxYear.currentFinancialYearStartDate) || date.isAfter(EclTaxYear.currentFinancialYearEndDate)) {
+      Invalid("amlStartDate.error.notWithinFinancialYear")
+    } else {
+      Valid
+    }
+  }
+
   def apply(): Form[LocalDate] = Form(
     (
       "value",
@@ -30,7 +40,7 @@ class AmlStartDateFormProvider extends Mappings {
         "amlStartDate.error.allRequired",
         "amlStartDate.error.twoRequired",
         "amlStartDate.error.required"
-      )
+      ).verifying(dateIsWithinCurrentFinancialYear)
     )
   )
 }
