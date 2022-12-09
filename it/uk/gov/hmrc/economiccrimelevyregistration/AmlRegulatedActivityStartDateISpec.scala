@@ -7,10 +7,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class AmlStartDateISpec extends ISpecBase with AuthorisedBehaviour {
+class AmlRegulatedActivityStartDateISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.AmlStartDateController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.AmlStartDateController.onPageLoad())
+  s"GET ${routes.AmlRegulatedActivityStartDateController.onPageLoad().url}" should {
+    behave like authorisedActionRoute(routes.AmlRegulatedActivityStartDateController.onPageLoad())
 
     "respond with 200 status and the Aml start date HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -19,7 +19,7 @@ class AmlStartDateISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.AmlStartDateController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.AmlRegulatedActivityStartDateController.onPageLoad()))
 
       status(result) shouldBe OK
 

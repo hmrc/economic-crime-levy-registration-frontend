@@ -58,7 +58,7 @@ class AmlRegulatedControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(registration.copy(startedAmlRegulatedActivity = None)) {
+      new TestContext(registration.copy(startedAmlRegulatedActivityInCurrentFy = None)) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
         status(result) shouldBe OK
@@ -69,7 +69,7 @@ class AmlRegulatedControllerSpec extends SpecBase {
 
     "populate the view correctly when the question has previously been answered" in forAll {
       (registration: Registration, startedAmlRegulatedActivity: Boolean) =>
-        new TestContext(registration.copy(startedAmlRegulatedActivity = Some(startedAmlRegulatedActivity))) {
+        new TestContext(registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(startedAmlRegulatedActivity))) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
           status(result)          shouldBe OK
@@ -83,7 +83,7 @@ class AmlRegulatedControllerSpec extends SpecBase {
       (registration: Registration, startedAmlRegulatedActivity: Boolean) =>
         new TestContext(registration) {
           val updatedRegistration: Registration =
-            registration.copy(startedAmlRegulatedActivity = Some(startedAmlRegulatedActivity))
+            registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(startedAmlRegulatedActivity))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))

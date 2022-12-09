@@ -23,8 +23,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 class AmlRegulatedPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.startedAmlRegulatedActivity match {
-      case Some(true)  => routes.AmlStartDateController.onPageLoad()
+    registration.startedAmlRegulatedActivityInCurrentFy match {
+      case Some(true)  => routes.AmlRegulatedActivityStartDateController.onPageLoad()
       case Some(false) => ???
       case _           => routes.StartController.onPageLoad()
     }

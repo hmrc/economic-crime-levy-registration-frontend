@@ -47,7 +47,7 @@ class AmlRegulatedController @Inject() (
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.startedAmlRegulatedActivity)))
+    Ok(view(form.prepare(request.registration.startedAmlRegulatedActivityInCurrentFy)))
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
@@ -58,7 +58,7 @@ class AmlRegulatedController @Inject() (
         startedAmlRegulatedActivity =>
           eclRegistrationConnector
             .upsertRegistration(
-              request.registration.copy(startedAmlRegulatedActivity = Some(startedAmlRegulatedActivity))
+              request.registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(startedAmlRegulatedActivity))
             )
             .map { updatedRegistration =>
               Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))

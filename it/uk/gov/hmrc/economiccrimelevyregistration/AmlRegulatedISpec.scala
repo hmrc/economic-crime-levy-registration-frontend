@@ -41,7 +41,7 @@ class AmlRegulatedISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val updatedRegistration = registration.copy(startedAmlRegulatedActivity = Some(true))
+      val updatedRegistration = registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(true))
 
       stubUpsertRegistration(updatedRegistration)
 
@@ -51,7 +51,7 @@ class AmlRegulatedISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(AmlStartDateController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(AmlRegulatedActivityStartDateController.onPageLoad().url)
     }
   }
 }

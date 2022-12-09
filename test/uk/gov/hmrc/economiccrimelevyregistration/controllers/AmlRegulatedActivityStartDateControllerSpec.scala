@@ -25,28 +25,28 @@ import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlStartDateFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityStartDateFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlStartDatePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlStartDateView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityStartDatePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityStartDateView
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class AmlStartDateControllerSpec extends SpecBase {
+class AmlRegulatedActivityStartDateControllerSpec extends SpecBase {
 
-  val view: AmlStartDateView                 = app.injector.instanceOf[AmlStartDateView]
-  val formProvider: AmlStartDateFormProvider = new AmlStartDateFormProvider()
-  val form: Form[LocalDate]                  = formProvider()
+  val view: AmlRegulatedActivityStartDateView                 = app.injector.instanceOf[AmlRegulatedActivityStartDateView]
+  val formProvider: AmlRegulatedActivityStartDateFormProvider = new AmlRegulatedActivityStartDateFormProvider()
+  val form: Form[LocalDate]                                   = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val pageNavigator: AmlStartDatePageNavigator = new AmlStartDatePageNavigator {
+  val pageNavigator: AmlRegulatedActivityStartDatePageNavigator = new AmlRegulatedActivityStartDatePageNavigator {
     override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
   }
 
   class TestContext(registrationData: Registration) {
-    val controller = new AmlStartDateController(
+    val controller = new AmlRegulatedActivityStartDateController(
       mcc,
       fakeAuthorisedAction,
       fakeDataRetrievalAction(registrationData),
@@ -59,7 +59,7 @@ class AmlStartDateControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(registration.copy(amlStartDate = None)) {
+      new TestContext(registration.copy(amlRegulatedActivityStartDate = None)) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
         status(result) shouldBe OK
@@ -70,7 +70,7 @@ class AmlStartDateControllerSpec extends SpecBase {
 
     "populate the view correctly when the question has previously been answered" in forAll {
       (registration: Registration, amlStartDate: LocalDate) =>
-        new TestContext(registration.copy(amlStartDate = Some(amlStartDate))) {
+        new TestContext(registration.copy(amlRegulatedActivityStartDate = Some(amlStartDate))) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
           status(result)          shouldBe OK
@@ -84,7 +84,7 @@ class AmlStartDateControllerSpec extends SpecBase {
       (registration: Registration, amlStartDate: LocalDate) =>
         new TestContext(registration) {
           val updatedRegistration: Registration =
-            registration.copy(amlStartDate = Some(amlStartDate))
+            registration.copy(amlRegulatedActivityStartDate = Some(amlStartDate))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))

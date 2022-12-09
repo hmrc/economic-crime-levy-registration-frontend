@@ -126,7 +126,7 @@ trait EclTestData {
       .map(e => Enrolment(e.key, e.identifiers.map(i => KeyValue(i.key, i.value))))
       .toSeq
 
-  def alphaNumericString: String = Gen.alphaNumStr.sample.get
+  def alphaNumericString: String = Gen.alphaNumStr.retryUntil(_.nonEmpty).sample.get
 
   val testInternalId: String               = alphaNumericString
   val testGroupId: String                  = alphaNumericString

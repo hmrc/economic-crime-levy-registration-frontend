@@ -28,9 +28,10 @@ class AmlRegulatedPageNavigatorSpec extends SpecBase {
   "nextPage" should {
     "return a Call to the Aml start date page from the Aml regulated activity started in current financial year page in NormalMode when the 'Yes' option is selected" in forAll {
       registration: Registration =>
-        val updatedRegistration = registration.copy(startedAmlRegulatedActivity = Some(true))
+        val updatedRegistration = registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(true))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.AmlStartDateController.onPageLoad()
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.AmlRegulatedActivityStartDateController
+          .onPageLoad()
     }
   }
 

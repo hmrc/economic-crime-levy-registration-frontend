@@ -20,8 +20,8 @@ import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.DateBehaviours
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
-class AmlStartDateFormProviderSpec extends DateBehaviours {
-  val form = new AmlStartDateFormProvider()()
+class AmlRegulatedActivityStartDateFormProviderSpec extends DateBehaviours {
+  val form = new AmlRegulatedActivityStartDateFormProvider()()
 
   "value" should {
     val fieldName   = "value"

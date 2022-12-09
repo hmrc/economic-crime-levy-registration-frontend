@@ -20,10 +20,10 @@ import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-class AmlStartDatePageNavigator extends PageNavigator {
+class AmlRegulatedActivityStartDatePageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.amlStartDate match {
+    registration.amlRegulatedActivityStartDate match {
       case Some(_) => ???
       case _       => routes.StartController.onPageLoad()
     }
