@@ -32,13 +32,6 @@ class AmlRegulatedPageNavigatorSpec extends SpecBase {
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.AmlStartDateController.onPageLoad()
     }
-
-    "return a Call to the SIC code page from the Aml regulated activity started in current financial year page in NormalMode when the 'No' option is selected" in forAll {
-      registration: Registration =>
-        val updatedRegistration = registration.copy(startedAmlRegulatedActivity = Some(false))
-
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe ???
-    }
   }
 
 }

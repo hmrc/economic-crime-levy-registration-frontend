@@ -24,8 +24,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import java.time.LocalDate
 
 class AmlStartDateFormProvider extends Mappings {
-  val dateIsWithinCurrentFinancialYear: Constraint[LocalDate] = Constraint[LocalDate] {
-    date: LocalDate => if (date.isBefore(EclTaxYear.currentFinancialYearStartDate) || date.isAfter(EclTaxYear.currentFinancialYearEndDate)) {
+  val dateIsWithinCurrentFinancialYear: Constraint[LocalDate] = Constraint[LocalDate] { date: LocalDate =>
+    if (
+      date.isBefore(EclTaxYear.currentFinancialYearStartDate) || date.isAfter(EclTaxYear.currentFinancialYearEndDate)
+    ) {
       Invalid("amlStartDate.error.notWithinFinancialYear")
     } else {
       Valid

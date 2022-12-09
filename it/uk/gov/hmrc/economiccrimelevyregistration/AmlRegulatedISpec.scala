@@ -34,26 +34,6 @@ class AmlRegulatedISpec extends ISpecBase with AuthorisedBehaviour {
   s"POST ${routes.AmlRegulatedController.onSubmit().url}"  should {
     behave like authorisedActionRoute(routes.AmlRegulatedController.onSubmit())
 
-    "save the selected Aml regulated option then redirect to the SIC code page when the No option is selected" in {
-      stubAuthorisedWithNoGroupEnrolment()
-
-      val registration = random[Registration]
-
-      stubGetRegistration(registration)
-
-      val updatedRegistration = registration.copy(startedAmlRegulatedActivity = Some(false))
-
-      stubUpsertRegistration(updatedRegistration)
-
-      val result = callRoute(
-        FakeRequest(routes.AmlRegulatedController.onSubmit()).withFormUrlEncodedBody(("value", "false"))
-      )
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe ???
-    }
-
     "save the selected Aml regulated option then redirect to the Aml start date page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 

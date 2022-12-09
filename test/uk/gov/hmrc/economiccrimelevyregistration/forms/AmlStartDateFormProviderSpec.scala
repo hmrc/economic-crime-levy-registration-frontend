@@ -39,11 +39,17 @@ class AmlStartDateFormProviderSpec extends DateBehaviours {
       requiredKey
     )
 
-    behave like dateFieldWithMin(form, fieldName, EclTaxYear.currentFinancialYearStartDate,
+    behave like dateFieldWithMin(
+      form,
+      fieldName,
+      EclTaxYear.currentFinancialYearStartDate,
       FormError(fieldName, "amlStartDate.error.notWithinFinancialYear")
     )
 
-    behave like dateFieldWithMax(form, fieldName, EclTaxYear.currentFinancialYearEndDate,
+    behave like dateFieldWithMax(
+      form,
+      fieldName,
+      EclTaxYear.currentFinancialYearEndDate,
       FormError(fieldName, "amlStartDate.error.notWithinFinancialYear")
     )
   }

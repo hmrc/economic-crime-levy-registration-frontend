@@ -34,7 +34,7 @@
 
     @formHelper(action = AmlStartDateController.onSubmit()) {
         @if(form.errors.nonEmpty) {
-            @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value.day")))
+            @errorSummary(ErrorSummaryViewModel.dateErrorSummary(form, errorLinkOverrides = Map("value" -> "value.day")))
         }
 
     @dateInput(DateViewModel(

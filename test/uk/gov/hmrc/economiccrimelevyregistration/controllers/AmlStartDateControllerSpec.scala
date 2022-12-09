@@ -31,7 +31,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlStartDatePageNavi
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlStartDateView
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import scala.concurrent.Future
 
 class AmlStartDateControllerSpec extends SpecBase {
