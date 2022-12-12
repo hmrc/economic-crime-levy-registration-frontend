@@ -24,18 +24,24 @@ class AmlRegulatedActivityStartDateFormProviderSpec extends DateBehaviours {
   val form = new AmlRegulatedActivityStartDateFormProvider()()
 
   "value" should {
-    val fieldName   = "value"
-    val requiredKey = "amlStartDate.error.allRequired"
+    val fieldName      = "value"
+    val invalidKey     = "amlStartDate.error.invalid"
+    val allRequiredKey = "amlStartDate.error.allRequired"
+    val twoRequiredKey = "amlStartDate.error.twoRequired"
+    val requiredKey    = "amlStartDate.error.required"
 
     behave like dateField(
       form,
       fieldName,
+      invalidKey,
       datesBetween(EclTaxYear.currentFinancialYearStartDate, EclTaxYear.currentFinancialYearEndDate)
     )
 
     behave like mandatoryDateField(
       form,
       fieldName,
+      allRequiredKey,
+      twoRequiredKey,
       requiredKey
     )
 

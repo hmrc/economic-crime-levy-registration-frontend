@@ -25,7 +25,7 @@ class AmlRegulatedPageNavigator extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.startedAmlRegulatedActivityInCurrentFy match {
       case Some(true)  => routes.AmlRegulatedActivityStartDateController.onPageLoad()
-      case Some(false) => ???
+      case Some(false) => routes.BusinessSectorController.onPageLoad()
       case _           => routes.StartController.onPageLoad()
     }
 

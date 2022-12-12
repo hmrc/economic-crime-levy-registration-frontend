@@ -53,5 +53,25 @@ class AmlRegulatedISpec extends ISpecBase with AuthorisedBehaviour {
 
       redirectLocation(result) shouldBe Some(AmlRegulatedActivityStartDateController.onPageLoad().url)
     }
+
+    "save the selected Aml regulated option then redirect to the business sector page when the No option is selected" in {
+      stubAuthorisedWithNoGroupEnrolment()
+
+      val registration = random[Registration]
+
+      stubGetRegistration(registration)
+
+      val updatedRegistration = registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(false))
+
+      stubUpsertRegistration(updatedRegistration)
+
+      val result = callRoute(
+        FakeRequest(routes.AmlRegulatedController.onSubmit()).withFormUrlEncodedBody(("value", "false"))
+      )
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(BusinessSectorController.onPageLoad().url)
+    }
   }
 }
