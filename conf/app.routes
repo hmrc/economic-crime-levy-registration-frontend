@@ -19,6 +19,14 @@ GET         /register-with-your-aml-supervisor    uk.gov.hmrc.economiccrimelevyr
 GET         /what-is-your-entity-type        uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
 POST        /what-is-your-entity-type        uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
 
+GET         /did-you-start-aml-activity-in-current-year    uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedController.onPageLoad()
+POST        /did-you-start-aml-activity-in-current-year    uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedController.onSubmit()
+
+GET         /aml-activity-start-date         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityStartDateController.onPageLoad()
+POST        /aml-activity-start-date         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityStartDateController.onSubmit()
+
+GET         /what-is-your-business-sector    uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad()
+
 GET         /grs-continue                    uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
 
 GET         /check-your-answers              uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()

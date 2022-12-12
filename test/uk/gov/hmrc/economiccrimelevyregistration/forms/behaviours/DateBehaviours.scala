@@ -18,16 +18,22 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours
 
 import org.scalacheck.Gen
 import play.api.data.{Form, FormError}
+import uk.gov.hmrc.economiccrimelevyregistration.{EclTestData, InvalidDayMonthYear}
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class DateBehaviours extends FieldBehaviours {
+class DateBehaviours extends FieldBehaviours with EclTestData {
 
-  def dateField(form: Form[_], key: String, validData: Gen[LocalDate]): Unit =
+  def dateField(
+    form: Form[_],
+    key: String,
+    invalidKey: String,
+    validData: Gen[LocalDate],
+    errorArgs: Seq[String] = Seq.empty
+  ): Unit =
     "bind" should {
       "bind valid data" in {
-
         forAll(validData -> "valid date") { date =>
           val data = Map(
             s"$key.day"   -> date.getDayOfMonth.toString,
@@ -40,6 +46,18 @@ class DateBehaviours extends FieldBehaviours {
           result.value.value shouldEqual date
           result.errors         shouldBe empty
         }
+      }
+
+      "fail to bind invalid data" in forAll { invalidDayMonthYear: InvalidDayMonthYear =>
+        val data = Map(
+          s"$key.day"   -> invalidDayMonthYear.day,
+          s"$key.month" -> invalidDayMonthYear.month,
+          s"$key.year"  -> invalidDayMonthYear.year
+        )
+
+        val result = form.bind(data)
+
+        result.errors should contain only FormError(key, invalidKey, errorArgs)
       }
     }
 
@@ -83,13 +101,42 @@ class DateBehaviours extends FieldBehaviours {
       }
     }
 
-  def mandatoryDateField(form: Form[_], key: String, requiredAllKey: String, errorArgs: Seq[String] = Seq.empty): Unit =
+  def mandatoryDateField(
+    form: Form[_],
+    key: String,
+    requiredAllKey: String,
+    twoRequiredKey: String,
+    requiredKey: String,
+    errorArgs: Seq[String] = Seq.empty
+  ): Unit =
     "bind" should {
       "fail to bind an empty date" in {
 
         val result = form.bind(Map.empty[String, String])
 
         result.errors should contain only FormError(key, requiredAllKey, errorArgs)
+      }
+
+      "fail to bind missing date elements" in forAll(
+        Table(
+          ("day", "month", "year", "expectedResult"),
+          ("1", "", "", Seq(FormError(key, twoRequiredKey, Seq("month", "year")))),
+          ("", "1", "", Seq(FormError(key, twoRequiredKey, Seq("day", "year")))),
+          ("", "", "2022", Seq(FormError(key, twoRequiredKey, Seq("day", "month")))),
+          ("1", "1", "", Seq(FormError(key, requiredKey, Seq("year")))),
+          ("1", "", "2022", Seq(FormError(key, requiredKey, Seq("month")))),
+          ("", "1", "2022", Seq(FormError(key, requiredKey, Seq("day"))))
+        )
+      ) { (day: String, month: String, year: String, expectedResult: Seq[FormError]) =>
+        val data = Map(
+          s"$key.day"   -> day,
+          s"$key.month" -> month,
+          s"$key.year"  -> year
+        )
+
+        val result = form.bind(data)
+
+        result.errors shouldBe expectedResult
       }
     }
 }

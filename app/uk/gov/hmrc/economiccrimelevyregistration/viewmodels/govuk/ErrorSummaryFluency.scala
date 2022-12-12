@@ -44,6 +44,36 @@ trait ErrorSummaryFluency {
         title = Text(messages("error.summary.title"))
       )
     }
+
+    def dateErrorSummary(
+      form: Form[_],
+      errorLinkOverrides: Map[String, String] = Map.empty
+    )(implicit messages: Messages): ErrorSummary = {
+
+      val errors = form.errors.flatMap { error =>
+        val missingFields: Seq[String] = error.args.map(_.toString)
+        if (missingFields.nonEmpty) {
+          missingFields.map { field =>
+            ErrorLink(
+              href = Some(s"#value.$field"),
+              content = Text(messages(s"error.$field.required", error.args: _*))
+            )
+          }
+        } else {
+          Seq(
+            ErrorLink(
+              href = Some(s"#${errorLinkOverrides.getOrElse(error.key, error.key)}"),
+              content = Text(messages(error.message, error.args: _*))
+            )
+          )
+        }
+      }
+
+      ErrorSummary(
+        errorList = errors,
+        title = Text(messages("error.summary.title"))
+      )
+    }
   }
 
   implicit class FluentErrorSummary(errorSummary: ErrorSummary) {

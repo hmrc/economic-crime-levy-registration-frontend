@@ -36,4 +36,6 @@ object EclTaxYear {
       yearDue
     }
 
+  val currentFinancialYearStartDate: LocalDate = LocalDate.of(currentFinancialYear.toInt, 4, 1)
+  val currentFinancialYearEndDate: LocalDate   = LocalDate.of(currentFinancialYear.toInt + 1, 3, 31)
 }
