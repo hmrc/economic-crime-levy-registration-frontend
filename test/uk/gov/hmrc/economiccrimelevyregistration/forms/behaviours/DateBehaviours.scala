@@ -18,11 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours
 
 import org.scalacheck.Gen
 import play.api.data.{Form, FormError}
+import uk.gov.hmrc.economiccrimelevyregistration.{EclTestData, InvalidDayMonthYear}
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class DateBehaviours extends FieldBehaviours {
+class DateBehaviours extends FieldBehaviours with EclTestData {
 
   def dateField(
     form: Form[_],
@@ -33,7 +34,6 @@ class DateBehaviours extends FieldBehaviours {
   ): Unit =
     "bind" should {
       "bind valid data" in {
-
         forAll(validData -> "valid date") { date =>
           val data = Map(
             s"$key.day"   -> date.getDayOfMonth.toString,
@@ -48,25 +48,11 @@ class DateBehaviours extends FieldBehaviours {
         }
       }
 
-      "fail to bind invalid data" in {
-
+      "fail to bind invalid data" in forAll { invalidDayMonthYear: InvalidDayMonthYear =>
         val data = Map(
-          s"$key.day"   -> "dd",
-          s"$key.month" -> "MM",
-          s"$key.year"  -> "yyyy"
-        )
-
-        val result = form.bind(data)
-
-        result.errors should contain only FormError(key, invalidKey, errorArgs)
-      }
-
-      "fail to bind data out-of-range" in {
-
-        val data = Map(
-          s"$key.day"   -> "99",
-          s"$key.month" -> "99",
-          s"$key.year"  -> "-2022"
+          s"$key.day"   -> invalidDayMonthYear.day,
+          s"$key.month" -> invalidDayMonthYear.month,
+          s"$key.year"  -> invalidDayMonthYear.year
         )
 
         val result = form.bind(data)
