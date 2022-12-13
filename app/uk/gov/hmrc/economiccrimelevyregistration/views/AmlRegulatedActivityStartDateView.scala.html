@@ -32,11 +32,12 @@
 ) {
     @formHelper(action = AmlRegulatedActivityStartDateController.onSubmit()) {
         @if(form.errors.nonEmpty) {
-            @errorSummary(ErrorSummaryViewModel.dateErrorSummary(form, errorLinkOverrides = Map("value" -> "value.day")))
+            @errorSummary(ErrorSummaryViewModel(form))
         }
 
         @dateInput(DateViewModel(
             field = form("value"),
+            formErrors = form.errors,
             legend = LegendViewModel(messages("amlStartDate.heading")).asPageHeading()
         )
                 .withHint(HintViewModel(messages("amlStartDate.hint")))

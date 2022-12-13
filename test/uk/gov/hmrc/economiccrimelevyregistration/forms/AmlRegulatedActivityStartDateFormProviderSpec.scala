@@ -24,24 +24,18 @@ class AmlRegulatedActivityStartDateFormProviderSpec extends DateBehaviours {
   val form = new AmlRegulatedActivityStartDateFormProvider()()
 
   "value" should {
-    val fieldName      = "value"
-    val invalidKey     = "amlStartDate.error.invalid"
-    val allRequiredKey = "amlStartDate.error.allRequired"
-    val twoRequiredKey = "amlStartDate.error.twoRequired"
-    val requiredKey    = "amlStartDate.error.required"
+    val fieldName   = "value"
+    val requiredKey = "error.date.required"
 
     behave like dateField(
       form,
       fieldName,
-      invalidKey,
       datesBetween(EclTaxYear.currentFinancialYearStartDate, EclTaxYear.currentFinancialYearEndDate)
     )
 
     behave like mandatoryDateField(
       form,
       fieldName,
-      allRequiredKey,
-      twoRequiredKey,
       requiredKey
     )
 
@@ -49,14 +43,28 @@ class AmlRegulatedActivityStartDateFormProviderSpec extends DateBehaviours {
       form,
       fieldName,
       EclTaxYear.currentFinancialYearStartDate,
-      FormError(fieldName, "amlStartDate.error.notWithinFinancialYear")
+      FormError(
+        fieldName,
+        "amlStartDate.error.notWithinFinancialYear",
+        Seq(
+          EclTaxYear.currentFinancialYearStartDate.getYear.toString,
+          EclTaxYear.currentFinancialYearEndDate.getYear.toString
+        )
+      )
     )
 
     behave like dateFieldWithMax(
       form,
       fieldName,
       EclTaxYear.currentFinancialYearEndDate,
-      FormError(fieldName, "amlStartDate.error.notWithinFinancialYear")
+      FormError(
+        fieldName,
+        "amlStartDate.error.notWithinFinancialYear",
+        Seq(
+          EclTaxYear.currentFinancialYearStartDate.getYear.toString,
+          EclTaxYear.currentFinancialYearEndDate.getYear.toString
+        )
+      )
     )
   }
 }

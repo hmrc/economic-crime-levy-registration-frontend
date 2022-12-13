@@ -27,13 +27,21 @@ class AmlRegulatedActivityStartDateFormProvider extends Mappings {
     (
       "value",
       localDate(
-        "amlStartDate.error.invalid",
-        "amlStartDate.error.allRequired",
-        "amlStartDate.error.twoRequired",
-        "amlStartDate.error.required"
+        "error.date.invalid",
+        "error.date.required"
       ).verifying(
-        minDate(EclTaxYear.currentFinancialYearStartDate, "amlStartDate.error.notWithinFinancialYear"),
-        maxDate(EclTaxYear.currentFinancialYearEndDate, "amlStartDate.error.notWithinFinancialYear")
+        minDate(
+          EclTaxYear.currentFinancialYearStartDate,
+          "amlStartDate.error.notWithinFinancialYear",
+          EclTaxYear.currentFinancialYearStartDate.getYear.toString,
+          EclTaxYear.currentFinancialYearEndDate.getYear.toString
+        ),
+        maxDate(
+          EclTaxYear.currentFinancialYearEndDate,
+          "amlStartDate.error.notWithinFinancialYear",
+          EclTaxYear.currentFinancialYearStartDate.getYear.toString,
+          EclTaxYear.currentFinancialYearEndDate.getYear.toString
+        )
       )
     )
   )

@@ -16,6 +16,19 @@ date.day = Day
 date.month = Month
 date.year = Year
 
+date.month.1 = January
+date.month.2 = February
+date.month.3 = March
+date.month.4 = April
+date.month.5 = May
+date.month.6 = June
+date.month.7 = July
+date.month.8 = August
+date.month.9 = September
+date.month.10 = October
+date.month.11 = November
+date.month.12 = December
+
 timeout.title = You’re about to be signed out
 timeout.message = For security reasons, you will be signed out of this service in
 timeout.keepAlive = Stay signed in
@@ -23,13 +36,17 @@ timeout.signOut = Sign out
 
 error.browser.title.prefix = Error:
 error.boolean = Please give an answer
-error.invalid_date = Give a correct date
 error.day.required = Enter a day
+error.day.invalid = The day entered must be a real day
 error.month.required = Enter a month
+error.month.invalid = The month entered must be a real month
 error.year.required = Enter a year
-error.integer = Give an answer in whole numbers
-error.non_numeric = Give a value using only numbers
-error.number = Please enter a valid number
+error.year.invalid = The year entered must be a real year
+error.dayMonth.required = The date entered must include a day and month
+error.dayYear.required = The date entered must include a day and year
+error.monthYear.required = The date entered must include a month and year
+error.date.required = Enter a date
+error.date.invalid = The date entered must be a real date
 error.required = Please enter a value
 error.summary.title = There is a problem
 
@@ -129,11 +146,7 @@ amlRegulated.error.required = Select an answer
 amlStartDate.title = What date did your AML-regulated activity start?
 amlStartDate.heading = What date did your AML-regulated activity start?
 amlStartDate.hint = For example, 13 10 2022
-amlStartDate.error.invalid = Start date is invalid
-amlStartDate.error.allRequired = Enter a date
-amlStartDate.error.twoRequired = Date must include a {0} and {1}
-amlStartDate.error.required = Date must include a {0}
-amlStartDate.error.notWithinFinancialYear = The start date does not fall within the current financial year
+amlStartDate.error.notWithinFinancialYear = The date must be between 1 April {0} and 31 March {1}
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 
