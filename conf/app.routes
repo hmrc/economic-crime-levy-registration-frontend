@@ -26,6 +26,9 @@ GET         /aml-activity-start-date         uk.gov.hmrc.economiccrimelevyregist
 POST        /aml-activity-start-date         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityStartDateController.onSubmit()
 
 GET         /what-is-your-business-sector    uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad()
+POST        /what-is-your-business-sector    uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onSubmit()
+
+GET         /contact-name                    uk.gov.hmrc.economiccrimelevyregistration.controllers.ContactNameController.onPageLoad()
 
 GET         /grs-continue                    uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
 
