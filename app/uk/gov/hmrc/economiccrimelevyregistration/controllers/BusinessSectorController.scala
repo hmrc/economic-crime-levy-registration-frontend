@@ -16,26 +16,51 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.BusinessSectorFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
+import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.BusinessSectorPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.BusinessSectorView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class BusinessSectorController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
-  getRegistrationData: DataRetrievalAction
+  getRegistrationData: DataRetrievalAction,
+  eclRegistrationConnector: EclRegistrationConnector,
+  formProvider: BusinessSectorFormProvider,
+  pageNavigator: BusinessSectorPageNavigator,
+  view: BusinessSectorView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
+  val form: Form[BusinessSector] = formProvider()
+
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok("Business sector question placeholder")
+    Ok(view(form.prepare(request.registration.businessSector)))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async(implicit request => ???)
+  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        businessSector =>
+          eclRegistrationConnector
+            .upsertRegistration(request.registration.copy(businessSector = Some(businessSector)))
+            .map { updatedRegistration =>
+              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
+            }
+      )
+  }
 }

@@ -134,6 +134,21 @@ amlStartDate.error.allRequired = Enter a date
 amlStartDate.error.twoRequired = Date must include a {0} and {1}
 amlStartDate.error.required = Date must include a {0}
 amlStartDate.error.notWithinFinancialYear = The start date does not fall within the current financial year
+
+businessSector.title = What is your business sector?
+businessSector.CreditInstitution = Credit institution
+businessSector.FinancialInstitution = Financial institution
+businessSector.Auditor = Auditor
+businessSector.InsolvencyPractitioner = Insolvency practitioner
+businessSector.ExternalAccountant = External accountant
+businessSector.TaxAdviser = Tax adviser
+businessSector.IndependentLegalProfessional = Independent legal professional
+businessSector.TrustOrCompanyServiceProvider = Trust or company service provider
+businessSector.EstateAgentOrLettingAgent = Estate agent or letting agent
+businessSector.HighValueDealer = High value dealer, casino, auction platform or art market participant
+businessSector.CryptoAssetExchangeProvider = Cryptoasset exchange provider or custodian wallet provider
+businessSector.error.required = Select a business sector
+
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 
