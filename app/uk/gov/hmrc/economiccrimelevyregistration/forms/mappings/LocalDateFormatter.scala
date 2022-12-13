@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
 
-import java.time.LocalDate
 import play.api.data.FormError
 import play.api.data.format.Formatter
 
+import java.time.LocalDate
 import java.time.temporal.ChronoField
 import scala.util.{Failure, Success, Try}
 
@@ -85,26 +85,20 @@ private[mappings] class LocalDateFormatter(
 
     val validatedDayMonthYear = validateDayMonthYear(key, day, month, year)
 
-    (day, month, year) match {
+    ((day, month, year) match {
       case (Some(day), Some(month), Some(year)) =>
         validatedDayMonthYear match {
-          case Nil        => toDate(key, day.toInt, month.toInt, year.toInt)
-          case formErrors => Left(formErrors)
+          case Nil => toDate(key, day.toInt, month.toInt, year.toInt)
+          case _   => Left(Nil)
         }
-      case (Some(_), None, Some(_))             =>
-        Left(validatedDayMonthYear ++ Seq(FormError(monthKey, "error.month.required")))
-      case (None, Some(_), Some(_))             =>
-        Left(validatedDayMonthYear ++ Seq(FormError(dayKey, "error.day.required")))
-      case (Some(_), Some(_), None)             =>
-        Left(validatedDayMonthYear ++ Seq(FormError(yearKey, "error.year.required")))
-      case (None, None, Some(_))                =>
-        Left(validatedDayMonthYear ++ Seq("day", "month").map(f => FormError(s"$key.$f", s"error.$f.required")))
-      case (None, Some(_), None)                =>
-        Left(validatedDayMonthYear ++ Seq("day", "year").map(f => FormError(s"$key.$f", s"error.$f.required")))
-      case (Some(_), None, None)                =>
-        Left(validatedDayMonthYear ++ Seq("month", "year").map(f => FormError(s"$key.$f", s"error.$f.required")))
-      case _                                    => Left(validatedDayMonthYear ++ Seq(FormError(key, requiredKey, args)))
-    }
+      case (Some(_), None, Some(_))             => Left(Seq(FormError(monthKey, "error.month.required")))
+      case (None, Some(_), Some(_))             => Left(Seq(FormError(dayKey, "error.day.required")))
+      case (Some(_), Some(_), None)             => Left(Seq(FormError(yearKey, "error.year.required")))
+      case (None, None, Some(_))                => Left(Seq("day", "month").map(f => FormError(s"$key.$f", s"error.$f.required")))
+      case (None, Some(_), None)                => Left(Seq("day", "year").map(f => FormError(s"$key.$f", s"error.$f.required")))
+      case (Some(_), None, None)                => Left(Seq("month", "year").map(f => FormError(s"$key.$f", s"error.$f.required")))
+      case _                                    => Left(Seq(FormError(key, requiredKey, args)))
+    }).left.map(_ ++ validatedDayMonthYear)
   }
 
   override def unbind(key: String, value: LocalDate): Map[String, String] =
