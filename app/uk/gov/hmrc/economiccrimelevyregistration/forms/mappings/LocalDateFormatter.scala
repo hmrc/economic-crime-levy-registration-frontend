@@ -83,11 +83,11 @@ private[mappings] class LocalDateFormatter(
     val month: Option[String] = data.get(monthKey).filter(_.nonEmpty)
     val year: Option[String]  = data.get(yearKey).filter(_.nonEmpty)
 
-    val validatedDayMonthYear = validateDayMonthYear(key, day, month, year)
+    val dayMonthYearErrors: Seq[FormError] = validateDayMonthYear(key, day, month, year)
 
     ((day, month, year) match {
       case (Some(day), Some(month), Some(year)) =>
-        validatedDayMonthYear match {
+        dayMonthYearErrors match {
           case Nil => toDate(key, day.toInt, month.toInt, year.toInt)
           case _   => Left(Nil)
         }
@@ -98,7 +98,7 @@ private[mappings] class LocalDateFormatter(
       case (None, Some(_), None)                => Left(Seq("day", "year").map(f => FormError(s"$key.$f", s"error.$f.required")))
       case (Some(_), None, None)                => Left(Seq("month", "year").map(f => FormError(s"$key.$f", s"error.$f.required")))
       case _                                    => Left(Seq(FormError(key, requiredKey, args)))
-    }).left.map(_ ++ validatedDayMonthYear)
+    }).left.map(_ ++ dayMonthYearErrors)
   }
 
   override def unbind(key: String, value: LocalDate): Map[String, String] =
