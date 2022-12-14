@@ -17,31 +17,36 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
+import play.api.data.validation.Constraint
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
 
 class AmlRegulatedActivityStartDateFormProvider extends Mappings {
+
+  val minDateConstraint: Constraint[LocalDate] = minDate(
+    EclTaxYear.currentFinancialYearStartDate,
+    "amlStartDate.error.notWithinFinancialYear",
+    EclTaxYear.currentFinancialYearStartDate.getYear.toString,
+    EclTaxYear.currentFinancialYearEndDate.getYear.toString
+  )
+
+  val maxDateConstraint: Constraint[LocalDate] = maxDate(
+    EclTaxYear.currentFinancialYearEndDate,
+    "amlStartDate.error.notWithinFinancialYear",
+    EclTaxYear.currentFinancialYearStartDate.getYear.toString,
+    EclTaxYear.currentFinancialYearEndDate.getYear.toString
+  )
+
   def apply(): Form[LocalDate] = Form(
     (
       "value",
       localDate(
         "error.date.invalid",
-        "error.date.required"
-      ).verifying(
-        minDate(
-          EclTaxYear.currentFinancialYearStartDate,
-          "amlStartDate.error.notWithinFinancialYear",
-          EclTaxYear.currentFinancialYearStartDate.getYear.toString,
-          EclTaxYear.currentFinancialYearEndDate.getYear.toString
-        ),
-        maxDate(
-          EclTaxYear.currentFinancialYearEndDate,
-          "amlStartDate.error.notWithinFinancialYear",
-          EclTaxYear.currentFinancialYearStartDate.getYear.toString,
-          EclTaxYear.currentFinancialYearEndDate.getYear.toString
-        )
+        "error.date.required",
+        Some(minDateConstraint),
+        Some(maxDateConstraint)
       )
     )
   )

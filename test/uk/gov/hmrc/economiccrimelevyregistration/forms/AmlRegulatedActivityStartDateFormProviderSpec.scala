@@ -35,7 +35,7 @@ class AmlRegulatedActivityStartDateFormProviderSpec extends DateBehaviours {
 
     behave like mandatoryDateField(
       form,
-      fieldName,
+      s"$fieldName.day",
       requiredKey
     )
 
@@ -44,7 +44,7 @@ class AmlRegulatedActivityStartDateFormProviderSpec extends DateBehaviours {
       fieldName,
       EclTaxYear.currentFinancialYearStartDate,
       FormError(
-        fieldName,
+        s"$fieldName.day",
         "amlStartDate.error.notWithinFinancialYear",
         Seq(
           EclTaxYear.currentFinancialYearStartDate.getYear.toString,
@@ -58,7 +58,7 @@ class AmlRegulatedActivityStartDateFormProviderSpec extends DateBehaviours {
       fieldName,
       EclTaxYear.currentFinancialYearEndDate,
       FormError(
-        fieldName,
+        s"$fieldName.day",
         "amlStartDate.error.notWithinFinancialYear",
         Seq(
           EclTaxYear.currentFinancialYearStartDate.getYear.toString,
