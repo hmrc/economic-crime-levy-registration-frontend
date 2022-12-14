@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
 
 import play.api.data.FieldMapping
 import play.api.data.Forms.of
+import play.api.data.validation.Constraint
 import uk.gov.hmrc.economiccrimelevyregistration.models.Enumerable
 
 import java.time.LocalDate
@@ -52,12 +53,16 @@ trait Mappings extends Formatters with Constraints {
   protected def localDate(
     invalidKey: String,
     requiredKey: String,
+    minDateConstraint: Option[Constraint[LocalDate]] = None,
+    maxDateConstraint: Option[Constraint[LocalDate]] = None,
     args: Seq[String] = Seq.empty
   ): FieldMapping[LocalDate] =
     of(
       new LocalDateFormatter(
         invalidKey,
         requiredKey,
+        minDateConstraint,
+        maxDateConstraint,
         args
       )
     )

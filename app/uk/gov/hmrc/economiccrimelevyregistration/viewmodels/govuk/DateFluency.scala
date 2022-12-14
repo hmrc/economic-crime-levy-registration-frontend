@@ -18,11 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk
 
 import play.api.data.{Field, FormError}
 import play.api.i18n.Messages
+import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.ErrorMessageAwareness
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.dateinput.{DateInput, InputItem}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.errormessage.ErrorMessage
 import uk.gov.hmrc.govukfrontend.views.viewmodels.fieldset.{Fieldset, Legend}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.hint.Hint
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.ErrorMessageAwareness
-import uk.gov.hmrc.govukfrontend.views.Aliases.{ErrorMessage, Text}
 
 object date extends DateFluency
 
@@ -77,19 +78,8 @@ trait DateFluency {
         fieldset = Some(fieldset),
         items = items,
         id = field.id,
-        errorMessage = (
-          formErrors.exists(_.message == "error.day.required"),
-          formErrors.exists(_.message == "error.month.required"),
-          formErrors.exists(_.message == "error.year.required")
-        ) match {
-          case (true, true, _) => Some(ErrorMessage(content = Text(messages("error.dayMonth.required"))))
-          case (true, _, true) => Some(ErrorMessage(content = Text(messages("error.dayYear.required"))))
-          case (_, true, true) => Some(ErrorMessage(content = Text(messages("error.monthYear.required"))))
-          case (true, _, _)    => Some(ErrorMessage(content = Text(messages("error.day.required"))))
-          case (_, true, _)    => Some(ErrorMessage(content = Text(messages("error.month.required"))))
-          case (_, _, true)    => Some(ErrorMessage(content = Text(messages("error.year.required"))))
-          case _               => formErrors.headOption.map(err => ErrorMessage(content = Text(messages(err.message, err.args: _*))))
-        }
+        errorMessage =
+          formErrors.headOption.map(err => ErrorMessage(content = Text(messages(err.message, err.args: _*))))
       )
     }
   }
