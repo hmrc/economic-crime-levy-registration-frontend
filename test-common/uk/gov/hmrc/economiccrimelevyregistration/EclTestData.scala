@@ -28,7 +28,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 
 import java.time.{Instant, LocalDate}
-import scala.util.Try
 
 case class EnrolmentsWithEcl(enrolments: Enrolments)
 
@@ -42,8 +41,6 @@ case class IncorporatedEntityJourneyDataWithSuccessfulRegistration(
   incorporatedEntityJourneyData: IncorporatedEntityJourneyData
 )
 
-case class InvalidDayMonthYear(day: String, month: String, year: String)
-
 trait EclTestData {
 
   implicit val arbInstant: Arbitrary[Instant] = Arbitrary {
@@ -52,25 +49,6 @@ trait EclTestData {
 
   implicit val arbLocalDate: Arbitrary[LocalDate] = Arbitrary {
     LocalDate.now()
-  }
-
-  implicit val arbInvalidDayMonthYear: Arbitrary[InvalidDayMonthYear] = Arbitrary {
-    def isInvalidLocalDate(dayMonthYear: (String, String, String)): Boolean = {
-      val (day, month, year) = dayMonthYear
-      Try {
-        LocalDate.of(year.toInt, month.toInt, day.toInt)
-      }.toOption.fold(true)(_ => false)
-    }
-
-    def nonEmptyString: Gen[String] = Gen.nonEmptyListOf[Char](Arbitrary.arbChar.arbitrary).map(_.mkString)
-
-    val dayMonthYearGen: Gen[(String, String, String)] = for {
-      day   <- nonEmptyString
-      month <- nonEmptyString
-      year  <- nonEmptyString
-    } yield (day, month, year)
-
-    dayMonthYearGen.retryUntil(dmy => isInvalidLocalDate(dmy)).map(s => InvalidDayMonthYear(s._1, s._2, s._3))
   }
 
   implicit val arbPartnershipType: Arbitrary[PartnershipType] = Arbitrary {
