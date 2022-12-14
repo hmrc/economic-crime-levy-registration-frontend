@@ -250,7 +250,7 @@ class DateMappingsSpec
 
           val result = form.bind(data)
 
-          result.errors should contain only FormError("value.day", "error.day.invalid")
+          result.errors should contain only FormError("value.day", "error.date.invalid")
       }
     }
 
@@ -266,7 +266,7 @@ class DateMappingsSpec
 
           val result = form.bind(data)
 
-          result.errors should contain only FormError("value.day", "error.day.invalid")
+          result.errors should contain only FormError("value.day", "error.date.invalid")
       }
     }
 
@@ -282,7 +282,7 @@ class DateMappingsSpec
 
           val result = form.bind(data)
 
-          result.errors should contain only FormError("value.month", "error.month.invalid")
+          result.errors should contain only FormError("value.day", "error.date.invalid")
       }
     }
 
@@ -298,7 +298,7 @@ class DateMappingsSpec
 
           val result = form.bind(data)
 
-          result.errors should contain only FormError("value.day", "error.day.invalid")
+          result.errors should contain only FormError("value.day", "error.date.invalid")
       }
     }
 
