@@ -31,6 +31,9 @@ POST        /what-is-your-business-sector                      uk.gov.hmrc.econo
 GET         /contact-name                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNameController.onPageLoad()
 POST        /contact-name                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNameController.onSubmit()
 
+GET         /contact-role                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactRoleController.onPageLoad()
+POST        /contact-role                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactRoleController.onSubmit()
+
 GET         /grs-continue                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
 
 GET         /check-your-answers                                uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()

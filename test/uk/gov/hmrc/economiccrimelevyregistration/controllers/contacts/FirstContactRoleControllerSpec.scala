@@ -26,20 +26,20 @@ import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
-import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactNameFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactNamePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.FirstContactNameView
+import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactRoleFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactRolePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.FirstContactRoleView
 
 import scala.concurrent.Future
 
-class FirstContactNameControllerSpec extends SpecBase {
+class FirstContactRoleControllerSpec extends SpecBase {
 
-  val view: FirstContactNameView                 = app.injector.instanceOf[FirstContactNameView]
-  val formProvider: FirstContactNameFormProvider = new FirstContactNameFormProvider()
+  val view: FirstContactRoleView                 = app.injector.instanceOf[FirstContactRoleView]
+  val formProvider: FirstContactRoleFormProvider = new FirstContactRoleFormProvider()
   val form: Form[String]                         = formProvider()
 
-  val pageNavigator: FirstContactNamePageNavigator = new FirstContactNamePageNavigator() {
+  val pageNavigator: FirstContactRolePageNavigator = new FirstContactRolePageNavigator() {
     override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
   }
 
@@ -48,7 +48,7 @@ class FirstContactNameControllerSpec extends SpecBase {
   implicit val arbStringWithMaxLength: Arbitrary[String] = Arbitrary(stringsWithMaxLength(160))
 
   class TestContext(registrationData: Registration) {
-    val controller = new FirstContactNameController(
+    val controller = new FirstContactRoleController(
       mcc,
       fakeAuthorisedAction,
       fakeDataRetrievalAction(registrationData),
@@ -61,9 +61,7 @@ class FirstContactNameControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(
-        registration.copy(contacts = Contacts.empty)
-      ) {
+      new TestContext(registration.copy(contacts = Contacts.empty)) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
         status(result) shouldBe OK
@@ -73,18 +71,18 @@ class FirstContactNameControllerSpec extends SpecBase {
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
-      (registration: Registration, name: String) =>
+      (registration: Registration, role: String) =>
         new TestContext(
           registration.copy(contacts =
             registration.contacts
-              .copy(firstContactDetails = registration.contacts.firstContactDetails.copy(name = Some(name)))
+              .copy(firstContactDetails = registration.contacts.firstContactDetails.copy(role = Some(role)))
           )
         ) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(name))(
+          contentAsString(result) shouldBe view(form.fill(role))(
             fakeRequest,
             messages
           ).toString
@@ -93,13 +91,13 @@ class FirstContactNameControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the selected contact name then redirect to the next page" in forAll {
-      (registration: Registration, name: String) =>
+    "save the selected contact role then redirect to the next page" in forAll {
+      (registration: Registration, role: String) =>
         new TestContext(registration) {
           val updatedRegistration: Registration =
             registration.copy(contacts =
               registration.contacts.copy(firstContactDetails =
-                registration.contacts.firstContactDetails.copy(name = Some(name))
+                registration.contacts.firstContactDetails.copy(role = Some(role))
               )
             )
 
@@ -107,7 +105,7 @@ class FirstContactNameControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", name)))
+            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", role)))
 
           status(result) shouldBe SEE_OTHER
 

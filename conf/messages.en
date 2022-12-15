@@ -157,6 +157,13 @@ firstContactName.hint = For example, ''John Jones'' or ''Laura Smith''.
 firstContactName.error.required = Enter a full name
 firstContactName.error.length = Full name must be 160 characters or less
 
+firstContactRole.title = What is {0}''s role?
+firstContactRole.heading = What is {0}''s role?
+firstContactRole.p1 = Tell us about their role in your organisation.
+firstContactRole.hint = For example, ''Compliance officer''.
+firstContactRole.error.required = Enter a role
+firstContactRole.error.length = Role must be 160 characters or less
+
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 

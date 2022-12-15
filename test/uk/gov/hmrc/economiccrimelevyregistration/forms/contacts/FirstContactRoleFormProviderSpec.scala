@@ -19,13 +19,13 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
 
-class FirstContactNameFormProviderSpec extends StringFieldBehaviours {
+class FirstContactRoleFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "firstContactName.error.required"
-  val lengthKey   = "firstContactName.error.length"
+  val requiredKey = "firstContactRole.error.required"
+  val lengthKey   = "firstContactRole.error.length"
   val maxLength   = 160
 
-  val form = new FirstContactNameFormProvider()()
+  val form = new FirstContactRoleFormProvider()()
 
   "value" should {
 

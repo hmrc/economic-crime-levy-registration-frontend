@@ -21,15 +21,17 @@ import play.api.libs.json.{Json, OFormat}
 final case class Contacts(
   firstContactDetails: ContactDetails,
   secondContact: Option[Boolean],
-  secondContactDetails: Option[ContactDetails]
+  secondContactDetails: ContactDetails
 )
 
 object Contacts {
+  def empty: Contacts = Contacts(ContactDetails(None, None, None, None), None, ContactDetails(None, None, None, None))
+
   implicit val format: OFormat[Contacts] = Json.format[Contacts]
 }
 
 final case class ContactDetails(
-  name: String,
+  name: Option[String],
   role: Option[String],
   emailAddress: Option[String],
   telephoneNumber: Option[String]

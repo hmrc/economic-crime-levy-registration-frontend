@@ -18,24 +18,23 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
-class FirstContactNamePageNavigatorSpec extends SpecBase {
+class FirstContactRolePageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new FirstContactNamePageNavigator()
+  val pageNavigator = new FirstContactRolePageNavigator()
 
   "nextPage" should {
-    "return a Call to the first contact role page in NormalMode" in forAll {
-      (registration: Registration, name: String) =>
+    "return a Call to the first contact email page in NormalMode" in forAll {
+      (registration: Registration, role: String) =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
             registration.contacts.copy(firstContactDetails =
-              registration.contacts.firstContactDetails.copy(name = Some(name))
+              registration.contacts.firstContactDetails.copy(role = Some(role))
             )
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.FirstContactRoleController.onPageLoad()
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe ???
     }
   }
 

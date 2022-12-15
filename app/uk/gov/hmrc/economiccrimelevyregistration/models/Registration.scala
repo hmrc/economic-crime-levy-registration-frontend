@@ -32,7 +32,7 @@ final case class Registration(
   startedAmlRegulatedActivityInCurrentFy: Option[Boolean],
   amlRegulatedActivityStartDate: Option[LocalDate],
   businessSector: Option[BusinessSector],
-  contacts: Option[Contacts]
+  contacts: Contacts
 )
 
 object Registration {
@@ -49,6 +49,6 @@ object Registration {
     startedAmlRegulatedActivityInCurrentFy = None,
     amlRegulatedActivityStartDate = None,
     businessSector = None,
-    contacts = None
+    contacts = Contacts.empty
   )
 }
