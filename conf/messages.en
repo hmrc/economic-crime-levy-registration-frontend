@@ -149,6 +149,14 @@ businessSector.HighValueDealer = High value dealer, casino, auction platform or 
 businessSector.CryptoAssetExchangeProvider = Cryptoasset exchange provider or custodian wallet provider
 businessSector.error.required = Select a business sector
 
+firstContactName.title = Provide a contact name
+firstContactName.heading = Provide a contact name
+firstContactName.p1 = Provide the name of a person in your organisation who can act as a point of contact. They do not have to be part of your tax or accounting departments.
+firstContactName.p2 = You can add a second contact name and their details after you have added the first contact.
+firstContactName.hint = For example, ''John Jones'' or ''Laura Smith''.
+firstContactName.error.required = Enter a full name
+firstContactName.error.length = Full name must be 160 characters or less
+
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 

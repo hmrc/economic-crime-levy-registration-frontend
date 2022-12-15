@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.navigation
+package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
-class BusinessSectorPageNavigator extends PageNavigator {
+class FirstContactNamePageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.businessSector match {
-      case Some(_) => contacts.routes.FirstContactNameController.onPageLoad()
+    registration.contacts.map(_.firstContactDetails.name) match {
+      case Some(_) => ???
       case _       => routes.StartController.onPageLoad()
     }
 

@@ -31,7 +31,8 @@ final case class Registration(
   partnershipEntityJourneyData: Option[PartnershipEntityJourneyData],
   startedAmlRegulatedActivityInCurrentFy: Option[Boolean],
   amlRegulatedActivityStartDate: Option[LocalDate],
-  businessSector: Option[BusinessSector]
+  businessSector: Option[BusinessSector],
+  contacts: Option[Contacts]
 )
 
 object Registration {
@@ -47,6 +48,7 @@ object Registration {
     partnershipEntityJourneyData = None,
     startedAmlRegulatedActivityInCurrentFy = None,
     amlRegulatedActivityStartDate = None,
-    businessSector = None
+    businessSector = None,
+    contacts = None
   )
 }

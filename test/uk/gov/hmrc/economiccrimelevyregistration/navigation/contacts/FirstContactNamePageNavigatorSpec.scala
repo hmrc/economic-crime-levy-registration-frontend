@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.navigation
+package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, NormalMode, Registration}
 
-class BusinessSectorPageNavigatorSpec extends SpecBase {
+class FirstContactNamePageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new BusinessSectorPageNavigator()
+  val pageNavigator = new FirstContactNamePageNavigator()
 
   "nextPage" should {
-    "return a Call to the contact name page in NormalMode" in forAll {
-      (registration: Registration, businessSector: BusinessSector) =>
-        val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
+    "return a Call to the first contact role page in NormalMode" in forAll {
+      (registration: Registration, contacts: Contacts) =>
+        val updatedRegistration: Registration = registration.copy(contacts = Some(contacts))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.FirstContactNameController.onPageLoad()
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe ???
     }
   }
 
