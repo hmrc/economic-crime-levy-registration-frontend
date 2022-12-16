@@ -32,7 +32,7 @@
 }
 
 @layout(pageTitle = titleWithForm(form, messages("addAnotherContact.title")), backLinkUrl = Some(FirstContactNumberController.onPageLoad().url)) {
-    @formHelper(action = AmlRegulatedController.onSubmit()) {
+    @formHelper(action = AddAnotherContactController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }

@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContactFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AddAnotherContactView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -55,15 +55,16 @@ class AddAnotherContactController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        addAnotherContact =>
+        secondContact => {
+          val updatedContacts: Contacts = request.registration.contacts
+            .copy(secondContact = Some(secondContact))
+
           eclRegistrationConnector
-            .upsertRegistration(
-              request.registration
-                .copy(contacts = request.registration.contacts.copy(secondContact = Some(addAnotherContact)))
-            )
+            .upsertRegistration(request.registration.copy(contacts = updatedContacts))
             .map { updatedRegistration =>
               Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
             }
+        }
       )
   }
 }

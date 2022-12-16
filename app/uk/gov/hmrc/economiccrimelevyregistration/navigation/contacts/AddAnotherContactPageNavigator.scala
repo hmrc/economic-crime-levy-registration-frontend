@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 class AddAnotherContactPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.startedAmlRegulatedActivityInCurrentFy match {
+    registration.contacts.secondContact match {
       case Some(true)  => contacts.routes.SecondContactNameController.onPageLoad()
       case Some(false) => ???
       case _           => routes.StartController.onPageLoad()
