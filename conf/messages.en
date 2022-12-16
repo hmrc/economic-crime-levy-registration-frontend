@@ -185,6 +185,34 @@ addAnotherContact.yes = Yes
 addAnotherContact.no = No
 addAnotherContact.error.required = Select an answer
 
+secondContactName.title = Provide a second contact name
+secondContactName.heading = Provide a second contact name
+secondContactName.legend = Add the details of one more contact within your organisation.
+secondContactName.hint = For example, ''John Jones'' or ''Laura Smith''.
+secondContactName.error.required = Enter a full name
+secondContactName.error.length = Full name must be 160 characters or less
+
+secondContactRole.title = What is {0}''s role?
+secondContactRole.heading = What is {0}''s role?
+secondContactRole.legend = Tell us about their role in your organisation.
+secondContactRole.hint = For example, ''Compliance officer''.
+secondContactRole.error.required = Enter a role
+secondContactRole.error.length = Role must be 160 characters or less
+
+secondContactEmail.title = What is {0}''s email address?
+secondContactEmail.heading = What is {0}''s email address?
+secondContactEmail.legend = This is the email address of your named contact.
+secondContactEmail.error.required = Enter an email address
+secondContactEmail.error.length = Email address must be 160 characters or less
+secondContactEmail.error.invalid = Enter an email address in the correct format, like name@example.com
+
+secondContactNumber.title = What is {0}''s telephone number?
+secondContactNumber.heading = What is {0}''s telephone number?
+secondContactNumber.legend = This is the telephone number of your named contact.
+secondContactNumber.error.required = Enter a telephone number
+secondContactNumber.error.length = Telephone number must be 24 characters or less
+secondContactNumber.error.invalid = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
+
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 

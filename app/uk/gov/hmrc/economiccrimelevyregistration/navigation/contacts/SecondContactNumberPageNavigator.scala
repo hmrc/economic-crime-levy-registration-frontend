@@ -21,13 +21,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
-class AddAnotherContactPageNavigator extends PageNavigator {
+class SecondContactNumberPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.startedAmlRegulatedActivityInCurrentFy match {
-      case Some(true)  => contacts.routes.SecondContactNameController.onPageLoad()
-      case Some(false) => ???
-      case _           => routes.StartController.onPageLoad()
+    registration.contacts.secondContactDetails.telephoneNumber match {
+      case Some(_) => ???
+      case _       => routes.StartController.onPageLoad()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???

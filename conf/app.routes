@@ -43,6 +43,18 @@ POST        /contact-telephone                                 uk.gov.hmrc.econo
 GET         /second-contact                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.AddAnotherContactController.onPageLoad()
 POST        /second-contact                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.AddAnotherContactController.onSubmit()
 
+GET         /second-contact-name                               uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactNameController.onPageLoad()
+POST        /second-contact-name                               uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactNameController.onSubmit()
+
+GET         /second-contact-role                               uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactRoleController.onPageLoad()
+POST        /second-contact-role                               uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactRoleController.onSubmit()
+
+GET         /second-contact-email-address                      uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactEmailController.onPageLoad()
+POST        /second-contact-email-address                      uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactEmailController.onSubmit()
+
+GET         /second-contact-telephone                          uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactNumberController.onPageLoad()
+POST        /second-contact-telephone                          uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactNumberController.onSubmit()
+
 GET         /grs-continue                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
 
 GET         /check-your-answers                                uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()

@@ -22,24 +22,24 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactRoleFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, NormalMode}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactRolePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.FirstContactRoleView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNumberPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.SecondContactNumberView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FirstContactRoleController @Inject() (
+class SecondContactNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
-  formProvider: FirstContactRoleFormProvider,
-  pageNavigator: FirstContactRolePageNavigator,
-  view: FirstContactRoleView
+  formProvider: SecondContactNumberFormProvider,
+  pageNavigator: SecondContactNumberPageNavigator,
+  view: SecondContactNumberView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -47,17 +47,21 @@ class FirstContactRoleController @Inject() (
   val form: Form[String] = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.contacts.firstContactDetails.role), firstContactName(request)))
+    Ok(
+      view(form.prepare(request.registration.contacts.secondContactDetails.telephoneNumber), secondContactName(request))
+    )
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, firstContactName(request)))),
-        role => {
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, secondContactName(request)))),
+        telephoneNumber => {
           val updatedContacts: Contacts = request.registration.contacts
-            .copy(firstContactDetails = request.registration.contacts.firstContactDetails.copy(role = Some(role)))
+            .copy(secondContactDetails =
+              request.registration.contacts.secondContactDetails.copy(telephoneNumber = Some(telephoneNumber))
+            )
 
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(contacts = updatedContacts))

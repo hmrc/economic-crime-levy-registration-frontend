@@ -19,7 +19,11 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 
 package object contacts {
-  val name: RegistrationDataRequest[_] => String = request =>
+  val firstContactName: RegistrationDataRequest[_] => String = request =>
     request.registration.contacts.firstContactDetails.name
-      .getOrElse(throw new IllegalStateException("Contact name must be provided"))
+      .getOrElse(throw new IllegalStateException("First contact name not found in registration data"))
+
+  val secondContactName: RegistrationDataRequest[_] => String = request =>
+    request.registration.contacts.secondContactDetails.name
+      .getOrElse(throw new IllegalStateException("Second contact name not found in registration data"))
 }
