@@ -93,7 +93,7 @@ class FirstContactNameControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the selected contact name then redirect to the next page" in forAll {
+    "save the provided contact name then redirect to the next page" in forAll {
       (registration: Registration, name: String) =>
         new TestContext(registration) {
           val updatedRegistration: Registration =

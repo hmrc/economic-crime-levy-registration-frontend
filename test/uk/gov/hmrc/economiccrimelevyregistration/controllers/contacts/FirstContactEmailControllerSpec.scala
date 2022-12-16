@@ -26,20 +26,20 @@ import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
-import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactRoleFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactEmailFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactRolePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.FirstContactRoleView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactEmailPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.FirstContactEmailView
 
 import scala.concurrent.Future
 
-class FirstContactRoleControllerSpec extends SpecBase {
+class FirstContactEmailControllerSpec extends SpecBase {
 
-  val view: FirstContactRoleView                 = app.injector.instanceOf[FirstContactRoleView]
-  val formProvider: FirstContactRoleFormProvider = new FirstContactRoleFormProvider()
-  val form: Form[String]                         = formProvider()
+  val view: FirstContactEmailView                 = app.injector.instanceOf[FirstContactEmailView]
+  val formProvider: FirstContactEmailFormProvider = new FirstContactEmailFormProvider()
+  val form: Form[String]                          = formProvider()
 
-  val pageNavigator: FirstContactRolePageNavigator = new FirstContactRolePageNavigator() {
+  val pageNavigator: FirstContactEmailPageNavigator = new FirstContactEmailPageNavigator() {
     override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
   }
 
@@ -48,7 +48,7 @@ class FirstContactRoleControllerSpec extends SpecBase {
   implicit val arbStringWithMaxLength: Arbitrary[String] = Arbitrary(stringsWithMaxLength(160))
 
   class TestContext(registrationData: Registration) {
-    val controller = new FirstContactRoleController(
+    val controller = new FirstContactEmailController(
       mcc,
       fakeAuthorisedAction,
       fakeDataRetrievalAction(registrationData),
@@ -76,12 +76,12 @@ class FirstContactRoleControllerSpec extends SpecBase {
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
-      (registration: Registration, role: String, name: String) =>
+      (registration: Registration, name: String, email: String) =>
         new TestContext(
           registration.copy(contacts =
             registration.contacts
               .copy(firstContactDetails =
-                registration.contacts.firstContactDetails.copy(name = Some(name), role = Some(role))
+                registration.contacts.firstContactDetails.copy(name = Some(name), emailAddress = Some(email))
               )
           )
         ) {
@@ -89,19 +89,19 @@ class FirstContactRoleControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(role), name)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form.fill(email), name)(fakeRequest, messages).toString
         }
     }
   }
 
   "onSubmit" should {
-    "save the provided contact role then redirect to the next page" in forAll {
-      (registration: Registration, role: String) =>
+    "save the provided contact email then redirect to the next page" in forAll {
+      (registration: Registration, email: String) =>
         new TestContext(registration) {
           val updatedRegistration: Registration =
             registration.copy(contacts =
               registration.contacts.copy(firstContactDetails =
-                registration.contacts.firstContactDetails.copy(role = Some(role))
+                registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
               )
             )
 
@@ -109,7 +109,7 @@ class FirstContactRoleControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", role)))
+            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", email)))
 
           status(result) shouldBe SEE_OTHER
 

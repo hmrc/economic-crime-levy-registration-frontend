@@ -164,6 +164,13 @@ firstContactRole.hint = For example, ''Compliance officer''.
 firstContactRole.error.required = Enter a role
 firstContactRole.error.length = Role must be 160 characters or less
 
+firstContactEmail.title = What is {0}''s email address?
+firstContactEmail.heading = What is {0}''s email address?
+firstContactEmail.hint = This is the email address of your named contact.
+firstContactEmail.error.required = Enter an email address
+firstContactEmail.error.length = Email address must be 160 characters or less
+firstContactEmail.error.invalid = Enter an email address in the correct format, like name@example.com
+
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 
