@@ -85,6 +85,22 @@ trait Generators {
       chars  <- listOfN(length, arbitrary[Char])
     } yield chars.mkString
 
+  def alphaNumStringsWithMaxLength(maxLength: Int): Gen[String] =
+    for {
+      length <- choose(1, maxLength)
+      chars  <- listOfN(length, Gen.alphaNumChar)
+    } yield chars.mkString
+
+  def emailAddress(maxLength: Int): Gen[String] = {
+    val emailPartsLength = maxLength / 5
+
+    for {
+      firstPart  <- alphaNumStringsWithMaxLength(emailPartsLength)
+      secondPart <- alphaNumStringsWithMaxLength(emailPartsLength)
+      thirdPart  <- alphaNumStringsWithMaxLength(emailPartsLength)
+    } yield (s"$firstPart@$secondPart.$thirdPart")
+  }
+
   def stringsLongerThan(minLength: Int): Gen[String] = for {
     maxLength <- (minLength * 2).max(100)
     length    <- Gen.chooseNum(minLength + 1, maxLength)

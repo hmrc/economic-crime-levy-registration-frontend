@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Regex
 
 class FirstContactEmailFormProviderSpec extends StringFieldBehaviours {
 
@@ -34,7 +35,7 @@ class FirstContactEmailFormProviderSpec extends StringFieldBehaviours {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(maxLength)
+      emailAddress(maxLength)
     )
 
     behave like fieldWithMaxLength(
@@ -49,5 +50,13 @@ class FirstContactEmailFormProviderSpec extends StringFieldBehaviours {
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
     )
+
+    "fail to bind an invalid email address" in forAll(
+      stringsWithMaxLength(maxLength).retryUntil(!_.matches(Regex.emailRegex))
+    ) { invalidEmail: String =>
+      val result: Form[String] = form.bind(Map("value" -> invalidEmail))
+
+      result.errors.map(_.message) should contain("firstContactEmail.error.invalid")
+    }
   }
 }

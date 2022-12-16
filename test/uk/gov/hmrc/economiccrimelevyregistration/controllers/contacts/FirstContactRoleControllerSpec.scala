@@ -45,7 +45,7 @@ class FirstContactRoleControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  implicit val arbStringWithMaxLength: Arbitrary[String] = Arbitrary(stringsWithMaxLength(160))
+  val roleMaxLength: Int = 160
 
   class TestContext(registrationData: Registration) {
     val controller = new FirstContactRoleController(
@@ -95,26 +95,28 @@ class FirstContactRoleControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the provided contact role then redirect to the next page" in forAll {
-      (registration: Registration, role: String) =>
-        new TestContext(registration) {
-          val updatedRegistration: Registration =
-            registration.copy(contacts =
-              registration.contacts.copy(firstContactDetails =
-                registration.contacts.firstContactDetails.copy(role = Some(role))
-              )
+    "save the provided contact role then redirect to the next page" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(roleMaxLength)
+    ) { (registration: Registration, role: String) =>
+      new TestContext(registration) {
+        val updatedRegistration: Registration =
+          registration.copy(contacts =
+            registration.contacts.copy(firstContactDetails =
+              registration.contacts.firstContactDetails.copy(role = Some(role))
             )
+          )
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", role)))
+        val result: Future[Result] =
+          controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", role)))
 
-          status(result) shouldBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(onwardRoute.url)
-        }
+        redirectLocation(result) shouldBe Some(onwardRoute.url)
+      }
     }
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll {

@@ -45,7 +45,7 @@ class FirstContactNameControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  implicit val arbStringWithMaxLength: Arbitrary[String] = Arbitrary(stringsWithMaxLength(160))
+  val nameMaxLength: Int = 160
 
   class TestContext(registrationData: Registration) {
     val controller = new FirstContactNameController(
@@ -93,26 +93,28 @@ class FirstContactNameControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the provided contact name then redirect to the next page" in forAll {
-      (registration: Registration, name: String) =>
-        new TestContext(registration) {
-          val updatedRegistration: Registration =
-            registration.copy(contacts =
-              registration.contacts.copy(firstContactDetails =
-                registration.contacts.firstContactDetails.copy(name = Some(name))
-              )
+    "save the provided contact name then redirect to the next page" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(160)
+    ) { (registration: Registration, name: String) =>
+      new TestContext(registration) {
+        val updatedRegistration: Registration =
+          registration.copy(contacts =
+            registration.contacts.copy(firstContactDetails =
+              registration.contacts.firstContactDetails.copy(name = Some(name))
             )
+          )
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", name)))
+        val result: Future[Result] =
+          controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", name)))
 
-          status(result) shouldBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(onwardRoute.url)
-        }
+        redirectLocation(result) shouldBe Some(onwardRoute.url)
+      }
     }
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>

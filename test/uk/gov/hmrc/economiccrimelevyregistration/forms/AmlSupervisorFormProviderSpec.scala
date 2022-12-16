@@ -41,7 +41,7 @@ class AmlSupervisorFormProviderSpec extends OptionFieldBehaviours with SpecBase 
   }
 
   "otherProfessionalBody" should {
-    "produce a form error if no professional body is provided when the Other option is selected" in {
+    "fail to bind if no professional body is provided when the Other option is selected" in {
       val result: Form[AmlSupervisor] = form.bind(Map("value" -> Other.toString, "otherProfessionalBody" -> ""))
 
       result.errors.map(_.key) should contain("otherProfessionalBody")
@@ -57,7 +57,7 @@ class AmlSupervisorFormProviderSpec extends OptionFieldBehaviours with SpecBase 
       result.value shouldBe Some(AmlSupervisor(supervisor, None))
     }
 
-    "produce a form error if an option is provided that is not in the list of professional bodies" in forAll(
+    "fail to bind when an option is provided that is not in the list of professional bodies" in forAll(
       Arbitrary.arbitrary[String].retryUntil(s => !appConfig.amlProfessionalBodySupervisors.contains(s))
     ) { invalidProfessionalBody =>
       val result: Form[AmlSupervisor] =
@@ -66,7 +66,7 @@ class AmlSupervisorFormProviderSpec extends OptionFieldBehaviours with SpecBase 
       result.errors.map(_.key) should contain("otherProfessionalBody")
     }
 
-    "be the selected professional body when the Other option is selected" in forAll(
+    "bind the selected professional body when the Other option is selected" in forAll(
       Gen.oneOf(appConfig.amlProfessionalBodySupervisors)
     ) { otherProfessionalBody =>
       val result: Form[AmlSupervisor] =

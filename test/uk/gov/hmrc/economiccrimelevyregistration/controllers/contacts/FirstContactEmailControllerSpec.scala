@@ -45,7 +45,7 @@ class FirstContactEmailControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  implicit val arbStringWithMaxLength: Arbitrary[String] = Arbitrary(stringsWithMaxLength(160))
+  val emailMaxLength: Int = 160
 
   class TestContext(registrationData: Registration) {
     val controller = new FirstContactEmailController(
@@ -95,26 +95,28 @@ class FirstContactEmailControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the provided contact email then redirect to the next page" in forAll {
-      (registration: Registration, email: String) =>
-        new TestContext(registration) {
-          val updatedRegistration: Registration =
-            registration.copy(contacts =
-              registration.contacts.copy(firstContactDetails =
-                registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
-              )
+    "save the provided contact email then redirect to the next page" in forAll(
+      Arbitrary.arbitrary[Registration],
+      emailAddress(emailMaxLength)
+    ) { (registration: Registration, email: String) =>
+      new TestContext(registration) {
+        val updatedRegistration: Registration =
+          registration.copy(contacts =
+            registration.contacts.copy(firstContactDetails =
+              registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
             )
+          )
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", email)))
+        val result: Future[Result] =
+          controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", email)))
 
-          status(result) shouldBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(onwardRoute.url)
-        }
+        redirectLocation(result) shouldBe Some(onwardRoute.url)
+      }
     }
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll {

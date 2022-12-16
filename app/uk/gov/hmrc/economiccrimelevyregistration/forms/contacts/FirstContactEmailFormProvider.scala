@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
 import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.{Mappings, Regex}
 
 import javax.inject.Inject
 
@@ -27,5 +27,6 @@ class FirstContactEmailFormProvider @Inject() extends Mappings {
     Form(
       "value" -> text("firstContactEmail.error.required")
         .verifying(maxLength(160, "firstContactEmail.error.length"))
+        .verifying(regexp(Regex.emailRegex, "firstContactEmail.error.invalid"))
     )
 }
