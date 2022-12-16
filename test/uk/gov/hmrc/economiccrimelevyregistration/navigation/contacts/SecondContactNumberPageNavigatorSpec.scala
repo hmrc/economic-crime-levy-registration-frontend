@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
 class SecondContactNumberPageNavigatorSpec extends SpecBase {
 
@@ -34,7 +35,8 @@ class SecondContactNumberPageNavigatorSpec extends SpecBase {
             )
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe ???
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.ConfirmContactAddressController
+          .onPageLoad()
     }
   }
 

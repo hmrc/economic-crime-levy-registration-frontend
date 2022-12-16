@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
@@ -25,7 +25,7 @@ class SecondContactNumberPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.contacts.secondContactDetails.telephoneNumber match {
-      case Some(_) => ???
+      case Some(_) => routes.ConfirmContactAddressController.onPageLoad()
       case _       => routes.StartController.onPageLoad()
     }
 

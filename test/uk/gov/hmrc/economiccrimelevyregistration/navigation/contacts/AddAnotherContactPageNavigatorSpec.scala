@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
 class AddAnotherContactPageNavigatorSpec extends SpecBase {
@@ -38,7 +38,8 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(false)))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe ???
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.ConfirmContactAddressController
+          .onPageLoad()
     }
   }
 

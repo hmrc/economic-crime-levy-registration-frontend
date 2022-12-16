@@ -26,7 +26,7 @@ class AddAnotherContactPageNavigator extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.contacts.secondContact match {
       case Some(true)  => contacts.routes.SecondContactNameController.onPageLoad()
-      case Some(false) => ???
+      case Some(false) => routes.ConfirmContactAddressController.onPageLoad()
       case _           => routes.StartController.onPageLoad()
     }
 
