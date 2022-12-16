@@ -17,16 +17,17 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
-class FirstContactNumberPageNavigator extends PageNavigator {
+class AddAnotherContactPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.contacts.firstContactDetails.telephoneNumber match {
-      case Some(_) => contacts.routes.AddAnotherContactController.onPageLoad()
-      case _       => routes.StartController.onPageLoad()
+    registration.startedAmlRegulatedActivityInCurrentFy match {
+      case Some(true)  => ???
+      case Some(false) => ???
+      case _           => routes.StartController.onPageLoad()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???

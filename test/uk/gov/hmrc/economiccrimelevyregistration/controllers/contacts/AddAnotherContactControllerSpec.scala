@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.controllers
+package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers
@@ -25,27 +25,27 @@ import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContactFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.AddAnotherContactView
 
 import scala.concurrent.Future
 
-class AmlRegulatedControllerSpec extends SpecBase {
+class AddAnotherContactControllerSpec extends SpecBase {
 
-  val view: AmlRegulatedView                 = app.injector.instanceOf[AmlRegulatedView]
-  val formProvider: AmlRegulatedFormProvider = new AmlRegulatedFormProvider()
-  val form: Form[Boolean]                    = formProvider()
+  val view: AddAnotherContactView                 = app.injector.instanceOf[AddAnotherContactView]
+  val formProvider: AddAnotherContactFormProvider = new AddAnotherContactFormProvider()
+  val form: Form[Boolean]                         = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val pageNavigator: AmlRegulatedPageNavigator = new AmlRegulatedPageNavigator {
+  val pageNavigator: AddAnotherContactPageNavigator = new AddAnotherContactPageNavigator {
     override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
   }
 
   class TestContext(registrationData: Registration) {
-    val controller = new AmlRegulatedController(
+    val controller = new AddAnotherContactController(
       mcc,
       fakeAuthorisedAction,
       fakeDataRetrievalAction(registrationData),
@@ -58,7 +58,7 @@ class AmlRegulatedControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(registration.copy(startedAmlRegulatedActivityInCurrentFy = None)) {
+      new TestContext(registration.copy(contacts = registration.contacts.copy(secondContact = None))) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
         status(result) shouldBe OK
@@ -68,28 +68,28 @@ class AmlRegulatedControllerSpec extends SpecBase {
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
-      (registration: Registration, startedAmlRegulatedActivity: Boolean) =>
-        new TestContext(registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(startedAmlRegulatedActivity))) {
+      (registration: Registration, secondContact: Boolean) =>
+        new TestContext(registration.copy(contacts = registration.contacts.copy(secondContact = Some(secondContact)))) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
           status(result)          shouldBe OK
-          contentAsString(result) shouldBe view(form.fill(startedAmlRegulatedActivity))(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form.fill(secondContact))(fakeRequest, messages).toString
         }
     }
   }
 
   "onSubmit" should {
     "save the selected answer then redirect to the next page" in forAll {
-      (registration: Registration, startedAmlRegulatedActivity: Boolean) =>
+      (registration: Registration, secondContact: Boolean) =>
         new TestContext(registration) {
           val updatedRegistration: Registration =
-            registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(startedAmlRegulatedActivity))
+            registration.copy(contacts = registration.contacts.copy(secondContact = Some(secondContact)))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", startedAmlRegulatedActivity.toString)))
+            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", secondContact.toString)))
 
           status(result) shouldBe SEE_OTHER
 

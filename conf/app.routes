@@ -40,6 +40,9 @@ POST        /contact-email-address                             uk.gov.hmrc.econo
 GET         /contact-telephone                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNumberController.onPageLoad()
 POST        /contact-telephone                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNumberController.onSubmit()
 
+GET         /second-contact                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.AddAnotherContactController.onPageLoad()
+POST        /second-contact                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.AddAnotherContactController.onSubmit()
+
 GET         /grs-continue                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
 
 GET         /check-your-answers                                uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()

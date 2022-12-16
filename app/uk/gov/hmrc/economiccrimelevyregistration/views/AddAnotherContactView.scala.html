@@ -27,14 +27,11 @@
 @(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
 
 @legendHtml = {
-    <h1 class="govuk-heading-l">@messages("amlRegulated.heading", EclTaxYear.currentFinancialYear)</h1>
-    <p class="govuk-body">@messages("amlRegulated.legend")</p>
+    <h1 class="govuk-heading-l">@messages("addAnotherContact.heading")</h1>
+    <p class="govuk-body">@messages("addAnotherContact.legend")</p>
 }
 
-@layout(
-    pageTitle = titleWithForm(form, messages("amlRegulated.title", EclTaxYear.currentFinancialYear)),
-    backLinkUrl = Some(EntityTypeController.onPageLoad().url)
-) {
+@layout(pageTitle = titleWithForm(form, messages("addAnotherContact.title")), backLinkUrl = Some(FirstContactNumberController.onPageLoad().url)) {
     @formHelper(action = AmlRegulatedController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
@@ -48,12 +45,12 @@
                     RadioItem(
                         id = Some("yes"),
                         value = Some("true"),
-                        content = Text(messages("amlRegulated.yes"))
+                        content = Text(messages("addAnotherContact.yes"))
                     ),
                     RadioItem(
                         id = Some("no"),
                         value = Some("false"),
-                        content = Text(messages("amlRegulated.no"))
+                        content = Text(messages("addAnotherContact.no"))
                     )
                 )
             )

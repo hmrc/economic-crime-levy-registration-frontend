@@ -28,8 +28,8 @@
 
     @labelHtml = {
         <h1 class="govuk-heading-l">@messages("firstContactName.heading")</h1>
-        <p class="govuk-body">@messages("firstContactName.p1")</p>
-        <p class="govuk-body">@messages("firstContactName.p2")</p>
+        <p class="govuk-body">@messages("firstContactName.legend.p1")</p>
+        <p class="govuk-body">@messages("firstContactName.legend.p2")</p>
     }
 
     @layout(pageTitle = titleWithForm(form, messages("firstContactName.title")), backLinkUrl = Some(BusinessSectorController.onPageLoad().url)) {
