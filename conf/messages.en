@@ -166,10 +166,17 @@ firstContactRole.error.length = Role must be 160 characters or less
 
 firstContactEmail.title = What is {0}''s email address?
 firstContactEmail.heading = What is {0}''s email address?
-firstContactEmail.hint = This is the email address of your named contact.
+firstContactEmail.p1 = This is the email address of your named contact.
 firstContactEmail.error.required = Enter an email address
 firstContactEmail.error.length = Email address must be 160 characters or less
 firstContactEmail.error.invalid = Enter an email address in the correct format, like name@example.com
+
+firstContactNumber.title = What is {0}''s telephone number?
+firstContactNumber.heading = What is {0}''s telephone number?
+firstContactNumber.p1 = This is the telephone number of your named contact.
+firstContactNumber.error.required = Enter a telephone number
+firstContactNumber.error.length = Telephone number must be 24 characters or less
+firstContactNumber.error.invalid = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers

@@ -15,7 +15,6 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
-@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LabelSize
 
 @this(
         layout: templates.Layout,
@@ -25,15 +24,16 @@
         govukButton: GovukButton
 )
 
+
 @(form: Form[String], name: String)(implicit request: Request[_], messages: Messages)
 
 @labelHtml = {
-    <h1 class="govuk-heading-l">@messages("firstContactEmail.heading", name)</h1>
-    <p class="govuk-body">@messages("firstContactEmail.p1")</p>
+    <h1 class="govuk-heading-l">@messages("firstContactNumber.heading", name)</h1>
+    <p class="govuk-body">@messages("firstContactNumber.p1")</p>
 }
 
-@layout(pageTitle = titleWithForm(form, messages("firstContactEmail.title", name)), backLinkUrl = Some(FirstContactRoleController.onPageLoad().url)) {
-    @formHelper(action = FirstContactEmailController.onSubmit()) {
+@layout(pageTitle = titleWithForm(form, messages("firstContactNumber.title", name)), backLinkUrl = Some(FirstContactEmailController.onPageLoad().url)) {
+    @formHelper(action = FirstContactNumberController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
@@ -41,7 +41,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("firstContactEmail.heading", name)).asPageHeading(LabelSize.Large)
+                label = LabelViewModel(HtmlContent(labelHtml))
             ).withWidth(Fixed20)
         )
 
