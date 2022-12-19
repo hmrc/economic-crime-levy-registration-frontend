@@ -27,7 +27,7 @@
         hmrcHead: HmrcHead,
         hmrcTimeoutDialog: HmrcTimeoutDialog,
         hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-        alphaBanner: StandardAlphaBanner,
+        betaBanner: StandardBetaBanner,
         autocompleteCss: HmrcAccessibleAutocompleteCss,
         autocompleteJavascript: HmrcAccessibleAutocompleteJavascript
 )
@@ -84,5 +84,5 @@
     additionalScriptsBlock = Some(additionalScripts),
     additionalHeadBlock = Some(head),
     backLinkUrl = backLinkUrl,
-    phaseBanner = Some(alphaBanner(appConfig.feedbackUrl))
+    phaseBanner = Some(betaBanner(appConfig.feedbackUrl))
 )(content)
