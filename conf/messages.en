@@ -126,8 +126,6 @@ entityType.error.required = Please select your entity type
 amlRegulated.title = Did you start AML-regulated activity in FY {0}?
 amlRegulated.heading = Did you start AML-regulated activity in FY {0}?
 amlRegulated.legend = The UK financial year starts on 1 April and ends on 31 March of the following year.
-amlRegulated.yes = Yes
-amlRegulated.no = No
 amlRegulated.error.required = Select an answer
 
 amlStartDate.title = What date did your AML-regulated activity start?
@@ -181,8 +179,6 @@ firstContactNumber.error.invalid = Enter a telephone number, like 01632 960 001,
 addAnotherContact.title = Would you like to add another contact?
 addAnotherContact.heading = Would you like to add another contact?
 addAnotherContact.legend = You can add the details of one more contact within your organisation.
-addAnotherContact.yes = Yes
-addAnotherContact.no = No
 addAnotherContact.error.required = Select yes if you want to add a second contact name
 
 secondContactName.title = Provide a second contact name
