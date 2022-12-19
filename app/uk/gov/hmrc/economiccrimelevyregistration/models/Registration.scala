@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityAddress, IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 
 import java.time.LocalDate
 
@@ -32,8 +32,32 @@ final case class Registration(
   startedAmlRegulatedActivityInCurrentFy: Option[Boolean],
   amlRegulatedActivityStartDate: Option[LocalDate],
   businessSector: Option[BusinessSector],
-  contacts: Contacts
-)
+  contacts: Contacts,
+  useRegisteredOfficeAddressAsContactAddress: Option[Boolean],
+  contactAddress: Option[EclAddress]
+) {
+
+  def grsAddressToEclAddress: Option[EclAddress] = {
+    val incorporatedEntityAddress: Option[IncorporatedEntityAddress] =
+      (incorporatedEntityJourneyData, soleTraderEntityJourneyData, partnershipEntityJourneyData) match {
+        case (Some(d), None, None) => Some(d.companyProfile.unsanitisedCHROAddress)
+        case (None, Some(_), None) => None
+        case (None, None, Some(d)) => d.companyProfile.map(_.unsanitisedCHROAddress)
+        case _                     => None
+      }
+
+    incorporatedEntityAddress.map { address =>
+      EclAddress(
+        addressLine1 = address.address_line_1.map(_.trim),
+        addressLine2 = address.address_line_2.map(_.trim),
+        townOrCity = address.locality.map(_.trim),
+        region = address.region.map(_.trim),
+        postCode = address.postal_code.map(_.trim)
+      )
+    }
+  }
+
+}
 
 object Registration {
   implicit val format: OFormat[Registration] = Json.format[Registration]
@@ -49,6 +73,8 @@ object Registration {
     startedAmlRegulatedActivityInCurrentFy = None,
     amlRegulatedActivityStartDate = None,
     businessSector = None,
-    contacts = Contacts.empty
+    contacts = Contacts.empty,
+    useRegisteredOfficeAddressAsContactAddress = None,
+    contactAddress = None
   )
 }

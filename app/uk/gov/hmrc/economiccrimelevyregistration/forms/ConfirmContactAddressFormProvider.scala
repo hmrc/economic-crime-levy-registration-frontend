@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.navigation
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
-trait PageNavigator {
-  def nextPage(mode: Mode, registration: Registration): Call = mode match {
-    case NormalMode => navigateInNormalMode(registration)
-    case CheckMode  => navigateInCheckMode(registration)
-  }
-
-  def previousPage(registration: Registration): Call
-
-  protected def navigateInNormalMode(registration: Registration): Call
-
-  protected def navigateInCheckMode(registration: Registration): Call
-
+class ConfirmContactAddressFormProvider extends Mappings {
+  def apply(): Form[Boolean] = Form(
+    ("value", boolean("confirmContactAddress.error.required"))
+  )
 }

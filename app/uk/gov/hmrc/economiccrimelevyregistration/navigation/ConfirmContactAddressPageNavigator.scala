@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
+package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
-class SecondContactRolePageNavigator extends PageNavigator {
+class ConfirmContactAddressPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.contacts.secondContactDetails.role match {
-      case Some(_) => contacts.routes.SecondContactEmailController.onPageLoad()
-      case _       => routes.StartController.onPageLoad()
+    registration.useRegisteredOfficeAddressAsContactAddress match {
+      case Some(true)  => routes.CheckYourAnswersController.onPageLoad()
+      case Some(false) => ???
+      case _           => routes.StartController.onPageLoad()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???
 
-  override def previousPage(registration: Registration): Call = ???
+  override def previousPage(registration: Registration): Call = registration.contacts.secondContact match {
+    case Some(true)  => contacts.routes.SecondContactNumberController.onPageLoad()
+    case Some(false) => contacts.routes.AddAnotherContactController.onPageLoad()
+    case _           => routes.StartController.onPageLoad()
+  }
 }

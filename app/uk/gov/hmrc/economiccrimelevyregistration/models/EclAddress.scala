@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.navigation
+package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import play.api.libs.json.{Json, OFormat}
 
-trait PageNavigator {
-  def nextPage(mode: Mode, registration: Registration): Call = mode match {
-    case NormalMode => navigateInNormalMode(registration)
-    case CheckMode  => navigateInCheckMode(registration)
-  }
+final case class EclAddress(
+  addressLine1: Option[String],
+  addressLine2: Option[String],
+  townOrCity: Option[String],
+  region: Option[String],
+  postCode: Option[String]
+)
 
-  def previousPage(registration: Registration): Call
-
-  protected def navigateInNormalMode(registration: Registration): Call
-
-  protected def navigateInCheckMode(registration: Registration): Call
-
+object EclAddress {
+  implicit val format: OFormat[EclAddress] = Json.format[EclAddress]
 }

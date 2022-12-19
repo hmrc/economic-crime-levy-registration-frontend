@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.routes
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, NormalMode, Registration}
 
 class BusinessSectorPageNavigatorSpec extends SpecBase {
@@ -30,7 +30,25 @@ class BusinessSectorPageNavigatorSpec extends SpecBase {
       (registration: Registration, businessSector: BusinessSector) =>
         val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.FirstContactNameController.onPageLoad()
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe contacts.routes.FirstContactNameController
+          .onPageLoad()
+    }
+  }
+
+  "previousPage" should {
+    "return a call to the aml regulated start date page when the answer was yes to becoming regulated in the current FY" in forAll {
+      (registration: Registration) =>
+        val updatedRegistration: Registration = registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(true))
+
+        pageNavigator.previousPage(updatedRegistration) shouldBe routes.AmlRegulatedActivityStartDateController
+          .onPageLoad()
+    }
+
+    "return a call to the aml regulated page when the answer was no to becoming regulated in the current FY" in forAll {
+      (registration: Registration) =>
+        val updatedRegistration: Registration = registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(false))
+
+        pageNavigator.previousPage(updatedRegistration) shouldBe routes.AmlRegulatedController.onPageLoad()
     }
   }
 

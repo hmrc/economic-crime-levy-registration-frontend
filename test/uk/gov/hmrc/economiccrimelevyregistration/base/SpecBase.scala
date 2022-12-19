@@ -64,6 +64,7 @@ trait SpecBase
   def fakeDataRetrievalAction(data: Registration) = new FakeDataRetrievalAction(data)
 
   def onwardRoute: Call = Call(GET, "/foo")
+  def backRoute: Call   = Call(GET, "/bar")
 
   val mcc: DefaultMessagesControllerComponents = {
     val stub = stubControllerComponents()
