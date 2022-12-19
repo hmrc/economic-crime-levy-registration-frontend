@@ -23,7 +23,7 @@ class SecondContactRoleFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey = "secondContactRole.error.required"
   val lengthKey   = "secondContactRole.error.length"
-  val maxLength   = 160
+  val maxLength   = 60
 
   val form = new SecondContactRoleFormProvider()()
 
