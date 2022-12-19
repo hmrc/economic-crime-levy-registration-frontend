@@ -1,39 +1,67 @@
 # microservice specific routes
 
-->          /hmrc-frontend                   hmrcfrontend.Routes
+->          /hmrc-frontend                                     hmrcfrontend.Routes
 
-GET         /assets/*file                    controllers.Assets.versioned(path = "/public", file: Asset)
+GET         /assets/*file                                      controllers.Assets.versioned(path = "/public", file: Asset)
 
-GET         /                                uk.gov.hmrc.economiccrimelevyregistration.controllers.StartController.onPageLoad()
+GET         /                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.StartController.onPageLoad()
 
-GET         /what-was-your-uk-revenue        uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad()
-POST        /what-was-your-uk-revenue        uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit()
+GET         /what-was-your-uk-revenue                          uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad()
+POST        /what-was-your-uk-revenue                          uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit()
 
-GET         /who-is-your-aml-supervisor      uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad()
-POST        /who-is-your-aml-supervisor      uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit()
+GET         /who-is-your-aml-supervisor                        uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad()
+POST        /who-is-your-aml-supervisor                        uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit()
 
-GET         /you-do-not-need-to-register     uk.gov.hmrc.economiccrimelevyregistration.controllers.NotLiableController.onPageLoad()
+GET         /you-do-not-need-to-register                       uk.gov.hmrc.economiccrimelevyregistration.controllers.NotLiableController.onPageLoad()
 
-GET         /register-with-your-aml-supervisor    uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterWithOtherAmlSupervisorController.onPageLoad()
+GET         /register-with-your-aml-supervisor                 uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterWithOtherAmlSupervisorController.onPageLoad()
 
-GET         /what-is-your-entity-type        uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
-POST        /what-is-your-entity-type        uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
+GET         /what-is-your-entity-type                          uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
+POST        /what-is-your-entity-type                          uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
 
-GET         /did-you-start-aml-activity-in-current-year    uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedController.onPageLoad()
-POST        /did-you-start-aml-activity-in-current-year    uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedController.onSubmit()
+GET         /did-you-start-aml-activity-in-current-year        uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedController.onPageLoad()
+POST        /did-you-start-aml-activity-in-current-year        uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedController.onSubmit()
 
-GET         /aml-activity-start-date         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityStartDateController.onPageLoad()
-POST        /aml-activity-start-date         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityStartDateController.onSubmit()
+GET         /aml-activity-start-date                           uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityStartDateController.onPageLoad()
+POST        /aml-activity-start-date                           uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityStartDateController.onSubmit()
 
-GET         /what-is-your-business-sector    uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad()
-POST        /what-is-your-business-sector    uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onSubmit()
+GET         /what-is-your-business-sector                      uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad()
+POST        /what-is-your-business-sector                      uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onSubmit()
 
-GET         /contact-name                    uk.gov.hmrc.economiccrimelevyregistration.controllers.ContactNameController.onPageLoad()
+GET         /contact-name                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNameController.onPageLoad()
+POST        /contact-name                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNameController.onSubmit()
 
-GET         /grs-continue                    uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
+GET         /contact-role                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactRoleController.onPageLoad()
+POST        /contact-role                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactRoleController.onSubmit()
 
-GET         /check-your-answers              uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
+GET         /contact-email-address                             uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactEmailController.onPageLoad()
+POST        /contact-email-address                             uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactEmailController.onSubmit()
 
-GET         /account/sign-out-survey         uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
-GET         /account/sign-out                uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
-GET         /account/signed-out              uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()
+GET         /contact-telephone                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNumberController.onPageLoad()
+POST        /contact-telephone                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNumberController.onSubmit()
+
+GET         /second-contact                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.AddAnotherContactController.onPageLoad()
+POST        /second-contact                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.AddAnotherContactController.onSubmit()
+
+GET         /second-contact-name                               uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactNameController.onPageLoad()
+POST        /second-contact-name                               uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactNameController.onSubmit()
+
+GET         /second-contact-role                               uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactRoleController.onPageLoad()
+POST        /second-contact-role                               uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactRoleController.onSubmit()
+
+GET         /second-contact-email-address                      uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactEmailController.onPageLoad()
+POST        /second-contact-email-address                      uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactEmailController.onSubmit()
+
+GET         /second-contact-telephone                          uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactNumberController.onPageLoad()
+POST        /second-contact-telephone                          uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactNumberController.onSubmit()
+
+GET         /contact-address                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.ConfirmContactAddressController.onPageLoad()
+POST        /contact-address                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.ConfirmContactAddressController.onSubmit()
+
+GET         /grs-continue                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
+
+GET         /check-your-answers                                uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
+
+GET         /account/sign-out-survey                           uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
+GET         /account/sign-out                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
+GET         /account/signed-out                                uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()

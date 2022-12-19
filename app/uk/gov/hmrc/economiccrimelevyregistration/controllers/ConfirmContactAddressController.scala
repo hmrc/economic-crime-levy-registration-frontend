@@ -25,7 +25,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ContactNameController @Inject() (
+class ConfirmContactAddressController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction
@@ -34,8 +34,10 @@ class ContactNameController @Inject() (
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok("Contact name question placeholder")
+    Ok("Confirm contact address placeholder")
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async(implicit request => ???)
+  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+    ???
+  }
 }

@@ -4,8 +4,7 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbit
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes._
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
@@ -50,7 +49,7 @@ class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(ContactNameController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(contacts.routes.FirstContactNameController.onPageLoad().url)
     }
   }
 }

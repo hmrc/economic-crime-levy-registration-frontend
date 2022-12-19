@@ -19,6 +19,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.generators
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
 import org.scalacheck.{Gen, Shrink}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Regex
+import wolfendale.scalacheck.regexp.RegexpGen
 
 import java.time.{Instant, LocalDate, ZoneOffset}
 
@@ -84,6 +86,25 @@ trait Generators {
       length <- choose(1, maxLength)
       chars  <- listOfN(length, arbitrary[Char])
     } yield chars.mkString
+
+  def alphaNumStringsWithMaxLength(maxLength: Int): Gen[String] =
+    for {
+      length <- choose(1, maxLength)
+      chars  <- listOfN(length, Gen.alphaNumChar)
+    } yield chars.mkString
+
+  def telephoneNumber(maxLength: Int): Gen[String] =
+    RegexpGen.from(s"${Regex.telephoneNumberRegex}").retryUntil(s => s.length <= maxLength && s.trim.nonEmpty)
+
+  def emailAddress(maxLength: Int): Gen[String] = {
+    val emailPartsLength = maxLength / 5
+
+    for {
+      firstPart  <- alphaNumStringsWithMaxLength(emailPartsLength)
+      secondPart <- alphaNumStringsWithMaxLength(emailPartsLength)
+      thirdPart  <- alphaNumStringsWithMaxLength(emailPartsLength)
+    } yield (s"$firstPart@$secondPart.$thirdPart")
+  }
 
   def stringsLongerThan(minLength: Int): Gen[String] = for {
     maxLength <- (minLength * 2).max(100)

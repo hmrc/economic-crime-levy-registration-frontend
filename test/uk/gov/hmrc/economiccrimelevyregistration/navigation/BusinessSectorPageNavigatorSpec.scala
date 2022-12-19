@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, NormalMode, Registration}
 
 class BusinessSectorPageNavigatorSpec extends SpecBase {
@@ -30,7 +30,7 @@ class BusinessSectorPageNavigatorSpec extends SpecBase {
       (registration: Registration, businessSector: BusinessSector) =>
         val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.ContactNameController.onPageLoad()
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.FirstContactNameController.onPageLoad()
     }
   }
 

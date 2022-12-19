@@ -79,7 +79,7 @@ class AmlRegulatedControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the selected Aml started in current financial year option then redirect to the next page" in forAll {
+    "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, startedAmlRegulatedActivity: Boolean) =>
         new TestContext(registration) {
           val updatedRegistration: Registration =

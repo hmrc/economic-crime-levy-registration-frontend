@@ -17,14 +17,14 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 class BusinessSectorPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.businessSector match {
-      case Some(_) => routes.ContactNameController.onPageLoad()
+      case Some(_) => contacts.routes.FirstContactNameController.onPageLoad()
       case _       => routes.StartController.onPageLoad()
     }
 
