@@ -9,7 +9,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class FirstContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
 
-  val roleMaxLength: Int = 160
+  val roleMaxLength: Int = 60
 
   s"GET ${contacts.routes.FirstContactRoleController.onPageLoad().url}" should {
     behave like authorisedActionRoute(contacts.routes.FirstContactRoleController.onPageLoad())

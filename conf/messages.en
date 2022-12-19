@@ -160,7 +160,7 @@ firstContactRole.heading = What is {0}''s role?
 firstContactRole.legend = Tell us about their role in your organisation.
 firstContactRole.hint = For example, ''Compliance officer''.
 firstContactRole.error.required = Enter a role
-firstContactRole.error.length = Role must be 160 characters or less
+firstContactRole.error.length = Role must be 60 characters or less
 
 firstContactEmail.title = What is {0}''s email address?
 firstContactEmail.heading = What is {0}''s email address?
@@ -193,7 +193,7 @@ secondContactRole.heading = What is {0}''s role?
 secondContactRole.legend = Tell us about their role in your organisation.
 secondContactRole.hint = For example, ''Compliance officer''.
 secondContactRole.error.required = Enter a role
-secondContactRole.error.length = Role must be 160 characters or less
+secondContactRole.error.length = Role must be 60 characters or less
 
 secondContactEmail.title = What is {0}''s email address?
 secondContactEmail.heading = What is {0}''s email address?
