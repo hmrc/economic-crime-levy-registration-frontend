@@ -215,6 +215,9 @@ confirmContactAddress.yes = Yes, use this address
 confirmContactAddress.no = No, use a different address
 confirmContactAddress.error.required = Select an answer
 
+isUkAddress.title = Is the contact address for {0} in the UK?
+isUkAddress.error.required = Select if the contact address is in the UK
+
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 

@@ -21,38 +21,32 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWithValidCompanyProfile
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InsetTextAddress
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.ConfirmContactAddressView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
 
 import scala.concurrent.Future
 
-class ConfirmContactAddressControllerSpec extends SpecBase {
+class IsUkAddressControllerSpec extends SpecBase {
 
-  val view: ConfirmContactAddressView                 = app.injector.instanceOf[ConfirmContactAddressView]
-  val formProvider: ConfirmContactAddressFormProvider = new ConfirmContactAddressFormProvider()
-  val form: Form[Boolean]                             = formProvider()
+  val view: IsUkAddressView                 = app.injector.instanceOf[IsUkAddressView]
+  val formProvider: IsUkAddressFormProvider = new IsUkAddressFormProvider()
+  val form: Form[Boolean]                   = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val pageNavigator: ConfirmContactAddressPageNavigator = new ConfirmContactAddressPageNavigator(
-    mockEclRegistrationConnector
-  ) {
-    override protected def navigateInNormalMode(
-      registration: Registration
-    )(implicit request: RequestHeader): Future[Call]            = Future.successful(onwardRoute)
-    override def previousPage(registration: Registration): Call = backRoute
+  val pageNavigator: IsUkAddressPageNavigator = new IsUkAddressPageNavigator {
+    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
   }
 
   class TestContext(registrationData: Registration) {
-    val controller = new ConfirmContactAddressController(
+    val controller = new IsUkAddressController(
       mcc,
       fakeAuthorisedAction,
       fakeDataRetrievalAction(registrationData),
@@ -70,29 +64,26 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
         incorporatedEntityJourneyDataWithValidCompanyProfile: IncorporatedEntityJourneyDataWithValidCompanyProfile
       ) =>
         val updatedRegistration = registration.copy(
-          useRegisteredOfficeAddressAsContactAddress = None,
+          contactAddressIsUk = None,
           incorporatedEntityJourneyData =
             Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
           partnershipEntityJourneyData = None,
           soleTraderEntityJourneyData = None
         )
 
-        new TestContext(
-          updatedRegistration
-        ) {
+        new TestContext(updatedRegistration) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(
-            form,
-            backRoute.url,
-            InsetTextAddress(updatedRegistration.grsAddressToEclAddress.get)
-          )(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form, updatedRegistration.entityName.get)(
+            fakeRequest,
+            messages
+          ).toString
         }
     }
 
-    "throw an IllegalStateException when there is no registered office address in the registration data" in forAll {
+    "throw an IllegalStateException when there is no entity name in the registration data" in forAll {
       (
         registration: Registration
       ) =>
@@ -109,7 +100,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
             await(controller.onPageLoad()(fakeRequest))
           }
 
-          result.getMessage shouldBe "No registered office address found in registration data"
+          result.getMessage shouldBe "No entity name found in registration data"
         }
     }
 
@@ -117,48 +108,40 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
       (
         registration: Registration,
         incorporatedEntityJourneyDataWithValidCompanyProfile: IncorporatedEntityJourneyDataWithValidCompanyProfile,
-        useRegisteredOfficeAddressAsContactAddress: Boolean
+        contactAddressIsUk: Boolean
       ) =>
         val updatedRegistration = registration.copy(
-          useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress),
+          contactAddressIsUk = Some(contactAddressIsUk),
           incorporatedEntityJourneyData =
             Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
           partnershipEntityJourneyData = None,
           soleTraderEntityJourneyData = None
         )
 
-        new TestContext(
-          updatedRegistration
-        ) {
+        new TestContext(updatedRegistration) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
-          status(result) shouldBe OK
-
-          contentAsString(result) shouldBe view(
-            form.fill(useRegisteredOfficeAddressAsContactAddress),
-            backRoute.url,
-            InsetTextAddress(updatedRegistration.grsAddressToEclAddress.get)
-          )(fakeRequest, messages).toString
+          status(result)          shouldBe OK
+          contentAsString(result) shouldBe view(form.fill(contactAddressIsUk), updatedRegistration.entityName.get)(
+            fakeRequest,
+            messages
+          ).toString
         }
     }
   }
 
   "onSubmit" should {
     "save the selected answer then redirect to the next page" in forAll {
-      (registration: Registration, useRegisteredOfficeAddressAsContactAddress: Boolean) =>
+      (registration: Registration, contactAddressIsUk: Boolean) =>
         new TestContext(registration) {
           val updatedRegistration: Registration =
-            registration.copy(useRegisteredOfficeAddressAsContactAddress =
-              Some(useRegisteredOfficeAddressAsContactAddress)
-            )
+            registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit()(
-              fakeRequest.withFormUrlEncodedBody(("value", useRegisteredOfficeAddressAsContactAddress.toString))
-            )
+            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", contactAddressIsUk.toString)))
 
           status(result) shouldBe SEE_OTHER
 
@@ -169,10 +152,11 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
     "return a Bad Request with form errors when invalid data is submitted" in forAll {
       (
         registration: Registration,
-        incorporatedEntityJourneyDataWithValidCompanyProfile: IncorporatedEntityJourneyDataWithValidCompanyProfile
+        incorporatedEntityJourneyDataWithValidCompanyProfile: IncorporatedEntityJourneyDataWithValidCompanyProfile,
+        contactAddressIsUk: Boolean
       ) =>
         val updatedRegistration = registration.copy(
-          useRegisteredOfficeAddressAsContactAddress = None,
+          contactAddressIsUk = Some(contactAddressIsUk),
           incorporatedEntityJourneyData =
             Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
           partnershipEntityJourneyData = None,
@@ -185,11 +169,10 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
 
           status(result) shouldBe BAD_REQUEST
 
-          contentAsString(result) shouldBe view(
-            formWithErrors,
-            backRoute.url,
-            InsetTextAddress(updatedRegistration.grsAddressToEclAddress.get)
-          )(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(formWithErrors, updatedRegistration.entityName.get)(
+            fakeRequest,
+            messages
+          ).toString
         }
     }
   }

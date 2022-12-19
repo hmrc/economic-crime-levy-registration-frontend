@@ -58,6 +58,9 @@ POST        /second-contact-telephone                          uk.gov.hmrc.econo
 GET         /contact-address                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.ConfirmContactAddressController.onPageLoad()
 POST        /contact-address                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.ConfirmContactAddressController.onSubmit()
 
+GET         /uk-address                                        uk.gov.hmrc.economiccrimelevyregistration.controllers.IsUkAddressController.onPageLoad()
+POST        /uk-address                                        uk.gov.hmrc.economiccrimelevyregistration.controllers.IsUkAddressController.onSubmit()
+
 GET         /grs-continue                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
 
 GET         /check-your-answers                                uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()

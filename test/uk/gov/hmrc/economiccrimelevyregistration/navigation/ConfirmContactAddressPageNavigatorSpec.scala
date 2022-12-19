@@ -17,13 +17,21 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWithValidCompanyProfile
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
+import scala.concurrent.Future
+
 class ConfirmContactAddressPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new ConfirmContactAddressPageNavigator()
+  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+
+  val pageNavigator = new ConfirmContactAddressPageNavigator(mockEclRegistrationConnector)
 
   "nextPage" should {
     "return a Call to the UK address question page in NormalMode when the answer is no" in forAll {
@@ -31,15 +39,36 @@ class ConfirmContactAddressPageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(false))
 
-        pending
+        await(
+          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.IsUkAddressController
+          .onPageLoad()
     }
 
     "return a Call to the check your answers page in NormalMode when the answer is yes" in forAll {
-      (registration: Registration) =>
-        val updatedRegistration: Registration =
-          registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(true))
+      (
+        registration: Registration,
+        incorporatedEntityJourneyDataWithValidCompanyProfile: IncorporatedEntityJourneyDataWithValidCompanyProfile
+      ) =>
+        val updatedRegistration = registration.copy(
+          useRegisteredOfficeAddressAsContactAddress = Some(true),
+          incorporatedEntityJourneyData =
+            Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
+          partnershipEntityJourneyData = None,
+          soleTraderEntityJourneyData = None
+        )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        when(
+          mockEclRegistrationConnector.upsertRegistration(
+            ArgumentMatchers.eq(updatedRegistration.copy(contactAddress = updatedRegistration.grsAddressToEclAddress))
+          )(any())
+        )
+          .thenReturn(Future.successful(updatedRegistration))
+
+        await(
+          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.CheckYourAnswersController
+          .onPageLoad()
     }
   }
 

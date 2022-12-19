@@ -16,20 +16,33 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.Call
+import play.api.mvc.{Call, RequestHeader}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
-class ConfirmContactAddressPageNavigator extends PageNavigator {
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
+class ConfirmContactAddressPageNavigator @Inject() (eclRegistrationConnector: EclRegistrationConnector)(implicit
+  ec: ExecutionContext
+) extends AsyncPageNavigator
+    with FrontendHeaderCarrierProvider {
+
+  override protected def navigateInNormalMode(
+    registration: Registration
+  )(implicit request: RequestHeader): Future[Call] =
     registration.useRegisteredOfficeAddressAsContactAddress match {
-      case Some(true)  => routes.CheckYourAnswersController.onPageLoad()
-      case Some(false) => ???
-      case _           => routes.StartController.onPageLoad()
+      case Some(true)  =>
+        eclRegistrationConnector
+          .upsertRegistration(registration = registration.copy(contactAddress = registration.grsAddressToEclAddress))
+          .map(_ => routes.CheckYourAnswersController.onPageLoad())
+      case Some(false) => Future.successful(routes.IsUkAddressController.onPageLoad())
+      case _           => Future.successful(routes.StartController.onPageLoad())
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call = ???
+  override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
 
   override def previousPage(registration: Registration): Call = registration.contacts.secondContact match {
     case Some(true)  => contacts.routes.SecondContactNumberController.onPageLoad()

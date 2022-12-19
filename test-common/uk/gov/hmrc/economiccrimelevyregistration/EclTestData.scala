@@ -41,7 +41,7 @@ case class IncorporatedEntityJourneyDataWithSuccessfulRegistration(
   incorporatedEntityJourneyData: IncorporatedEntityJourneyData
 )
 
-case class IncorporatedEntityJourneyDataWithValidAddress(
+case class IncorporatedEntityJourneyDataWithValidCompanyProfile(
   incorporatedEntityJourneyData: IncorporatedEntityJourneyData
 )
 
@@ -104,8 +104,8 @@ trait EclTestData {
     )
   }
 
-  implicit val arbIncorporatedEntityJourneyDataWithValidAddress
-    : Arbitrary[IncorporatedEntityJourneyDataWithValidAddress] = Arbitrary {
+  implicit val arbIncorporatedEntityJourneyDataWithValidCompanyProfile
+    : Arbitrary[IncorporatedEntityJourneyDataWithValidCompanyProfile] = Arbitrary {
     for {
       incorpEntityJourneyData <- Arbitrary.arbitrary[IncorporatedEntityJourneyData]
       addressLine1            <- Arbitrary.arbitrary[String]
@@ -113,7 +113,7 @@ trait EclTestData {
       townOrCity              <- Arbitrary.arbitrary[String]
       region                  <- Arbitrary.arbitrary[String]
       postcode                <- Arbitrary.arbitrary[String]
-    } yield IncorporatedEntityJourneyDataWithValidAddress(
+    } yield IncorporatedEntityJourneyDataWithValidCompanyProfile(
       incorpEntityJourneyData.copy(companyProfile =
         incorpEntityJourneyData.companyProfile.copy(unsanitisedCHROAddress =
           IncorporatedEntityAddress(

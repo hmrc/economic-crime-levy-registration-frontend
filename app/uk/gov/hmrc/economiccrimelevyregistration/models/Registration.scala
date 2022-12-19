@@ -34,7 +34,8 @@ final case class Registration(
   businessSector: Option[BusinessSector],
   contacts: Contacts,
   useRegisteredOfficeAddressAsContactAddress: Option[Boolean],
-  contactAddress: Option[EclAddress]
+  contactAddress: Option[EclAddress],
+  contactAddressIsUk: Option[Boolean]
 ) {
 
   def grsAddressToEclAddress: Option[EclAddress] = {
@@ -57,6 +58,14 @@ final case class Registration(
     }
   }
 
+  def entityName: Option[String] =
+    (incorporatedEntityJourneyData, soleTraderEntityJourneyData, partnershipEntityJourneyData) match {
+      case (Some(d), None, None) => Some(d.companyProfile.companyName)
+      case (None, Some(d), None) => Some(s"${d.fullName.firstName} ${d.fullName.lastName}")
+      case (None, None, Some(d)) => d.companyProfile.map(_.companyName)
+      case _                     => None
+    }
+
 }
 
 object Registration {
@@ -75,6 +84,7 @@ object Registration {
     businessSector = None,
     contacts = Contacts.empty,
     useRegisteredOfficeAddressAsContactAddress = None,
-    contactAddress = None
+    contactAddress = None,
+    contactAddressIsUk = None
   )
 }
