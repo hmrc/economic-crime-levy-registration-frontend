@@ -16,7 +16,7 @@ trait GrsStubs { self: WireMockStubs =>
             s"""
                |{
                |  "continueUrl" : "http://localhost:14000/register-for-the-economic-crime-levy/grs-continue",
-               |  "businessVerificationCheck" : true,
+               |  "businessVerificationCheck" : false,
                |  "optServiceName" : "Register for the Economic Crime Levy",
                |  "deskProServiceId" : "economic-crime-levy-registration-frontend",
                |  "signOutUrl" : "http://localhost:14000/register-for-the-economic-crime-levy/account/sign-out-survey",
