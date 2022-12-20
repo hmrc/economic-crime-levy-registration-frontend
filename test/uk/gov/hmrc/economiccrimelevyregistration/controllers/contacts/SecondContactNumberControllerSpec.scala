@@ -75,6 +75,25 @@ class SecondContactNumberControllerSpec extends SpecBase {
         }
     }
 
+    "throw an IllegalStateException when there is no second contact name in the registration data" in forAll {
+      (
+        registration: Registration
+      ) =>
+        val updatedRegistration = registration.copy(
+          contacts = Contacts.empty
+        )
+
+        new TestContext(
+          updatedRegistration
+        ) {
+          val result: IllegalStateException = intercept[IllegalStateException] {
+            await(controller.onPageLoad()(fakeRequest))
+          }
+
+          result.getMessage shouldBe "No second contact name found in registration data"
+        }
+    }
+
     "populate the view correctly when the question has previously been answered" in forAll {
       (registration: Registration, number: String, name: String) =>
         new TestContext(

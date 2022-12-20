@@ -23,10 +23,12 @@ import javax.inject.Inject
 
 class SecondContactNumberFormProvider @Inject() extends Mappings {
 
+  private val maxLength = 24
+
   def apply(): Form[String] =
     Form(
       "value" -> text("secondContactNumber.error.required")
-        .verifying(maxLength(24, "secondContactNumber.error.length"))
+        .verifying(maxLength(maxLength, "secondContactNumber.error.length"))
         .verifying(regexp(Regex.telephoneNumberRegex, "secondContactNumber.error.invalid"))
     )
 
