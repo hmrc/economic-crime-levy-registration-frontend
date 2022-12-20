@@ -29,8 +29,6 @@ class IsUkAddressPageNavigatorSpec extends SpecBase {
       (registration: Registration, contactAddressIsUk: Boolean) =>
         val updatedRegistration: Registration =
           registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
-
-        pending
     }
   }
 
