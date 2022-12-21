@@ -42,14 +42,20 @@ class SecondContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
     "save the provided telephone number then redirect to the add another contact page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val name         = random[String]
-      val number       = telephoneNumber(numberMaxLength).sample.get
+      val registration                                         = random[Registration]
+      val incorporatedEntityJourneyDataWithValidCompanyProfile =
+        random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
+      val name                                                 = random[String]
+      val number                                               = telephoneNumber(numberMaxLength).sample.get
 
-      val updatedRegistration = registration.copy(contacts =
-        registration.contacts.copy(secondContactDetails =
+      val updatedRegistration = registration.copy(
+        contacts = registration.contacts.copy(secondContactDetails =
           registration.contacts.secondContactDetails.copy(name = Some(name), telephoneNumber = Some(number))
-        )
+        ),
+        incorporatedEntityJourneyData =
+          Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
+        partnershipEntityJourneyData = None,
+        soleTraderEntityJourneyData = None
       )
 
       stubGetRegistration(updatedRegistration)
