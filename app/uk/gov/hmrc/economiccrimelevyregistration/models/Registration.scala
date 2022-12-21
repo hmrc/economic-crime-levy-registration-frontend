@@ -47,14 +47,20 @@ final case class Registration(
         case _                     => None
       }
 
-    incorporatedEntityAddress.map { address =>
-      EclAddress(
-        addressLine1 = address.address_line_1.map(_.trim),
-        addressLine2 = address.address_line_2.map(_.trim),
-        townOrCity = address.locality.map(_.trim),
-        region = address.region.map(_.trim),
-        postCode = address.postal_code.map(_.trim)
-      )
+    incorporatedEntityAddress.flatMap { address =>
+      (address.address_line_1.map(_.trim), address.locality.map(_.trim)) match {
+        case (Some(a1), Some(a2)) =>
+          Some(
+            EclAddress(
+              addressLine1 = a1,
+              addressLine2 = address.address_line_2.map(_.trim),
+              townOrCity = a2,
+              region = address.region.map(_.trim),
+              postCode = address.postal_code.map(_.trim)
+            )
+          )
+        case _                    => None
+      }
     }
   }
 

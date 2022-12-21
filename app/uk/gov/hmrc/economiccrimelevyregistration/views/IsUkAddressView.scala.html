@@ -24,11 +24,11 @@
         button: GovukButton
 )
 
-@(form: Form[Boolean], entityName: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], entityName: String, backLink: String)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = titleWithForm(form, messages("isUkAddress.title", entityName)),
-    backLinkUrl = Some(ConfirmContactAddressController.onPageLoad().url)
+    backLinkUrl = Some(backLink)
 ) {
     @formHelper(action = IsUkAddressController.onSubmit()) {
         @if(form.errors.nonEmpty) {

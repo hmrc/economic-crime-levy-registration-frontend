@@ -43,6 +43,7 @@ class IsUkAddressControllerSpec extends SpecBase {
 
   val pageNavigator: IsUkAddressPageNavigator = new IsUkAddressPageNavigator {
     override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+    override def previousPage(registration: Registration): Call                   = backRoute
   }
 
   class TestContext(registrationData: Registration) {
@@ -76,7 +77,7 @@ class IsUkAddressControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form, updatedRegistration.entityName.get)(
+          contentAsString(result) shouldBe view(form, updatedRegistration.entityName.get, backRoute.url)(
             fakeRequest,
             messages
           ).toString
@@ -122,7 +123,11 @@ class IsUkAddressControllerSpec extends SpecBase {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
           status(result)          shouldBe OK
-          contentAsString(result) shouldBe view(form.fill(contactAddressIsUk), updatedRegistration.entityName.get)(
+          contentAsString(result) shouldBe view(
+            form.fill(contactAddressIsUk),
+            updatedRegistration.entityName.get,
+            backRoute.url
+          )(
             fakeRequest,
             messages
           ).toString
@@ -169,7 +174,7 @@ class IsUkAddressControllerSpec extends SpecBase {
 
           status(result) shouldBe BAD_REQUEST
 
-          contentAsString(result) shouldBe view(formWithErrors, updatedRegistration.entityName.get)(
+          contentAsString(result) shouldBe view(formWithErrors, updatedRegistration.entityName.get, backRoute.url)(
             fakeRequest,
             messages
           ).toString

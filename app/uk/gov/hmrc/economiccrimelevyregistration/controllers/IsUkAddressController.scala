@@ -53,14 +53,23 @@ class IsUkAddressController @Inject() (
     )
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.contactAddressIsUk), entityName(request)))
+    Ok(
+      view(
+        form.prepare(request.registration.contactAddressIsUk),
+        entityName(request),
+        pageNavigator.previousPage(request.registration).url
+      )
+    )
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, entityName(request)))),
+        formWithErrors =>
+          Future.successful(
+            BadRequest(view(formWithErrors, entityName(request), pageNavigator.previousPage(request.registration).url))
+          ),
         contactAddressIsUk =>
           eclRegistrationConnector
             .upsertRegistration(

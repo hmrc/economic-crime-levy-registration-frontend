@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWithValidCompanyProfile
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
@@ -34,11 +35,33 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
           .onPageLoad()
     }
 
-    "return a Call to the registered office address page in NormalMode when the 'No' option is selected" in forAll {
-      registration: Registration =>
-        val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(false)))
+    "return a Call to the confirm contact address page in NormalMode when the 'No' option is selected and there is a valid address present in the GRS journey data" in forAll {
+      (
+        registration: Registration,
+        incorporatedEntityJourneyDataWithValidCompanyProfile: IncorporatedEntityJourneyDataWithValidCompanyProfile
+      ) =>
+        val updatedRegistration = registration.copy(
+          contacts = registration.contacts.copy(secondContact = Some(false)),
+          incorporatedEntityJourneyData =
+            Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
+          partnershipEntityJourneyData = None,
+          soleTraderEntityJourneyData = None
+        )
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.ConfirmContactAddressController
+          .onPageLoad()
+    }
+
+    "return a Call to the contact address in the UK page in NormalMode when the 'No' option is selected and there is no valid address present in the GRS journey data" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(
+          contacts = registration.contacts.copy(secondContact = Some(false)),
+          incorporatedEntityJourneyData = None,
+          partnershipEntityJourneyData = None,
+          soleTraderEntityJourneyData = None
+        )
+
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.IsUkAddressController
           .onPageLoad()
     }
   }

@@ -23,15 +23,16 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.insettext.InsetText
 object InsetTextAddress {
 
   def apply(eclAddress: EclAddress): InsetText = {
-    val lineWithBreak: Option[String] => String = s => s.fold("")(l => s"$l <br>")
+    val optLineWithBreak: Option[String] => String = s => s.fold("")(l => s"$l <br>")
+    val lineWithBreak: String => String            = s => s"$s <br>"
 
     val html = s"""
       |<p class="govuk-body">
       |${lineWithBreak(eclAddress.addressLine1)}
-      |${lineWithBreak(eclAddress.addressLine2)}
+      |${optLineWithBreak(eclAddress.addressLine2)}
       |${lineWithBreak(eclAddress.townOrCity)}
-      |${lineWithBreak(eclAddress.region)}
-      |${lineWithBreak(eclAddress.postCode)}
+      |${optLineWithBreak(eclAddress.region)}
+      |${optLineWithBreak(eclAddress.postCode)}
       |</p>
       |""".stripMargin
 
