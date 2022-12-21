@@ -14,21 +14,28 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.{Mappings, Regex}
+import play.api.data.FormError
+import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.BooleanFieldBehaviours
 
-import javax.inject.Inject
+class IsUkAddressFormProviderSpec extends BooleanFieldBehaviours {
+  val form = new IsUkAddressFormProvider()()
 
-class SecondContactEmailFormProvider @Inject() extends Mappings {
+  "value" should {
+    val fieldName   = "value"
+    val requiredKey = "isUkAddress.error.required"
 
-  private val maxLength = 160
-
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("secondContactEmail.error.required")
-        .verifying(maxLength(maxLength, "secondContactEmail.error.length"))
-        .verifying(regexp(Regex.emailRegex, "secondContactEmail.error.invalid"))
+    behave like booleanField(
+      form,
+      fieldName,
+      FormError(fieldName, "error.boolean")
     )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      FormError(fieldName, requiredKey)
+    )
+  }
 }

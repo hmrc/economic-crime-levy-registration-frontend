@@ -96,19 +96,18 @@ trait GrsStubData[T] {
   }
 
   val companyProfile: CompanyProfile = CompanyProfile(
-    companyName = "Test Entity Ltd.",
+    companyName = "Test Company Name",
     companyNumber = "01234567",
     dateOfIncorporation = Date.from(Instant.parse("2007-12-03T10:15:30.00Z")),
     unsanitisedCHROAddress = IncorporatedEntityAddress(
-      address_line_1 = "Test Address Line 1",
-      address_line_2 = "Test Address Line 2",
-      care_of = "Test Name",
-      country = "United Kingdom",
-      locality = "Test City",
-      po_box = "123",
-      postal_code = "AA11AA",
-      premises = "1",
-      region = "Test Region"
+      address_line_1 = Some("Test Address Line 1"),
+      address_line_2 = Some("Test Address Line 2"),
+      country = Some("United Kingdom"),
+      locality = Some("Test Town"),
+      po_box = Some("123"),
+      postal_code = Some("AB1 2CD"),
+      premises = None,
+      region = Some("Test Region")
     )
   )
 

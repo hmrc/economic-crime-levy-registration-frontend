@@ -17,25 +17,53 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWithValidCompanyProfile
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
 class SecondContactNumberPageNavigatorSpec extends SpecBase {
 
   val pageNavigator = new SecondContactNumberPageNavigator()
 
   "nextPage" should {
-    "return a Call to the registered office address page in NormalMode" in forAll {
-      (registration: Registration, number: String) =>
+    "return a Call to the confirm contact address page in NormalMode when there is a valid address present in the GRS journey data" in forAll {
+      (
+        registration: Registration,
+        incorporatedEntityJourneyDataWithValidCompanyProfile: IncorporatedEntityJourneyDataWithValidCompanyProfile,
+        number: String
+      ) =>
         val updatedRegistration: Registration =
-          registration.copy(contacts =
-            registration.contacts.copy(secondContactDetails =
+          registration.copy(
+            contacts = registration.contacts.copy(secondContactDetails =
               registration.contacts.secondContactDetails.copy(telephoneNumber = Some(number))
-            )
+            ),
+            incorporatedEntityJourneyData =
+              Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
+            partnershipEntityJourneyData = None,
+            soleTraderEntityJourneyData = None
           )
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.ConfirmContactAddressController
+          .onPageLoad()
+    }
+
+    "return a Call to the contact address in the UK page in NormalMode when there is no valid address present in the GRS journey data" in forAll {
+      (
+        registration: Registration,
+        number: String
+      ) =>
+        val updatedRegistration: Registration =
+          registration.copy(
+            contacts = registration.contacts.copy(secondContactDetails =
+              registration.contacts.secondContactDetails.copy(telephoneNumber = Some(number))
+            ),
+            incorporatedEntityJourneyData = None,
+            partnershipEntityJourneyData = None,
+            soleTraderEntityJourneyData = None
+          )
+
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.IsUkAddressController
           .onPageLoad()
     }
   }

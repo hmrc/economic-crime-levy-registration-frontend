@@ -23,10 +23,12 @@ import javax.inject.Inject
 
 class FirstContactEmailFormProvider @Inject() extends Mappings {
 
+  private val maxLength = 160
+
   def apply(): Form[String] =
     Form(
       "value" -> text("firstContactEmail.error.required")
-        .verifying(maxLength(160, "firstContactEmail.error.length"))
+        .verifying(maxLength(maxLength, "firstContactEmail.error.length"))
         .verifying(regexp(Regex.emailRegex, "firstContactEmail.error.invalid"))
     )
 }

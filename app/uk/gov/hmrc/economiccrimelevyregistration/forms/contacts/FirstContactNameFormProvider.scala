@@ -23,9 +23,11 @@ import javax.inject.Inject
 
 class FirstContactNameFormProvider @Inject() extends Mappings {
 
+  private val maxLength = 160
+
   def apply(): Form[String] =
     Form(
       "value" -> text("firstContactName.error.required")
-        .verifying(maxLength(160, "firstContactName.error.length"))
+        .verifying(maxLength(maxLength, "firstContactName.error.length"))
     )
 }

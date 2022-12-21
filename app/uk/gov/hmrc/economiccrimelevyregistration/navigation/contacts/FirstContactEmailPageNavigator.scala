@@ -30,4 +30,6 @@ class FirstContactEmailPageNavigator extends PageNavigator {
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???
+
+  override def previousPage(registration: Registration): Call = ???
 }

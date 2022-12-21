@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
+package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.{Mappings, Regex}
+import play.api.libs.json.{Json, OFormat}
 
-import javax.inject.Inject
+final case class EclAddress(
+  addressLine1: String,
+  addressLine2: Option[String],
+  townOrCity: String,
+  region: Option[String],
+  postCode: Option[String]
+)
 
-class SecondContactEmailFormProvider @Inject() extends Mappings {
-
-  private val maxLength = 160
-
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("secondContactEmail.error.required")
-        .verifying(maxLength(maxLength, "secondContactEmail.error.length"))
-        .verifying(regexp(Regex.emailRegex, "secondContactEmail.error.invalid"))
-    )
+object EclAddress {
+  implicit val format: OFormat[EclAddress] = Json.format[EclAddress]
 }

@@ -24,22 +24,33 @@
         button: GovukButton
 )
 
-@(form: Form[BusinessSector], backLink: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], entityName: String, backLink: String)(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle = titleWithForm(form, messages("businessSector.title")),
+    pageTitle = titleWithForm(form, messages("isUkAddress.title", entityName)),
     backLinkUrl = Some(backLink)
-
 ) {
-    @formHelper(action = BusinessSectorController.onSubmit()) {
+    @formHelper(action = IsUkAddressController.onSubmit()) {
         @if(form.errors.nonEmpty) {
-            @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
+            @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }
+
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(messages("businessSector.title")).asPageHeading(LegendSize.Large),
-                items = BusinessSector.options
+                legend = LegendViewModel(messages("isUkAddress.title", entityName)).asPageHeading(LegendSize.Large),
+                items = Seq(
+                    RadioItem(
+                        id = Some("yes"),
+                        value = Some("true"),
+                        content = Text(messages("site.yes"))
+                    ),
+                    RadioItem(
+                        id = Some("no"),
+                        value = Some("false"),
+                        content = Text(messages("site.no"))
+                    )
+                )
             )
         )
 
@@ -48,3 +59,4 @@
         )
     }
 }
+

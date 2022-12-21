@@ -53,12 +53,19 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected answer then redirect to the registered office address page when the No option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration                                         = random[Registration]
+      val incorporatedEntityJourneyDataWithValidCompanyProfile =
+        random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
 
-      stubGetRegistration(registration)
+      val updatedRegistration = registration.copy(
+        contacts = registration.contacts.copy(secondContact = Some(false)),
+        incorporatedEntityJourneyData =
+          Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
+        partnershipEntityJourneyData = None,
+        soleTraderEntityJourneyData = None
+      )
 
-      val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(false)))
-
+      stubGetRegistration(updatedRegistration)
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(

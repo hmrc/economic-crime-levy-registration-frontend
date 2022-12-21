@@ -43,7 +43,7 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
 
           IncorporatedEntityCreateJourneyRequest(
             continueUrl = "http://localhost:14000/register-for-the-economic-crime-levy/grs-continue",
-            businessVerificationCheck = true,
+            businessVerificationCheck = false,
             optServiceName = Some(serviceNameLabels.en.optServiceName),
             deskProServiceId = "economic-crime-levy-registration-frontend",
             signOutUrl = "http://localhost:14000/register-for-the-economic-crime-levy/account/sign-out-survey",

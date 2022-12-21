@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityAddress, IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 
 import java.time.LocalDate
 
@@ -32,8 +32,47 @@ final case class Registration(
   startedAmlRegulatedActivityInCurrentFy: Option[Boolean],
   amlRegulatedActivityStartDate: Option[LocalDate],
   businessSector: Option[BusinessSector],
-  contacts: Contacts
-)
+  contacts: Contacts,
+  useRegisteredOfficeAddressAsContactAddress: Option[Boolean],
+  contactAddress: Option[EclAddress],
+  contactAddressIsUk: Option[Boolean]
+) {
+
+  def grsAddressToEclAddress: Option[EclAddress] = {
+    val incorporatedEntityAddress: Option[IncorporatedEntityAddress] =
+      (incorporatedEntityJourneyData, soleTraderEntityJourneyData, partnershipEntityJourneyData) match {
+        case (Some(d), None, None) => Some(d.companyProfile.unsanitisedCHROAddress)
+        case (None, Some(_), None) => None
+        case (None, None, Some(d)) => d.companyProfile.map(_.unsanitisedCHROAddress)
+        case _                     => None
+      }
+
+    incorporatedEntityAddress.flatMap { address =>
+      (address.address_line_1.map(_.trim), address.locality.map(_.trim)) match {
+        case (Some(a1), Some(a2)) =>
+          Some(
+            EclAddress(
+              addressLine1 = a1,
+              addressLine2 = address.address_line_2.map(_.trim),
+              townOrCity = a2,
+              region = address.region.map(_.trim),
+              postCode = address.postal_code.map(_.trim)
+            )
+          )
+        case _                    => None
+      }
+    }
+  }
+
+  def entityName: Option[String] =
+    (incorporatedEntityJourneyData, soleTraderEntityJourneyData, partnershipEntityJourneyData) match {
+      case (Some(d), None, None) => Some(d.companyProfile.companyName)
+      case (None, Some(d), None) => Some(s"${d.fullName.firstName} ${d.fullName.lastName}")
+      case (None, None, Some(d)) => d.companyProfile.map(_.companyName)
+      case _                     => None
+    }
+
+}
 
 object Registration {
   implicit val format: OFormat[Registration] = Json.format[Registration]
@@ -49,6 +88,9 @@ object Registration {
     startedAmlRegulatedActivityInCurrentFy = None,
     amlRegulatedActivityStartDate = None,
     businessSector = None,
-    contacts = Contacts.empty
+    contacts = Contacts.empty,
+    useRegisteredOfficeAddressAsContactAddress = None,
+    contactAddress = None,
+    contactAddressIsUk = None
   )
 }

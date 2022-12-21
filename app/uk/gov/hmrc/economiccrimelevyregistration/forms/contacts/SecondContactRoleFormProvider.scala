@@ -23,9 +23,11 @@ import javax.inject.Inject
 
 class SecondContactRoleFormProvider @Inject() extends Mappings {
 
+  private val maxLength = 60
+
   def apply(): Form[String] =
     Form(
       "value" -> text("secondContactRole.error.required")
-        .verifying(maxLength(60, "secondContactRole.error.length"))
+        .verifying(maxLength(maxLength, "secondContactRole.error.length"))
     )
 }

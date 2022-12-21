@@ -25,9 +25,15 @@ class SecondContactNumberPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.contacts.secondContactDetails.telephoneNumber match {
-      case Some(_) => routes.ConfirmContactAddressController.onPageLoad()
+      case Some(_) =>
+        registration.grsAddressToEclAddress match {
+          case Some(_) => routes.ConfirmContactAddressController.onPageLoad()
+          case _       => routes.IsUkAddressController.onPageLoad()
+        }
       case _       => routes.StartController.onPageLoad()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???
+
+  override def previousPage(registration: Registration): Call = ???
 }

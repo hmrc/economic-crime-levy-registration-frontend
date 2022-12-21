@@ -19,46 +19,45 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
+import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
+import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, NormalMode}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InsetTextAddress
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.ConfirmContactAddressView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ConfirmContactAddressController @Inject() (
+class IsUkAddressController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
-  formProvider: ConfirmContactAddressFormProvider,
-  pageNavigator: ConfirmContactAddressPageNavigator,
-  view: ConfirmContactAddressView
+  formProvider: IsUkAddressFormProvider,
+  pageNavigator: IsUkAddressPageNavigator,
+  view: IsUkAddressView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
 
-  val address: RegistrationDataRequest[_] => EclAddress = r =>
-    r.registration.grsAddressToEclAddress.getOrElse(
-      throw new IllegalStateException("No registered office address found in registration data")
+  val entityName: RegistrationDataRequest[_] => String = r =>
+    r.registration.entityName.getOrElse(
+      throw new IllegalStateException("No entity name found in registration data")
     )
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(
       view(
-        form.prepare(request.registration.useRegisteredOfficeAddressAsContactAddress),
-        pageNavigator.previousPage(request.registration).url,
-        InsetTextAddress(address(request))
+        form.prepare(request.registration.contactAddressIsUk),
+        entityName(request),
+        pageNavigator.previousPage(request.registration).url
       )
     )
   }
@@ -69,22 +68,15 @@ class ConfirmContactAddressController @Inject() (
       .fold(
         formWithErrors =>
           Future.successful(
-            BadRequest(
-              view(
-                formWithErrors,
-                pageNavigator.previousPage(request.registration).url,
-                InsetTextAddress(address(request))
-              )
-            )
+            BadRequest(view(formWithErrors, entityName(request), pageNavigator.previousPage(request.registration).url))
           ),
-        useRegisteredOfficeAddressAsContactAddress =>
+        contactAddressIsUk =>
           eclRegistrationConnector
             .upsertRegistration(
-              request.registration
-                .copy(useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress))
+              request.registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
             )
-            .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(NormalMode, updatedRegistration).map(Redirect)
+            .map { updatedRegistration =>
+              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
             }
       )
   }

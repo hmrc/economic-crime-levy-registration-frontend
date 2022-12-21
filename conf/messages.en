@@ -209,6 +209,15 @@ secondContactNumber.error.required = Enter a telephone number
 secondContactNumber.error.length = Telephone number must be 24 characters or less
 secondContactNumber.error.invalid = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
 
+confirmContactAddress.title = Do you want to use this registered address as the main contact address?
+confirmContactAddress.heading = Do you want to use this registered address as the main contact address?
+confirmContactAddress.yes = Yes, use this address
+confirmContactAddress.no = No, use a different address
+confirmContactAddress.error.required = Select an answer
+
+isUkAddress.title = Is the contact address for {0} in the UK?
+isUkAddress.error.required = Select if the contact address is in the UK
+
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 

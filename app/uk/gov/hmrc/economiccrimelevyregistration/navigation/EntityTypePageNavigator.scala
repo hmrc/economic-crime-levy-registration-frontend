@@ -63,4 +63,6 @@ class EntityTypePageNavigator @Inject() (
     }
 
   override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
+
+  override def previousPage(registration: Registration): Call = ???
 }

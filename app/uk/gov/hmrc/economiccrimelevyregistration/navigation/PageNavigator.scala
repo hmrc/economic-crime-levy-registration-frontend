@@ -25,6 +25,8 @@ trait PageNavigator {
     case CheckMode  => navigateInCheckMode(registration)
   }
 
+  def previousPage(registration: Registration): Call
+
   protected def navigateInNormalMode(registration: Registration): Call
 
   protected def navigateInCheckMode(registration: Registration): Call
