@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.Helpers.{contentAsString, status}
@@ -24,6 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{FinancialConductAuthorityView, GamblingCommissionView}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 
 import scala.concurrent.Future
 

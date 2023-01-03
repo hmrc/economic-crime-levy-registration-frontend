@@ -1,10 +1,11 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbitrary, random}
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class SecondContactNameISpec extends ISpecBase with AuthorisedBehaviour {
@@ -29,14 +30,14 @@ class SecondContactNameISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${contacts.routes.SecondContactNameController.onSubmit().url}" should {
+  s"POST ${contacts.routes.SecondContactNameController.onSubmit().url}"  should {
     behave like authorisedActionRoute(contacts.routes.SecondContactNameController.onSubmit())
 
     "save the provided name then redirect to the second contact role page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
-      val name = stringsWithMaxLength(nameMaxLength).sample.get
+      val name         = stringsWithMaxLength(nameMaxLength).sample.get
 
       stubGetRegistration(registration)
 
