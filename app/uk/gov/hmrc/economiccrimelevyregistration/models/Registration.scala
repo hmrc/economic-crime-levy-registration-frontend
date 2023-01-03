@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,14 +63,6 @@ final case class Registration(
       }
     }
   }
-
-  def entityName: Option[String] =
-    (incorporatedEntityJourneyData, soleTraderEntityJourneyData, partnershipEntityJourneyData) match {
-      case (Some(d), None, None) => Some(d.companyProfile.companyName)
-      case (None, Some(d), None) => Some(s"${d.fullName.firstName} ${d.fullName.lastName}")
-      case (None, None, Some(d)) => d.companyProfile.map(_.companyName)
-      case _                     => None
-    }
 
 }
 
