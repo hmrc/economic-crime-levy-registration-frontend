@@ -15,25 +15,15 @@ class IsUkAddressISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the is UK address HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val incorporatedEntityJourneyDataWithValidCompanyProfile =
-        random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
-
       val registration = random[Registration]
 
-      val updatedRegistration = registration.copy(
-        incorporatedEntityJourneyData =
-          Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
-        partnershipEntityJourneyData = None,
-        soleTraderEntityJourneyData = None
-      )
-
-      stubGetRegistration(updatedRegistration)
+      stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(routes.IsUkAddressController.onPageLoad()))
 
       status(result) shouldBe OK
 
-      html(result) should include(s"Is the contact address for ${updatedRegistration.entityName.get} in the UK?")
+      html(result) should include("Is your contact address based in the UK?")
     }
   }
 
