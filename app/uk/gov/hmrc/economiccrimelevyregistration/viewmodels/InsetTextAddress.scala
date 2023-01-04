@@ -24,13 +24,13 @@ object InsetTextAddress {
 
   def apply(eclAddress: EclAddress): InsetText = {
     val optLineWithBreak: Option[String] => String = s => s.fold("")(l => s"$l <br>")
-    val lineWithBreak: String => String            = s => s"$s <br>"
 
     val html = s"""
       |<p class="govuk-body">
-      |${lineWithBreak(eclAddress.addressLine1)}
+      |${optLineWithBreak(eclAddress.addressLine1)}
       |${optLineWithBreak(eclAddress.addressLine2)}
-      |${lineWithBreak(eclAddress.townOrCity)}
+      |${optLineWithBreak(eclAddress.addressLine3)}
+      |${optLineWithBreak(eclAddress.townOrCity)}
       |${optLineWithBreak(eclAddress.region)}
       |${optLineWithBreak(eclAddress.postCode)}
       |</p>
