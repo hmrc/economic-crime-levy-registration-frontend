@@ -56,7 +56,7 @@ class FirstContactNumberFormProviderSpec extends StringFieldBehaviours {
     ) { invalidNumber: String =>
       val result: Form[String] = form.bind(Map("value" -> invalidNumber))
 
-      result.errors.map(_.message) should contain("firstContactNumber.error.invalid")
+      result.errors.map(_.message) should contain only "firstContactNumber.error.invalid"
     }
   }
 }

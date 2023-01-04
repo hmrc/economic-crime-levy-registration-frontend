@@ -153,27 +153,27 @@ firstContactName.legend.p1 = Provide the name of a person in your organisation w
 firstContactName.legend.p2 = You can add a second contact name and their details after you have added the first contact.
 firstContactName.hint = For example, ''John Jones'' or ''Laura Smith''.
 firstContactName.error.required = Enter a full name
-firstContactName.error.length = Full name must be 160 characters or less
+firstContactName.error.length = Full name must be {0} characters or less
 
 firstContactRole.title = What is {0}''s role?
 firstContactRole.heading = What is {0}''s role?
 firstContactRole.legend = Tell us about their role in your organisation.
 firstContactRole.hint = For example, ''Compliance officer''.
 firstContactRole.error.required = Enter a role
-firstContactRole.error.length = Role must be 60 characters or less
+firstContactRole.error.length = Role must be {0} characters or less
 
 firstContactEmail.title = What is {0}''s email address?
 firstContactEmail.heading = What is {0}''s email address?
 firstContactEmail.legend = This is the email address of your named contact.
 firstContactEmail.error.required = Enter an email address
-firstContactEmail.error.length = Email address must be 160 characters or less
+firstContactEmail.error.length = Email address must be {0} characters or less
 firstContactEmail.error.invalid = Enter an email address in the correct format, like name@example.com
 
 firstContactNumber.title = What is {0}''s telephone number?
 firstContactNumber.heading = What is {0}''s telephone number?
 firstContactNumber.legend = This is the telephone number of your named contact.
 firstContactNumber.error.required = Enter a telephone number
-firstContactNumber.error.length = Telephone number must be 24 characters or less
+firstContactNumber.error.length = Telephone number must be {0} characters or less
 firstContactNumber.error.invalid = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
 
 addAnotherContact.title = Would you like to add another contact?
@@ -186,27 +186,27 @@ secondContactName.heading = Provide a second contact name
 secondContactName.legend = Add the details of one more contact within your organisation.
 secondContactName.hint = For example, ''John Jones'' or ''Laura Smith''.
 secondContactName.error.required = Enter a full name
-secondContactName.error.length = Full name must be 160 characters or less
+secondContactName.error.length = Full name must be {0} characters or less
 
 secondContactRole.title = What is {0}''s role?
 secondContactRole.heading = What is {0}''s role?
 secondContactRole.legend = Tell us about their role in your organisation.
 secondContactRole.hint = For example, ''Compliance officer''.
 secondContactRole.error.required = Enter a role
-secondContactRole.error.length = Role must be 60 characters or less
+secondContactRole.error.length = Role must be {0} characters or less
 
 secondContactEmail.title = What is {0}''s email address?
 secondContactEmail.heading = What is {0}''s email address?
 secondContactEmail.legend = This is the email address of your named contact.
 secondContactEmail.error.required = Enter an email address
-secondContactEmail.error.length = Email address must be 160 characters or less
+secondContactEmail.error.length = Email address must be {0} characters or less
 secondContactEmail.error.invalid = Enter an email address in the correct format, like name@example.com
 
 secondContactNumber.title = What is {0}''s telephone number?
 secondContactNumber.heading = What is {0}''s telephone number?
 secondContactNumber.legend = This is the telephone number of your named contact.
 secondContactNumber.error.required = Enter a telephone number
-secondContactNumber.error.length = Telephone number must be 24 characters or less
+secondContactNumber.error.length = Telephone number must be {0} characters or less
 secondContactNumber.error.invalid = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
 
 confirmContactAddress.title = Do you want to use this registered address as the main contact address?
