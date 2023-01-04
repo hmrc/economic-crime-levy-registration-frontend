@@ -1,10 +1,11 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbitrary, random}
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
@@ -103,7 +104,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe OK
 
-      contentAsString(result) shouldBe s"Business is already subscribed to ECL with registration reference $testEclRegistrationReference"
+      contentAsString(
+        result
+      ) shouldBe s"Business is already subscribed to ECL with registration reference $testEclRegistrationReference"
     }
 
     "retrieve the sole trader entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
@@ -185,7 +188,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe OK
 
-      contentAsString(result) shouldBe s"Business is already subscribed to ECL with registration reference $testEclRegistrationReference"
+      contentAsString(
+        result
+      ) shouldBe s"Business is already subscribed to ECL with registration reference $testEclRegistrationReference"
     }
 
     "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
@@ -233,7 +238,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
     "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val entityType = random[PartnershipType].entityType
+      val entityType   = random[PartnershipType].entityType
       val registration =
         random[Registration]
           .copy(
@@ -269,7 +274,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe OK
 
-      contentAsString(result) shouldBe s"Business is already subscribed to ECL with registration reference $testEclRegistrationReference"
+      contentAsString(
+        result
+      ) shouldBe s"Business is already subscribed to ECL with registration reference $testEclRegistrationReference"
     }
   }
 

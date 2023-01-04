@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 
 import scala.concurrent.Future
 

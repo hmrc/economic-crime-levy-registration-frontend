@@ -1,10 +1,11 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.{derivedArbitrary, random}
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
@@ -28,7 +29,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.EntityTypeController.onSubmit().url}" should {
+  s"POST ${routes.EntityTypeController.onSubmit().url}"  should {
     behave like authorisedActionRoute(routes.EntityTypeController.onSubmit())
 
     "save the selected entity type then redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
