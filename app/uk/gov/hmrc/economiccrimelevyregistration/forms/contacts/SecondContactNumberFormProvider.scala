@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
 import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.{Mappings, Regex}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
 import javax.inject.Inject
 
@@ -28,8 +28,7 @@ class SecondContactNumberFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("secondContactNumber.error.required")
-        .verifying(maxLength(maxLength, "secondContactNumber.error.length"))
-        .verifying(regexp(Regex.telephoneNumberRegex, "secondContactNumber.error.invalid"))
+        .verifying(telephoneNumber(maxLength, "secondContactNumber.error.length", "secondContactNumber.error.invalid"))
     )
 
 }

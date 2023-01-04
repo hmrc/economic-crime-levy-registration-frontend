@@ -17,7 +17,6 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
 
 import java.time.LocalDate
-
 import play.api.data.validation.{Constraint, Invalid, Valid}
 
 trait Constraints {
@@ -102,4 +101,19 @@ trait Constraints {
       case _                   =>
         Invalid(errorKey)
     }
+
+  protected def telephoneNumber(max: Int, maxLengthKey: String, invalidKey: String): Constraint[String] = Constraint {
+    s =>
+      maxLength(max, maxLengthKey)(s) match {
+        case Valid   => regexp(Regex.telephoneNumberRegex, invalidKey)(s)
+        case invalid => invalid
+      }
+  }
+
+  protected def emailAddress(max: Int, maxLengthKey: String, invalidKey: String): Constraint[String] = Constraint { s =>
+    maxLength(max, maxLengthKey)(s) match {
+      case Valid   => regexp(Regex.emailRegex, invalidKey)(s)
+      case invalid => invalid
+    }
+  }
 }
