@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisorType, Busi
 
 object CachedArbitraries extends EclTestData {
 
-  def mkArb[T](implicit mkArb: MkArbitrary[T]): Arbitrary[T] = MkArbitrary[T].arbitrary
+  private def mkArb[T](implicit mkArb: MkArbitrary[T]): Arbitrary[T] = MkArbitrary[T].arbitrary
 
   implicit lazy val arbRegistration: Arbitrary[Registration]                                   = mkArb
   implicit lazy val arbBusinessSector: Arbitrary[BusinessSector]                               = mkArb
