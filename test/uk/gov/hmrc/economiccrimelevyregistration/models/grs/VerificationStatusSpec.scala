@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models.grs
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import play.api.libs.json.{JsBoolean, JsError, JsString, Json}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus._

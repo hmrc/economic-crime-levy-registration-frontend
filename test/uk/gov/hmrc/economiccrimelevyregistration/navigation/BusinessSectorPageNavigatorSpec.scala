@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, NormalMode, Registration}

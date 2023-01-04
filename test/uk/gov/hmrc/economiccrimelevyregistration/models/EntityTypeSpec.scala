@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.libs.json.{JsBoolean, JsError, JsString, Json}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 
 class EntityTypeSpec extends SpecBase {
   "writes" should {

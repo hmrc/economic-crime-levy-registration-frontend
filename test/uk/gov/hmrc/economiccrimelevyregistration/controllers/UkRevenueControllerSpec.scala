@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
@@ -29,6 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 
 import scala.concurrent.Future
 
