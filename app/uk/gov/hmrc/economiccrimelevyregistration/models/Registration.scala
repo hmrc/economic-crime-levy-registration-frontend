@@ -48,17 +48,15 @@ final case class Registration(
       }
 
     incorporatedEntityAddress.flatMap { address =>
-      address.address_line_1.flatMap { addressLine1 =>
-        Some(
-          EclAddress(
-            addressLine1 = address.premises.fold(Some(addressLine1))(p => Some(s"$p $addressLine1")),
-            addressLine2 = address.address_line_2.map(_.trim),
-            addressLine3 = address.po_box.map(_.trim),
-            townOrCity = address.locality.map(_.trim),
-            region = address.region.map(_.trim),
-            postCode = address.postal_code.map(_.trim),
-            countryCode = "GB"
-          )
+      address.address_line_1.map { addressLine1 =>
+        EclAddress(
+          addressLine1 = address.premises.fold(Some(addressLine1))(p => Some(s"$p $addressLine1")),
+          addressLine2 = address.address_line_2.map(_.trim),
+          addressLine3 = address.po_box.map(_.trim),
+          townOrCity = address.locality.map(_.trim),
+          region = address.region.map(_.trim),
+          postCode = address.postal_code.map(_.trim),
+          countryCode = "GB"
         )
       }
     }
