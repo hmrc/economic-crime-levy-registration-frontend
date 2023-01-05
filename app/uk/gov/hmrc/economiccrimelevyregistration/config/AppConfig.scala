@@ -68,5 +68,7 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
 
   val enrolmentStoreProxyUrl: String = servicesConfig.baseUrl("enrolment-store-proxy")
 
+  val addressLookupFrontendUrl: String = servicesConfig.baseUrl("address-lookup-frontend")
+
   val amlProfessionalBodySupervisors: Seq[String] = configuration.get[Seq[String]]("amlProfessionalBodySupervisors")
 }

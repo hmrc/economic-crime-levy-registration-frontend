@@ -64,4 +64,7 @@ class Module(environment: Environment, configuration: Configuration) extends Abs
     }
   }
 
+  bind(classOf[AddressLookupFrontendConnector])
+    .to(classOf[AddressLookupFrontendConnectorImpl])
+    .asEagerSingleton()
 }
