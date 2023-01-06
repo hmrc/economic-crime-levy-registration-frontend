@@ -21,10 +21,10 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, Result}
+import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
@@ -40,9 +40,13 @@ class IsUkAddressControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val pageNavigator: IsUkAddressPageNavigator = new IsUkAddressPageNavigator {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
-    override def previousPage(registration: Registration): Call                   = backRoute
+  val pageNavigator: IsUkAddressPageNavigator = new IsUkAddressPageNavigator(
+    mock[AddressLookupFrontendConnector]
+  ) {
+    override protected def navigateInNormalMode(registration: Registration)(implicit
+      request: RequestHeader
+    ): Future[Call]                                             = Future.successful(onwardRoute)
+    override def previousPage(registration: Registration): Call = backRoute
   }
 
   class TestContext(registrationData: Registration) {

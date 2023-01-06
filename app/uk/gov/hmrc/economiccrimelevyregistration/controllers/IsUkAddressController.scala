@@ -68,8 +68,8 @@ class IsUkAddressController @Inject() (
             .upsertRegistration(
               request.registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
             )
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
+            .flatMap { updatedRegistration =>
+              pageNavigator.nextPage(NormalMode, updatedRegistration).map(Redirect)
             }
       )
   }
