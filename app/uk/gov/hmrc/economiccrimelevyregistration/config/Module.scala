@@ -62,9 +62,9 @@ class Module(environment: Environment, configuration: Configuration) extends Abs
         .to(classOf[SoleTraderIdentificationFrontendConnectorImpl])
         .asEagerSingleton()
     }
-  }
 
-  bind(classOf[AddressLookupFrontendConnector])
-    .to(classOf[AddressLookupFrontendConnectorImpl])
-    .asEagerSingleton()
+    bind(classOf[AddressLookupFrontendConnector])
+      .to(classOf[AddressLookupFrontendConnectorImpl])
+      .asEagerSingleton()
+  }
 }

@@ -37,8 +37,8 @@ class SoleTraderIdentificationFrontendConnectorSpec extends SpecBase {
 
         val expectedSoleTraderEntityCreateJourneyRequest: SoleTraderEntityCreateJourneyRequest = {
           val serviceNameLabels = ServiceNameLabels(
-            En("Register for the Economic Crime Levy"),
-            Cy("service.name")
+            OptServiceName("Register for the Economic Crime Levy"),
+            OptServiceName("service.name")
           )
 
           SoleTraderEntityCreateJourneyRequest(

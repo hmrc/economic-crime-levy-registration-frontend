@@ -18,10 +18,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
+import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 trait AddressLookupFrontendConnector {
@@ -29,6 +29,7 @@ trait AddressLookupFrontendConnector {
   def getAddress(journeyId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData]
 }
 
+@Singleton
 class AddressLookupFrontendConnectorImpl @Inject() (
   appConfig: AppConfig,
   httpClient: HttpClient
@@ -36,12 +37,28 @@ class AddressLookupFrontendConnectorImpl @Inject() (
   val messagesApi: MessagesApi,
   ec: ExecutionContext
 ) extends AddressLookupFrontendConnector {
-  private val baseUrl =
-    s"${appConfig.addressLookupFrontendUrl}"
+  private val baseUrl = appConfig.addressLookupFrontendUrl
 
   def initJourney(ukMode: Boolean)(implicit
     hc: HeaderCarrier
-  ): Future[String] = ???
+  ): Future[String] = {
+    val alfLabels = AlfEnCyLabels()
+
+    httpClient.POST[AlfJourneyConfig, String](
+      s"$baseUrl/api/init",
+      AlfJourneyConfig(
+        options = AlfOptions(
+          continueUrl = appConfig.alfContinueUrl,
+          homeNavHref = appConfig.alfHomeUrl,
+          signOutHref = appConfig.alfSignOutUrl,
+          accessibilityFooterUrl = appConfig.alfAccessibilityFooterUrl,
+          deskProServiceName = appConfig.alfDeskProServiceName,
+          ukMode = ukMode
+        ),
+        labels = alfLabels
+      )
+    )
+  }
 
   def getAddress(addressId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData] = ???
 }

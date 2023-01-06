@@ -19,29 +19,22 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.grs
 import play.api.i18n.{Lang, MessagesApi}
 import play.api.libs.json.{Json, OFormat}
 
-final case class ServiceNameLabels(en: En, cy: Cy)
+final case class ServiceNameLabels(en: OptServiceName, cy: OptServiceName)
 
 object ServiceNameLabels {
   def apply()(implicit messagesApi: MessagesApi): ServiceNameLabels =
     ServiceNameLabels(
-      En(optServiceName = messagesApi("service.name")(Lang("en"))),
-      Cy(optServiceName = messagesApi("service.name")(Lang("cy")))
+      OptServiceName(optServiceName = messagesApi("service.name")(Lang("en"))),
+      OptServiceName(optServiceName = messagesApi("service.name")(Lang("cy")))
     )
 
   implicit val format: OFormat[ServiceNameLabels] =
     Json.format[ServiceNameLabels]
 }
 
-final case class Cy(optServiceName: String)
+final case class OptServiceName(optServiceName: String)
 
-object Cy {
-  implicit val format: OFormat[Cy] =
-    Json.format[Cy]
-}
-
-final case class En(optServiceName: String)
-
-object En {
-  implicit val format: OFormat[En] =
-    Json.format[En]
+object OptServiceName {
+  implicit val format: OFormat[OptServiceName] =
+    Json.format[OptServiceName]
 }
