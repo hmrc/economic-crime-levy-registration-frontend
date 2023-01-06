@@ -16,16 +16,28 @@
 
 @this(
         layout: templates.Layout,
-        govukSummaryList: GovukSummaryList
+        govukSummaryList: GovukSummaryList,
+        govukButton: GovukButton
 )
 
-@(organisationDetails: SummaryList)(implicit request: Request[_], messages: Messages)
+@(organisationDetails: SummaryList, personalDetails: SummaryList)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(messages("checkYourAnswers.title")), backLinkUrl = Some(StartController.onPageLoad().url)) {
-
     <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
     <h1 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h1>
 
     @govukSummaryList(organisationDetails)
+
+    <h1 class="govuk-heading-m">@messages("checkYourAnswers.personalDetails")</h1>
+
+    @govukSummaryList(personalDetails)
+
+    <h1 class="govuk-heading-m">@messages("checkYourAnswers.nowSend")</h1>
+
+    <div class="govuk-body">@messages("checkYourAnswers.bySubmitting")</div>
+
+    @govukButton(
+        ButtonViewModel(messages("checkYourAnswers.confirmAndSend"))
+    )
 }

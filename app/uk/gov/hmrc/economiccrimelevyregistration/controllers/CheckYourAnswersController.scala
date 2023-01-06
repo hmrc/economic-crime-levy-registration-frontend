@@ -20,10 +20,10 @@ import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers.{AmlSupervisorSummary, BusinessSectorSummary}
+import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
+import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 
 import javax.inject.Singleton
 
@@ -40,11 +40,25 @@ class CheckYourAnswersController @Inject() (
   def onPageLoad(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     val organisationDetails = SummaryListViewModel(
       rows = Seq(
+        EntityTypeSummary.row(),
         AmlSupervisorSummary.row(),
         BusinessSectorSummary.row()
       ).flatten
-    )
+    ).withCssClass("govuk-!-margin-bottom-9")
 
-    Ok(view(organisationDetails))
+    val personalDetails = SummaryListViewModel(
+      rows = Seq(
+        FirstContactNameSummary.row(),
+        FirstContactRoleSummary.row(),
+        FirstContactEmailSummary.row(),
+        FirstContactNumberSummary.row(),
+        SecondContactNameSummary.row(),
+        SecondContactRoleSummary.row(),
+        SecondContactEmailSummary.row(),
+        SecondContactNumberSummary.row()
+      ).flatten
+    ).withCssClass("govuk-!-margin-bottom-9")
+
+    Ok(view(organisationDetails, personalDetails))
   }
 }
