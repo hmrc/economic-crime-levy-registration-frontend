@@ -34,20 +34,16 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   def feedbackUrl(implicit request: RequestHeader): String =
     s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${SafeRedirectUrl(host + request.uri).encodedUrl}"
 
-  val signInUrl: String                 = configuration.get[String]("urls.signIn")
-  val signOutUrl: String                = configuration.get[String]("urls.signOut")
-  val grsSignOutUrl: String             = configuration.get[String]("urls.grsSignOut")
-  val grsContinueUrl: String            = configuration.get[String]("urls.grsContinue")
-  val alfContinueUrl: String            = configuration.get[String]("urls.alfContinue")
-  val alfSignOutUrl: String             = configuration.get[String]("urls.alfSignOut")
-  val alfHomeUrl: String                = configuration.get[String]("urls.alfHome")
-  val alfAccessibilityFooterUrl: String = configuration.get[String]("urls.alfAccessibilityFooter")
-  val alfDeskProServiceName: String     = configuration.get[String]("urls.alfDeskProServiceName")
+  val signInUrl: String      = configuration.get[String]("urls.signIn")
+  val signOutUrl: String     = configuration.get[String]("urls.signOut")
+  val eclSignOutUrl: String  = configuration.get[String]("urls.eclSignOut")
+  val grsContinueUrl: String = configuration.get[String]("urls.grsContinue")
+  val alfContinueUrl: String = configuration.get[String]("urls.alfContinue")
 
   val accessibilityStatementServicePath: String =
     configuration.get[String]("accessibility-statement.service-path")
 
-  val grsAccessibilityStatementPath: String =
+  val accessibilityStatementPath: String =
     s"/accessibility-statement$accessibilityStatementServicePath"
 
   private val exitSurveyHost              = configuration.get[String]("feedback-frontend.host")

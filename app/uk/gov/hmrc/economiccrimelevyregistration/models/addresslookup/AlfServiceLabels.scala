@@ -26,7 +26,7 @@ object AlfEnCyLabels {
     AlfEnCyLabels(
       en = AlfLabels(
         appLevelLabels = AlfAppLabels(
-          navTitle = messagesApi("alf.labels.app.title")(Lang("en")),
+          navTitle = messagesApi("service.name")(Lang("en")),
           phaseBannerHtml = messagesApi("alf.labels.app.banner")(Lang("en"))
         ),
         countryPickerLabels = AlfCountryPickerLabels(
@@ -51,7 +51,7 @@ object AlfEnCyLabels {
       ),
       cy = AlfLabels(
         appLevelLabels = AlfAppLabels(
-          navTitle = messagesApi("alf.labels.app.title")(Lang("cy")),
+          navTitle = messagesApi("service.name")(Lang("cy")),
           phaseBannerHtml = messagesApi("alf.labels.app.banner")(Lang("cy"))
         ),
         countryPickerLabels = AlfCountryPickerLabels(

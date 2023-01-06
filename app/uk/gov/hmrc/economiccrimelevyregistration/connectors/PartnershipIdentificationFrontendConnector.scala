@@ -65,8 +65,8 @@ class PartnershipIdentificationFrontendConnectorImpl @Inject() (
         businessVerificationCheck = appConfig.partnershipBvEnabled,
         optServiceName = Some(serviceNameLabels.en.optServiceName),
         deskProServiceId = appConfig.appName,
-        signOutUrl = appConfig.grsSignOutUrl,
-        accessibilityUrl = appConfig.grsAccessibilityStatementPath,
+        signOutUrl = appConfig.eclSignOutUrl,
+        accessibilityUrl = appConfig.accessibilityStatementPath,
         labels = serviceNameLabels
       )
     )

@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -49,10 +50,10 @@ class AddressLookupFrontendConnectorImpl @Inject() (
       AlfJourneyConfig(
         options = AlfOptions(
           continueUrl = appConfig.alfContinueUrl,
-          homeNavHref = appConfig.alfHomeUrl,
-          signOutHref = appConfig.alfSignOutUrl,
-          accessibilityFooterUrl = appConfig.alfAccessibilityFooterUrl,
-          deskProServiceName = appConfig.alfDeskProServiceName,
+          homeNavHref = routes.StartController.onPageLoad().url,
+          signOutHref = appConfig.eclSignOutUrl,
+          accessibilityFooterUrl = appConfig.accessibilityStatementPath,
+          deskProServiceName = appConfig.appName,
           ukMode = ukMode
         ),
         labels = alfLabels

@@ -38,7 +38,7 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
           val alfLabels = AlfEnCyLabels(
             en = AlfLabels(
               appLevelLabels = AlfAppLabels(
-                navTitle = "???",
+                navTitle = "Register for the Economic Crime Levy",
                 phaseBannerHtml = "???"
               ),
               countryPickerLabels = AlfCountryPickerLabels(
@@ -63,7 +63,7 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
             ),
             cy = AlfLabels(
               appLevelLabels = AlfAppLabels(
-                navTitle = "alf.labels.app.title",
+                navTitle = "service.name",
                 phaseBannerHtml = "alf.labels.app.banner"
               ),
               countryPickerLabels = AlfCountryPickerLabels(
@@ -91,10 +91,10 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
           AlfJourneyConfig(
             options = AlfOptions(
               continueUrl = "http://localhost:14000/register-for-the-economic-crime-levy/address-lookup-continue",
-              homeNavHref = "http://www.hmrc.gov.uk/",
+              homeNavHref = "/register-for-the-economic-crime-levy",
               signOutHref = "http://localhost:14000/register-for-the-economic-crime-levy/account/sign-out-survey",
-              accessibilityFooterUrl = "",
-              deskProServiceName = "",
+              accessibilityFooterUrl = "/accessibility-statement/register-for-the-economic-crime-levy",
+              deskProServiceName = "economic-crime-levy-registration-frontend",
               ukMode = ukMode
             ),
             labels = alfLabels
