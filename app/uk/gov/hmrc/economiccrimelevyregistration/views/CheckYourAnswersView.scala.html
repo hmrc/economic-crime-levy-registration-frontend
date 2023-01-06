@@ -15,15 +15,17 @@
  *@
 
 @this(
-    layout: templates.Layout,
-    govukSummaryList: GovukSummaryList
+        layout: templates.Layout,
+        govukSummaryList: GovukSummaryList
 )
 
-@(list: SummaryList)(implicit request: Request[_], messages: Messages)
+@(organisationDetails: SummaryList)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(messages("checkYourAnswers.title"))) {
+@layout(pageTitle = title(messages("checkYourAnswers.title")), backLinkUrl = Some(StartController.onPageLoad().url)) {
 
-    <h1 class="govuk-heading-xl">@messages("checkYourAnswers.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
-    @govukSummaryList(list)
+    <h1 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h1>
+
+    @govukSummaryList(organisationDetails)
 }

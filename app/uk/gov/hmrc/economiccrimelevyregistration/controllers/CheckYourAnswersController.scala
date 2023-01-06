@@ -20,9 +20,10 @@ import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers.{AmlSupervisorSummary, BusinessSectorSummary}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 
 import javax.inject.Singleton
 
@@ -37,10 +38,13 @@ class CheckYourAnswersController @Inject() (
     with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    val list = SummaryList(
-      rows = Seq.empty
+    val organisationDetails = SummaryListViewModel(
+      rows = Seq(
+        AmlSupervisorSummary.row(),
+        BusinessSectorSummary.row()
+      ).flatten
     )
 
-    Ok(view(list))
+    Ok(view(organisationDetails))
   }
 }
