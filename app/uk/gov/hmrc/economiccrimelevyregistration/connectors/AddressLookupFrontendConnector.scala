@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import play.api.http.HeaderNames
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpErrorFunctions, HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +39,8 @@ class AddressLookupFrontendConnectorImpl @Inject() (
 )(implicit
   val messagesApi: MessagesApi,
   ec: ExecutionContext
-) extends AddressLookupFrontendConnector {
+) extends AddressLookupFrontendConnector
+    with HttpErrorFunctions {
   private val baseUrl = appConfig.addressLookupFrontendUrl
 
   def initJourney(ukMode: Boolean)(implicit
@@ -45,20 +48,29 @@ class AddressLookupFrontendConnectorImpl @Inject() (
   ): Future[String] = {
     val alfLabels = AlfEnCyLabels()
 
-    httpClient.POST[AlfJourneyConfig, String](
-      s"$baseUrl/api/init",
-      AlfJourneyConfig(
-        options = AlfOptions(
-          continueUrl = appConfig.alfContinueUrl,
-          homeNavHref = routes.StartController.onPageLoad().url,
-          signOutHref = appConfig.eclSignOutUrl,
-          accessibilityFooterUrl = appConfig.accessibilityStatementPath,
-          deskProServiceName = appConfig.appName,
-          ukMode = ukMode
-        ),
-        labels = alfLabels
+    httpClient
+      .POST[AlfJourneyConfig, Either[UpstreamErrorResponse, HttpResponse]](
+        s"$baseUrl/api/init",
+        AlfJourneyConfig(
+          options = AlfOptions(
+            continueUrl = appConfig.alfContinueUrl,
+            homeNavHref = routes.StartController.onPageLoad().url,
+            signOutHref = appConfig.eclSignOutUrl,
+            accessibilityFooterUrl = appConfig.accessibilityStatementPath,
+            deskProServiceName = appConfig.appName,
+            ukMode = ukMode
+          ),
+          labels = alfLabels
+        )
       )
-    )
+      .map {
+        case Right(httpResponse) =>
+          httpResponse.header(HeaderNames.LOCATION) match {
+            case Some(journeyUrl) => journeyUrl
+            case _                => throw new IllegalStateException("Location header not present in response")
+          }
+        case Left(e)             => throw e
+      }
   }
 
   def getAddress(addressId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData] = ???
