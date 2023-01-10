@@ -34,13 +34,19 @@ class SubmissionValidationService @Inject() () {
   def validateRegistrationSubmission()(implicit request: RegistrationDataRequest[_]): ValidationResult[Registration] =
     (
       validateGrsJourneyData(request.registration),
-      validateOptExists(request.registration.contacts.firstContactDetails.name, "First contact name"),
-      validateOptExists(request.registration.contacts.firstContactDetails.role, "First contact role"),
-      validateOptExists(request.registration.contacts.firstContactDetails.emailAddress, "First contact email"),
-      validateOptExists(request.registration.contacts.firstContactDetails.telephoneNumber, "First contact number"),
-      validateOptExists(request.registration.businessSector, "Business sector"),
-      validateOptExists(request.registration.contactAddress, "Contact address"),
-      validateOptExists(request.registration.amlSupervisor, "AML supervisor"),
+      validateOptExists(request.registration.contacts.firstContactDetails.name, errorMessage("First contact name")),
+      validateOptExists(request.registration.contacts.firstContactDetails.role, errorMessage("First contact role")),
+      validateOptExists(
+        request.registration.contacts.firstContactDetails.emailAddress,
+        errorMessage("First contact email")
+      ),
+      validateOptExists(
+        request.registration.contacts.firstContactDetails.telephoneNumber,
+        errorMessage("First contact number")
+      ),
+      validateOptExists(request.registration.businessSector, errorMessage("Business sector")),
+      validateOptExists(request.registration.contactAddress, errorMessage("Contact address")),
+      validateOptExists(request.registration.amlSupervisor, errorMessage("AML supervisor")),
       validateSecondContactDetails(request.registration)
     ).mapN((_, _, _, _, _, _, _, _, _) => request.registration)
 
@@ -48,12 +54,19 @@ class SubmissionValidationService @Inject() () {
     registration.contacts.secondContact match {
       case Some(true)  =>
         (
-          validateOptExists(registration.contacts.secondContactDetails.name, "Second contact name"),
-          validateOptExists(registration.contacts.secondContactDetails.role, "Second contact role"),
-          validateOptExists(registration.contacts.secondContactDetails.emailAddress, "Second contact email"),
-          validateOptExists(registration.contacts.secondContactDetails.telephoneNumber, "Second contact number")
+          validateOptExists(registration.contacts.secondContactDetails.name, errorMessage("Second contact name")),
+          validateOptExists(registration.contacts.secondContactDetails.role, errorMessage("Second contact role")),
+          validateOptExists(
+            registration.contacts.secondContactDetails.emailAddress,
+            errorMessage("Second contact email")
+          ),
+          validateOptExists(
+            registration.contacts.secondContactDetails.telephoneNumber,
+            errorMessage("Second contact number")
+          )
         ).mapN((_, _, _, _) => registration)
       case Some(false) => registration.validNec
+      case _           => DataMissingError(errorMessage("Second contact choice")).invalidNec
     }
 
   private def validateGrsJourneyData(registration: Registration): ValidationResult[Registration] = {
@@ -91,7 +104,7 @@ class SubmissionValidationService @Inject() () {
           case (None, None, Some(s)) => validateBusinessPartnerId(s.registration.registeredBusinessPartnerId)
           case _                     => DataMissingError(errorMessage("Sole trader data")).invalidNec
         }
-      case _                      => DataMissingError("Entity type").invalidNec
+      case _                      => DataMissingError(errorMessage("Entity type")).invalidNec
     }
   }
 
