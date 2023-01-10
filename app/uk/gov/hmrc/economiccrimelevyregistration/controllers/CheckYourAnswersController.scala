@@ -16,15 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import cats.data.Validated.{Invalid, Valid}
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.services.SubmissionValidationService
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidatedSubmissionAction}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Singleton
@@ -36,36 +35,33 @@ class CheckYourAnswersController @Inject() (
   getRegistrationData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
-  submissionValidationService: SubmissionValidationService
+  validateSubmissionData: ValidatedSubmissionAction
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    val organisationDetails = SummaryListViewModel(
-      rows = Seq(
-        EntityTypeSummary.row(),
-        AmlSupervisorSummary.row(),
-        BusinessSectorSummary.row()
-      ).flatten
-    ).withCssClass("govuk-!-margin-bottom-9")
+  def onPageLoad(): Action[AnyContent] = (authorise andThen getRegistrationData andThen validateSubmissionData) {
+    implicit request =>
+      val organisationDetails: SummaryList = SummaryListViewModel(
+        rows = Seq(
+          EntityTypeSummary.row(),
+          AmlSupervisorSummary.row(),
+          BusinessSectorSummary.row()
+        ).flatten
+      ).withCssClass("govuk-!-margin-bottom-9")
 
-    val personalDetails = SummaryListViewModel(
-      rows = Seq(
-        FirstContactNameSummary.row(),
-        FirstContactRoleSummary.row(),
-        FirstContactEmailSummary.row(),
-        FirstContactNumberSummary.row(),
-        SecondContactNameSummary.row(),
-        SecondContactRoleSummary.row(),
-        SecondContactEmailSummary.row(),
-        SecondContactNumberSummary.row()
-      ).flatten
-    ).withCssClass("govuk-!-margin-bottom-9")
+      val personalDetails: SummaryList = SummaryListViewModel(
+        rows = Seq(
+          FirstContactNameSummary.row(),
+          FirstContactRoleSummary.row(),
+          FirstContactEmailSummary.row(),
+          FirstContactNumberSummary.row(),
+          SecondContactNameSummary.row(),
+          SecondContactRoleSummary.row(),
+          SecondContactEmailSummary.row(),
+          SecondContactNumberSummary.row()
+        ).flatten
+      ).withCssClass("govuk-!-margin-bottom-9")
 
-    submissionValidationService.validateRegistrationSubmission() match {
-      case Valid(_)   => Ok(view(organisationDetails, personalDetails))
-      case Invalid(_) => Redirect(routes.StartController.onPageLoad())
-    }
-
+      Ok(view(organisationDetails, personalDetails))
   }
 }

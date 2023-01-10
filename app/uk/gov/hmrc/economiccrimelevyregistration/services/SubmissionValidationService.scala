@@ -32,7 +32,29 @@ class SubmissionValidationService @Inject() () {
   type ValidationResult[A] = ValidatedNec[DataMissingError, A]
 
   def validateRegistrationSubmission()(implicit request: RegistrationDataRequest[_]): ValidationResult[Registration] =
-    validateGrsJourneyData(request.registration)
+    (
+      validateGrsJourneyData(request.registration),
+      validateOptExists(request.registration.contacts.firstContactDetails.name, "First contact name"),
+      validateOptExists(request.registration.contacts.firstContactDetails.role, "First contact role"),
+      validateOptExists(request.registration.contacts.firstContactDetails.emailAddress, "First contact email"),
+      validateOptExists(request.registration.contacts.firstContactDetails.telephoneNumber, "First contact number"),
+      validateOptExists(request.registration.businessSector, "Business sector"),
+      validateOptExists(request.registration.contactAddress, "Contact address"),
+      validateOptExists(request.registration.amlSupervisor, "AML supervisor"),
+      validateSecondContactDetails(request.registration)
+    ).mapN((_, _, _, _, _, _, _, _, _) => request.registration)
+
+  private def validateSecondContactDetails(registration: Registration): ValidationResult[Registration] =
+    registration.contacts.secondContact match {
+      case Some(true)  =>
+        (
+          validateOptExists(registration.contacts.secondContactDetails.name, "Second contact name"),
+          validateOptExists(registration.contacts.secondContactDetails.role, "Second contact role"),
+          validateOptExists(registration.contacts.secondContactDetails.emailAddress, "Second contact email"),
+          validateOptExists(registration.contacts.secondContactDetails.telephoneNumber, "Second contact number")
+        ).mapN((_, _, _, _) => registration)
+      case Some(false) => registration.validNec
+    }
 
   private def validateGrsJourneyData(registration: Registration): ValidationResult[Registration] = {
     val grsJourneyData: (
@@ -69,10 +91,16 @@ class SubmissionValidationService @Inject() () {
           case (None, None, Some(s)) => validateBusinessPartnerId(s.registration.registeredBusinessPartnerId)
           case _                     => DataMissingError(errorMessage("Sole trader data")).invalidNec
         }
-      case _ => DataMissingError("Entity type").invalidNec
+      case _                      => DataMissingError("Entity type").invalidNec
     }
   }
 
   private def errorMessage(missingDataDescription: String): String = s"$missingDataDescription is missing"
+
+  private def validateOptExists[T](optData: Option[T], description: String): ValidationResult[T] =
+    optData match {
+      case Some(value) => value.validNec
+      case _           => DataMissingError(description).invalidNec
+    }
 
 }
