@@ -107,7 +107,8 @@ val scalaCompilerOptions: Def.Setting[Task[Seq[String]]] = scalacOptions ++= Seq
   "-rootdir",
   baseDirectory.value.getCanonicalPath,
   "-Wconf:cat=feature:ws,cat=optimizer:ws,src=target/.*:s",
-  "-Xlint:-byname-implicit"
+  "-Xlint:-byname-implicit",
+  "-Ypartial-unification"
 )
 
 addCommandAlias("runAllChecks", ";clean;compile;scalafmtCheckAll;coverage;test;it:test;scalastyle;coverageReport")
