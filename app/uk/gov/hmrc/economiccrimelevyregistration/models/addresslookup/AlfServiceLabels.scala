@@ -18,16 +18,25 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup
 
 import play.api.i18n.{Lang, MessagesApi}
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 
 final case class AlfEnCyLabels(en: AlfLabels, cy: AlfLabels)
 
 object AlfEnCyLabels {
-  def apply()(implicit messagesApi: MessagesApi): AlfEnCyLabels =
+  def apply(appConfig: AppConfig)(implicit messagesApi: MessagesApi): AlfEnCyLabels = {
+    def betaBanner(lang: Lang): String = new StandardBetaBanner()
+      .apply(appConfig.feedbackUrl(routes.IsUkAddressController.onPageLoad().url))(messagesApi.preferred(Seq(lang)))
+      .content
+      .asHtml
+      .body
+
     AlfEnCyLabels(
       en = AlfLabels(
         appLevelLabels = AlfAppLabels(
           navTitle = messagesApi("service.name")(Lang("en")),
-          phaseBannerHtml = messagesApi("alf.labels.app.banner")(Lang("en"))
+          phaseBannerHtml = betaBanner(Lang("en"))
         ),
         countryPickerLabels = AlfCountryPickerLabels(
           submitLabel = messagesApi("alf.labels.submit")(Lang("en"))
@@ -52,7 +61,7 @@ object AlfEnCyLabels {
       cy = AlfLabels(
         appLevelLabels = AlfAppLabels(
           navTitle = messagesApi("service.name")(Lang("cy")),
-          phaseBannerHtml = messagesApi("alf.labels.app.banner")(Lang("cy"))
+          phaseBannerHtml = betaBanner(Lang("cy"))
         ),
         countryPickerLabels = AlfCountryPickerLabels(
           submitLabel = messagesApi("alf.labels.submit")(Lang("cy"))
@@ -75,6 +84,7 @@ object AlfEnCyLabels {
         )
       )
     )
+  }
 
   implicit val format: OFormat[AlfEnCyLabels] = Json.format[AlfEnCyLabels]
 }

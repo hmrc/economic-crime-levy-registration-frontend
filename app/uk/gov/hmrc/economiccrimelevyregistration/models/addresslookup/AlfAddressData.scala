@@ -24,7 +24,14 @@ object AlfAddressData {
   implicit val format: OFormat[AlfAddressData] = Json.format[AlfAddressData]
 }
 
-final case class AlfAddress(lines: Seq[String], postcode: Option[String], country: AlfCountry)
+final case class AlfAddress(
+  organisation: Option[String],
+  lines: Seq[String],
+  town: Option[String],
+  postcode: Option[String],
+  country: AlfCountry,
+  poBox: Option[String]
+)
 
 object AlfAddress {
   implicit val format: OFormat[AlfAddress] = Json.format[AlfAddress]

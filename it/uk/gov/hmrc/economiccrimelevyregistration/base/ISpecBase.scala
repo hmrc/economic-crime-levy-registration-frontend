@@ -55,6 +55,7 @@ abstract class ISpecBase
     "incorporated-entity-identification-frontend",
     "sole-trader-identification-frontend",
     "partnership-identification-frontend",
+    "address-lookup-frontend",
     "enrolment-store-proxy"
   )
 

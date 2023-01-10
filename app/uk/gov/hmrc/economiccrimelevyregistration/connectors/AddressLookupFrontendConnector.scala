@@ -46,7 +46,7 @@ class AddressLookupFrontendConnectorImpl @Inject() (
   def initJourney(ukMode: Boolean)(implicit
     hc: HeaderCarrier
   ): Future[String] = {
-    val alfLabels = AlfEnCyLabels()
+    val alfLabels = AlfEnCyLabels(appConfig)
 
     httpClient
       .POST[AlfJourneyConfig, Either[UpstreamErrorResponse, HttpResponse]](
@@ -73,5 +73,6 @@ class AddressLookupFrontendConnectorImpl @Inject() (
       }
   }
 
-  def getAddress(addressId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData] = ???
+  def getAddress(addressId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData] =
+    httpClient.GET[AlfAddressData](url = s"$baseUrl/api/confirmed", queryParams = Seq(("id", addressId)))
 }

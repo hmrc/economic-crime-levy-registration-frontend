@@ -27,10 +27,12 @@ object InsetTextAddress {
 
     val html = s"""
       |<p class="govuk-body">
+      |${optLineWithBreak(eclAddress.organisation)}
       |${optLineWithBreak(eclAddress.addressLine1)}
       |${optLineWithBreak(eclAddress.addressLine2)}
       |${optLineWithBreak(eclAddress.addressLine3)}
-      |${optLineWithBreak(eclAddress.townOrCity)}
+      |${optLineWithBreak(eclAddress.addressLine4)}
+      |${optLineWithBreak(eclAddress.poBox)}
       |${optLineWithBreak(eclAddress.region)}
       |${optLineWithBreak(eclAddress.postCode)}
       |</p>

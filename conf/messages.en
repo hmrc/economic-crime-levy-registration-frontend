@@ -219,7 +219,6 @@ isUkAddress.title = Is your contact address based in the UK?
 isUkAddress.error.required = Select if your contact address is in the UK
 
 alf.labels.submit = Save and continue
-alf.labels.app.banner = ???
 alf.labels.select.title = Select your address
 alf.labels.select.heading = Select your address
 alf.labels.lookup.title = What address do you want to use as the contact address?
