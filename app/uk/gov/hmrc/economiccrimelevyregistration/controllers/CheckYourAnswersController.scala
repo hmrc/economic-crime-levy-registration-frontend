@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.Validated.{Invalid, Valid}
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.services.SubmissionValidationService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
@@ -33,7 +35,8 @@ class CheckYourAnswersController @Inject() (
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CheckYourAnswersView
+  view: CheckYourAnswersView,
+  submissionValidationService: SubmissionValidationService
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -59,6 +62,10 @@ class CheckYourAnswersController @Inject() (
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 
-    Ok(view(organisationDetails, personalDetails))
+    submissionValidationService.validateRegistrationSubmission() match {
+      case Valid(_)   => Ok(view(organisationDetails, personalDetails))
+      case Invalid(_) => Redirect(routes.StartController.onPageLoad())
+    }
+
   }
 }
