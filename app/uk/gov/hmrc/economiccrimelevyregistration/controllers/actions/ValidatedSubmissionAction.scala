@@ -30,7 +30,7 @@ class ValidatedSubmissionActionImpl @Inject() (submissionValidationService: Subm
   val executionContext: ExecutionContext
 ) extends ValidatedSubmissionAction {
 
-  override protected def filter[A](request: RegistrationDataRequest[A]): Future[Option[Result]] =
+  override def filter[A](request: RegistrationDataRequest[A]): Future[Option[Result]] =
     submissionValidationService.validateRegistrationSubmission()(request) match {
       case Valid(_)   => Future.successful(None)
       case Invalid(_) => Future.successful(Some(Redirect(routes.StartController.onPageLoad())))
