@@ -27,7 +27,6 @@ object AlfAddressData {
 final case class AlfAddress(
   organisation: Option[String],
   lines: Seq[String],
-  town: Option[String],
   postcode: Option[String],
   country: AlfCountry,
   poBox: Option[String]
