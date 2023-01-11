@@ -57,7 +57,7 @@ object AmlSupervisorType {
       ) +: appConfig.amlProfessionalBodySupervisors.map { opb =>
         SelectItem(
           value = Some(opb),
-          text = messages(s"amlSupervisor.opb.$opb"),
+          text = messages(s"amlSupervisor.$opb"),
           selected = form.value match {
             case Some(AmlSupervisor(_, Some(value))) => value == opb
             case _                                   => false
