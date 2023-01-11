@@ -147,56 +147,56 @@ class EclRegistrationConnectorSpec extends SpecBase {
     }
   }
 
-  "validateRegistration" should {
+  "getRegistrationValidationErrors" should {
     "return None when the http client returns 204 no content with no validation errors" in forAll {
       internalId: String =>
-        val expectedUrl = s"$eclRegistrationUrl/registrations/validate/$internalId"
+        val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId/validation-errors"
 
         val response = HttpResponse(NO_CONTENT, "")
 
         when(
           mockHttpClient
-            .POSTEmpty[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any())(
+            .GET[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any(), any())(
               any(),
               any(),
               any()
             )
         ).thenReturn(Future.successful(Right(response)))
 
-        val result = await(connector.validateRegistration(internalId))
+        val result = await(connector.getRegistrationValidationErrors(internalId))
 
         result shouldBe None
     }
 
     "return validation errors when the http client return 200 ok with validation errors" in forAll {
       (internalId: String, dataValidationErrors: DataValidationErrors) =>
-        val expectedUrl = s"$eclRegistrationUrl/registrations/validate/$internalId"
+        val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId/validation-errors"
 
         val response = HttpResponse(OK, Json.toJson(dataValidationErrors), Map.empty)
 
         when(
           mockHttpClient
-            .POSTEmpty[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any())(
+            .GET[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any(), any())(
               any(),
               any(),
               any()
             )
         ).thenReturn(Future.successful(Right(response)))
 
-        val result = await(connector.validateRegistration(internalId))
+        val result = await(connector.getRegistrationValidationErrors(internalId))
 
         result shouldBe Some(dataValidationErrors)
     }
 
     "throw a HttpException when an unexpected http status is returned by the http client" in forAll {
       internalId: String =>
-        val expectedUrl = s"$eclRegistrationUrl/registrations/validate/$internalId"
+        val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId/validation-errors"
 
         val response = HttpResponse(ACCEPTED, "")
 
         when(
           mockHttpClient
-            .POSTEmpty[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any())(
+            .GET[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any(), any())(
               any(),
               any(),
               any()
@@ -204,7 +204,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
         ).thenReturn(Future.successful(Right(response)))
 
         val result: HttpException = intercept[HttpException] {
-          await(connector.validateRegistration(internalId))
+          await(connector.getRegistrationValidationErrors(internalId))
         }
 
         result.getMessage shouldBe s"Unexpected response with HTTP status $ACCEPTED"
@@ -212,13 +212,13 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
     "throw an UpstreamErrorResponse exception when the http client returns a error response" in forAll {
       internalId: String =>
-        val expectedUrl = s"$eclRegistrationUrl/registrations/validate/$internalId"
+        val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId/validation-errors"
 
         val response = UpstreamErrorResponse("Internal server error", INTERNAL_SERVER_ERROR)
 
         when(
           mockHttpClient
-            .POSTEmpty[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any())(
+            .GET[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any(), any())(
               any(),
               any(),
               any()
@@ -226,7 +226,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
         ).thenReturn(Future.successful(Left(response)))
 
         val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
-          await(connector.validateRegistration(internalId))
+          await(connector.getRegistrationValidationErrors(internalId))
         }
 
         result.getMessage shouldBe "Internal server error"

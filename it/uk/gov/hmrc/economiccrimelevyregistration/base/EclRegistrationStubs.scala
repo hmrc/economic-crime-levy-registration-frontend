@@ -37,9 +37,9 @@ trait EclRegistrationStubs { self: WireMockStubs =>
         .withBody(Json.toJson(eclSubscriptionStatus).toString())
     )
 
-  def stubValidateRegistration(valid: Boolean): StubMapping =
+  def stubGetRegistrationValidationErrors(valid: Boolean): StubMapping =
     stub(
-      post(urlEqualTo(s"/economic-crime-levy-registration/registrations/validate/$testInternalId")),
+      get(urlEqualTo(s"/economic-crime-levy-registration/registrations/$testInternalId/validation-errors")),
       if (valid) {
         aResponse()
           .withStatus(NO_CONTENT)

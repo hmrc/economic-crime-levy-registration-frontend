@@ -55,9 +55,13 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
       s"$eclRegistrationUrl/subscription-status/$businessPartnerId"
     )
 
-  def validateRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Option[DataValidationErrors]] =
+  def getRegistrationValidationErrors(
+    internalId: String
+  )(implicit hc: HeaderCarrier): Future[Option[DataValidationErrors]] =
     httpClient
-      .POSTEmpty[Either[UpstreamErrorResponse, HttpResponse]](s"$eclRegistrationUrl/registrations/validate/$internalId")
+      .GET[Either[UpstreamErrorResponse, HttpResponse]](
+        s"$eclRegistrationUrl/registrations/$internalId/validation-errors"
+      )
       .map {
         case Right(httpResponse) =>
           httpResponse.status match {

@@ -40,7 +40,7 @@ class ValidatedRegistrationActionSpec extends SpecBase {
 
   "filter" should {
     "return None if the registration data is valid" in forAll { (internalId: String, registration: Registration) =>
-      when(mockEclRegistrationConnector.validateRegistration(any())(any()))
+      when(mockEclRegistrationConnector.getRegistrationValidationErrors(any())(any()))
         .thenReturn(Future.successful(None))
 
       val result: Future[Option[Result]] =
@@ -51,7 +51,7 @@ class ValidatedRegistrationActionSpec extends SpecBase {
 
     "return to the start page if the registration data is invalid" in forAll {
       (internalId: String, registration: Registration) =>
-        when(mockEclRegistrationConnector.validateRegistration(any())(any()))
+        when(mockEclRegistrationConnector.getRegistrationValidationErrors(any())(any()))
           .thenReturn(Future.successful(Some(DataValidationErrors(Seq("Some data is missing")))))
 
         val result: Future[Option[Result]] =

@@ -19,7 +19,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       val registration = random[Registration]
 
       stubGetRegistration(registration)
-      stubValidateRegistration(valid = true)
+      stubGetRegistrationValidationErrors(valid = true)
 
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
 
@@ -34,7 +34,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       val registration = random[Registration]
 
       stubGetRegistration(registration)
-      stubValidateRegistration(valid = false)
+      stubGetRegistrationValidationErrors(valid = false)
 
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
 
