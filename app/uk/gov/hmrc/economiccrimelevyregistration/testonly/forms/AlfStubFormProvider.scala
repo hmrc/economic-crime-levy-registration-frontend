@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.testonly.forms
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.data.Form
+import play.api.data.Forms._
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.models.AlfStubFormData
 
-final case class EclAddress(
-  organisation: Option[String],
-  addressLine1: Option[String],
-  addressLine2: Option[String],
-  addressLine3: Option[String],
-  addressLine4: Option[String],
-  region: Option[String],
-  postCode: Option[String],
-  poBox: Option[String],
-  countryCode: String
-)
+class AlfStubFormProvider extends Mappings {
 
-object EclAddress {
-  implicit val format: OFormat[EclAddress] = Json.format[EclAddress]
+  def apply(): Form[AlfStubFormData] =
+    Form(
+      mapping(
+        "addressJson" -> text()
+      )(AlfStubFormData.apply)(AlfStubFormData.unapply)
+    )
 }

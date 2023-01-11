@@ -104,7 +104,7 @@ trait GrsStubData[T] {
       address_line_2 = Some("Test Address Line 2"),
       country = Some("United Kingdom"),
       locality = Some("Test Town"),
-      po_box = Some("123"),
+      po_box = None,
       postal_code = Some("AB1 2CD"),
       premises = None,
       region = Some("Test Region")

@@ -16,20 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.i18n.Lang
 
-final case class EclAddress(
-  organisation: Option[String],
-  addressLine1: Option[String],
-  addressLine2: Option[String],
-  addressLine3: Option[String],
-  addressLine4: Option[String],
-  region: Option[String],
-  postCode: Option[String],
-  poBox: Option[String],
-  countryCode: String
-)
-
-object EclAddress {
-  implicit val format: OFormat[EclAddress] = Json.format[EclAddress]
+object Languages {
+  val english: Lang = Lang("en")
+  val welsh: Lang   = Lang("cy")
 }

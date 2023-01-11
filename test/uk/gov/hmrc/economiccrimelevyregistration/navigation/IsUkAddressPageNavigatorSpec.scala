@@ -16,15 +16,36 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWithValidCompanyProfile
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.AddressLookupFrontendConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.http.HttpVerbs.GET
+
+import scala.concurrent.Future
 
 class IsUkAddressPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new IsUkAddressPageNavigator()
+  val mockAddressLookupFrontendConnector: AddressLookupFrontendConnector = mock[AddressLookupFrontendConnector]
+
+  val pageNavigator = new IsUkAddressPageNavigator(mockAddressLookupFrontendConnector)
+
+  "nextPage" should {
+    "return a call to the address lookup journey in NormalMode" in forAll {
+      (registration: Registration, contactAddressIsUk: Boolean, journeyUrl: String) =>
+        val updatedRegistration: Registration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
+
+        when(mockAddressLookupFrontendConnector.initJourney(ArgumentMatchers.eq(contactAddressIsUk))(any()))
+          .thenReturn(Future.successful(journeyUrl))
+
+        await(pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
+    }
+  }
 
   "previousPage" should {
     "return a call to the second contact number page when the answer was yes to adding another contact and there is no valid address in the GRS journey data" in forAll {

@@ -48,29 +48,21 @@ final case class Registration(
       }
 
     incorporatedEntityAddress.flatMap { address =>
-      (address.address_line_1.map(_.trim), address.locality.map(_.trim)) match {
-        case (Some(a1), Some(a2)) =>
-          Some(
-            EclAddress(
-              addressLine1 = a1,
-              addressLine2 = address.address_line_2.map(_.trim),
-              townOrCity = a2,
-              region = address.region.map(_.trim),
-              postCode = address.postal_code.map(_.trim)
-            )
-          )
-        case _                    => None
+      address.address_line_1.map { addressLine1 =>
+        EclAddress(
+          organisation = None,
+          addressLine1 = address.premises.fold(Some(addressLine1))(p => Some(s"$p $addressLine1")),
+          addressLine2 = address.address_line_2.map(_.trim),
+          addressLine3 = address.locality.map(_.trim),
+          addressLine4 = None,
+          region = address.region.map(_.trim),
+          postCode = address.postal_code.map(_.trim),
+          poBox = address.po_box.map(_.trim),
+          countryCode = "GB"
+        )
       }
     }
   }
-
-  def entityName: Option[String] =
-    (incorporatedEntityJourneyData, soleTraderEntityJourneyData, partnershipEntityJourneyData) match {
-      case (Some(d), None, None) => Some(d.companyProfile.companyName)
-      case (None, Some(d), None) => Some(s"${d.fullName.firstName} ${d.fullName.lastName}")
-      case (None, None, Some(d)) => d.companyProfile.map(_.companyName)
-      case _                     => None
-    }
 
 }
 

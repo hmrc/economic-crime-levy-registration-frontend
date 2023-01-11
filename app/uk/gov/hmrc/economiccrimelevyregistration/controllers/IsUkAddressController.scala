@@ -24,7 +24,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -47,16 +46,10 @@ class IsUkAddressController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  val entityName: RegistrationDataRequest[_] => String = r =>
-    r.registration.entityName.getOrElse(
-      throw new IllegalStateException("No entity name found in registration data")
-    )
-
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(
       view(
         form.prepare(request.registration.contactAddressIsUk),
-        entityName(request),
         pageNavigator.previousPage(request.registration).url
       )
     )
@@ -68,15 +61,15 @@ class IsUkAddressController @Inject() (
       .fold(
         formWithErrors =>
           Future.successful(
-            BadRequest(view(formWithErrors, entityName(request), pageNavigator.previousPage(request.registration).url))
+            BadRequest(view(formWithErrors, pageNavigator.previousPage(request.registration).url))
           ),
         contactAddressIsUk =>
           eclRegistrationConnector
             .upsertRegistration(
               request.registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
             )
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
+            .flatMap { updatedRegistration =>
+              pageNavigator.nextPage(NormalMode, updatedRegistration).map(Redirect)
             }
       )
   }

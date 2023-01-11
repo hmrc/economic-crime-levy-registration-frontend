@@ -52,8 +52,8 @@ class IncorporatedEntityIdentificationFrontendConnectorImpl @Inject() (
         businessVerificationCheck = appConfig.incorporatedEntityBvEnabled,
         optServiceName = Some(serviceNameLabels.en.optServiceName),
         deskProServiceId = appConfig.appName,
-        signOutUrl = appConfig.grsSignOutUrl,
-        accessibilityUrl = appConfig.grsAccessibilityStatementPath,
+        signOutUrl = appConfig.eclSignOutUrl,
+        accessibilityUrl = appConfig.accessibilityStatementPath,
         labels = serviceNameLabels
       )
     )
