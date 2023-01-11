@@ -20,7 +20,7 @@ import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidatedSubmissionAction
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidatedRegistrationAction
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
@@ -41,7 +41,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       mcc,
       view,
-      new FakeValidatedSubmissionAction(registrationData)
+      new FakeValidatedRegistrationAction(registrationData)
     )
   }
 

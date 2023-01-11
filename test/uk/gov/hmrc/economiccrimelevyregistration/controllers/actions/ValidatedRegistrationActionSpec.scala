@@ -16,23 +16,23 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
-import cats.implicits._
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.{DataMissingError, SubmissionValidationService}
 
 import scala.concurrent.Future
 
-class ValidationSubmissionActionSpec extends SpecBase {
+class ValidatedRegistrationActionSpec extends SpecBase {
 
-  val mockSubmissionValidationService: SubmissionValidationService = mock[SubmissionValidationService]
+  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val validatedSubmissionAction = new ValidatedSubmissionActionImpl(mockSubmissionValidationService)
+  val validatedRegistrationAction = new ValidatedRegistrationActionImpl(mockEclRegistrationConnector)
 
   val testAction: Request[_] => Future[Result] = { _ =>
     Future(Ok("Test"))
@@ -40,22 +40,22 @@ class ValidationSubmissionActionSpec extends SpecBase {
 
   "filter" should {
     "return None if the registration data is valid" in forAll { (internalId: String, registration: Registration) =>
-      when(mockSubmissionValidationService.validateRegistrationSubmission()(any()))
-        .thenReturn(registration.validNec)
+      when(mockEclRegistrationConnector.validateRegistration(any())(any()))
+        .thenReturn(Future.successful(None))
 
       val result: Future[Option[Result]] =
-        validatedSubmissionAction.filter(RegistrationDataRequest(fakeRequest, internalId, registration))
+        validatedRegistrationAction.filter(RegistrationDataRequest(fakeRequest, internalId, registration))
 
       await(result) shouldBe None
     }
 
     "return to the start page if the registration data is invalid" in forAll {
       (internalId: String, registration: Registration) =>
-        when(mockSubmissionValidationService.validateRegistrationSubmission()(any()))
-          .thenReturn(DataMissingError("Some data is missing").invalidNec)
+        when(mockEclRegistrationConnector.validateRegistration(any())(any()))
+          .thenReturn(Future.successful(Some(DataValidationErrors(Seq("Some data is missing")))))
 
         val result: Future[Option[Result]] =
-          validatedSubmissionAction.filter(RegistrationDataRequest(fakeRequest, internalId, registration))
+          validatedRegistrationAction.filter(RegistrationDataRequest(fakeRequest, internalId, registration))
 
         await(result) shouldBe Some(Redirect(routes.StartController.onPageLoad()))
     }

@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import play.api.http.Status.NO_CONTENT
+import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR, NO_CONTENT, OK}
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclSubscriptionStatus, Registration}
-import uk.gov.hmrc.http.{HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HttpClient, HttpException, HttpResponse, UpstreamErrorResponse}
 
 import scala.concurrent.Future
 
@@ -142,6 +144,92 @@ class EclRegistrationConnectorSpec extends SpecBase {
           )(any(), any(), any())
 
         reset(mockHttpClient)
+    }
+  }
+
+  "validateRegistration" should {
+    "return None when the http client returns 204 no content with no validation errors" in forAll {
+      internalId: String =>
+        val expectedUrl = s"$eclRegistrationUrl/registrations/validate/$internalId"
+
+        val response = HttpResponse(NO_CONTENT, "")
+
+        when(
+          mockHttpClient
+            .POSTEmpty[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any())(
+              any(),
+              any(),
+              any()
+            )
+        ).thenReturn(Future.successful(Right(response)))
+
+        val result = await(connector.validateRegistration(internalId))
+
+        result shouldBe None
+    }
+
+    "return validation errors when the http client return 200 ok with validation errors" in forAll {
+      (internalId: String, dataValidationErrors: DataValidationErrors) =>
+        val expectedUrl = s"$eclRegistrationUrl/registrations/validate/$internalId"
+
+        val response = HttpResponse(OK, Json.toJson(dataValidationErrors), Map.empty)
+
+        when(
+          mockHttpClient
+            .POSTEmpty[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any())(
+              any(),
+              any(),
+              any()
+            )
+        ).thenReturn(Future.successful(Right(response)))
+
+        val result = await(connector.validateRegistration(internalId))
+
+        result shouldBe Some(dataValidationErrors)
+    }
+
+    "throw a HttpException when an unexpected http status is returned by the http client" in forAll {
+      internalId: String =>
+        val expectedUrl = s"$eclRegistrationUrl/registrations/validate/$internalId"
+
+        val response = HttpResponse(ACCEPTED, "")
+
+        when(
+          mockHttpClient
+            .POSTEmpty[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any())(
+              any(),
+              any(),
+              any()
+            )
+        ).thenReturn(Future.successful(Right(response)))
+
+        val result: HttpException = intercept[HttpException] {
+          await(connector.validateRegistration(internalId))
+        }
+
+        result.getMessage shouldBe s"Unexpected response with HTTP status $ACCEPTED"
+    }
+
+    "throw an UpstreamErrorResponse exception when the http client returns a error response" in forAll {
+      internalId: String =>
+        val expectedUrl = s"$eclRegistrationUrl/registrations/validate/$internalId"
+
+        val response = UpstreamErrorResponse("Internal server error", INTERNAL_SERVER_ERROR)
+
+        when(
+          mockHttpClient
+            .POSTEmpty[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any())(
+              any(),
+              any(),
+              any()
+            )
+        ).thenReturn(Future.successful(Left(response)))
+
+        val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
+          await(connector.validateRegistration(internalId))
+        }
+
+        result.getMessage shouldBe "Internal server error"
     }
   }
 }

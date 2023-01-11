@@ -16,25 +16,26 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
-import cats.data.Validated.{Invalid, Valid}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionFilter, Result}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.SubmissionValidationService
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ValidatedSubmissionActionImpl @Inject() (submissionValidationService: SubmissionValidationService)(implicit
+class ValidatedRegistrationActionImpl @Inject() (eclRegistrationConnector: EclRegistrationConnector)(implicit
   val executionContext: ExecutionContext
-) extends ValidatedSubmissionAction {
+) extends ValidatedRegistrationAction
+    with FrontendHeaderCarrierProvider {
 
   override def filter[A](request: RegistrationDataRequest[A]): Future[Option[Result]] =
-    submissionValidationService.validateRegistrationSubmission()(request) match {
-      case Valid(_)   => Future.successful(None)
-      case Invalid(_) => Future.successful(Some(Redirect(routes.StartController.onPageLoad())))
+    eclRegistrationConnector.validateRegistration(request.registration.internalId)(hc(request)).map {
+      case Some(_) => Some(Redirect(routes.StartController.onPageLoad()))
+      case None    => None
     }
 }
 
-trait ValidatedSubmissionAction extends ActionFilter[RegistrationDataRequest]
+trait ValidatedRegistrationAction extends ActionFilter[RegistrationDataRequest]

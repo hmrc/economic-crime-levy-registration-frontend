@@ -22,7 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDat
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeValidatedSubmissionAction(data: Registration) extends ValidatedSubmissionAction {
+class FakeValidatedRegistrationAction(data: Registration) extends ValidatedRegistrationAction {
   override protected def filter[A](request: RegistrationDataRequest[A]): Future[Option[Result]] =
     Future.successful(None)
 
