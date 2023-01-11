@@ -2,9 +2,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status.OK
+import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclSubscriptionStatus, Registration}
 
 trait EclRegistrationStubs { self: WireMockStubs =>
@@ -35,4 +36,18 @@ trait EclRegistrationStubs { self: WireMockStubs =>
         .withStatus(OK)
         .withBody(Json.toJson(eclSubscriptionStatus).toString())
     )
+
+  def stubValidateRegistration(valid: Boolean): StubMapping =
+    stub(
+      post(urlEqualTo(s"/economic-crime-levy-registration/registrations/validate/$testInternalId")),
+      if (valid) {
+        aResponse()
+          .withStatus(NO_CONTENT)
+      } else {
+        aResponse()
+          .withStatus(OK)
+          .withBody(Json.toJson(DataValidationErrors(Seq("Data is not valid"))).toString())
+      }
+    )
+
 }

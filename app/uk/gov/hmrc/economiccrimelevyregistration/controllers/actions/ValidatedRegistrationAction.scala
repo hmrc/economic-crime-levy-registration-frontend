@@ -32,7 +32,7 @@ class ValidatedRegistrationActionImpl @Inject() (eclRegistrationConnector: EclRe
     with FrontendHeaderCarrierProvider {
 
   override def filter[A](request: RegistrationDataRequest[A]): Future[Option[Result]] =
-    eclRegistrationConnector.validateRegistration(request.registration.internalId)(hc(request)).map {
+    eclRegistrationConnector.validateRegistration(request.internalId)(hc(request)).map {
       case Some(_) => Some(Redirect(routes.StartController.onPageLoad()))
       case None    => None
     }

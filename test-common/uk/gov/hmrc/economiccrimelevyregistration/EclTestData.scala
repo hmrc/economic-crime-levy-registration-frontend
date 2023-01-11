@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.scalacheck.{Arbitrary, Gen}
 import uk.gov.hmrc.auth.core.{Enrolments, Enrolment => AuthEnrolment}
-import uk.gov.hmrc.economiccrimelevyregistration.models._
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus._
@@ -29,19 +29,21 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 
 import java.time.{Instant, LocalDate}
 
-case class EnrolmentsWithEcl(enrolments: Enrolments)
+final case class ValidRegistration(registration: Registration)
 
-case class EnrolmentsWithoutEcl(enrolments: Enrolments)
+final case class EnrolmentsWithEcl(enrolments: Enrolments)
 
-case class GroupEnrolmentsResponseWithEcl(groupEnrolmentsResponse: GroupEnrolmentsResponse)
+final case class EnrolmentsWithoutEcl(enrolments: Enrolments)
 
-case class GroupEnrolmentsResponseWithoutEcl(groupEnrolmentsResponse: GroupEnrolmentsResponse)
+final case class GroupEnrolmentsResponseWithEcl(groupEnrolmentsResponse: GroupEnrolmentsResponse)
 
-case class IncorporatedEntityJourneyDataWithSuccessfulRegistration(
+final case class GroupEnrolmentsResponseWithoutEcl(groupEnrolmentsResponse: GroupEnrolmentsResponse)
+
+final case class IncorporatedEntityJourneyDataWithSuccessfulRegistration(
   incorporatedEntityJourneyData: IncorporatedEntityJourneyData
 )
 
-case class IncorporatedEntityJourneyDataWithValidCompanyProfile(
+final case class IncorporatedEntityJourneyDataWithValidCompanyProfile(
   incorporatedEntityJourneyData: IncorporatedEntityJourneyData
 )
 
