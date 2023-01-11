@@ -50,9 +50,9 @@ class ValidatedRegistrationActionSpec extends SpecBase {
     }
 
     "return to the start page if the registration data is invalid" in forAll {
-      (internalId: String, registration: Registration) =>
+      (internalId: String, registration: Registration, dataValidationErrors: DataValidationErrors) =>
         when(mockEclRegistrationConnector.getRegistrationValidationErrors(any())(any()))
-          .thenReturn(Future.successful(Some(DataValidationErrors(Seq("Some data is missing")))))
+          .thenReturn(Future.successful(Some(dataValidationErrors)))
 
         val result: Future[Option[Result]] =
           validatedRegistrationAction.filter(RegistrationDataRequest(fakeRequest, internalId, registration))

@@ -7,6 +7,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
 
 class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -17,9 +18,10 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
+      val errors       = random[DataValidationErrors]
 
       stubGetRegistration(registration)
-      stubGetRegistrationValidationErrors(valid = true)
+      stubGetRegistrationValidationErrors(valid = true, errors)
 
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
 
@@ -32,9 +34,10 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
+      val errors       = random[DataValidationErrors]
 
       stubGetRegistration(registration)
-      stubGetRegistrationValidationErrors(valid = false)
+      stubGetRegistrationValidationErrors(valid = false, errors)
 
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
 

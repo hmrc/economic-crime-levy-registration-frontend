@@ -37,7 +37,7 @@ trait EclRegistrationStubs { self: WireMockStubs =>
         .withBody(Json.toJson(eclSubscriptionStatus).toString())
     )
 
-  def stubGetRegistrationValidationErrors(valid: Boolean): StubMapping =
+  def stubGetRegistrationValidationErrors(valid: Boolean, errors: DataValidationErrors): StubMapping =
     stub(
       get(urlEqualTo(s"/economic-crime-levy-registration/registrations/$testInternalId/validation-errors")),
       if (valid) {
@@ -46,7 +46,7 @@ trait EclRegistrationStubs { self: WireMockStubs =>
       } else {
         aResponse()
           .withStatus(OK)
-          .withBody(Json.toJson(DataValidationErrors(Seq("Data is not valid"))).toString())
+          .withBody(Json.toJson(errors).toString())
       }
     )
 
