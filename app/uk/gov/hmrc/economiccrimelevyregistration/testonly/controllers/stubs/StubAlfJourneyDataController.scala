@@ -47,7 +47,7 @@ class StubAlfJourneyDataController @Inject() (
       AlfAddressData(
         id = None,
         address = AlfAddress(
-          organisation = Some("Test Org Ltd."),
+          organisation = None,
           lines = Seq("Address Line 1", "Address Line 2", "Address Line 3", "Test Town"),
           postcode = Some("AB12 3CD"),
           country = AlfCountry("GB", "United Kingdom"),

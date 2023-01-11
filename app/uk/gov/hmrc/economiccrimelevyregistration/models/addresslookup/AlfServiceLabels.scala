@@ -20,6 +20,7 @@ import play.api.i18n.{Lang, MessagesApi}
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.Languages._
 import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 
 final case class AlfEnCyLabels(en: AlfLabels, cy: AlfLabels)
@@ -35,52 +36,52 @@ object AlfEnCyLabels {
     AlfEnCyLabels(
       en = AlfLabels(
         appLevelLabels = AlfAppLabels(
-          navTitle = messagesApi("service.name")(Lang("en")),
-          phaseBannerHtml = betaBanner(Lang("en"))
+          navTitle = messagesApi("service.name")(english),
+          phaseBannerHtml = betaBanner(english)
         ),
         countryPickerLabels = AlfCountryPickerLabels(
-          submitLabel = messagesApi("alf.labels.submit")(Lang("en"))
+          submitLabel = messagesApi("alf.labels.submit")(english)
         ),
         selectPageLabels = AlfSelectPageLabels(
-          title = messagesApi("alf.labels.select.title")(Lang("en")),
-          heading = messagesApi("alf.labels.select.heading")(Lang("en")),
-          submitLabel = messagesApi("alf.labels.submit")(Lang("en"))
+          title = messagesApi("alf.labels.select.title")(english),
+          heading = messagesApi("alf.labels.select.heading")(english),
+          submitLabel = messagesApi("alf.labels.submit")(english)
         ),
         lookupPageLabels = AlfLookupPageLabels(
-          title = messagesApi("alf.labels.lookup.title")(Lang("en")),
-          heading = messagesApi("alf.labels.lookup.heading")(Lang("en")),
-          postcodeLabel = messagesApi("alf.labels.lookup.postcode")(Lang("en")),
-          submitLabel = messagesApi("alf.labels.submit")(Lang("en"))
+          title = messagesApi("alf.labels.lookup.title")(english),
+          heading = messagesApi("alf.labels.lookup.heading")(english),
+          postcodeLabel = messagesApi("alf.labels.lookup.postcode")(english),
+          submitLabel = messagesApi("alf.labels.submit")(english)
         ),
         editPageLabels = AlfEditPageLabels(
-          title = messagesApi("alf.labels.edit.title")(Lang("en")),
-          heading = messagesApi("alf.labels.edit.heading")(Lang("en")),
-          submitLabel = messagesApi("alf.labels.submit")(Lang("en"))
+          title = messagesApi("alf.labels.edit.title")(english),
+          heading = messagesApi("alf.labels.edit.heading")(english),
+          submitLabel = messagesApi("alf.labels.submit")(english)
         )
       ),
       cy = AlfLabels(
         appLevelLabels = AlfAppLabels(
-          navTitle = messagesApi("service.name")(Lang("cy")),
-          phaseBannerHtml = betaBanner(Lang("cy"))
+          navTitle = messagesApi("service.name")(welsh),
+          phaseBannerHtml = betaBanner(welsh)
         ),
         countryPickerLabels = AlfCountryPickerLabels(
-          submitLabel = messagesApi("alf.labels.submit")(Lang("cy"))
+          submitLabel = messagesApi("alf.labels.submit")(welsh)
         ),
         selectPageLabels = AlfSelectPageLabels(
-          title = messagesApi("alf.labels.select.title")(Lang("cy")),
-          heading = messagesApi("alf.labels.select.heading")(Lang("cy")),
-          submitLabel = messagesApi("alf.labels.submit")(Lang("cy"))
+          title = messagesApi("alf.labels.select.title")(welsh),
+          heading = messagesApi("alf.labels.select.heading")(welsh),
+          submitLabel = messagesApi("alf.labels.submit")(welsh)
         ),
         lookupPageLabels = AlfLookupPageLabels(
-          title = messagesApi("alf.labels.lookup.title")(Lang("cy")),
-          heading = messagesApi("alf.labels.lookup.heading")(Lang("cy")),
-          postcodeLabel = messagesApi("alf.labels.lookup.postcode")(Lang("cy")),
-          submitLabel = messagesApi("alf.labels.submit")(Lang("cy"))
+          title = messagesApi("alf.labels.lookup.title")(welsh),
+          heading = messagesApi("alf.labels.lookup.heading")(welsh),
+          postcodeLabel = messagesApi("alf.labels.lookup.postcode")(welsh),
+          submitLabel = messagesApi("alf.labels.submit")(welsh)
         ),
         editPageLabels = AlfEditPageLabels(
-          title = messagesApi("alf.labels.edit.title")(Lang("cy")),
-          heading = messagesApi("alf.labels.edit.heading")(Lang("cy")),
-          submitLabel = messagesApi("alf.labels.submit")(Lang("cy"))
+          title = messagesApi("alf.labels.edit.title")(welsh),
+          heading = messagesApi("alf.labels.edit.heading")(welsh),
+          submitLabel = messagesApi("alf.labels.submit")(welsh)
         )
       )
     )
