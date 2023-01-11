@@ -242,6 +242,7 @@ checkYourAnswers.secondContactName.label = Second contact name
 checkYourAnswers.secondContactRole.label = Role
 checkYourAnswers.secondContactEmail.label = Email address
 checkYourAnswers.secondContactNumber.label = Phone number
+checkYourAnswers.address.label = Contact address
 checkYourAnswers.nowSend = Now send your registration
 checkYourAnswers.bySubmitting = By submitting this registration you are confirming that, to the best of your knowledge, the details you are providing are correct.
 checkYourAnswers.confirmAndSend = Confirm and send

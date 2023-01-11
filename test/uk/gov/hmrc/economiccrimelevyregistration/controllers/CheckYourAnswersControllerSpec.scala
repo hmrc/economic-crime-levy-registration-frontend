@@ -58,7 +58,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           rows = Seq(
             EntityTypeSummary.row(),
             AmlSupervisorSummary.row(),
-            BusinessSectorSummary.row()
+            BusinessSectorSummary.row(),
+            ContactAddressSummary.row()
           ).flatten
         ).withCssClass("govuk-!-margin-bottom-9")
 
