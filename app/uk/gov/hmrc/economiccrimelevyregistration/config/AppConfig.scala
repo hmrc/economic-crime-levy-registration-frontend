@@ -34,15 +34,19 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   def feedbackUrl(implicit request: RequestHeader): String =
     s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${SafeRedirectUrl(host + request.uri).encodedUrl}"
 
+  def feedbackUrl(backUrl: String): String =
+    s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${SafeRedirectUrl(backUrl).encodedUrl}"
+
   val signInUrl: String      = configuration.get[String]("urls.signIn")
   val signOutUrl: String     = configuration.get[String]("urls.signOut")
-  val grsSignOutUrl: String  = configuration.get[String]("urls.grsSignOut")
+  val eclSignOutUrl: String  = configuration.get[String]("urls.eclSignOut")
   val grsContinueUrl: String = configuration.get[String]("urls.grsContinue")
+  val alfContinueUrl: String = configuration.get[String]("urls.alfContinue")
 
   val accessibilityStatementServicePath: String =
     configuration.get[String]("accessibility-statement.service-path")
 
-  val grsAccessibilityStatementPath: String =
+  val accessibilityStatementPath: String =
     s"/accessibility-statement$accessibilityStatementServicePath"
 
   private val exitSurveyHost              = configuration.get[String]("feedback-frontend.host")
@@ -67,6 +71,8 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val soleTraderBvEnabled: Boolean         = configuration.get[Boolean]("features.soleTraderBvEnabled")
 
   val enrolmentStoreProxyUrl: String = servicesConfig.baseUrl("enrolment-store-proxy")
+
+  val addressLookupFrontendUrl: String = servicesConfig.baseUrl("address-lookup-frontend")
 
   val amlProfessionalBodySupervisors: Seq[String] = configuration.get[Seq[String]]("amlProfessionalBodySupervisors")
 }

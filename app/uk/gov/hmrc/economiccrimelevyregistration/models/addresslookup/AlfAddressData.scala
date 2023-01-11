@@ -14,22 +14,30 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class EclAddress(
+final case class AlfAddressData(id: Option[String], address: AlfAddress)
+
+object AlfAddressData {
+  implicit val format: OFormat[AlfAddressData] = Json.format[AlfAddressData]
+}
+
+final case class AlfAddress(
   organisation: Option[String],
-  addressLine1: Option[String],
-  addressLine2: Option[String],
-  addressLine3: Option[String],
-  addressLine4: Option[String],
-  region: Option[String],
-  postCode: Option[String],
-  poBox: Option[String],
-  countryCode: String
+  lines: Seq[String],
+  postcode: Option[String],
+  country: AlfCountry,
+  poBox: Option[String]
 )
 
-object EclAddress {
-  implicit val format: OFormat[EclAddress] = Json.format[EclAddress]
+object AlfAddress {
+  implicit val format: OFormat[AlfAddress] = Json.format[AlfAddress]
+}
+
+final case class AlfCountry(code: String, name: String)
+
+object AlfCountry {
+  implicit val format: OFormat[AlfCountry] = Json.format[AlfCountry]
 }

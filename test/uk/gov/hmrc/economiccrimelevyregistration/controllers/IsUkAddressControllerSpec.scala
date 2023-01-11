@@ -21,11 +21,10 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, Result}
+import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
-import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWithValidCompanyProfile
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
@@ -41,9 +40,13 @@ class IsUkAddressControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val pageNavigator: IsUkAddressPageNavigator = new IsUkAddressPageNavigator {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
-    override def previousPage(registration: Registration): Call                   = backRoute
+  val pageNavigator: IsUkAddressPageNavigator = new IsUkAddressPageNavigator(
+    mock[AddressLookupFrontendConnector]
+  ) {
+    override protected def navigateInNormalMode(registration: Registration)(implicit
+      request: RequestHeader
+    ): Future[Call]                                             = Future.successful(onwardRoute)
+    override def previousPage(registration: Registration): Call = backRoute
   }
 
   class TestContext(registrationData: Registration) {
@@ -62,62 +65,27 @@ class IsUkAddressControllerSpec extends SpecBase {
     "return OK and the correct view when no answer has already been provided" in forAll {
       (
         registration: Registration,
-        incorporatedEntityJourneyDataWithValidCompanyProfile: IncorporatedEntityJourneyDataWithValidCompanyProfile
       ) =>
-        val updatedRegistration = registration.copy(
-          contactAddressIsUk = None,
-          incorporatedEntityJourneyData =
-            Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
-          partnershipEntityJourneyData = None,
-          soleTraderEntityJourneyData = None
-        )
+        val updatedRegistration = registration.copy(contactAddressIsUk = None)
 
         new TestContext(updatedRegistration) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form, updatedRegistration.entityName.get, backRoute.url)(
+          contentAsString(result) shouldBe view(form, backRoute.url)(
             fakeRequest,
             messages
           ).toString
         }
     }
 
-    "throw an IllegalStateException when there is no entity name in the registration data" in forAll {
-      (
-        registration: Registration
-      ) =>
-        val updatedRegistration = registration.copy(
-          incorporatedEntityJourneyData = None,
-          partnershipEntityJourneyData = None,
-          soleTraderEntityJourneyData = None
-        )
-
-        new TestContext(
-          updatedRegistration
-        ) {
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onPageLoad()(fakeRequest))
-          }
-
-          result.getMessage shouldBe "No entity name found in registration data"
-        }
-    }
-
     "populate the view correctly when the question has previously been answered" in forAll {
       (
         registration: Registration,
-        incorporatedEntityJourneyDataWithValidCompanyProfile: IncorporatedEntityJourneyDataWithValidCompanyProfile,
         contactAddressIsUk: Boolean
       ) =>
-        val updatedRegistration = registration.copy(
-          contactAddressIsUk = Some(contactAddressIsUk),
-          incorporatedEntityJourneyData =
-            Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
-          partnershipEntityJourneyData = None,
-          soleTraderEntityJourneyData = None
-        )
+        val updatedRegistration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
 
         new TestContext(updatedRegistration) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
@@ -125,7 +93,6 @@ class IsUkAddressControllerSpec extends SpecBase {
           status(result)          shouldBe OK
           contentAsString(result) shouldBe view(
             form.fill(contactAddressIsUk),
-            updatedRegistration.entityName.get,
             backRoute.url
           )(
             fakeRequest,
@@ -157,16 +124,9 @@ class IsUkAddressControllerSpec extends SpecBase {
     "return a Bad Request with form errors when invalid data is submitted" in forAll {
       (
         registration: Registration,
-        incorporatedEntityJourneyDataWithValidCompanyProfile: IncorporatedEntityJourneyDataWithValidCompanyProfile,
         contactAddressIsUk: Boolean
       ) =>
-        val updatedRegistration = registration.copy(
-          contactAddressIsUk = Some(contactAddressIsUk),
-          incorporatedEntityJourneyData =
-            Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
-          partnershipEntityJourneyData = None,
-          soleTraderEntityJourneyData = None
-        )
+        val updatedRegistration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
 
         new TestContext(updatedRegistration) {
           val result: Future[Result]        = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
@@ -174,7 +134,7 @@ class IsUkAddressControllerSpec extends SpecBase {
 
           status(result) shouldBe BAD_REQUEST
 
-          contentAsString(result) shouldBe view(formWithErrors, updatedRegistration.entityName.get, backRoute.url)(
+          contentAsString(result) shouldBe view(formWithErrors, backRoute.url)(
             fakeRequest,
             messages
           ).toString

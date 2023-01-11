@@ -12,6 +12,7 @@ trait WireMockStubs
     extends EclTestData
     with AuthStubs
     with GrsStubs
+    with AlfStubs
     with EclRegistrationStubs
     with EnrolmentStoreProxyStubs {
 

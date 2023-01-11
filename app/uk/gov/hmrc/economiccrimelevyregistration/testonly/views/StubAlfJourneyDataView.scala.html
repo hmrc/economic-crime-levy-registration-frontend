@@ -1,0 +1,59 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.economiccrimelevyregistration.testonly.models.AlfStubFormData
+
+@this(
+        formHelper: FormWithCSRF,
+        govukErrorSummary: GovukErrorSummary,
+        govukTextarea: GovukTextarea,
+        govukButton: GovukButton,
+        layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
+)
+
+@(form: Form[AlfStubFormData])(implicit request: Request[_], messages: Messages)
+
+@layout(
+    pageTitle = title("Stub Address Lookup Journey Data"),
+    backLinkUrl = Some(IsUkAddressController.onPageLoad().url),
+    isWelshTranslationAvailable = Some(false)
+) {
+
+    <h1 class="govuk-heading-xl">Stub Address Lookup Journey Data</h1>
+
+    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.routes.StubAlfJourneyDataController.onSubmit()) {
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
+        @govukTextarea(Textarea(
+            id = "addressJson",
+            name = "addressJson",
+            rows = 15,
+            label = Label(
+                classes = "govuk-label--m",
+                content = Text("Configure the address JSON to be returned")
+            ),
+            value = form.value.map(_.addressJson)
+        ))
+
+        @govukButton(
+            ButtonViewModel("Save and continue")
+        )
+    }
+
+}

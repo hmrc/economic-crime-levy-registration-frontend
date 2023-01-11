@@ -48,8 +48,8 @@ class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
 
         val expectedPartnershipEntityCreateJourneyRequest: PartnershipEntityCreateJourneyRequest = {
           val serviceNameLabels = ServiceNameLabels(
-            En("Register for the Economic Crime Levy"),
-            Cy("service.name")
+            OptServiceName("Register for the Economic Crime Levy"),
+            OptServiceName("service.name")
           )
 
           PartnershipEntityCreateJourneyRequest(

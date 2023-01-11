@@ -38,8 +38,6 @@
     backLinkUrl = Some(UkRevenueController.onPageLoad().url),
     autoCompleteEnabled = true
 ) {
-
-
     @formHelper(action = AmlSupervisorController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0", "otherProfessionalBody" -> "otherProfessionalBody")))

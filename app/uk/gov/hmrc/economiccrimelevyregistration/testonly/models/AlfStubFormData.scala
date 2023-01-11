@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.testonly.models
 
-import play.api.libs.json.{Json, OFormat}
-
-final case class EclAddress(
-  organisation: Option[String],
-  addressLine1: Option[String],
-  addressLine2: Option[String],
-  addressLine3: Option[String],
-  addressLine4: Option[String],
-  region: Option[String],
-  postCode: Option[String],
-  poBox: Option[String],
-  countryCode: String
+case class AlfStubFormData(
+  addressJson: String
 )
-
-object EclAddress {
-  implicit val format: OFormat[EclAddress] = Json.format[EclAddress]
-}

@@ -63,6 +63,8 @@ POST        /uk-address                                        uk.gov.hmrc.econo
 
 GET         /grs-continue                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
 
+GET         /address-lookup-continue                           uk.gov.hmrc.economiccrimelevyregistration.controllers.AddressLookupContinueController.continue(id)
+
 GET         /check-your-answers                                uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
 
 GET         /account/sign-out-survey                           uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()

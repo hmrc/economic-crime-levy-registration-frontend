@@ -24,10 +24,10 @@
         button: GovukButton
 )
 
-@(form: Form[Boolean], entityName: String, backLink: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], backLink: String)(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle = titleWithForm(form, messages("isUkAddress.title", entityName)),
+    pageTitle = titleWithForm(form, messages("isUkAddress.title")),
     backLinkUrl = Some(backLink)
 ) {
     @formHelper(action = IsUkAddressController.onSubmit()) {
@@ -38,7 +38,7 @@
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(messages("isUkAddress.title", entityName)).asPageHeading(LegendSize.Large),
+                legend = LegendViewModel(messages("isUkAddress.title")).asPageHeading(LegendSize.Large),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),

@@ -48,13 +48,15 @@ abstract class ISpecBase
   val additionalAppConfig: Map[String, Any] = Map(
     "metrics.enabled"         -> false,
     "auditing.enabled"        -> false,
-    "features.grsStubEnabled" -> false
+    "features.grsStubEnabled" -> false,
+    "features.alfStubEnabled" -> false
   ) ++ setWireMockPort(
     "auth",
     "economic-crime-levy-registration",
     "incorporated-entity-identification-frontend",
     "sole-trader-identification-frontend",
     "partnership-identification-frontend",
+    "address-lookup-frontend",
     "enrolment-store-proxy"
   )
 
