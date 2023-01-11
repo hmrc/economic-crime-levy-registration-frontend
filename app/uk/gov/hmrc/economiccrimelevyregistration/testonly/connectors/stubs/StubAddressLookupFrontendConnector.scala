@@ -37,7 +37,12 @@ class StubAddressLookupFrontendConnector @Inject() (
     Future.successful("/register-for-the-economic-crime-levy/test-only/stub-alf-journey-data")
 
   override def getAddress(journeyId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData] = {
-    val decodedBytes = Base64.getDecoder.decode(journeyId.replace("_", "="))
+    val decodedBytes = Base64.getDecoder.decode(
+      journeyId
+        .replace(".", "+")
+        .replace("_", "/")
+        .replace("-", "=")
+    )
 
     Future.successful(Json.parse(new String(decodedBytes)).as[AlfAddressData])
   }

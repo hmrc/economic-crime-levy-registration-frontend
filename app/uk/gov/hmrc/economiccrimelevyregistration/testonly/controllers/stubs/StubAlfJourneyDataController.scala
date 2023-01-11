@@ -65,10 +65,14 @@ class StubAlfJourneyDataController @Inject() (
       .fold(
         formWithErrors => BadRequest(view(formWithErrors)),
         alfStubFormData => {
-          val base64encodedAddressJson = Base64.getEncoder.encodeToString(alfStubFormData.addressJson.getBytes).replace("=", "_")
+          val base64encodedAddressJson = Base64.getEncoder
+            .encodeToString(alfStubFormData.addressJson.getBytes)
+            .replace("+", ".")
+            .replace("/", "_")
+            .replace("=", "-")
 
           Redirect(
-            s"/register-for-the-economic-crime-levy/address-lookup-continue?journeyId=$base64encodedAddressJson"
+            s"/register-for-the-economic-crime-levy/address-lookup-continue?id=$base64encodedAddressJson"
           )
         }
       )
