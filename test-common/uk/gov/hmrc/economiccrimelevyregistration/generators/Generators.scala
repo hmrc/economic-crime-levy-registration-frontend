@@ -81,6 +81,8 @@ trait Generators {
   def nonEmptyString: Gen[String] =
     arbitrary[String] suchThat (_.nonEmpty)
 
+  def nonBlankString: Gen[String] = arbitrary[String] suchThat (!_.isBlank)
+
   def stringsWithMaxLength(maxLength: Int): Gen[String] =
     for {
       length <- choose(1, maxLength)
@@ -113,7 +115,7 @@ trait Generators {
   } yield chars.mkString
 
   def stringsExceptSpecificValues(excluded: Seq[String]): Gen[String] =
-    nonEmptyString suchThat (!excluded.contains(_))
+    nonBlankString suchThat (!excluded.contains(_))
 
   def oneOf[T](xs: Seq[Gen[T]]): Gen[T] =
     if (xs.isEmpty) {
