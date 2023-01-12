@@ -28,7 +28,7 @@
 @(form: Form[String], name: String)(implicit request: Request[_], messages: Messages)
 
 @labelHtml = {
-    <h1 class="govuk-heading-l">@messages("secondContactEmail.heading", name)</h1>
+    <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("secondContactEmail.heading", name))</h1>
     <p class="govuk-body">@messages("secondContactEmail.legend")</p>
 }
 

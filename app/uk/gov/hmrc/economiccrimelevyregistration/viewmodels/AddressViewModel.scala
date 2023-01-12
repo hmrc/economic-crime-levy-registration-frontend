@@ -16,31 +16,34 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.viewmodels
 
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclAddress
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.insettext.InsetText
 
-object InsetTextAddress {
+object AddressViewModel {
 
-  def apply(eclAddress: EclAddress): InsetText = {
-    val optLineWithBreak: Option[String] => String = s => s.fold("")(l => s"$l <br>")
+  private def eclAddressToSeq(eclAddress: EclAddress): Seq[Option[String]] = Seq(
+    eclAddress.organisation,
+    eclAddress.addressLine1,
+    eclAddress.addressLine2,
+    eclAddress.addressLine3,
+    eclAddress.addressLine2,
+    eclAddress.poBox,
+    eclAddress.region,
+    eclAddress.postCode
+  )
 
-    val html = s"""
-      |<p class="govuk-body">
-      |${optLineWithBreak(eclAddress.organisation)}
-      |${optLineWithBreak(eclAddress.addressLine1)}
-      |${optLineWithBreak(eclAddress.addressLine2)}
-      |${optLineWithBreak(eclAddress.addressLine3)}
-      |${optLineWithBreak(eclAddress.addressLine4)}
-      |${optLineWithBreak(eclAddress.poBox)}
-      |${optLineWithBreak(eclAddress.region)}
-      |${optLineWithBreak(eclAddress.postCode)}
-      |</p>
-      |""".stripMargin
+  private def html(eclAddress: EclAddress): String = eclAddressToSeq(eclAddress)
+    .filter(_.isDefined)
+    .map(value => HtmlFormat.escape(value.get))
+    .mkString("<br>")
 
+  def htmlContent(eclAddress: EclAddress): HtmlContent = HtmlContent(html(eclAddress))
+
+  def insetText(eclAddress: EclAddress): InsetText =
     InsetText(
       id = Some("address"),
-      content = HtmlContent(html)
+      content = htmlContent(eclAddress)
     )
-  }
 }

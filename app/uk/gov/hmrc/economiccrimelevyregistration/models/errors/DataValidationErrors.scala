@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration
+package uk.gov.hmrc.economiccrimelevyregistration.models.errors
 
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
+import play.api.libs.json.{Json, OFormat}
 
-case class PartnershipType(entityType: EntityType)
+final case class DataValidationError(message: String)
+
+object DataValidationError {
+  implicit val format: OFormat[DataValidationError] = Json.format[DataValidationError]
+}
+
+final case class DataValidationErrors(errors: Seq[DataValidationError])
+
+object DataValidationErrors {
+  implicit val format: OFormat[DataValidationErrors] = Json.format[DataValidationErrors]
+}

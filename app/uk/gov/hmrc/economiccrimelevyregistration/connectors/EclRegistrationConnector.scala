@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import play.api.http.Status._
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclSubscriptionStatus, Registration}
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpResponse, UpstreamErrorResponse}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -52,4 +54,21 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
     httpClient.GET[EclSubscriptionStatus](
       s"$eclRegistrationUrl/subscription-status/$businessPartnerId"
     )
+
+  def getRegistrationValidationErrors(
+    internalId: String
+  )(implicit hc: HeaderCarrier): Future[Option[DataValidationErrors]] =
+    httpClient
+      .GET[Either[UpstreamErrorResponse, HttpResponse]](
+        s"$eclRegistrationUrl/registrations/$internalId/validation-errors"
+      )
+      .map {
+        case Right(httpResponse) =>
+          httpResponse.status match {
+            case NO_CONTENT => None
+            case OK         => Some(httpResponse.json.as[DataValidationErrors])
+            case s          => throw new HttpException(s"Unexpected response with HTTP status $s", s)
+          }
+        case Left(e)             => throw e
+      }
 }

@@ -15,15 +15,29 @@
  *@
 
 @this(
-    layout: templates.Layout,
-    govukSummaryList: GovukSummaryList
+        layout: templates.Layout,
+        govukSummaryList: GovukSummaryList,
+        govukButton: GovukButton
 )
 
-@(list: SummaryList)(implicit request: Request[_], messages: Messages)
+@(organisationDetails: SummaryList, personalDetails: SummaryList, backUrl: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(messages("checkYourAnswers.title"))) {
+@layout(pageTitle = title(messages("checkYourAnswers.title")), backLinkUrl = Some(backUrl)) {
+    <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
-    <h1 class="govuk-heading-xl">@messages("checkYourAnswers.heading")</h1>
+    <h1 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h1>
 
-    @govukSummaryList(list)
+    @govukSummaryList(organisationDetails)
+
+    <h1 class="govuk-heading-m">@messages("checkYourAnswers.personalDetails")</h1>
+
+    @govukSummaryList(personalDetails)
+
+    <h1 class="govuk-heading-m">@messages("checkYourAnswers.nowSend")</h1>
+
+    <div class="govuk-body">@messages("checkYourAnswers.bySubmitting")</div>
+
+    @govukButton(
+        ButtonViewModel(messages("checkYourAnswers.confirmAndSend"))
+    )
 }
