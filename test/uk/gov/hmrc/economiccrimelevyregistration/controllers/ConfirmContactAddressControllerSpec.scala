@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InsetTextAddress
+import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ConfirmContactAddressView
 
 import scala.concurrent.Future
@@ -87,7 +87,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             form,
             backRoute.url,
-            InsetTextAddress(updatedRegistration.grsAddressToEclAddress.get)
+            AddressViewModel.insetText(updatedRegistration.grsAddressToEclAddress.get)
           )(fakeRequest, messages).toString
         }
     }
@@ -137,7 +137,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             form.fill(useRegisteredOfficeAddressAsContactAddress),
             backRoute.url,
-            InsetTextAddress(updatedRegistration.grsAddressToEclAddress.get)
+            AddressViewModel.insetText(updatedRegistration.grsAddressToEclAddress.get)
           )(fakeRequest, messages).toString
         }
     }
@@ -188,7 +188,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             formWithErrors,
             backRoute.url,
-            InsetTextAddress(updatedRegistration.grsAddressToEclAddress.get)
+            AddressViewModel.insetText(updatedRegistration.grsAddressToEclAddress.get)
           )(fakeRequest, messages).toString
         }
     }

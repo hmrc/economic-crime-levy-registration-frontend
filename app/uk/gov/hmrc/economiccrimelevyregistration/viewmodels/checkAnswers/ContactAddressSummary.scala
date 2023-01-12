@@ -18,32 +18,18 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
+import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 
 object ContactAddressSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] = {
-    val optLineWithBreak: Option[String] => String = s => s.fold("")(l => s"$l <br>")
-
+  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
     request.registration.contactAddress.map { answer =>
-      val html =
-        s"""
-           |${optLineWithBreak(answer.organisation)}
-           |${optLineWithBreak(answer.addressLine1)}
-           |${optLineWithBreak(answer.addressLine2)}
-           |${optLineWithBreak(answer.addressLine3)}
-           |${optLineWithBreak(answer.addressLine4)}
-           |${optLineWithBreak(answer.poBox)}
-           |${optLineWithBreak(answer.region)}
-           |${optLineWithBreak(answer.postCode)}
-           |""".stripMargin
-
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.address.label"),
-        value = ValueViewModel(HtmlContent(html)),
+        value = ValueViewModel(AddressViewModel.htmlContent(answer)),
         actions = Seq(
           ActionItemViewModel("site.change", "#TODO").withVisuallyHiddenText(
             messages("checkYourAnswers.address.label")
@@ -51,6 +37,5 @@ object ContactAddressSummary {
         )
       )
     }
-  }
 
 }

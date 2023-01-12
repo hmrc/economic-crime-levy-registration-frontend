@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InsetTextAddress
+import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ConfirmContactAddressView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -58,7 +58,7 @@ class ConfirmContactAddressController @Inject() (
       view(
         form.prepare(request.registration.useRegisteredOfficeAddressAsContactAddress),
         pageNavigator.previousPage(request.registration).url,
-        InsetTextAddress(address(request))
+        AddressViewModel.insetText(address(request))
       )
     )
   }
@@ -73,7 +73,7 @@ class ConfirmContactAddressController @Inject() (
               view(
                 formWithErrors,
                 pageNavigator.previousPage(request.registration).url,
-                InsetTextAddress(address(request))
+                AddressViewModel.insetText(address(request))
               )
             )
           ),

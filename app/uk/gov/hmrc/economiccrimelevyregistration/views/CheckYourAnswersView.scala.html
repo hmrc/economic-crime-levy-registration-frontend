@@ -20,9 +20,9 @@
         govukButton: GovukButton
 )
 
-@(organisationDetails: SummaryList, personalDetails: SummaryList)(implicit request: Request[_], messages: Messages)
+@(organisationDetails: SummaryList, personalDetails: SummaryList, backUrl: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(messages("checkYourAnswers.title")), backLinkUrl = Some(StartController.onPageLoad().url)) {
+@layout(pageTitle = title(messages("checkYourAnswers.title")), backLinkUrl = Some(backUrl)) {
     <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
     <h1 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h1>

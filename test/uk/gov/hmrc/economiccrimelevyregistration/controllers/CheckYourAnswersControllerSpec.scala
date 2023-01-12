@@ -17,13 +17,14 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.Messages
-import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.mvc.{AnyContentAsEmpty, Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidatedRegistrationAction
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.CheckYourAnswersPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
@@ -34,6 +35,11 @@ import scala.concurrent.Future
 class CheckYourAnswersControllerSpec extends SpecBase {
 
   val view: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
+
+  val pageNavigator: CheckYourAnswersPageNavigator = new CheckYourAnswersPageNavigator() {
+    override def previousPage(registration: Registration): Call = backRoute
+  }
+
   class TestContext(registrationData: Registration) {
     val controller = new CheckYourAnswersController(
       messagesApi,
@@ -41,7 +47,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       mcc,
       view,
-      new FakeValidatedRegistrationAction(registrationData)
+      new FakeValidatedRegistrationAction(registrationData),
+      pageNavigator
     )
   }
 
@@ -77,7 +84,10 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         ).withCssClass("govuk-!-margin-bottom-9")
 
         status(result)          shouldBe OK
-        contentAsString(result) shouldBe view(organisationDetails, personalDetails)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(organisationDetails, personalDetails, backRoute.url)(
+          fakeRequest,
+          messages
+        ).toString
       }
     }
   }

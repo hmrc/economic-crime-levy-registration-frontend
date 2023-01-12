@@ -20,6 +20,7 @@ import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidatedRegistrationAction}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.CheckYourAnswersPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
@@ -35,7 +36,8 @@ class CheckYourAnswersController @Inject() (
   getRegistrationData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
-  validateRegistrationData: ValidatedRegistrationAction
+  validateRegistrationData: ValidatedRegistrationAction,
+  pageNavigator: CheckYourAnswersPageNavigator
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -63,6 +65,6 @@ class CheckYourAnswersController @Inject() (
         ).flatten
       ).withCssClass("govuk-!-margin-bottom-9")
 
-      Ok(view(organisationDetails, personalDetails))
+      Ok(view(organisationDetails, personalDetails, pageNavigator.previousPage(request.registration).url))
   }
 }
