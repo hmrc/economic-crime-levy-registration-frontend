@@ -28,7 +28,7 @@ object AddressViewModel {
     eclAddress.addressLine1,
     eclAddress.addressLine2,
     eclAddress.addressLine3,
-    eclAddress.addressLine2,
+    eclAddress.addressLine4,
     eclAddress.poBox,
     eclAddress.region,
     eclAddress.postCode
