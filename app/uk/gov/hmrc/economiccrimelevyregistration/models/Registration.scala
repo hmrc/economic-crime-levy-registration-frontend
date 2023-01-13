@@ -20,6 +20,7 @@ import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityAddress, IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 
 import java.time.LocalDate
+import java.util.Date
 
 final case class Registration(
   internalId: String,
@@ -63,6 +64,33 @@ final case class Registration(
       }
     }
   }
+
+  def entityName: Option[String] =
+    (incorporatedEntityJourneyData, partnershipEntityJourneyData, soleTraderEntityJourneyData) match {
+      case (Some(i), _, _) => Some(i.companyProfile.companyName)
+      case (_, Some(p), _) => p.companyProfile.map(_.companyName)
+      case (_, _, Some(s)) => Some(s"${s.fullName.firstName} ${s.fullName.lastName}")
+      case _               => None
+    }
+
+  def companyNumber: Option[String] =
+    (incorporatedEntityJourneyData, partnershipEntityJourneyData) match {
+      case (Some(i), _) => Some(i.companyProfile.companyNumber)
+      case (_, Some(p)) => p.companyProfile.map(_.companyNumber)
+      case _            => None
+    }
+
+  def ctUtr: Option[String] = incorporatedEntityJourneyData.map(_.ctutr)
+
+  def saUtr: Option[String] = (partnershipEntityJourneyData, soleTraderEntityJourneyData) match {
+    case (Some(p), _) => p.sautr
+    case (_, Some(s)) => s.sautr
+    case _            => None
+  }
+
+  def nino: Option[String] = soleTraderEntityJourneyData.flatMap(_.nino)
+
+  def dateOfBirth: Option[Date] = soleTraderEntityJourneyData.map(_.dateOfBirth)
 
 }
 

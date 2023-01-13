@@ -64,13 +64,18 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         val organisationDetails: SummaryList = SummaryListViewModel(
           rows = Seq(
             EntityTypeSummary.row(),
+            EntityNameSummary.row(),
+            CompanyNumberSummary.row(),
+            CtUtrSummary.row(),
+            SaUtrSummary.row(),
+            NinoSummary.row(),
+            DateOfBirthSummary.row(),
             AmlSupervisorSummary.row(),
-            BusinessSectorSummary.row(),
-            ContactAddressSummary.row()
+            BusinessSectorSummary.row()
           ).flatten
         ).withCssClass("govuk-!-margin-bottom-9")
 
-        val personalDetails: SummaryList = SummaryListViewModel(
+        val contactDetails: SummaryList = SummaryListViewModel(
           rows = Seq(
             FirstContactNameSummary.row(),
             FirstContactRoleSummary.row(),
@@ -79,12 +84,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             SecondContactNameSummary.row(),
             SecondContactRoleSummary.row(),
             SecondContactEmailSummary.row(),
-            SecondContactNumberSummary.row()
+            SecondContactNumberSummary.row(),
+            ContactAddressSummary.row()
           ).flatten
         ).withCssClass("govuk-!-margin-bottom-9")
 
         status(result)          shouldBe OK
-        contentAsString(result) shouldBe view(organisationDetails, personalDetails, backRoute.url)(
+        contentAsString(result) shouldBe view(organisationDetails, contactDetails, backRoute.url)(
           fakeRequest,
           messages
         ).toString
