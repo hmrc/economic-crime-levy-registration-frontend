@@ -46,13 +46,18 @@ class CheckYourAnswersController @Inject() (
       val organisationDetails: SummaryList = SummaryListViewModel(
         rows = Seq(
           EntityTypeSummary.row(),
+          EntityNameSummary.row(),
+          CompanyNumberSummary.row(),
+          CtUtrSummary.row(),
+          SaUtrSummary.row(),
+          NinoSummary.row(),
+          DateOfBirthSummary.row(),
           AmlSupervisorSummary.row(),
-          BusinessSectorSummary.row(),
-          ContactAddressSummary.row()
+          BusinessSectorSummary.row()
         ).flatten
       ).withCssClass("govuk-!-margin-bottom-9")
 
-      val personalDetails: SummaryList = SummaryListViewModel(
+      val contactDetails: SummaryList = SummaryListViewModel(
         rows = Seq(
           FirstContactNameSummary.row(),
           FirstContactRoleSummary.row(),
@@ -61,10 +66,11 @@ class CheckYourAnswersController @Inject() (
           SecondContactNameSummary.row(),
           SecondContactRoleSummary.row(),
           SecondContactEmailSummary.row(),
-          SecondContactNumberSummary.row()
+          SecondContactNumberSummary.row(),
+          ContactAddressSummary.row()
         ).flatten
       ).withCssClass("govuk-!-margin-bottom-9")
 
-      Ok(view(organisationDetails, personalDetails, pageNavigator.previousPage(request.registration).url))
+      Ok(view(organisationDetails, contactDetails, pageNavigator.previousPage(request.registration).url))
   }
 }
