@@ -1,11 +1,13 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
+import org.scalacheck.Gen
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Hmrc, Other}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
@@ -25,6 +27,41 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       status(result) shouldBe OK
 
       html(result) should include(s"Who is your AML supervisor?")
+    }
+  }
+
+  s"POST ${routes.AmlSupervisorController.onSubmit().url}"  should {
+    behave like authorisedActionRoute(routes.AmlSupervisorController.onPageLoad())
+
+    "save the selected option then redirect to the relevant AP 12 months page when the answer is either HMRC or another professional body" in {
+      stubAuthorisedWithNoGroupEnrolment()
+
+      val registration = random[Registration]
+
+      val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
+      val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample.get
+      val amlSupervisor         =
+        AmlSupervisor(supervisorType, if (supervisorType == Hmrc) None else Some(otherProfessionalBody))
+
+      val formData: Seq[(String, String)] = amlSupervisor match {
+        case AmlSupervisor(Other, Some(otherProfessionalBody)) =>
+          Seq(("value", Other.toString), ("otherProfessionalBody", otherProfessionalBody))
+        case _                                                 => Seq(("value", amlSupervisor.supervisorType.toString))
+      }
+
+      stubGetRegistration(registration)
+
+      val updatedRegistration = registration.copy(amlSupervisor = Some(amlSupervisor))
+
+      stubUpsertRegistration(updatedRegistration)
+
+      val result = callRoute(
+        FakeRequest(routes.AmlSupervisorController.onSubmit()).withFormUrlEncodedBody(formData: _*)
+      )
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.RelevantAp12MonthsController.onPageLoad().url)
     }
   }
 
