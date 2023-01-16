@@ -16,13 +16,16 @@
 
 @this(
         layout: templates.Layout,
+        formHelper: FormWithCSRF,
         govukSummaryList: GovukSummaryList,
         govukButton: GovukButton
 )
 
+
 @(organisationDetails: SummaryList, contactDetails: SummaryList, backUrl: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(messages("checkYourAnswers.title")), backLinkUrl = Some(backUrl)) {
+@formHelper(action = CheckYourAnswersController.onSubmit()) {
     <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
     <h1 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h1>
@@ -40,4 +43,5 @@
     @govukButton(
         ButtonViewModel(messages("checkYourAnswers.confirmAndSend"))
     )
+}
 }

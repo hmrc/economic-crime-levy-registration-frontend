@@ -18,7 +18,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidatedRegistrationAction}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.CheckYourAnswersPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
@@ -28,17 +30,19 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Singleton
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
+  eclRegistrationConnector: EclRegistrationConnector,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
   validateRegistrationData: ValidatedRegistrationAction,
   pageNavigator: CheckYourAnswersPageNavigator
-) extends FrontendBaseController
+)(implicit ec: ExecutionContext) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getRegistrationData andThen validateRegistrationData) {
@@ -72,5 +76,11 @@ class CheckYourAnswersController @Inject() (
       ).withCssClass("govuk-!-margin-bottom-9")
 
       Ok(view(organisationDetails, contactDetails, pageNavigator.previousPage(request.registration).url))
+  }
+
+  def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+    eclRegistrationConnector
+      .submitRegistration(request.internalId)
+      .map(rs => Ok(Json.toJson(rs)))
   }
 }

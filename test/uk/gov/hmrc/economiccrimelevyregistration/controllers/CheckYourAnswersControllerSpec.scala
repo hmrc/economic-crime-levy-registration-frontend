@@ -20,6 +20,7 @@ import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidatedRegistrationAction
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
@@ -36,6 +37,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
   val view: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
 
+  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+
   val pageNavigator: CheckYourAnswersPageNavigator = new CheckYourAnswersPageNavigator() {
     override def previousPage(registration: Registration): Call = backRoute
   }
@@ -45,6 +48,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       messagesApi,
       fakeAuthorisedAction,
       fakeDataRetrievalAction(registrationData),
+      mockEclRegistrationConnector,
       mcc,
       view,
       new FakeValidatedRegistrationAction(registrationData),

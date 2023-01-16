@@ -66,6 +66,9 @@ GET         /grs-continue                                      uk.gov.hmrc.econo
 GET         /address-lookup-continue                           uk.gov.hmrc.economiccrimelevyregistration.controllers.AddressLookupContinueController.continue(id)
 
 GET         /check-your-answers                                uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
+POST        /check-your-answers                                uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onSubmit()
+
+GET         /registration-submitted                            uk.gov.hmrc.economiccrimelevyregistration.controllers.RegistrationSubmittedController.onPageLoad()
 
 GET         /account/sign-out-survey                           uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
 GET         /account/sign-out                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
