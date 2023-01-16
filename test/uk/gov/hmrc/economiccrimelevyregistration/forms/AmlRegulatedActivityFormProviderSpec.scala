@@ -16,12 +16,26 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import play.api.data.FormError
+import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.BooleanFieldBehaviours
 
-class UkRevenueFormProvider extends Mappings {
-  def apply(): Form[Boolean] = Form(
-    ("value", boolean("ukRevenue.error.required", args = Seq(EclTaxYear.currentFinancialYear)))
-  )
+class AmlRegulatedActivityFormProviderSpec extends BooleanFieldBehaviours {
+  val form = new AmlRegulatedActivityFormProvider()()
+
+  "value" should {
+    val fieldName   = "value"
+    val requiredKey = "amlRegulated.error.required"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      FormError(fieldName, "error.boolean")
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      FormError(fieldName, requiredKey)
+    )
+  }
 }

@@ -6,8 +6,8 @@ GET         /assets/*file                                      controllers.Asset
 
 GET         /                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.StartController.onPageLoad()
 
-GET         /what-was-your-uk-revenue                          uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad()
-POST        /what-was-your-uk-revenue                          uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit()
+GET         /aml-regulated-activity-question                   uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onPageLoad()
+POST        /aml-regulated-activity-question                   uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onSubmit()
 
 GET         /who-is-your-aml-supervisor                        uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad()
 POST        /who-is-your-aml-supervisor                        uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit()
@@ -18,12 +18,6 @@ GET         /register-with-your-aml-supervisor                 uk.gov.hmrc.econo
 
 GET         /what-is-your-entity-type                          uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
 POST        /what-is-your-entity-type                          uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
-
-GET         /did-you-start-aml-activity-in-current-year        uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedController.onPageLoad()
-POST        /did-you-start-aml-activity-in-current-year        uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedController.onSubmit()
-
-GET         /aml-activity-start-date                           uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityStartDateController.onPageLoad()
-POST        /aml-activity-start-date                           uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityStartDateController.onSubmit()
 
 GET         /what-is-your-business-sector                      uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad()
 POST        /what-is-your-business-sector                      uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onSubmit()

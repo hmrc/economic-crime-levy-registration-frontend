@@ -24,28 +24,28 @@ import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
+import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
 
 import scala.concurrent.Future
 
-class UkRevenueControllerSpec extends SpecBase {
+class AmlRegulatedActivityControllerSpec extends SpecBase {
 
-  val view: UkRevenueView                 = app.injector.instanceOf[UkRevenueView]
-  val formProvider: UkRevenueFormProvider = new UkRevenueFormProvider()
-  val form: Form[Boolean]                 = formProvider()
+  val view: AmlRegulatedActivityView                 = app.injector.instanceOf[AmlRegulatedActivityView]
+  val formProvider: AmlRegulatedActivityFormProvider = new AmlRegulatedActivityFormProvider()
+  val form: Form[Boolean]                            = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val pageNavigator: UkRevenuePageNavigator = new UkRevenuePageNavigator {
+  val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator {
     override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
   }
 
   class TestContext(registrationData: Registration) {
-    val controller = new UkRevenueController(
+    val controller = new AmlRegulatedActivityController(
       mcc,
       fakeAuthorisedAction,
       fakeDataRetrievalAction(registrationData),
@@ -58,7 +58,7 @@ class UkRevenueControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(registration.copy(meetsRevenueThreshold = None)) {
+      new TestContext(registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = None)) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
         status(result) shouldBe OK
@@ -68,27 +68,35 @@ class UkRevenueControllerSpec extends SpecBase {
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
-      (registration: Registration, meetsRevenueThreshold: Boolean) =>
-        new TestContext(registration.copy(meetsRevenueThreshold = Some(meetsRevenueThreshold))) {
+      (registration: Registration, carriedOutAmlRegulatedActivity: Boolean) =>
+        new TestContext(
+          registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity))
+        ) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
           status(result)          shouldBe OK
-          contentAsString(result) shouldBe view(form.fill(meetsRevenueThreshold))(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form.fill(carriedOutAmlRegulatedActivity))(
+            fakeRequest,
+            messages
+          ).toString
         }
     }
   }
 
   "onSubmit" should {
-    "save the selected Uk revenue option then redirect to the next page" in forAll {
-      (registration: Registration, meetsRevenueThreshold: Boolean) =>
+    "save the selected answer then redirect to the next page" in forAll {
+      (registration: Registration, carriedOutAmlRegulatedActivity: Boolean) =>
         new TestContext(registration) {
-          val updatedRegistration: Registration = registration.copy(meetsRevenueThreshold = Some(meetsRevenueThreshold))
+          val updatedRegistration: Registration =
+            registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", meetsRevenueThreshold.toString)))
+            controller.onSubmit()(
+              fakeRequest.withFormUrlEncodedBody(("value", carriedOutAmlRegulatedActivity.toString))
+            )
 
           status(result) shouldBe SEE_OTHER
 

@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
-class AmlRegulatedFormProvider extends Mappings {
+class AmlRegulatedActivityFormProvider extends Mappings {
   def apply(): Form[Boolean] = Form(
     ("value", boolean("amlRegulated.error.required"))
   )

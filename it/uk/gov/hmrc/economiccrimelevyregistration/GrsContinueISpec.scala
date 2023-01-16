@@ -60,7 +60,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.AmlRegulatedController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad().url)
     }
 
     "retrieve the incorporated entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {
@@ -147,7 +147,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.AmlRegulatedController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad().url)
     }
 
     "retrieve the sole trader entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {
@@ -232,7 +232,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.AmlRegulatedController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad().url)
     }
 
     "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {

@@ -40,7 +40,11 @@ object EclTaxYear {
       yearDue
     }
 
-  val currentFinancialYearStartDate: LocalDate =
+  private val currentFinancialYearStartDate: LocalDate =
     LocalDate.of(currentFinancialYear.toInt, eclFyStartMonth, eclFyStartDay)
-  val currentFinancialYearEndDate: LocalDate   = LocalDate.of(currentFinancialYear.toInt + 1, eclFyEndMonth, eclFyEndDay)
+  private val currentFinancialYearEndDate: LocalDate   =
+    LocalDate.of(currentFinancialYear.toInt + 1, eclFyEndMonth, eclFyEndDay)
+
+  val currentFyStartYear: String = currentFinancialYearStartDate.getYear.toString
+  val currentFyEndYear: String   = currentFinancialYearEndDate.getYear.toString
 }

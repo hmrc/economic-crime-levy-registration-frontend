@@ -15,29 +15,26 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-@import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 @this(
         layout: templates.Layout,
-        govukInsetText : GovukInsetText,
+        govukInsetText: GovukInsetText,
         appConfig: AppConfig
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
 @insetTextHtml = {
-<p>@messages("notLiable.inset.p1")</p>
-<p>@Html(messages("notLiable.inset.p2", messages("notLiable.inset.link")))</p>
+    <p>@messages("notLiable.inset.p1")</p>
+    <p>@Html(messages("notLiable.inset.p2", messages("notLiable.inset.link")))</p>
 }
 
 @layout(
     pageTitle = title(messages("notLiable.title")),
-    backLinkUrl = Some(UkRevenueController.onPageLoad().url)
+    backLinkUrl = Some(AmlRegulatedActivityController.onPageLoad().url)
 ) {
 
     <h1 class="govuk-heading-l">@messages("notLiable.heading")</h1>
-
-    <p class="govuk-body">@messages("notLiable.body", EclTaxYear.currentFinancialYear)</p>
 
     @govukInsetText(InsetText(
         content = HtmlContent(insetTextHtml)

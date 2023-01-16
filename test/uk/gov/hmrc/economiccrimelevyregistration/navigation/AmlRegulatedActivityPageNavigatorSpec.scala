@@ -16,29 +16,29 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
-class AmlRegulatedPageNavigatorSpec extends SpecBase {
+class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new AmlRegulatedPageNavigator
+  val pageNavigator = new AmlRegulatedActivityPageNavigator
 
   "nextPage" should {
-    "return a Call to the Aml start date page from the Aml regulated activity started in current financial year page in NormalMode when the 'Yes' option is selected" in forAll {
+    "return a Call to the AML supervisor page from the AML regulated activity page in NormalMode when the 'Yes' option is selected" in forAll {
       registration: Registration =>
-        val updatedRegistration = registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(true))
+        val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.AmlRegulatedActivityStartDateController
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.AmlSupervisorController
           .onPageLoad()
     }
 
-    "return a Call to the business sector page from the Aml regulated activity started in current financial year page in NormalMode when the 'No' option is selected" in forAll {
+    "return a Call to the not liable page  from the AML regulated activity page in NormalMode when the 'No' option is selected" in forAll {
       registration: Registration =>
-        val updatedRegistration = registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(false))
+        val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.BusinessSectorController.onPageLoad()
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.NotLiableController.onPageLoad()
     }
   }
 

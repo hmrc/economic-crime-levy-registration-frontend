@@ -35,7 +35,7 @@
 
 @layout(
     pageTitle = titleWithForm(form, messages("amlSupervisor.title")),
-    backLinkUrl = Some(UkRevenueController.onPageLoad().url),
+    backLinkUrl = Some(AmlRegulatedActivityController.onPageLoad().url),
     autoCompleteEnabled = true
 ) {
     @formHelper(action = AmlSupervisorController.onSubmit()) {

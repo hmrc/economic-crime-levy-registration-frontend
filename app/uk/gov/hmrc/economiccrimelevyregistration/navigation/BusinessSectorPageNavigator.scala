@@ -30,10 +30,5 @@ class BusinessSectorPageNavigator extends PageNavigator {
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???
 
-  override def previousPage(registration: Registration): Call =
-    registration.startedAmlRegulatedActivityInCurrentFy match {
-      case Some(true)  => routes.AmlRegulatedActivityStartDateController.onPageLoad()
-      case Some(false) => routes.AmlRegulatedController.onPageLoad()
-      case _           => routes.StartController.onPageLoad()
-    }
+  override def previousPage(registration: Registration): Call = ???
 }
