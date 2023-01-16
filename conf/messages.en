@@ -95,6 +95,12 @@ amlSupervisor.LawSociety = Law Society
 amlSupervisor.LawSocietyOfScotland = Law Society of Scotland
 amlSupervisor.LawSocietyForNorthernIreland = Law Society for Northern Ireland
 
+relevantAp12Months.title = Is your relevant accounting period 12 months?
+relevantAp12Months.heading = Is your relevant accounting period 12 months?
+relevantAp12Months.p1 = Your relevant accounting period is the one that ends in the financial year. It is based on the accounting period you use for your Company Tax return.
+relevantAp12Months.p2 = For the purposes of the Economic Crime Levy (ECL), the financial year starts on 1 April and ends on 31 March of the following year.
+relevantAp12Months.error.required = Select an answer
+
 registerWith.title = You need to register with the {0}
 registerWith.title.fca = FCA
 registerWith.title.gc = GC

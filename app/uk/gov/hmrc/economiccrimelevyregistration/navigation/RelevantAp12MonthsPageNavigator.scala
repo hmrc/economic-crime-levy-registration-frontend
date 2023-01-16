@@ -18,20 +18,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-class AmlSupervisorPageNavigator extends PageNavigator {
+class RelevantAp12MonthsPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.amlSupervisor match {
-      case Some(amlSupervisor) =>
-        amlSupervisor.supervisorType match {
-          case GamblingCommission | FinancialConductAuthority =>
-            routes.RegisterWithOtherAmlSupervisorController.onPageLoad()
-          case Hmrc | Other                                   => routes.RelevantAp12MonthsController.onPageLoad()
-        }
-      case _                   => routes.StartController.onPageLoad()
+    registration.relevantAp12Months match {
+      case Some(true)  => ??? //TODO What was your UK revenue for the relevant accounting period?
+      case Some(false) => ??? //TODO How long is your relevant accounting period?
+      case _           => routes.StartController.onPageLoad()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???
