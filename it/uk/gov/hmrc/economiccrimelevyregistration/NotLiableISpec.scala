@@ -16,10 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 class NotLiableISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -29,10 +32,14 @@ class NotLiableISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the start HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
+      val registration = random[Registration]
+
+      stubGetRegistration(registration)
+
       val result = callRoute(FakeRequest(routes.NotLiableController.onPageLoad()))
 
       status(result) shouldBe OK
-      html(result)     should include("You do not need to register")
+      html(result)     should include("You do not need to register for the Economic Crime Levy")
     }
   }
 

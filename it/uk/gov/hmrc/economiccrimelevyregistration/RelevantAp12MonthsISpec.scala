@@ -48,7 +48,7 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(???)
+      redirectLocation(result) shouldBe Some(routes.UkRevenueController.onPageLoad().url)
     }
 
     "save the selected option then redirect to the relevant AP length page when the No option is selected" in {
@@ -68,7 +68,7 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(???)
+      redirectLocation(result) shouldBe Some(routes.RelevantApLengthController.onPageLoad().url)
     }
   }
 }
