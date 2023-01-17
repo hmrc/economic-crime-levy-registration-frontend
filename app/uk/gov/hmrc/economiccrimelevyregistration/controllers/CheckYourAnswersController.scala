@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidatedRegistrationAction}
@@ -42,7 +41,8 @@ class CheckYourAnswersController @Inject() (
   view: CheckYourAnswersView,
   validateRegistrationData: ValidatedRegistrationAction,
   pageNavigator: CheckYourAnswersPageNavigator
-)(implicit ec: ExecutionContext) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getRegistrationData andThen validateRegistrationData) {
@@ -81,6 +81,10 @@ class CheckYourAnswersController @Inject() (
   def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     eclRegistrationConnector
       .submitRegistration(request.internalId)
-      .map(rs => Ok(Json.toJson(rs)))
+      .map(rs =>
+        Redirect(routes.RegistrationSubmittedController.onPageLoad()).withSession(
+          request.session + ("eclReference" -> rs.eclReference)
+        )
+      )
   }
 }

@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.utils
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import scala.annotation.tailrec
 
 object EclTaxYear {
@@ -29,6 +30,8 @@ object EclTaxYear {
   private val eclFyEndDay     = 31
   private val eclFyStartDay   = 1
 
+  val dueDate: String              =
+    LocalDate.of(calculateYearDue(), monthDue, dayDue).format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
   val yearDue: String              = calculateYearDue().toString
   val currentFinancialYear: String = (yearDue.toInt - 1).toString
 
