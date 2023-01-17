@@ -15,6 +15,9 @@ POST        /who-is-your-aml-supervisor                     uk.gov.hmrc.economic
 GET         /is-relevant-accounting-period-12-months        uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onPageLoad()
 POST        /is-relevant-accounting-period-12-months        uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onSubmit()
 
+GET         /uk-revenue-in-accounting-period                uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad()
+POST        /uk-revenue-in-accounting-period                uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit()
+
 GET         /you-do-not-need-to-register                    uk.gov.hmrc.economiccrimelevyregistration.controllers.NotLiableController.onPageLoad()
 
 GET         /register-with-your-aml-supervisor              uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterWithOtherAmlSupervisorController.onPageLoad()

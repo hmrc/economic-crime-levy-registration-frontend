@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
@@ -29,7 +30,7 @@ class RelevantAp12MonthsPageNavigatorSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration = registration.copy(relevantAp12Months = Some(true))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe ???
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.UkRevenueController.onPageLoad()
     }
 
     "return a Call to the relevant AP length page from the relevant AP 12 months page in NormalMode when the 'No' option is selected" in forAll {

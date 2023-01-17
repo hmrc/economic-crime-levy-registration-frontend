@@ -16,20 +16,18 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.Call
+import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-class RelevantAp12MonthsPageNavigator extends PageNavigator {
+import scala.concurrent.Future
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.relevantAp12Months match {
-      case Some(true)  => routes.UkRevenueController.onPageLoad()
-      case Some(false) => ??? //TODO How long is your relevant accounting period?
-      case _           => routes.StartController.onPageLoad()
-    }
+class UkRevenuePageNavigator extends AsyncPageNavigator {
+  override protected def navigateInNormalMode(registration: Registration)(implicit
+    request: RequestHeader
+  ): Future[Call] = ???
 
-  override protected def navigateInCheckMode(registration: Registration): Call = ???
+  override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
 
-  override def previousPage(registration: Registration): Call = ???
+  override def previousPage(registration: Registration): Call = routes.RelevantAp12MonthsController.onPageLoad()
 }
