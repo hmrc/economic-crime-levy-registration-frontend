@@ -17,15 +17,44 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.{Call, RequestHeader}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclReturnsConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
-import scala.concurrent.Future
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-class UkRevenuePageNavigator extends AsyncPageNavigator {
+class UkRevenuePageNavigator @Inject() (
+  eclReturnsConnector: EclReturnsConnector
+)(implicit ec: ExecutionContext)
+    extends AsyncPageNavigator
+    with FrontendHeaderCarrierProvider {
   override protected def navigateInNormalMode(registration: Registration)(implicit
     request: RequestHeader
-  ): Future[Call] = ???
+  ): Future[Call] = {
+    val fullYear = 365
+
+    registration.relevantApRevenue match {
+      case Some(revenue) =>
+        val f: Int => Future[Call] = eclReturnsConnector
+          .calculateLiability(_, revenue)
+          .map(liability =>
+            if (liability.amountDue > 0) {
+              routes.EntityTypeController.onPageLoad()
+            } else {
+              routes.NotLiableController.onPageLoad()
+            }
+          )
+
+        registration.relevantAp12Months match {
+          case Some(true)  => f(fullYear)
+          case Some(false) => ???
+          case _           => Future.successful(routes.StartController.onPageLoad())
+        }
+      case _             => Future.successful(routes.StartController.onPageLoad())
+    }
+  }
 
   override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
 

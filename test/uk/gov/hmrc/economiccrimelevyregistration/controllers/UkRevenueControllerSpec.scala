@@ -39,7 +39,7 @@ class UkRevenueControllerSpec extends SpecBase {
   val formProvider: UkRevenueFormProvider = new UkRevenueFormProvider()
   val form: Form[Long]                    = formProvider()
 
-  val pageNavigator: UkRevenuePageNavigator = new UkRevenuePageNavigator() {
+  val pageNavigator: UkRevenuePageNavigator = new UkRevenuePageNavigator(mock[EclReturnsConnector]) {
     override protected def navigateInNormalMode(
       registration: Registration
     )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
