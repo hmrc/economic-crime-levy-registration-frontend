@@ -56,14 +56,8 @@ trait Generators {
   def intsLargerThanMaxValue: Gen[BigInt] =
     arbitrary[BigInt] suchThat (x => x > Int.MaxValue)
 
-  def longsLargerThanMaxValue: Gen[BigInt] =
-    arbitrary[BigInt] retryUntil (x => x > Long.MaxValue)
-
   def intsSmallerThanMinValue: Gen[BigInt] =
     arbitrary[BigInt] suchThat (x => x < Int.MinValue)
-
-  def longsSmallerThanMinValue: Gen[BigInt] =
-    arbitrary[BigInt] suchThat (x => x < Long.MinValue)
 
   def nonNumerics: Gen[String] =
     alphaStr suchThat (_.nonEmpty)

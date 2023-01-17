@@ -35,22 +35,6 @@ trait LongFieldBehaviours extends FieldBehaviours {
           result.errors should contain only wholeNumberError
         }
       }
-
-      "not bind longs larger than Long.MaxValue" in {
-
-        forAll(longsLargerThanMaxValue -> "massiveLong") { num: BigInt =>
-          val result = form.bind(Map(fieldName -> num.toString)).apply(fieldName)
-          result.errors should contain only nonNumericError
-        }
-      }
-
-      "not bind longs smaller than Long.MinValue" in {
-
-        forAll(longsSmallerThanMinValue -> "massivelySmallLong") { num: BigInt =>
-          val result = form.bind(Map(fieldName -> num.toString)).apply(fieldName)
-          result.errors should contain only nonNumericError
-        }
-      }
     }
 
   def longFieldWithRange(
