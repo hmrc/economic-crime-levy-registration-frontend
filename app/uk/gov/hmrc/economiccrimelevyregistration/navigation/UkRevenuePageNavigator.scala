@@ -49,7 +49,11 @@ class UkRevenuePageNavigator @Inject() (
 
         registration.relevantAp12Months match {
           case Some(true)  => f(fullYear)
-          case Some(false) => ???
+          case Some(false) =>
+            registration.relevantApLength match {
+              case Some(relevantApLength) => f(relevantApLength)
+              case _                      => Future.successful(routes.StartController.onPageLoad())
+            }
           case _           => Future.successful(routes.StartController.onPageLoad())
         }
       case _             => Future.successful(routes.StartController.onPageLoad())

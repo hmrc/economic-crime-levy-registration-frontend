@@ -112,6 +112,16 @@ ukRevenue.error.wholeNumber = UK revenue must be a number rounded down to the ne
 ukRevenue.error.nonNumeric = UK revenue must be a number rounded down to the nearest pound
 ukRevenue.error.outOfRange = UK revenue must be between {0} and {1}
 
+relevantApLength.title = How long is your relevant accounting period?
+relevantApLength.heading = How long is your relevant accounting period?
+relevantApLength.p1 = Your relevant accounting period is any accounting period that ends in the financial year.
+relevantApLength.p2 = For the purposes of the ECL, the financial year starts on 1 April and ends on 31 March of the following year.
+relevantApLength.hint = Enter the length of your accounting period in days
+relevantApLength.error.required = Enter the length
+relevantApLength.error.wholeNumber = Length must be a whole number
+relevantApLength.error.nonNumeric = Length must be a whole number
+relevantApLength.error.outOfRange = Length must be between {0} and {1} days
+
 registerWith.title = You need to register with the {0}
 registerWith.title.fca = FCA
 registerWith.title.gc = GC

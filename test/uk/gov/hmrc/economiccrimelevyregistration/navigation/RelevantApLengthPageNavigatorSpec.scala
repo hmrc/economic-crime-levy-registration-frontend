@@ -21,23 +21,15 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
-class RelevantAp12MonthsPageNavigatorSpec extends SpecBase {
+class RelevantApLengthPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new RelevantAp12MonthsPageNavigator
+  val pageNavigator = new RelevantApLengthPageNavigator
 
   "nextPage" should {
-    "return a Call to the UK revenue page from the relevant AP 12 months page in NormalMode when the 'Yes' option is selected" in forAll {
-      registration: Registration =>
-        val updatedRegistration = registration.copy(relevantAp12Months = Some(true))
+    "return a Call to the UK revenue page in NormalMode" in forAll { (registration: Registration, length: Int) =>
+      val updatedRegistration = registration.copy(relevantApLength = Some(length))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.UkRevenueController.onPageLoad()
-    }
-
-    "return a Call to the relevant AP length page from the relevant AP 12 months page in NormalMode when the 'No' option is selected" in forAll {
-      registration: Registration =>
-        val updatedRegistration = registration.copy(relevantAp12Months = Some(false))
-
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.RelevantApLengthController.onPageLoad()
+      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.UkRevenueController.onPageLoad()
     }
   }
 
