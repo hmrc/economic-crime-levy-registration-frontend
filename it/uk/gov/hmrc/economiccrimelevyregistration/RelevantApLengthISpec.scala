@@ -1,0 +1,56 @@
+package uk.gov.hmrc.economiccrimelevyregistration
+
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
+import play.api.test.FakeRequest
+import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models._
+
+class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
+
+  s"GET ${routes.RelevantApLengthController.onPageLoad().url}" should {
+    behave like authorisedActionRoute(routes.RelevantApLengthController.onPageLoad())
+
+    "respond with 200 status and the relevant AP length view" in {
+      stubAuthorisedWithNoGroupEnrolment()
+
+      val registration = random[Registration]
+
+      stubGetRegistration(registration)
+
+      val result = callRoute(FakeRequest(routes.RelevantApLengthController.onPageLoad()))
+
+      status(result) shouldBe OK
+
+      html(result) should include("How long is your relevant accounting period?")
+    }
+  }
+
+  s"POST ${routes.RelevantApLengthController.onSubmit().url}"  should {
+    behave like authorisedActionRoute(routes.RelevantApLengthController.onSubmit())
+
+    "save the relevant AP length then redirect to the UK revenue page" in {
+      stubAuthorisedWithNoGroupEnrolment()
+
+      val registration     = random[Registration]
+      val relevantApLength = random[Int]
+
+      stubGetRegistration(registration)
+
+      val updatedRegistration = registration.copy(relevantApLength = Some(relevantApLength))
+
+      stubUpsertRegistration(updatedRegistration)
+
+      val result = callRoute(
+        FakeRequest(routes.RelevantApLengthController.onSubmit())
+          .withFormUrlEncodedBody(("value", relevantApLength.toString))
+      )
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.UkRevenueController.onPageLoad().url)
+    }
+  }
+}

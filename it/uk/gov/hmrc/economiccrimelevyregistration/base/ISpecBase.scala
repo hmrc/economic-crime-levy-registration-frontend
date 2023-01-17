@@ -55,6 +55,7 @@ abstract class ISpecBase
   ) ++ setWireMockPort(
     "auth",
     "economic-crime-levy-registration",
+    "economic-crime-levy-returns",
     "incorporated-entity-identification-frontend",
     "sole-trader-identification-frontend",
     "partnership-identification-frontend",

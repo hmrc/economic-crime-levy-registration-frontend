@@ -14,6 +14,7 @@ trait WireMockStubs
     with GrsStubs
     with AlfStubs
     with EclRegistrationStubs
+    with EclReturnStubs
     with EnrolmentStoreProxyStubs {
 
   def stubAuthorisedWithNoGroupEnrolment(): StubMapping = {
