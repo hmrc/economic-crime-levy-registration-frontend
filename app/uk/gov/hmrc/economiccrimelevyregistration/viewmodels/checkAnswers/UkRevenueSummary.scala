@@ -21,6 +21,7 @@ import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
+import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 
@@ -30,7 +31,7 @@ object UkRevenueSummary {
     request.registration.relevantApRevenue.map { answer =>
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.ukRevenue.label"),
-        value = ValueViewModel(HtmlContent(HtmlFormat.escape(s"£${answer.toString}"))),
+        value = ValueViewModel(HtmlContent(HtmlFormat.escape(s"£${ViewUtils.formatMoney(answer)}"))),
         actions = Seq(
           ActionItemViewModel("site.change", "#TODO").withVisuallyHiddenText(
             messages("checkYourAnswers.ukRevenue.label")

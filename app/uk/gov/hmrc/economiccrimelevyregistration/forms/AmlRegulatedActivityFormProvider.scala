@@ -21,6 +21,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
 class AmlRegulatedActivityFormProvider extends Mappings {
   def apply(): Form[Boolean] = Form(
-    ("value", boolean("amlRegulated.error.required"))
+    ("value", boolean("amlRegulatedActivity.error.required"))
   )
 }

@@ -30,8 +30,9 @@ object RelevantApLengthSummary {
     request.registration.relevantApLength.map { answer =>
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.relevantApLength.label"),
-        value =
-          ValueViewModel(HtmlContent(HtmlFormat.escape(s"${answer.toString} ${messages("relevantApLength.days")}"))),
+        value = ValueViewModel(
+          HtmlContent(HtmlFormat.escape(s"${answer.toString} ${messages("checkYourAnswers.relevantApLength.days")}"))
+        ),
         actions = Seq(
           ActionItemViewModel("site.change", "#TODO").withVisuallyHiddenText(
             messages("checkYourAnswers.relevantApLength.label")
