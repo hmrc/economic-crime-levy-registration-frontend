@@ -1,7 +1,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
-import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Gen
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -14,7 +14,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
   val minRevenue = 0L
   val maxRevenue = 99999999999L
 
-  implicit val revenueArb: Arbitrary[Long] = Arbitrary { Gen.chooseNum[Long](minRevenue, maxRevenue) }
+  val revenueGen: Gen[Long] = Gen.chooseNum[Long](minRevenue, maxRevenue)
 
   s"GET ${routes.UkRevenueController.onPageLoad().url}" should {
     behave like authorisedActionRoute(routes.UkRevenueController.onPageLoad())
@@ -41,7 +41,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
-      val ukRevenue    = random[Long]
+      val ukRevenue    = revenueGen.sample.get
 
       stubGetRegistration(registration.copy(relevantAp12Months = Some(true)))
 
@@ -64,7 +64,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
-      val ukRevenue    = random[Long]
+      val ukRevenue    = revenueGen.sample.get
 
       stubGetRegistration(registration.copy(relevantAp12Months = Some(true)))
 

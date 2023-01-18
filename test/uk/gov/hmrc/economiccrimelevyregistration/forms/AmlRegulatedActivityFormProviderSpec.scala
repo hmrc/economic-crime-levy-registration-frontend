@@ -24,7 +24,7 @@ class AmlRegulatedActivityFormProviderSpec extends BooleanFieldBehaviours {
 
   "value" should {
     val fieldName   = "value"
-    val requiredKey = "amlRegulated.error.required"
+    val requiredKey = "amlRegulatedActivity.error.required"
 
     behave like booleanField(
       form,

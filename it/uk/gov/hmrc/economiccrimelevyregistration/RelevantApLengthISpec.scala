@@ -1,6 +1,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
+import org.scalacheck.Gen
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -9,6 +10,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
+
+  val minLength = 1
+  val maxLength = 999
 
   s"GET ${routes.RelevantApLengthController.onPageLoad().url}" should {
     behave like authorisedActionRoute(routes.RelevantApLengthController.onPageLoad())
@@ -35,7 +39,7 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration     = random[Registration]
-      val relevantApLength = random[Int]
+      val relevantApLength = Gen.chooseNum[Int](minLength, maxLength).sample.get
 
       stubGetRegistration(registration)
 
