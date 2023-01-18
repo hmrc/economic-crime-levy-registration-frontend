@@ -17,26 +17,46 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.FormError
-import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.BooleanFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.LongFieldBehaviours
 
-class UkRevenueFormProviderSpec extends BooleanFieldBehaviours {
+class UkRevenueFormProviderSpec extends LongFieldBehaviours {
+
   val form = new UkRevenueFormProvider()()
 
   "value" should {
-    val fieldName   = "value"
-    val requiredKey = "ukRevenue.error.required"
 
-    behave like booleanField(
+    val fieldName = "value"
+
+    val minimum = 0L
+    val maximum = 99999999999L
+
+    val validDataGenerator = longsInRangeWithCommas(minimum, maximum)
+
+    behave like fieldThatBindsValidData(
       form,
       fieldName,
-      FormError(fieldName, "error.boolean", args = Seq(EclTaxYear.currentFinancialYear))
+      validDataGenerator
+    )
+
+    behave like longField(
+      form,
+      fieldName,
+      nonNumericError = FormError(fieldName, "ukRevenue.error.nonNumeric"),
+      wholeNumberError = FormError(fieldName, "ukRevenue.error.wholeNumber")
+    )
+
+    behave like longFieldWithRange(
+      form,
+      fieldName,
+      minimum = minimum,
+      maximum = maximum,
+      expectedError = FormError(fieldName, "ukRevenue.error.outOfRange", Seq(minimum, maximum))
     )
 
     behave like mandatoryField(
       form,
       fieldName,
-      FormError(fieldName, requiredKey, args = Seq(EclTaxYear.currentFinancialYear))
+      requiredError = FormError(fieldName, "ukRevenue.error.required")
     )
   }
 }

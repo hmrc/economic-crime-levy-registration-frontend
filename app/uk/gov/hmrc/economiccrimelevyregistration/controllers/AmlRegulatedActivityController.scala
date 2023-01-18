@@ -21,34 +21,33 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityStartDateFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityStartDatePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityStartDateView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
-import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmlRegulatedActivityStartDateController @Inject() (
+class AmlRegulatedActivityController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
-  formProvider: AmlRegulatedActivityStartDateFormProvider,
-  pageNavigator: AmlRegulatedActivityStartDatePageNavigator,
-  view: AmlRegulatedActivityStartDateView
+  formProvider: AmlRegulatedActivityFormProvider,
+  pageNavigator: AmlRegulatedActivityPageNavigator,
+  view: AmlRegulatedActivityView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form: Form[LocalDate] = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.amlRegulatedActivityStartDate)))
+    Ok(view(form.prepare(request.registration.carriedOutAmlRegulatedActivityInCurrentFy)))
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
@@ -56,10 +55,10 @@ class AmlRegulatedActivityStartDateController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        amlStartDate =>
+        amlRegulatedActivity =>
           eclRegistrationConnector
             .upsertRegistration(
-              request.registration.copy(amlRegulatedActivityStartDate = Some(amlStartDate))
+              request.registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity))
             )
             .map { updatedRegistration =>
               Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))

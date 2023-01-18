@@ -18,10 +18,18 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
-class UkRevenueFormProvider extends Mappings {
-  def apply(): Form[Boolean] = Form(
-    ("value", boolean("ukRevenue.error.required", args = Seq(EclTaxYear.currentFinancialYear)))
-  )
+import javax.inject.Inject
+
+class UkRevenueFormProvider @Inject() extends Mappings {
+
+  val minRevenue = 0L
+  val maxRevenue = 99999999999L
+
+  def apply(): Form[Long] =
+    Form(
+      "value" -> long("ukRevenue.error.required", "ukRevenue.error.wholeNumber", "ukRevenue.error.nonNumeric")
+        .verifying(inRange(minRevenue, maxRevenue, "ukRevenue.error.outOfRange"))
+    )
+
 }

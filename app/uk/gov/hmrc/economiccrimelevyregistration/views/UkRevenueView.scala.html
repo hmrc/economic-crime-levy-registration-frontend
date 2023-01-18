@@ -14,56 +14,47 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
 
 @this(
         layout: templates.Layout,
         formHelper: FormWithCSRF,
-        errorSummary: GovukErrorSummary,
-        radios: GovukRadios,
-        button: GovukButton
+        govukErrorSummary: GovukErrorSummary,
+        govukInput: GovukInput,
+        govukButton: GovukButton
 )
 
-@(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
+@(form: Form[Long], backUrl: String)(implicit request: Request[_], messages: Messages)
 
-@legendHtml = {
-    <h1 class="govuk-heading-l">@messages("ukRevenue.heading", EclTaxYear.currentFinancialYear)</h1>
-@messages("ukRevenue.legend", EclTaxYear.currentFinancialYear)
+@labelHtml = {
+    <h1 class="govuk-heading-l">@messages("ukRevenue.heading")</h1>
+    <p class="govuk-body">@messages("ukRevenue.p1")</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("ukRevenue.b1")</li>
+        <li>@messages("ukRevenue.b2")</li>
+    </ul>
 }
 
-@layout(
-    pageTitle = titleWithForm(form, messages("ukRevenue.title", EclTaxYear.currentFinancialYear)),
-    backLinkUrl = Some(StartController.onPageLoad().url)
-) {
-
-
+@layout(pageTitle = titleWithForm(form, messages("ukRevenue.title")), backLinkUrl = Some(backUrl)) {
     @formHelper(action = UkRevenueController.onSubmit()) {
         @if(form.errors.nonEmpty) {
-            @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "less-than")))
+            @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @radios(
-            RadiosViewModel(
+        @govukInput(
+            InputViewModel(
                 field = form("value"),
-                legend = LegendViewModel(HtmlContent(legendHtml)),
-                items = Seq(
-                    RadioItem(
-                        id = Some("less-than"),
-                        value = Some("false"),
-                        content = Text(messages("ukRevenue.lessThan"))
-                    ),
-                    RadioItem(
-                        id = Some("equal-or-more-than"),
-                        value = Some("true"),
-                        content = Text(messages("ukRevenue.moreThanOrEqualTo"))
-                    )
-                )
+                label = LabelViewModel(HtmlContent(labelHtml)).asPageHeading(),
+                prefix = Some(PrefixOrSuffix(content = "£"))
             )
+                    .asNumeric()
+                    .withWidth(Fixed10)
+                    .withHint(HintViewModel(messages("ukRevenue.hint")))
+
         )
 
-        @button(
+        @govukButton(
             ButtonViewModel(messages("site.saveAndContinue"))
         )
     }
 }
-

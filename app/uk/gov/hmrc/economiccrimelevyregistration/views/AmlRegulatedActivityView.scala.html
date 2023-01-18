@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 
 @this(
         layout: templates.Layout,
@@ -26,16 +27,11 @@
 
 @(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
 
-@legendHtml = {
-    <h1 class="govuk-heading-l">@messages("amlRegulated.heading", EclTaxYear.currentFinancialYear)</h1>
-    <p class="govuk-body">@messages("amlRegulated.legend")</p>
-}
-
 @layout(
-    pageTitle = titleWithForm(form, messages("amlRegulated.title", EclTaxYear.currentFinancialYear)),
-    backLinkUrl = Some(EntityTypeController.onPageLoad().url)
+    pageTitle = titleWithForm(form, messages("amlRegulatedActivity.title", EclTaxYear.currentFyStartYear, EclTaxYear.currentFyEndYear)),
+    backLinkUrl = Some(StartController.onPageLoad().url)
 ) {
-    @formHelper(action = AmlRegulatedController.onSubmit()) {
+    @formHelper(action = AmlRegulatedActivityController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }
@@ -43,7 +39,7 @@
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(HtmlContent(legendHtml)),
+                legend = LegendViewModel(messages("amlRegulatedActivity.heading", EclTaxYear.currentFyStartYear, EclTaxYear.currentFyEndYear)).asPageHeading(LegendSize.Large),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),

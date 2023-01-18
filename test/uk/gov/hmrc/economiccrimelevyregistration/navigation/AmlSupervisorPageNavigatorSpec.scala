@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.scalacheck.Gen
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{FinancialConductAuthority, GamblingCommission, Hmrc, Other}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, NormalMode, Registration}
 
@@ -38,7 +38,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           .onPageLoad()
     }
 
-    "return a Call to the entity type page in NormalMode when either the HMRC or Other AML Supervisor option is selected" in forAll {
+    "return a Call to the relevant AP 12 months page in NormalMode when either the HMRC or Other AML Supervisor option is selected" in forAll {
       registration: Registration =>
         val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
         val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample
@@ -46,7 +46,8 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = otherProfessionalBody)
         val updatedRegistration   = registration.copy(amlSupervisor = Some(amlSupervisor))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.EntityTypeController.onPageLoad()
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.RelevantAp12MonthsController
+          .onPageLoad()
     }
   }
 

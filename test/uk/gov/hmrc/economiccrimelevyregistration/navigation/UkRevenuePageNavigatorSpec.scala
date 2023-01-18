@@ -16,29 +16,56 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclReturnsConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculatedLiability, NormalMode, Registration}
+
+import scala.concurrent.Future
 
 class UkRevenuePageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new UkRevenuePageNavigator
+  val mockEclReturnsConnector: EclReturnsConnector = mock[EclReturnsConnector]
+
+  val pageNavigator = new UkRevenuePageNavigator(mockEclReturnsConnector)
 
   "nextPage" should {
-    "return a Call to the AML Supervisor page from the UK revenue page in NormalMode when the entity meets the revenue threshold" in forAll {
-      registration: Registration =>
-        val updatedRegistration = registration.copy(meetsRevenueThreshold = Some(true))
+    "return a Call to the entity type page in NormalMode when the amount due is more than 0" in forAll {
+      (registration: Registration, ukRevenue: Long, calculatedLiability: CalculatedLiability) =>
+        val updatedRegistration: Registration =
+          registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(ukRevenue))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.AmlSupervisorController
+        when(mockEclReturnsConnector.calculateLiability(any(), any())(any()))
+          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = 1)))
+
+        await(pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)) shouldBe routes.EntityTypeController
           .onPageLoad()
     }
 
-    "return a Call to the not liable page from the UK revenue page in NormalMode when the entity does not meet the revenue threshold" in forAll {
-      registration: Registration =>
-        val updatedRegistration = registration.copy(meetsRevenueThreshold = Some(false))
+    "return a Call to the not liable page in NormalMode when the amount due is 0" in forAll {
+      (registration: Registration, ukRevenue: Long, calculatedLiability: CalculatedLiability) =>
+        val updatedRegistration: Registration =
+          registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(ukRevenue))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.NotLiableController
+        when(mockEclReturnsConnector.calculateLiability(any(), any())(any()))
+          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = 0)))
+
+        await(pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)) shouldBe routes.NotLiableController
+          .onPageLoad()
+    }
+  }
+
+  "previousPage" should {
+    "return a call to the relevant AP 12 months page when the relevant AP is 12 months" in forAll {
+      (registration: Registration) =>
+        val updatedRegistration: Registration =
+          registration.copy(
+            relevantAp12Months = Some(true)
+          )
+
+        pageNavigator.previousPage(updatedRegistration) shouldBe routes.RelevantAp12MonthsController
           .onPageLoad()
     }
   }

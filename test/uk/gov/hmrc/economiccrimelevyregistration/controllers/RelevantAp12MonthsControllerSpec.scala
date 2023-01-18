@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
@@ -25,28 +24,28 @@ import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityStartDateFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantAp12MonthsFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityStartDatePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityStartDateView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantAp12MonthsPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantAp12MonthsView
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
-class AmlRegulatedActivityStartDateControllerSpec extends SpecBase {
+class RelevantAp12MonthsControllerSpec extends SpecBase {
 
-  val view: AmlRegulatedActivityStartDateView                 = app.injector.instanceOf[AmlRegulatedActivityStartDateView]
-  val formProvider: AmlRegulatedActivityStartDateFormProvider = new AmlRegulatedActivityStartDateFormProvider()
-  val form: Form[LocalDate]                                   = formProvider()
+  val view: RelevantAp12MonthsView                 = app.injector.instanceOf[RelevantAp12MonthsView]
+  val formProvider: RelevantAp12MonthsFormProvider = new RelevantAp12MonthsFormProvider()
+  val form: Form[Boolean]                          = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val pageNavigator: AmlRegulatedActivityStartDatePageNavigator = new AmlRegulatedActivityStartDatePageNavigator {
+  val pageNavigator: RelevantAp12MonthsPageNavigator = new RelevantAp12MonthsPageNavigator {
     override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
   }
 
   class TestContext(registrationData: Registration) {
-    val controller = new AmlRegulatedActivityStartDateController(
+    val controller = new RelevantAp12MonthsController(
       mcc,
       fakeAuthorisedAction,
       fakeDataRetrievalAction(registrationData),
@@ -59,7 +58,7 @@ class AmlRegulatedActivityStartDateControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(registration.copy(amlRegulatedActivityStartDate = None)) {
+      new TestContext(registration.copy(relevantAp12Months = None)) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
         status(result) shouldBe OK
@@ -69,33 +68,34 @@ class AmlRegulatedActivityStartDateControllerSpec extends SpecBase {
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
-      (registration: Registration, amlStartDate: LocalDate) =>
-        new TestContext(registration.copy(amlRegulatedActivityStartDate = Some(amlStartDate))) {
+      (registration: Registration, relevantAp12Months: Boolean) =>
+        new TestContext(
+          registration.copy(relevantAp12Months = Some(relevantAp12Months))
+        ) {
           val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
           status(result)          shouldBe OK
-          contentAsString(result) shouldBe view(form.fill(amlStartDate))(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form.fill(relevantAp12Months))(
+            fakeRequest,
+            messages
+          ).toString
         }
     }
   }
 
   "onSubmit" should {
-    "save the provided Aml start date then redirect to the next page" in forAll {
-      (registration: Registration, amlStartDate: LocalDate) =>
+    "save the selected answer then redirect to the next page" in forAll {
+      (registration: Registration, relevantAp12Months: Boolean) =>
         new TestContext(registration) {
           val updatedRegistration: Registration =
-            registration.copy(amlRegulatedActivityStartDate = Some(amlStartDate))
+            registration.copy(relevantAp12Months = Some(relevantAp12Months))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
             controller.onSubmit()(
-              fakeRequest.withFormUrlEncodedBody(
-                ("value.day", amlStartDate.getDayOfMonth.toString),
-                ("value.month", amlStartDate.getMonthValue.toString),
-                ("value.year", amlStartDate.getYear.toString)
-              )
+              fakeRequest.withFormUrlEncodedBody(("value", relevantAp12Months.toString))
             )
 
           status(result) shouldBe SEE_OTHER
@@ -106,8 +106,8 @@ class AmlRegulatedActivityStartDateControllerSpec extends SpecBase {
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
       new TestContext(registration) {
-        val result: Future[Result]          = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
-        val formWithErrors: Form[LocalDate] = form.bind(Map("value" -> ""))
+        val result: Future[Result]        = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
+        val formWithErrors: Form[Boolean] = form.bind(Map("value" -> ""))
 
         status(result) shouldBe BAD_REQUEST
 

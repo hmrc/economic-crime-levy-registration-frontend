@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.views
 import play.api.data.Form
 import play.api.i18n.Messages
 
+import java.text.NumberFormat
 import java.time.{LocalDate, ZoneId}
 import java.util.Date
 
@@ -46,5 +47,10 @@ object ViewUtils {
     val year  = localDate.getYear
 
     s"$day $month $year"
+  }
+
+  def formatMoney(amount: Number): String = {
+    val formatter = NumberFormat.getNumberInstance
+    formatter.format(amount)
   }
 }

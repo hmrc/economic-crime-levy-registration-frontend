@@ -19,19 +19,19 @@ package uk.gov.hmrc.economiccrimelevyregistration.models
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityAddress, IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 
-import java.time.LocalDate
 import java.util.Date
 
 final case class Registration(
   internalId: String,
+  carriedOutAmlRegulatedActivityInCurrentFy: Option[Boolean],
   entityType: Option[EntityType],
-  meetsRevenueThreshold: Option[Boolean],
   amlSupervisor: Option[AmlSupervisor],
+  relevantAp12Months: Option[Boolean],
+  relevantApLength: Option[Int],
+  relevantApRevenue: Option[Long],
   incorporatedEntityJourneyData: Option[IncorporatedEntityJourneyData],
   soleTraderEntityJourneyData: Option[SoleTraderEntityJourneyData],
   partnershipEntityJourneyData: Option[PartnershipEntityJourneyData],
-  startedAmlRegulatedActivityInCurrentFy: Option[Boolean],
-  amlRegulatedActivityStartDate: Option[LocalDate],
   businessSector: Option[BusinessSector],
   contacts: Contacts,
   useRegisteredOfficeAddressAsContactAddress: Option[Boolean],
@@ -100,13 +100,14 @@ object Registration {
   def empty(internalId: String): Registration = Registration(
     internalId = internalId,
     entityType = None,
-    meetsRevenueThreshold = None,
     amlSupervisor = None,
+    relevantAp12Months = None,
+    relevantApLength = None,
+    relevantApRevenue = None,
     incorporatedEntityJourneyData = None,
     soleTraderEntityJourneyData = None,
     partnershipEntityJourneyData = None,
-    startedAmlRegulatedActivityInCurrentFy = None,
-    amlRegulatedActivityStartDate = None,
+    carriedOutAmlRegulatedActivityInCurrentFy = None,
     businessSector = None,
     contacts = Contacts.empty,
     useRegisteredOfficeAddressAsContactAddress = None,

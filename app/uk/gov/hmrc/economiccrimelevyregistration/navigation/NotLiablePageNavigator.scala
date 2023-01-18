@@ -20,16 +20,16 @@ import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-class AmlRegulatedPageNavigator extends PageNavigator {
+class NotLiablePageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.startedAmlRegulatedActivityInCurrentFy match {
-      case Some(true)  => routes.AmlRegulatedActivityStartDateController.onPageLoad()
-      case Some(false) => routes.BusinessSectorController.onPageLoad()
-      case _           => routes.StartController.onPageLoad()
-    }
+  override protected def navigateInNormalMode(registration: Registration): Call = ???
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???
 
-  override def previousPage(registration: Registration): Call = ???
+  override def previousPage(registration: Registration): Call =
+    (registration.carriedOutAmlRegulatedActivityInCurrentFy, registration.relevantApRevenue) match {
+      case (Some(false), _) => routes.AmlRegulatedActivityController.onPageLoad()
+      case (_, Some(_))     => routes.UkRevenueController.onPageLoad()
+      case _                => routes.StartController.onPageLoad()
+    }
 }
