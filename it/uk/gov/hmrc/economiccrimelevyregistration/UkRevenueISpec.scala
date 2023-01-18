@@ -8,6 +8,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -48,7 +49,10 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       val updatedRegistration = registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(ukRevenue))
 
       stubUpsertRegistration(updatedRegistration)
-      stubCalculateLiability(CalculateLiabilityRequest(365, 365, ukRevenue), liable = true)
+      stubCalculateLiability(
+        CalculateLiabilityRequest(EclTaxYear.yearInDays, EclTaxYear.yearInDays, ukRevenue),
+        liable = true
+      )
 
       val result = callRoute(
         FakeRequest(routes.UkRevenueController.onSubmit())
@@ -71,7 +75,10 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       val updatedRegistration = registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(ukRevenue))
 
       stubUpsertRegistration(updatedRegistration)
-      stubCalculateLiability(CalculateLiabilityRequest(365, 365, ukRevenue), liable = false)
+      stubCalculateLiability(
+        CalculateLiabilityRequest(EclTaxYear.yearInDays, EclTaxYear.yearInDays, ukRevenue),
+        liable = false
+      )
 
       val result = callRoute(
         FakeRequest(routes.UkRevenueController.onSubmit())

@@ -29,8 +29,9 @@ object EclTaxYear {
   private val eclFyEndDay     = 31
   private val eclFyStartDay   = 1
 
-  val yearDue: String              = calculateYearDue().toString
-  val currentFinancialYear: String = (yearDue.toInt - 1).toString
+  val yearDue: String                      = calculateYearDue().toString
+  private val currentFinancialYear: String = (yearDue.toInt - 1).toString
+  val yearInDays                           = 365
 
   @tailrec
   def calculateYearDue(yearDue: Int = startYear, currentDate: LocalDate = LocalDate.now()): Int =

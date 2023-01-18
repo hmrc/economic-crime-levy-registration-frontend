@@ -21,6 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculateLiabilityRequest, CalculatedLiability}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.http.HttpClient
 
 import scala.concurrent.Future
@@ -37,12 +38,11 @@ class EclReturnsConnectorSpec extends SpecBase {
         calculatedLiability: CalculatedLiability
       ) =>
         val expectedUrl = s"$eclReturnsUrl/calculate-liability"
-        val fullYear    = 365
 
         when(
           mockHttpClient.POST[CalculateLiabilityRequest, CalculatedLiability](
             ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(calculateLiabilityRequest.copy(amlRegulatedActivityLength = fullYear)),
+            ArgumentMatchers.eq(calculateLiabilityRequest.copy(amlRegulatedActivityLength = EclTaxYear.yearInDays)),
             any()
           )(any(), any(), any(), any())
         )
@@ -57,7 +57,7 @@ class EclReturnsConnectorSpec extends SpecBase {
         verify(mockHttpClient, times(1))
           .POST[CalculateLiabilityRequest, CalculatedLiability](
             ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(calculateLiabilityRequest.copy(amlRegulatedActivityLength = fullYear)),
+            ArgumentMatchers.eq(calculateLiabilityRequest.copy(amlRegulatedActivityLength = EclTaxYear.yearInDays)),
             any()
           )(any(), any(), any(), any())
 

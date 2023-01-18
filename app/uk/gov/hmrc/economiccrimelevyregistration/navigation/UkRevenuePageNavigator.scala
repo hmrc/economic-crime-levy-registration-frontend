@@ -20,6 +20,7 @@ import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclReturnsConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
@@ -33,8 +34,6 @@ class UkRevenuePageNavigator @Inject() (
   override protected def navigateInNormalMode(registration: Registration)(implicit
     request: RequestHeader
   ): Future[Call] = {
-    val fullYear = 365
-
     registration.relevantApRevenue match {
       case Some(revenue) =>
         val f: Int => Future[Call] = eclReturnsConnector
@@ -48,7 +47,7 @@ class UkRevenuePageNavigator @Inject() (
           )
 
         registration.relevantAp12Months match {
-          case Some(true)  => f(fullYear)
+          case Some(true)  => f(EclTaxYear.yearInDays)
           case Some(false) =>
             registration.relevantApLength match {
               case Some(relevantApLength) => f(relevantApLength)

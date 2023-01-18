@@ -18,8 +18,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculateLiabilityRequest, CalculatedLiability}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,17 +33,14 @@ class EclReturnsConnector @Inject() (appConfig: AppConfig, httpClient: HttpClien
 
   def calculateLiability(relevantApLength: Int, relevantApRevenue: Long)(implicit
     hc: HeaderCarrier
-  ): Future[CalculatedLiability] = {
-    val fullYear = 365
-
+  ): Future[CalculatedLiability] =
     httpClient.POST[CalculateLiabilityRequest, CalculatedLiability](
       s"$eclReturnsUrl/calculate-liability",
       CalculateLiabilityRequest(
-        amlRegulatedActivityLength = fullYear,
+        amlRegulatedActivityLength = EclTaxYear.yearInDays,
         relevantApLength = relevantApLength,
         ukRevenue = relevantApRevenue
       )
     )
-  }
 
 }
