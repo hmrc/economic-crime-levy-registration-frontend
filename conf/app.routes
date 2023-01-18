@@ -6,8 +6,8 @@ GET         /assets/*file                                       controllers.Asse
 
 GET         /                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.StartController.onPageLoad()
 
-GET         /aml-regulated-activity-question                    uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onPageLoad()
-POST        /aml-regulated-activity-question                    uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onSubmit()
+GET         /did-you-carry-out-aml-regulated-activity           uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onPageLoad()
+POST        /did-you-carry-out-aml-regulated-activity           uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onSubmit()
 
 GET         /who-is-your-aml-supervisor                         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad()
 POST        /who-is-your-aml-supervisor                         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit()
@@ -18,8 +18,8 @@ POST        /is-relevant-accounting-period-12-months            uk.gov.hmrc.econ
 GET         /how-long-is-your-relevant-accounting-period        uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantApLengthController.onPageLoad()
 POST        /how-long-is-your-relevant-accounting-period        uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantApLengthController.onSubmit()
 
-GET         /uk-revenue-in-accounting-period                    uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad()
-POST        /uk-revenue-in-accounting-period                    uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit()
+GET         /uk-revenue-for-accounting-period                   uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad()
+POST        /uk-revenue-for-accounting-period                   uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit()
 
 GET         /you-do-not-need-to-register                        uk.gov.hmrc.economiccrimelevyregistration.controllers.NotLiableController.onPageLoad()
 
