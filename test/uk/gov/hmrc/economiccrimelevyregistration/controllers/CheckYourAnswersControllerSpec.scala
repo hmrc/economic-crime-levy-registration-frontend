@@ -69,6 +69,10 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             CtUtrSummary.row(),
             SaUtrSummary.row(),
             NinoSummary.row(),
+            AmlRegulatedActivitySummary.row(),
+            RelevantAp12MonthsSummary.row(),
+            RelevantApLengthSummary.row(),
+            UkRevenueSummary.row(),
             DateOfBirthSummary.row(),
             AmlSupervisorSummary.row(),
             BusinessSectorSummary.row()
