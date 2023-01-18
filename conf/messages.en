@@ -66,7 +66,8 @@ notLiable.inset.link = <a href="https://www.gov.uk/government/publications/econo
 
 amlSupervisor.title = Who is your AML supervisor?
 amlSupervisor.heading = Who is your Anti-Money Laundering (AML) supervisor?
-amlSupervisor.body = This is the supervisory authority who monitors your Anti-Money Laundering (AML) activity.
+amlSupervisor.p1 = This is the regulatory body who supervises your AML activity.
+amlSupervisor.p2 = If HMRC and another professional body supervise your AML activities, you must register with that professional body. You do not need to register with HMRC.
 amlSupervisor.Hmrc = HMRC
 amlSupervisor.GamblingCommission = Gambling Commission (GC)
 amlSupervisor.FinancialConductAuthority = Financial Conduct Authority (FCA)
