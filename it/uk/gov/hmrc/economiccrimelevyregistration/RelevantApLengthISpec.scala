@@ -11,8 +11,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
 
-  val minLength = 1
-  val maxLength = 999
+  val minDays = 1
+  val maxDays = 999
 
   s"GET ${routes.RelevantApLengthController.onPageLoad().url}" should {
     behave like authorisedActionRoute(routes.RelevantApLengthController.onPageLoad())
@@ -39,7 +39,7 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration     = random[Registration]
-      val relevantApLength = Gen.chooseNum[Int](minLength, maxLength).sample.get
+      val relevantApLength = Gen.chooseNum[Int](minDays, maxDays).sample.get
 
       stubGetRegistration(registration)
 

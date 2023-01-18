@@ -33,7 +33,7 @@ class UkRevenuePageNavigator @Inject() (
     with FrontendHeaderCarrierProvider {
   override protected def navigateInNormalMode(registration: Registration)(implicit
     request: RequestHeader
-  ): Future[Call] = {
+  ): Future[Call] =
     registration.relevantApRevenue match {
       case Some(revenue) =>
         val f: Int => Future[Call] = eclReturnsConnector
@@ -57,7 +57,6 @@ class UkRevenuePageNavigator @Inject() (
         }
       case _             => Future.successful(routes.StartController.onPageLoad())
     }
-  }
 
   override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
 

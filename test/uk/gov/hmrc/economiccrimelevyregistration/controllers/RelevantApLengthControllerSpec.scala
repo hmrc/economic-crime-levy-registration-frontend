@@ -47,8 +47,8 @@ class RelevantApLengthControllerSpec extends SpecBase {
     ): Call = onwardRoute
   }
 
-  val minLength = 1
-  val maxLength = 999
+  val minDays = 1
+  val maxDays = 999
 
   class TestContext(registrationData: Registration) {
     val controller = new RelevantApLengthController(
@@ -93,7 +93,7 @@ class RelevantApLengthControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the provided UK revenue then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      Gen.chooseNum[Int](minLength, maxLength)
+      Gen.chooseNum[Int](minDays, maxDays)
     ) { (registration: Registration, relevantApLength: Int) =>
       new TestContext(registration) {
         val updatedRegistration: Registration =
