@@ -59,13 +59,14 @@ trait Formatters {
       def unbind(key: String, value: Boolean) = Map(key -> value.toString)
     }
 
-  private[mappings] def intFormatter(
+  private def numberFormatter[T](
+    stringToNumber: String => T,
     requiredKey: String,
     wholeNumberKey: String,
     nonNumericKey: String,
-    args: Seq[String] = Seq.empty
-  ): Formatter[Int] =
-    new Formatter[Int] {
+    args: Seq[String]
+  ): Formatter[T] =
+    new Formatter[T] {
 
       val decimalRegexp = """^-?(\d*\.\d*)$"""
 
@@ -80,12 +81,12 @@ trait Formatters {
               Left(Seq(FormError(key, wholeNumberKey, args)))
             case s                             =>
               nonFatalCatch
-                .either(s.toInt)
+                .either(stringToNumber(s))
                 .left
                 .map(_ => Seq(FormError(key, nonNumericKey, args)))
           }
 
-      override def unbind(key: String, value: Int) =
+      override def unbind(key: String, value: T) =
         baseFormatter.unbind(key, value.toString)
     }
 
@@ -94,30 +95,14 @@ trait Formatters {
     wholeNumberKey: String,
     nonNumericKey: String,
     args: Seq[String] = Seq.empty
-  ): Formatter[Long] =
-    new Formatter[Long] {
+  ): Formatter[Long] = numberFormatter[Long](_.toLong, requiredKey, wholeNumberKey, nonNumericKey, args)
 
-      val decimalRegexp = """^-?(\d*\.\d*)$"""
-
-      private val baseFormatter = stringFormatter(requiredKey, args)
-
-      override def bind(key: String, data: Map[String, String]) =
-        baseFormatter
-          .bind(key, data)
-          .map(_.replace(",", ""))
-          .flatMap {
-            case s if s.matches(decimalRegexp) =>
-              Left(Seq(FormError(key, wholeNumberKey, args)))
-            case s                             =>
-              nonFatalCatch
-                .either(s.toLong)
-                .left
-                .map(_ => Seq(FormError(key, nonNumericKey, args)))
-          }
-
-      override def unbind(key: String, value: Long) =
-        baseFormatter.unbind(key, value.toString)
-    }
+  private[mappings] def intFormatter(
+    requiredKey: String,
+    wholeNumberKey: String,
+    nonNumericKey: String,
+    args: Seq[String] = Seq.empty
+  ): Formatter[Int] = numberFormatter[Int](_.toInt, requiredKey, wholeNumberKey, nonNumericKey, args)
 
   private[mappings] def enumerableFormatter[A](requiredKey: String, invalidKey: String, args: Seq[String] = Seq.empty)(
     implicit ev: Enumerable[A]
