@@ -18,7 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedAction
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.NotLiablePageNavigator
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.NotLiableView
 
@@ -28,11 +29,13 @@ import javax.inject.{Inject, Singleton}
 class NotLiableController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
-  view: NotLiableView
+  view: NotLiableView,
+  pageNavigator: NotLiablePageNavigator,
+  getRegistrationData: DataRetrievalAction
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    Ok(view())
+  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    Ok(view(pageNavigator.previousPage(request.registration).url))
   }
 }

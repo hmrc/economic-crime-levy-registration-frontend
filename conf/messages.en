@@ -54,23 +54,20 @@ start.doNotUse = Do not use this service if:
 start.doNotUse.b1 = the Financial Conduct Authority (FCA) or the Gambling Commission (GC) supervises your AML activities
 start.doNotUse.b2 = your UK revenue is less than £10.2 million per year
 
-ukRevenue.title = What was your UK revenue in {0}?
-ukRevenue.heading = What was your UK revenue in {0}?
-ukRevenue.legend = You do not need to pay the levy if your UK revenue was less than £10.2 million in {0}.
-ukRevenue.lessThan = Less than £10.2 million
-ukRevenue.moreThanOrEqualTo = Equal to or more than £10.2 million
-ukRevenue.error.required = Select your UK revenue for {0}
+amlRegulatedActivity.title = Did you carry out AML-regulated activity between 1 April {0} and 31 March {1}?
+amlRegulatedActivity.heading = Did you carry out AML-regulated activity between 1 April {0} and 31 March {1}?
+amlRegulatedActivity.error.required = Select an answer
 
-notLiable.title = You do not need to register
+notLiable.title = You do not need to register for the Economic Crime Levy
 notLiable.heading = You do not need to register for the Economic Crime Levy
-notLiable.body = You do not need to register to pay the Economic Crime Levy (ECL) because your UK revenue for {0} does not exceed £10.2 million.
-notLiable.inset.p1 = You will need to register for the ECL in the future if your UK revenue equals or exceeds £10.2 million.
+notLiable.inset.p1 = You do not need to register for the Economic Crime Levy (ECL) at this time. You may need to register in the future if you carry out AML-regulated activity and your UK revenue meets the threshold.
 notLiable.inset.p2 = The {0} has more information on who needs to pay the levy.
 notLiable.inset.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">Economic Crime Levy guidance</a>
 
 amlSupervisor.title = Who is your AML supervisor?
 amlSupervisor.heading = Who is your Anti-Money Laundering (AML) supervisor?
-amlSupervisor.body = This is the supervisory authority who monitors your Anti-Money Laundering (AML) activity.
+amlSupervisor.p1 = This is the regulatory body who supervises your AML activity.
+amlSupervisor.p2 = If HMRC and another professional body supervise your AML activities, you must register with that professional body. You do not need to register with HMRC.
 amlSupervisor.Hmrc = HMRC
 amlSupervisor.GamblingCommission = Gambling Commission (GC)
 amlSupervisor.FinancialConductAuthority = Financial Conduct Authority (FCA)
@@ -99,6 +96,33 @@ amlSupervisor.LawSociety = Law Society
 amlSupervisor.LawSocietyOfScotland = Law Society of Scotland
 amlSupervisor.LawSocietyForNorthernIreland = Law Society for Northern Ireland
 
+relevantAp12Months.title = Is your relevant accounting period 12 months?
+relevantAp12Months.heading = Is your relevant accounting period 12 months?
+relevantAp12Months.p1 = Your relevant accounting period is the one that ends in the financial year. It is based on the accounting period you use for your Company Tax return.
+relevantAp12Months.p2 = For the purposes of the Economic Crime Levy (ECL), the financial year starts on 1 April and ends on 31 March of the following year.
+relevantAp12Months.error.required = Select an answer
+
+ukRevenue.title = What was your UK revenue for the relevant accounting period?
+ukRevenue.heading = What was your UK revenue for the relevant accounting period?
+ukRevenue.p1 = For the purposes of the Economic Crime Levy (ECL), your UK revenue is defined as:
+ukRevenue.b1 = your turnover during the accounting period
+ukRevenue.b2 = any other amounts not included within your turnover that are recognised as revenue
+ukRevenue.hint = Enter the amount in pounds
+ukRevenue.error.required = Enter the UK revenue
+ukRevenue.error.wholeNumber = UK revenue must be a number rounded down to the nearest pound
+ukRevenue.error.nonNumeric = UK revenue must be a number rounded down to the nearest pound
+ukRevenue.error.outOfRange = UK revenue must be between {0} and {1}
+
+relevantApLength.title = How long is your relevant accounting period?
+relevantApLength.heading = How long is your relevant accounting period?
+relevantApLength.p1 = Your relevant accounting period is any accounting period that ends in the financial year.
+relevantApLength.p2 = For the purposes of the ECL, the financial year starts on 1 April and ends on 31 March of the following year.
+relevantApLength.hint = Enter the length of your accounting period in days
+relevantApLength.error.required = Enter the length
+relevantApLength.error.wholeNumber = Length must be a whole number
+relevantApLength.error.nonNumeric = Length must be a whole number
+relevantApLength.error.outOfRange = Length must be between {0} and {1} days
+
 registerWith.title = You need to register with the {0}
 registerWith.title.fca = FCA
 registerWith.title.gc = GC
@@ -122,16 +146,6 @@ entityType.ScottishLimitedPartnership = Scottish limited partnership
 entityType.LimitedLiabilityPartnership = Limited liability partnership
 entityType.Other = Other
 entityType.error.required = Please select your entity type
-
-amlRegulated.title = Did you start AML-regulated activity in FY {0}?
-amlRegulated.heading = Did you start AML-regulated activity in FY {0}?
-amlRegulated.legend = The UK financial year starts on 1 April and ends on 31 March of the following year.
-amlRegulated.error.required = Select an answer
-
-amlStartDate.title = What date did your AML-regulated activity start?
-amlStartDate.heading = What date did your AML-regulated activity start?
-amlStartDate.hint = For example, 13 10 2022
-amlStartDate.error.notWithinFinancialYear = The date must be between 1 April {0} and 31 March {1}
 
 businessSector.title = What is your business sector?
 businessSector.CreditInstitution = Credit institution
@@ -231,6 +245,12 @@ checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 checkYourAnswers.organisationDetails = Organisation details
 checkYourAnswers.contactDetails = Contact details
+checkYourAnswers.amlRegulatedActivity.label = Carried out AML regulated activity
+checkYourAnswers.amlSupervisor.label = AML supervisor
+checkYourAnswers.relevantAp12Months.label = Relevant accounting period is 12 months
+checkYourAnswers.relevantApLength.label = Relevant accounting period length
+checkYourAnswers.relevantApLength.days = days
+checkYourAnswers.ukRevenue.label = UK revenue
 checkYourAnswers.amlSupervisor.label = AML supervisor
 checkYourAnswers.businessSector.label = Business sector
 checkYourAnswers.entityType.label = Entity type

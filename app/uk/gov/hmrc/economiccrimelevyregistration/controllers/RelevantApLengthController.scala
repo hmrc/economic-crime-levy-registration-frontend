@@ -19,35 +19,35 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
-import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
+import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantApLengthFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantApLengthPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantApLengthView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmlRegulatedController @Inject() (
+class RelevantApLengthController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
-  formProvider: AmlRegulatedFormProvider,
-  pageNavigator: AmlRegulatedPageNavigator,
-  view: AmlRegulatedView
+  formProvider: RelevantApLengthFormProvider,
+  pageNavigator: RelevantApLengthPageNavigator,
+  view: RelevantApLengthView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form: Form[Boolean] = formProvider()
+  val form: Form[Int] = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.startedAmlRegulatedActivityInCurrentFy)))
+    Ok(view(form.prepare(request.registration.relevantApLength)))
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
@@ -55,14 +55,13 @@ class AmlRegulatedController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        startedAmlRegulatedActivity =>
+        relevantApLength =>
           eclRegistrationConnector
-            .upsertRegistration(
-              request.registration.copy(startedAmlRegulatedActivityInCurrentFy = Some(startedAmlRegulatedActivity))
-            )
+            .upsertRegistration(request.registration.copy(relevantApLength = Some(relevantApLength)))
             .map { updatedRegistration =>
               Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
             }
       )
   }
+
 }

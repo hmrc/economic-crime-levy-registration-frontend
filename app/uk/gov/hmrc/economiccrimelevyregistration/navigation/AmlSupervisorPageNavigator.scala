@@ -29,7 +29,7 @@ class AmlSupervisorPageNavigator extends PageNavigator {
         amlSupervisor.supervisorType match {
           case GamblingCommission | FinancialConductAuthority =>
             routes.RegisterWithOtherAmlSupervisorController.onPageLoad()
-          case Hmrc | Other                                   => routes.EntityTypeController.onPageLoad()
+          case Hmrc | Other                                   => routes.RelevantAp12MonthsController.onPageLoad()
         }
       case _                   => routes.StartController.onPageLoad()
     }

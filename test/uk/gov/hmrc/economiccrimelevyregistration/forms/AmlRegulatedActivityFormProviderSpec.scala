@@ -16,11 +16,26 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import play.api.data.FormError
+import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.BooleanFieldBehaviours
 
-class AmlRegulatedFormProvider extends Mappings {
-  def apply(): Form[Boolean] = Form(
-    ("value", boolean("amlRegulated.error.required"))
-  )
+class AmlRegulatedActivityFormProviderSpec extends BooleanFieldBehaviours {
+  val form = new AmlRegulatedActivityFormProvider()()
+
+  "value" should {
+    val fieldName   = "value"
+    val requiredKey = "amlRegulatedActivity.error.required"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      FormError(fieldName, "error.boolean")
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      FormError(fieldName, requiredKey)
+    )
+  }
 }

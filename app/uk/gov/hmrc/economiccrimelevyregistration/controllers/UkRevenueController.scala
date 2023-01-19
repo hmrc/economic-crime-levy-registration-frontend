@@ -19,9 +19,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
+import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
@@ -44,23 +44,25 @@ class UkRevenueController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form: Form[Boolean] = formProvider()
+  val form: Form[Long] = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.meetsRevenueThreshold)))
+    Ok(view(form.prepare(request.registration.relevantApRevenue), pageNavigator.previousPage(request.registration).url))
   }
 
   def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        meetsRevenueThreshold =>
+        formWithErrors =>
+          Future.successful(BadRequest(view(formWithErrors, pageNavigator.previousPage(request.registration).url))),
+        revenue =>
           eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(meetsRevenueThreshold = Some(meetsRevenueThreshold)))
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
+            .upsertRegistration(request.registration.copy(relevantApRevenue = Some(revenue)))
+            .flatMap { updatedRegistration =>
+              pageNavigator.nextPage(NormalMode, updatedRegistration).map(Redirect)
             }
       )
   }
+
 }

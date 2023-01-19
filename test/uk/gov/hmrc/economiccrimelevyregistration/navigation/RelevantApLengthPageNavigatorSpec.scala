@@ -16,19 +16,21 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.Call
+import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
-class AmlRegulatedActivityStartDatePageNavigator extends PageNavigator {
+class RelevantApLengthPageNavigatorSpec extends SpecBase {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.amlRegulatedActivityStartDate match {
-      case Some(_) => routes.BusinessSectorController.onPageLoad()
-      case _       => routes.StartController.onPageLoad()
+  val pageNavigator = new RelevantApLengthPageNavigator
+
+  "nextPage" should {
+    "return a Call to the UK revenue page in NormalMode" in forAll { (registration: Registration, length: Int) =>
+      val updatedRegistration = registration.copy(relevantApLength = Some(length))
+
+      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.UkRevenueController.onPageLoad()
     }
+  }
 
-  override protected def navigateInCheckMode(registration: Registration): Call = ???
-
-  override def previousPage(registration: Registration): Call = ???
 }

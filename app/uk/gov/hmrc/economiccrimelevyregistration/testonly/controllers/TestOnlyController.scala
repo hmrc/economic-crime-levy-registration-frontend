@@ -38,6 +38,10 @@ class TestOnlyController @Inject() (
     testOnlyConnector.clearAllData().map(httpResponse => Ok(httpResponse.body))
   }
 
+  def clearCurrentData(): Action[AnyContent] = Action.async { implicit request =>
+    testOnlyConnector.clearCurrentData().map(httpResponse => Ok(httpResponse.body))
+  }
+
   def getRegistrationData(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(Json.toJson(request.registration))
   }

@@ -24,11 +24,11 @@
         button: GovukButton
 )
 
-@(form: Form[BusinessSector], backLink: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[BusinessSector])(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = titleWithForm(form, messages("businessSector.title")),
-    backLinkUrl = Some(backLink)
+    backLinkUrl = Some(EntityTypeController.onPageLoad().url),
 
 ) {
     @formHelper(action = BusinessSectorController.onSubmit()) {

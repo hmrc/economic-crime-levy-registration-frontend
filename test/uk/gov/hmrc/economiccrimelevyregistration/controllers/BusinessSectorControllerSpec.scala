@@ -40,7 +40,6 @@ class BusinessSectorControllerSpec extends SpecBase {
 
   val pageNavigator: BusinessSectorPageNavigator = new BusinessSectorPageNavigator() {
     override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
-    override def previousPage(registration: Registration): Call                   = backRoute
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
@@ -64,7 +63,7 @@ class BusinessSectorControllerSpec extends SpecBase {
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, backRoute.url)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
       }
     }
 
@@ -75,7 +74,7 @@ class BusinessSectorControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(businessSector), backRoute.url)(
+          contentAsString(result) shouldBe view(form.fill(businessSector))(
             fakeRequest,
             messages
           ).toString
@@ -108,7 +107,7 @@ class BusinessSectorControllerSpec extends SpecBase {
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, backRoute.url)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors)(fakeRequest, messages).toString
       }
     }
   }

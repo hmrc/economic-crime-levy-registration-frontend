@@ -38,4 +38,9 @@ class TestOnlyConnector @Inject() (
       s"$eclRegistrationsUrl/clear-all"
     )
 
+  def clearCurrentData()(implicit hc: HeaderCarrier): Future[HttpResponse] =
+    httpClient.GET(
+      s"$eclRegistrationsUrl/clear-current"
+    )
+
 }

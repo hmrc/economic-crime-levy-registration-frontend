@@ -30,10 +30,11 @@ object EclTaxYear {
   private val eclFyEndDay     = 31
   private val eclFyStartDay   = 1
 
-  val dueDate: String              =
+  val dueDate: String                      =
     LocalDate.of(calculateYearDue(), monthDue, dayDue).format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
-  val yearDue: String              = calculateYearDue().toString
-  val currentFinancialYear: String = (yearDue.toInt - 1).toString
+  val yearDue: String                      = calculateYearDue().toString
+  private val currentFinancialYear: String = (yearDue.toInt - 1).toString
+  val yearInDays                           = 365
 
   @tailrec
   def calculateYearDue(yearDue: Int = startYear, currentDate: LocalDate = LocalDate.now()): Int =
@@ -43,7 +44,11 @@ object EclTaxYear {
       yearDue
     }
 
-  val currentFinancialYearStartDate: LocalDate =
+  private val currentFinancialYearStartDate: LocalDate =
     LocalDate.of(currentFinancialYear.toInt, eclFyStartMonth, eclFyStartDay)
-  val currentFinancialYearEndDate: LocalDate   = LocalDate.of(currentFinancialYear.toInt + 1, eclFyEndMonth, eclFyEndDay)
+  private val currentFinancialYearEndDate: LocalDate   =
+    LocalDate.of(currentFinancialYear.toInt + 1, eclFyEndMonth, eclFyEndDay)
+
+  val currentFyStartYear: String = currentFinancialYearStartDate.getYear.toString
+  val currentFyEndYear: String   = currentFinancialYearEndDate.getYear.toString
 }
