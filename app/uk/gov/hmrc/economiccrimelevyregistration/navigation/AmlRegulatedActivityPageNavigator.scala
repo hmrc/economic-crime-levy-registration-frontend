@@ -26,7 +26,7 @@ class AmlRegulatedActivityPageNavigator extends PageNavigator {
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  => routes.AmlSupervisorController.onPageLoad()
       case Some(false) => routes.NotLiableController.onPageLoad()
-      case _           => routes.StartController.onPageLoad()
+      case _           => routes.JourneyRecoveryController.onPageLoad()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???

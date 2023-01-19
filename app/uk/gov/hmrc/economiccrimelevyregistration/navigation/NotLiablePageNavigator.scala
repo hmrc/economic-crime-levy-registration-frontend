@@ -30,6 +30,6 @@ class NotLiablePageNavigator extends PageNavigator {
     (registration.carriedOutAmlRegulatedActivityInCurrentFy, registration.relevantApRevenue) match {
       case (Some(false), _) => routes.AmlRegulatedActivityController.onPageLoad()
       case (_, Some(_))     => routes.UkRevenueController.onPageLoad()
-      case _                => routes.StartController.onPageLoad()
+      case _                => routes.JourneyRecoveryController.onPageLoad()
     }
 }

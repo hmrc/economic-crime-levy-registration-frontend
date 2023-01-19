@@ -30,7 +30,7 @@ class SecondContactNumberPageNavigator extends PageNavigator {
           case Some(_) => routes.ConfirmContactAddressController.onPageLoad()
           case _       => routes.IsUkAddressController.onPageLoad()
         }
-      case _       => routes.StartController.onPageLoad()
+      case _       => routes.JourneyRecoveryController.onPageLoad()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???

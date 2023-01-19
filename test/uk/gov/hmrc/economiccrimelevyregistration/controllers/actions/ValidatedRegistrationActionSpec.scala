@@ -57,7 +57,7 @@ class ValidatedRegistrationActionSpec extends SpecBase {
         val result: Future[Option[Result]] =
           validatedRegistrationAction.filter(RegistrationDataRequest(fakeRequest, internalId, registration))
 
-        await(result) shouldBe Some(Redirect(routes.StartController.onPageLoad()))
+        await(result) shouldBe Some(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
   }
 

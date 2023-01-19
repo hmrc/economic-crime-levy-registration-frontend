@@ -37,18 +37,18 @@ class IsUkAddressPageNavigator @Inject() (
   )(implicit request: RequestHeader): Future[Call] =
     registration.contactAddressIsUk match {
       case Some(ukMode) => addressLookupFrontendConnector.initJourney(ukMode).map(journeyUrl => Call(GET, journeyUrl))
-      case _            => Future.successful(routes.StartController.onPageLoad())
+      case _            => Future.successful(routes.JourneyRecoveryController.onPageLoad())
     }
 
   override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
 
   override def previousPage(registration: Registration): Call = registration.grsAddressToEclAddress match {
-    case Some(address) => routes.ConfirmContactAddressController.onPageLoad()
-    case _             =>
+    case Some(_) => routes.ConfirmContactAddressController.onPageLoad()
+    case _       =>
       registration.contacts.secondContact match {
         case Some(true)  => contacts.routes.SecondContactNumberController.onPageLoad()
         case Some(false) => contacts.routes.AddAnotherContactController.onPageLoad()
-        case _           => routes.StartController.onPageLoad()
+        case _           => routes.JourneyRecoveryController.onPageLoad()
       }
   }
 
