@@ -73,6 +73,8 @@ POST        /check-your-answers                                 uk.gov.hmrc.econ
 
 GET         /registration-submitted                             uk.gov.hmrc.economiccrimelevyregistration.controllers.RegistrationSubmittedController.onPageLoad()
 
+GET         /there-is-a-problem-with-the-service                uk.gov.hmrc.economiccrimelevyregistration.controllers.JourneyRecoveryController.onPageLoad()
+
 GET         /account/sign-out-survey                            uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
 GET         /account/sign-out                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
 GET         /account/signed-out                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()

@@ -68,6 +68,18 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
         pageNavigator.previousPage(updatedRegistration) shouldBe routes.RelevantAp12MonthsController
           .onPageLoad()
     }
+
+    "return a call to the relevant AP length page when the relevant AP is not 12 months" in forAll {
+      (registration: Registration, relevantApLength: Int) =>
+        val updatedRegistration: Registration =
+          registration.copy(
+            relevantAp12Months = Some(false),
+            relevantApLength = Some(relevantApLength)
+          )
+
+        pageNavigator.previousPage(updatedRegistration) shouldBe routes.RelevantApLengthController
+          .onPageLoad()
+    }
   }
 
 }

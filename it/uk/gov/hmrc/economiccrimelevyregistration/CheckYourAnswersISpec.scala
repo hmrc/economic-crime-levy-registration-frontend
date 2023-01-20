@@ -30,7 +30,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       html(result) should include(s"Check your answers")
     }
 
-    "redirect to the start page when the registration data is invalid" in {
+    "redirect to the journey recovery page when the registration data is invalid" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
@@ -43,7 +43,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.StartController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
     }
   }
 

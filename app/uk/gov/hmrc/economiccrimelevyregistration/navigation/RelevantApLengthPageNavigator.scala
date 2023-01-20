@@ -25,7 +25,7 @@ class RelevantApLengthPageNavigator extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.relevantApLength match {
       case Some(_) => routes.UkRevenueController.onPageLoad()
-      case _       => routes.StartController.onPageLoad()
+      case _       => routes.JourneyRecoveryController.onPageLoad()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???

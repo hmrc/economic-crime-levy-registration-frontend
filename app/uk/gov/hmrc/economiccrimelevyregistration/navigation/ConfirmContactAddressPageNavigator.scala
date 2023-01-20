@@ -39,7 +39,7 @@ class ConfirmContactAddressPageNavigator @Inject() (eclRegistrationConnector: Ec
           .upsertRegistration(registration = registration.copy(contactAddress = registration.grsAddressToEclAddress))
           .map(_ => routes.CheckYourAnswersController.onPageLoad())
       case Some(false) => Future.successful(routes.IsUkAddressController.onPageLoad())
-      case _           => Future.successful(routes.StartController.onPageLoad())
+      case _           => Future.successful(routes.JourneyRecoveryController.onPageLoad())
     }
 
   override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
@@ -47,6 +47,6 @@ class ConfirmContactAddressPageNavigator @Inject() (eclRegistrationConnector: Ec
   override def previousPage(registration: Registration): Call = registration.contacts.secondContact match {
     case Some(true)  => contacts.routes.SecondContactNumberController.onPageLoad()
     case Some(false) => contacts.routes.AddAnotherContactController.onPageLoad()
-    case _           => routes.StartController.onPageLoad()
+    case _           => routes.JourneyRecoveryController.onPageLoad()
   }
 }
