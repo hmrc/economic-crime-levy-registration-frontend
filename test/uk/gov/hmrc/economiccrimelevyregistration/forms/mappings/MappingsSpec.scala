@@ -130,6 +130,16 @@ class MappingsSpec extends AnyWordSpec with Matchers with OptionValues with Mapp
       result.get shouldEqual 1
     }
 
+    "bind a valid integer and strip out any commas" in {
+      val result = testForm.bind(Map("value" -> "1,000"))
+      result.get shouldEqual 1000
+    }
+
+    "bind a valid integer and strip out any whitespace" in {
+      val result = testForm.bind(Map("value" -> "1 000  "))
+      result.get shouldEqual 1000
+    }
+
     "not bind an empty value" in {
       val result = testForm.bind(Map("value" -> ""))
       result.errors should contain(FormError("value", "error.required"))
@@ -142,6 +152,43 @@ class MappingsSpec extends AnyWordSpec with Matchers with OptionValues with Mapp
 
     "unbind a valid value" in {
       val result = testForm.fill(123)
+      result.apply("value").value.value shouldEqual "123"
+    }
+  }
+
+  "long" should {
+    val testForm: Form[Long] =
+      Form(
+        "value" -> long()
+      )
+
+    "bind a valid long" in {
+      val result = testForm.bind(Map("value" -> "1"))
+      result.get shouldEqual 1L
+    }
+
+    "bind a valid long and strip out any commas" in {
+      val result = testForm.bind(Map("value" -> "1,000"))
+      result.get shouldEqual 1000L
+    }
+
+    "bind a valid long and strip out any whitespace" in {
+      val result = testForm.bind(Map("value" -> "1 000  "))
+      result.get shouldEqual 1000L
+    }
+
+    "not bind an empty value" in {
+      val result = testForm.bind(Map("value" -> ""))
+      result.errors should contain(FormError("value", "error.required"))
+    }
+
+    "not bind an empty map" in {
+      val result = testForm.bind(Map.empty[String, String])
+      result.errors should contain(FormError("value", "error.required"))
+    }
+
+    "unbind a valid value" in {
+      val result = testForm.fill(123L)
       result.apply("value").value.value shouldEqual "123"
     }
   }
