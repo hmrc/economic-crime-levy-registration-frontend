@@ -30,6 +30,6 @@ class CheckYourAnswersPageNavigator extends PageNavigator {
     registration.useRegisteredOfficeAddressAsContactAddress match {
       case Some(true)  => routes.ConfirmContactAddressController.onPageLoad()
       case Some(false) => routes.IsUkAddressController.onPageLoad()
-      case _           => routes.StartController.onPageLoad()
+      case _           => routes.JourneyRecoveryController.onPageLoad()
     }
 }

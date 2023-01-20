@@ -26,7 +26,7 @@ class FirstContactEmailPageNavigator extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.contacts.firstContactDetails.emailAddress match {
       case Some(_) => contacts.routes.FirstContactNumberController.onPageLoad()
-      case _       => routes.StartController.onPageLoad()
+      case _       => routes.JourneyRecoveryController.onPageLoad()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???

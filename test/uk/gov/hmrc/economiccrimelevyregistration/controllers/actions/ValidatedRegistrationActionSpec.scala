@@ -49,7 +49,7 @@ class ValidatedRegistrationActionSpec extends SpecBase {
       await(result) shouldBe None
     }
 
-    "return to the start page if the registration data is invalid" in forAll {
+    "redirect to the journey recovery page if the registration data is invalid" in forAll {
       (internalId: String, registration: Registration, dataValidationErrors: DataValidationErrors) =>
         when(mockEclRegistrationConnector.getRegistrationValidationErrors(any())(any()))
           .thenReturn(Future.successful(Some(dataValidationErrors)))
@@ -57,7 +57,7 @@ class ValidatedRegistrationActionSpec extends SpecBase {
         val result: Future[Option[Result]] =
           validatedRegistrationAction.filter(RegistrationDataRequest(fakeRequest, internalId, registration))
 
-        await(result) shouldBe Some(Redirect(routes.StartController.onPageLoad()))
+        await(result) shouldBe Some(Redirect(routes.JourneyRecoveryController.onPageLoad()))
     }
   }
 

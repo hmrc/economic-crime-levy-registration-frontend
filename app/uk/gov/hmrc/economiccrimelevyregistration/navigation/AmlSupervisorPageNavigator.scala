@@ -31,7 +31,7 @@ class AmlSupervisorPageNavigator extends PageNavigator {
             routes.RegisterWithOtherAmlSupervisorController.onPageLoad()
           case Hmrc | Other                                   => routes.RelevantAp12MonthsController.onPageLoad()
         }
-      case _                   => routes.StartController.onPageLoad()
+      case _                   => routes.JourneyRecoveryController.onPageLoad()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???

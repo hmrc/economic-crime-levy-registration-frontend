@@ -60,5 +60,10 @@ class UkRevenuePageNavigator @Inject() (
 
   override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
 
-  override def previousPage(registration: Registration): Call = routes.RelevantAp12MonthsController.onPageLoad()
+  override def previousPage(registration: Registration): Call =
+    (registration.relevantAp12Months, registration.relevantApLength) match {
+      case (Some(true), _) => routes.RelevantAp12MonthsController.onPageLoad()
+      case (_, Some(_))    => routes.RelevantApLengthController.onPageLoad()
+      case _               => routes.JourneyRecoveryController.onPageLoad()
+    }
 }

@@ -26,7 +26,7 @@ class FirstContactRolePageNavigator extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.contacts.firstContactDetails.role match {
       case Some(_) => contacts.routes.FirstContactEmailController.onPageLoad()
-      case _       => routes.StartController.onPageLoad()
+      case _       => routes.JourneyRecoveryController.onPageLoad()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call = ???

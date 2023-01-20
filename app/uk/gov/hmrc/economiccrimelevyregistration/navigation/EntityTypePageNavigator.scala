@@ -59,7 +59,7 @@ class EntityTypePageNavigator @Inject() (
 
           case Other => ???
         }
-      case _                => Future.successful(routes.StartController.onPageLoad())
+      case _                => Future.successful(routes.JourneyRecoveryController.onPageLoad())
     }
 
   override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???

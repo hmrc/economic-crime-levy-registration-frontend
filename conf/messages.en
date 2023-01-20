@@ -37,6 +37,10 @@ error.date.invalid = The date entered must be a real date
 error.required = Please enter a value
 error.summary.title = There is a problem
 
+journeyRecovery.title = Sorry, there is a problem with the service
+journeyRecovery.heading = Sorry, there is a problem with the service
+journeyRecovery.p1 = The information provided is not complete or is not valid.
+
 start.title = Register for the Economic Crime Levy
 start.heading = Register for the Economic Crime Levy
 start.p1 = Use this service if you are an organisation or entity registered with HMRC for Anti-Money Laundering (AML) supervision and you need to register for the Economic Crime Levy (ECL).
