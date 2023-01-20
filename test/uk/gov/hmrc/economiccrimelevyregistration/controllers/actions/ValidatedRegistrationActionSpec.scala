@@ -49,7 +49,7 @@ class ValidatedRegistrationActionSpec extends SpecBase {
       await(result) shouldBe None
     }
 
-    "return to the start page if the registration data is invalid" in forAll {
+    "redirect to the journey recovery page if the registration data is invalid" in forAll {
       (internalId: String, registration: Registration, dataValidationErrors: DataValidationErrors) =>
         when(mockEclRegistrationConnector.getRegistrationValidationErrors(any())(any()))
           .thenReturn(Future.successful(Some(dataValidationErrors)))
