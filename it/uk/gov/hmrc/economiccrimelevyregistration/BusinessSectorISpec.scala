@@ -10,8 +10,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.BusinessSectorController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.BusinessSectorController.onPageLoad())
+  s"GET ${routes.BusinessSectorController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionRoute(routes.BusinessSectorController.onPageLoad(NormalMode))
 
     "respond with 200 status and the business sector HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -20,7 +20,7 @@ class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.BusinessSectorController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.BusinessSectorController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -28,8 +28,8 @@ class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.BusinessSectorController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(routes.BusinessSectorController.onSubmit())
+  s"POST ${routes.BusinessSectorController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionRoute(routes.BusinessSectorController.onSubmit(NormalMode))
 
     "save the selected business sector option then redirect to the contact name page" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -44,7 +44,7 @@ class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.BusinessSectorController.onSubmit())
+        FakeRequest(routes.BusinessSectorController.onSubmit(NormalMode))
           .withFormUrlEncodedBody(("value", businessSector.toString))
       )
 

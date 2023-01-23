@@ -57,7 +57,6 @@ class ConfirmContactAddressController @Inject() (
     Ok(
       view(
         form.prepare(request.registration.useRegisteredOfficeAddressAsContactAddress),
-        pageNavigator.previousPage(request.registration).url,
         AddressViewModel.insetText(address(request))
       )
     )
@@ -72,7 +71,6 @@ class ConfirmContactAddressController @Inject() (
             BadRequest(
               view(
                 formWithErrors,
-                pageNavigator.previousPage(request.registration).url,
                 AddressViewModel.insetText(address(request))
               )
             )

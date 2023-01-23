@@ -32,7 +32,7 @@
     <p class="govuk-body">@messages("secondContactRole.legend")</p>
 }
 
-@layout(pageTitle = titleWithForm(form, messages("secondContactRole.title", name)), backLinkUrl = Some(SecondContactNameController.onPageLoad().url)) {
+@layout(pageTitle = titleWithForm(form, messages("secondContactRole.title", name))) {
     @formHelper(action = SecondContactRoleController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

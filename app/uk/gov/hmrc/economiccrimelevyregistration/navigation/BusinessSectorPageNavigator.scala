@@ -28,7 +28,7 @@ class BusinessSectorPageNavigator extends PageNavigator {
       case _       => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call = ???
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    routes.CheckYourAnswersController.onPageLoad()
 
-  override def previousPage(registration: Registration): Call = ???
 }

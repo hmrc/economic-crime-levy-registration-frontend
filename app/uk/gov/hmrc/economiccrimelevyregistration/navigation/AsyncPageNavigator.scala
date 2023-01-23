@@ -31,5 +31,4 @@ trait AsyncPageNavigator {
 
   protected def navigateInCheckMode(registration: Registration): Future[Call]
 
-  def previousPage(registration: Registration): Call
 }

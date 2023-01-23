@@ -17,12 +17,11 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.http.Status.OK
-import play.api.mvc.{Call, Result}
+import play.api.mvc.Result
 import play.api.test.Helpers.{contentAsString, status}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NotLiablePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.NotLiableView
 
 import scala.concurrent.Future
@@ -30,16 +29,11 @@ import scala.concurrent.Future
 class NotLiableControllerSpec extends SpecBase {
   val view: NotLiableView = app.injector.instanceOf[NotLiableView]
 
-  val pageNavigator: NotLiablePageNavigator = new NotLiablePageNavigator {
-    override def previousPage(registration: Registration): Call = backRoute
-  }
-
   class TestContext(registrationData: Registration) {
     val controller = new NotLiableController(
       mcc,
       fakeAuthorisedAction,
       view,
-      pageNavigator,
       fakeDataRetrievalAction(registrationData)
     )
   }
@@ -51,7 +45,7 @@ class NotLiableControllerSpec extends SpecBase {
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(backRoute.url)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view()(fakeRequest, messages).toString
       }
     }
   }

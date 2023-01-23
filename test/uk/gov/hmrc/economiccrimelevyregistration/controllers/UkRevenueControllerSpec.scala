@@ -43,8 +43,6 @@ class UkRevenueControllerSpec extends SpecBase {
     override protected def navigateInNormalMode(
       registration: Registration
     )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
-
-    override def previousPage(registration: Registration): Call = backRoute
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
@@ -71,7 +69,7 @@ class UkRevenueControllerSpec extends SpecBase {
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, backRoute.url)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
       }
     }
 
@@ -84,7 +82,7 @@ class UkRevenueControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(ukRevenue), backRoute.url)(
+          contentAsString(result) shouldBe view(form.fill(ukRevenue))(
             fakeRequest,
             messages
           ).toString
@@ -124,7 +122,7 @@ class UkRevenueControllerSpec extends SpecBase {
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, backRoute.url)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors)(fakeRequest, messages).toString
       }
     }
   }

@@ -45,8 +45,7 @@ class IsUkAddressControllerSpec extends SpecBase {
   ) {
     override protected def navigateInNormalMode(registration: Registration)(implicit
       request: RequestHeader
-    ): Future[Call]                                             = Future.successful(onwardRoute)
-    override def previousPage(registration: Registration): Call = backRoute
+    ): Future[Call] = Future.successful(onwardRoute)
   }
 
   class TestContext(registrationData: Registration) {
@@ -73,7 +72,7 @@ class IsUkAddressControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form, backRoute.url)(
+          contentAsString(result) shouldBe view(form)(
             fakeRequest,
             messages
           ).toString
@@ -92,8 +91,7 @@ class IsUkAddressControllerSpec extends SpecBase {
 
           status(result)          shouldBe OK
           contentAsString(result) shouldBe view(
-            form.fill(contactAddressIsUk),
-            backRoute.url
+            form.fill(contactAddressIsUk)
           )(
             fakeRequest,
             messages
@@ -134,7 +132,7 @@ class IsUkAddressControllerSpec extends SpecBase {
 
           status(result) shouldBe BAD_REQUEST
 
-          contentAsString(result) shouldBe view(formWithErrors, backRoute.url)(
+          contentAsString(result) shouldBe view(formWithErrors)(
             fakeRequest,
             messages
           ).toString

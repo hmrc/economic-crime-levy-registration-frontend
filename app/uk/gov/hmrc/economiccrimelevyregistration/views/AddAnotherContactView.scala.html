@@ -31,7 +31,7 @@
     <p class="govuk-body">@messages("addAnotherContact.legend")</p>
 }
 
-@layout(pageTitle = titleWithForm(form, messages("addAnotherContact.title")), backLinkUrl = Some(FirstContactNumberController.onPageLoad().url)) {
+@layout(pageTitle = titleWithForm(form, messages("addAnotherContact.title"))) {
     @formHelper(action = AddAnotherContactController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
