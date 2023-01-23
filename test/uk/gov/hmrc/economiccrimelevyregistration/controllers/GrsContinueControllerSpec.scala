@@ -94,7 +94,7 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad().url)
+          redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
         }
     }
 
@@ -284,7 +284,7 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad().url)
+          redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
         }
     }
 
@@ -476,7 +476,7 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad().url)
+          redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
         }
     }
 

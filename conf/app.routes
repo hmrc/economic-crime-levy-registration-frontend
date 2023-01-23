@@ -28,8 +28,10 @@ GET         /register-with-your-aml-supervisor                  uk.gov.hmrc.econ
 GET         /what-is-your-entity-type                           uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
 POST        /what-is-your-entity-type                           uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
 
-GET         /what-is-your-business-sector                       uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad()
-POST        /what-is-your-business-sector                       uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onSubmit()
+GET         /what-is-your-business-sector                       uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-business-sector                       uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-business-sector         uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-business-sector         uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onSubmit(mode: Mode = CheckMode)
 
 GET         /contact-name                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNameController.onPageLoad()
 POST        /contact-name                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNameController.onSubmit()

@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.BusinessSectorFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.BusinessSectorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.BusinessSectorView
 
@@ -59,22 +59,22 @@ class BusinessSectorControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
       new TestContext(registration.copy(businessSector = None)) {
-        val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
       }
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
       (registration: Registration, businessSector: BusinessSector) =>
         new TestContext(registration.copy(businessSector = Some(businessSector))) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(businessSector))(
+          contentAsString(result) shouldBe view(form.fill(businessSector), NormalMode)(
             fakeRequest,
             messages
           ).toString
@@ -92,7 +92,7 @@ class BusinessSectorControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", businessSector.toString)))
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", businessSector.toString)))
 
           status(result) shouldBe SEE_OTHER
 
@@ -102,12 +102,12 @@ class BusinessSectorControllerSpec extends SpecBase {
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
       new TestContext(registration) {
-        val result: Future[Result]               = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
+        val result: Future[Result]               = controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
         val formWithErrors: Form[BusinessSector] = form.bind(Map("value" -> ""))
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString
       }
     }
   }

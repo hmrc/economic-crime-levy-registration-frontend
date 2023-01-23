@@ -24,14 +24,13 @@
         button: GovukButton
 )
 
-@(form: Form[BusinessSector])(implicit request: Request[_], messages: Messages)
+@(form: Form[BusinessSector], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = titleWithForm(form, messages("businessSector.title")),
-    backLinkUrl = Some(EntityTypeController.onPageLoad().url),
-
+    backLinkUrl = Some(backLinkUrl(mode, EntityTypeController.onPageLoad().url)),
 ) {
-    @formHelper(action = BusinessSectorController.onSubmit()) {
+    @formHelper(action = BusinessSectorController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
         }
