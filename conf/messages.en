@@ -8,7 +8,6 @@ site.yes = Yes
 site.continue = Continue
 site.saveAndContinue = Save and continue
 site.start = Start now
-site.startAgain = Start again
 site.signIn = Sign in
 site.govuk = GOV.UK
 
@@ -37,9 +36,13 @@ error.date.invalid = The date entered must be a real date
 error.required = Please enter a value
 error.summary.title = There is a problem
 
-journeyRecovery.title = Sorry, there is a problem with the service
-journeyRecovery.heading = Sorry, there is a problem with the service
-journeyRecovery.p1 = The information provided is not complete or is not valid.
+journeyRecovery.title = The answers you provided are not valid
+journeyRecovery.heading = The answers you provided are not valid
+journeyRecovery.p1 = The answers you provided are not valid or are incomplete.
+journeyRecovery.p2 = This might have happened because you bookmarked a URL in the journey and tried to come back to it after 30 days.
+journeyRecovery.p3 = You will need to submit your answers again.
+journeyRecovery.button = Register for the Economic Crime Levy
+
 
 start.title = Register for the Economic Crime Levy
 start.heading = Register for the Economic Crime Levy

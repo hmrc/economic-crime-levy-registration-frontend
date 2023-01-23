@@ -56,9 +56,4 @@ object ViewUtils {
     formatter.format(amount)
   }
 
-  def backLinkUrl(mode: Mode, url: String): String =
-    mode match {
-      case NormalMode => url
-      case CheckMode  => routes.CheckYourAnswersController.onPageLoad().url
-    }
 }
