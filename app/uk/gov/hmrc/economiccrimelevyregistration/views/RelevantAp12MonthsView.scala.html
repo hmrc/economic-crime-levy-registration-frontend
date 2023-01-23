@@ -30,7 +30,7 @@
     <p class="govuk-body">@messages("relevantAp12Months.p2")</p>
 }
 
-@layout(pageTitle = titleWithForm(form, messages("relevantAp12Months.title")), backLinkUrl = Some(AmlSupervisorController.onPageLoad().url)) {
+@layout(pageTitle = titleWithForm(form, messages("relevantAp12Months.title"))) {
     @formHelper(action = RelevantAp12MonthsController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))

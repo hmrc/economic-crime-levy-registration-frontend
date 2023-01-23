@@ -25,7 +25,8 @@
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle = title(messages("journeyRecovery.title"))
+    pageTitle = title(messages("journeyRecovery.title")),
+    showBackLink = false
 ) {
 
     <h1 class="govuk-heading-l">@messages("journeyRecovery.heading")</h1>

@@ -22,17 +22,14 @@
         appConfig: AppConfig
 )
 
-@(backUrl: String)(implicit request: Request[_], messages: Messages)
+@()(implicit request: Request[_], messages: Messages)
 
 @insetTextHtml = {
     <p>@messages("notLiable.inset.p1")</p>
     <p>@Html(messages("notLiable.inset.p2", messages("notLiable.inset.link")))</p>
 }
 
-@layout(
-    pageTitle = title(messages("notLiable.title")),
-    backLinkUrl = Some(backUrl)
-) {
+@layout(pageTitle = title(messages("notLiable.title"))) {
 
     <h1 class="govuk-heading-l">@messages("notLiable.heading")</h1>
 

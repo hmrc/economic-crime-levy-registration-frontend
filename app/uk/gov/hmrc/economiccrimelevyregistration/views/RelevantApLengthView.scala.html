@@ -32,7 +32,7 @@
     <p class="govuk-body">@messages("relevantApLength.p2")</p>
 }
 
-@layout(pageTitle = titleWithForm(form, messages("relevantApLength.title")), backLinkUrl = Some(RelevantAp12MonthsController.onPageLoad().url)) {
+@layout(pageTitle = titleWithForm(form, messages("relevantApLength.title"))) {
     @formHelper(action = RelevantApLengthController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

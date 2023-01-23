@@ -31,5 +31,4 @@ class BusinessSectorPageNavigator extends PageNavigator {
   override protected def navigateInCheckMode(registration: Registration): Call =
     routes.CheckYourAnswersController.onPageLoad()
 
-  override def previousPage(registration: Registration): Call = ???
 }

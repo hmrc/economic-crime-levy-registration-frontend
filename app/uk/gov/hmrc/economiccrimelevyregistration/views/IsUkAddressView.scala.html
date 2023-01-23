@@ -24,12 +24,9 @@
         button: GovukButton
 )
 
-@(form: Form[Boolean], backLink: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithForm(form, messages("isUkAddress.title")),
-    backLinkUrl = Some(backLink)
-) {
+@layout(pageTitle = titleWithForm(form, messages("isUkAddress.title"))) {
     @formHelper(action = IsUkAddressController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))

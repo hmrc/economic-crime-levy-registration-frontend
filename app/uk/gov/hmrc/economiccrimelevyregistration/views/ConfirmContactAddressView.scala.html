@@ -23,7 +23,7 @@
         insetText: GovukInsetText
 )
 
-@(form: Form[Boolean], backLink: String, addressViewModel: InsetText)(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], addressViewModel: InsetText)(implicit request: Request[_], messages: Messages)
 
 @legendHtml = {
     <h1 class="govuk-heading-l">@messages("confirmContactAddress.heading")</h1>
@@ -32,10 +32,7 @@
 )
 }
 
-@layout(
-    pageTitle = titleWithForm(form, messages("confirmContactAddress.title")),
-    backLinkUrl = Some(backLink)
-) {
+@layout(pageTitle = titleWithForm(form, messages("confirmContactAddress.title"))) {
     @formHelper(action = ConfirmContactAddressController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))

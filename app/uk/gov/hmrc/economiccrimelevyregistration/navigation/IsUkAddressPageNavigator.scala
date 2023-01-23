@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.AddressLookupFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.http.HttpVerbs.GET
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
@@ -41,15 +41,5 @@ class IsUkAddressPageNavigator @Inject() (
     }
 
   override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
-
-  override def previousPage(registration: Registration): Call = registration.grsAddressToEclAddress match {
-    case Some(_) => routes.ConfirmContactAddressController.onPageLoad()
-    case _       =>
-      registration.contacts.secondContact match {
-        case Some(true)  => contacts.routes.SecondContactNumberController.onPageLoad()
-        case Some(false) => contacts.routes.AddAnotherContactController.onPageLoad()
-        case _           => routes.JourneyRecoveryController.onPageLoad()
-      }
-  }
 
 }

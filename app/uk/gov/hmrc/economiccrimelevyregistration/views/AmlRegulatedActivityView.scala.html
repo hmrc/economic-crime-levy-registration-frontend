@@ -27,10 +27,7 @@
 
 @(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithForm(form, messages("amlRegulatedActivity.title", EclTaxYear.currentFyStartYear, EclTaxYear.currentFyEndYear)),
-    backLinkUrl = Some(StartController.onPageLoad().url)
-) {
+@layout(pageTitle = titleWithForm(form, messages("amlRegulatedActivity.title", EclTaxYear.currentFyStartYear, EclTaxYear.currentFyEndYear))) {
     @formHelper(action = AmlRegulatedActivityController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
