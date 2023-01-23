@@ -23,10 +23,7 @@ appConfig: AppConfig
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = title(messages("registerWith.title", messages("registerWith.title.gc"))),
-backLinkUrl = Some(AmlSupervisorController.onPageLoad().url)
-) {
+@layout(pageTitle = title(messages("registerWith.title", messages("registerWith.title.gc")))) {
 
 <h1 class="govuk-heading-l">@messages("registerWith.heading", messages("registerWith.heading.gc"))</h1>
 

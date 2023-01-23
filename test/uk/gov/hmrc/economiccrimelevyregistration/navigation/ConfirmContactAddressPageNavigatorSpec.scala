@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWithValidCompanyProfile
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
 import scala.concurrent.Future
@@ -68,26 +68,6 @@ class ConfirmContactAddressPageNavigatorSpec extends SpecBase {
         await(
           pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.CheckYourAnswersController
-          .onPageLoad()
-    }
-  }
-
-  "previousPage" should {
-    "return a call to the second contact number page when the answer was yes to adding another contact" in forAll {
-      (registration: Registration) =>
-        val updatedRegistration: Registration =
-          registration.copy(contacts = registration.contacts.copy(secondContact = Some(true)))
-
-        pageNavigator.previousPage(updatedRegistration) shouldBe contacts.routes.SecondContactNumberController
-          .onPageLoad()
-    }
-
-    "return a call to the add another contact page when the answer was no adding another contact" in forAll {
-      (registration: Registration) =>
-        val updatedRegistration: Registration =
-          registration.copy(contacts = registration.contacts.copy(secondContact = Some(false)))
-
-        pageNavigator.previousPage(updatedRegistration) shouldBe contacts.routes.AddAnotherContactController
           .onPageLoad()
     }
   }

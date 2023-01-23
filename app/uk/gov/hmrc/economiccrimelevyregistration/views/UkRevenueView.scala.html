@@ -24,7 +24,7 @@
         govukButton: GovukButton
 )
 
-@(form: Form[Long], backUrl: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[Long])(implicit request: Request[_], messages: Messages)
 
 @labelHtml = {
     <h1 class="govuk-heading-l">@messages("ukRevenue.heading")</h1>
@@ -35,7 +35,7 @@
     </ul>
 }
 
-@layout(pageTitle = titleWithForm(form, messages("ukRevenue.title")), backLinkUrl = Some(backUrl)) {
+@layout(pageTitle = titleWithForm(form, messages("ukRevenue.title"))) {
     @formHelper(action = UkRevenueController.onSubmit()) {
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

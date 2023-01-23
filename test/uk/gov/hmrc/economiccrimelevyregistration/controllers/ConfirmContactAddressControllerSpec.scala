@@ -47,8 +47,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
   ) {
     override protected def navigateInNormalMode(
       registration: Registration
-    )(implicit request: RequestHeader): Future[Call]            = Future.successful(onwardRoute)
-    override def previousPage(registration: Registration): Call = backRoute
+    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
   }
 
   class TestContext(registrationData: Registration) {
@@ -86,7 +85,6 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
 
           contentAsString(result) shouldBe view(
             form,
-            backRoute.url,
             AddressViewModel.insetText(updatedRegistration.grsAddressToEclAddress.get)
           )(fakeRequest, messages).toString
         }
@@ -136,7 +134,6 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
 
           contentAsString(result) shouldBe view(
             form.fill(useRegisteredOfficeAddressAsContactAddress),
-            backRoute.url,
             AddressViewModel.insetText(updatedRegistration.grsAddressToEclAddress.get)
           )(fakeRequest, messages).toString
         }
@@ -187,7 +184,6 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
 
           contentAsString(result) shouldBe view(
             formWithErrors,
-            backRoute.url,
             AddressViewModel.insetText(updatedRegistration.grsAddressToEclAddress.get)
           )(fakeRequest, messages).toString
         }

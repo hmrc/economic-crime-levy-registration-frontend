@@ -15,9 +15,7 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-@import uk.gov.hmrc.hmrcfrontend.views.config.StandardAlphaBanner
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcAccessibleAutocompleteCss
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcAccessibleAutocompleteJavascript
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcAccessibleAutocompleteCss, HmrcAccessibleAutocompleteJavascript}
 @import views.html.helper.CSPNonce
 
 @this(
@@ -32,13 +30,19 @@
         autocompleteJavascript: HmrcAccessibleAutocompleteJavascript
 )
 
-@(pageTitle: String, backLinkUrl: Option[String] = None, timeout: Boolean = true, showSignOut: Boolean = true, isWelshTranslationAvailable: Option[Boolean] = None, autoCompleteEnabled: Boolean = false)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, isWelshTranslationAvailable: Option[Boolean] = None, autoCompleteEnabled: Boolean = false)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = {
 @if(autoCompleteEnabled) {
     @autocompleteCss(CSPNonce.get)
     <link rel="stylesheet" href="@{
         controllers.routes.Assets.versioned("stylesheets/accessible-autocomplete-fixes.css")
+    }" @{
+        CSPNonce.attr
+    }>
+
+    <link rel="stylesheet" href="@{
+        controllers.routes.Assets.versioned("stylesheets/js-disabled.css")
     }" @{
         CSPNonce.attr
     }>
@@ -83,6 +87,6 @@
     isWelshTranslationAvailable = isWelshTranslationAvailable.getOrElse(appConfig.languageTranslationEnabled),
     additionalScriptsBlock = Some(additionalScripts),
     additionalHeadBlock = Some(head),
-    backLinkUrl = backLinkUrl,
+    backLink = if(showBackLink) Some(BackLink.mimicsBrowserBackButtonViaJavaScript) else None,
     phaseBanner = Some(betaBanner(appConfig.feedbackUrl))
 )(content)

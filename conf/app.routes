@@ -28,8 +28,10 @@ GET         /register-with-your-aml-supervisor                  uk.gov.hmrc.econ
 GET         /what-is-your-entity-type                           uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
 POST        /what-is-your-entity-type                           uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
 
-GET         /what-is-your-business-sector                       uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad()
-POST        /what-is-your-business-sector                       uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onSubmit()
+GET         /what-is-your-business-sector                       uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-business-sector                       uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-business-sector         uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-business-sector         uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onSubmit(mode: Mode = CheckMode)
 
 GET         /contact-name                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNameController.onPageLoad()
 POST        /contact-name                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNameController.onSubmit()
@@ -70,7 +72,7 @@ GET         /address-lookup-continue                            uk.gov.hmrc.econ
 
 GET         /check-your-answers                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
 
-GET         /there-is-a-problem-with-the-service                uk.gov.hmrc.economiccrimelevyregistration.controllers.JourneyRecoveryController.onPageLoad()
+GET         /answers-are-not-valid                              uk.gov.hmrc.economiccrimelevyregistration.controllers.JourneyRecoveryController.onPageLoad()
 
 GET         /account/sign-out-survey                            uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
 GET         /account/sign-out                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()

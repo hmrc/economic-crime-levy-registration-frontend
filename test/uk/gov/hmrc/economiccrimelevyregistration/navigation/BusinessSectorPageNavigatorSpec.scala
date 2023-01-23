@@ -17,9 +17,9 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, CheckMode, NormalMode, Registration}
 
 class BusinessSectorPageNavigatorSpec extends SpecBase {
 
@@ -31,6 +31,14 @@ class BusinessSectorPageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe contacts.routes.FirstContactNameController
+          .onPageLoad()
+    }
+
+    "return a Call to the check your answers page in CheckMode" in forAll {
+      (registration: Registration, businessSector: BusinessSector) =>
+        val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
+
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController
           .onPageLoad()
     }
   }

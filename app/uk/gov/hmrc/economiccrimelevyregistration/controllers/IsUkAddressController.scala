@@ -49,8 +49,7 @@ class IsUkAddressController @Inject() (
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(
       view(
-        form.prepare(request.registration.contactAddressIsUk),
-        pageNavigator.previousPage(request.registration).url
+        form.prepare(request.registration.contactAddressIsUk)
       )
     )
   }
@@ -61,7 +60,7 @@ class IsUkAddressController @Inject() (
       .fold(
         formWithErrors =>
           Future.successful(
-            BadRequest(view(formWithErrors, pageNavigator.previousPage(request.registration).url))
+            BadRequest(view(formWithErrors))
           ),
         contactAddressIsUk =>
           eclRegistrationConnector
