@@ -18,8 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.views
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode}
 
 import java.text.NumberFormat
 import java.time.{LocalDate, ZoneId}
@@ -44,6 +42,14 @@ object ViewUtils {
   def formatDate(date: Date)(implicit messages: Messages): String = {
     val localDate: LocalDate = date.toInstant.atZone(ZoneId.systemDefault()).toLocalDate
 
+    val day   = localDate.getDayOfMonth
+    val month = messages(s"date.month.${localDate.getMonthValue}")
+    val year  = localDate.getYear
+
+    s"$day $month $year"
+  }
+
+  def formatLocalDate(localDate: LocalDate)(implicit messages: Messages): String = {
     val day   = localDate.getDayOfMonth
     val month = messages(s"date.month.${localDate.getMonthValue}")
     val year  = localDate.getYear

@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models.requests
+package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import play.api.mvc.{Request, WrappedRequest}
+import play.api.libs.json.{Json, OFormat}
 
-case class AuthorisedRequest[A](request: Request[A], internalId: String, groupId: String)
-    extends WrappedRequest[A](request)
+import java.time.Instant
+
+final case class CreateEclSubscriptionResponse(
+  processingDate: Instant,
+  eclReference: String
+)
+
+object CreateEclSubscriptionResponse {
+  implicit val format: OFormat[CreateEclSubscriptionResponse] = Json.format[CreateEclSubscriptionResponse]
+}

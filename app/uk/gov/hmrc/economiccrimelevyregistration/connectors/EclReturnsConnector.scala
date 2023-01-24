@@ -37,7 +37,7 @@ class EclReturnsConnector @Inject() (appConfig: AppConfig, httpClient: HttpClien
     httpClient.POST[CalculateLiabilityRequest, CalculatedLiability](
       s"$eclReturnsUrl/calculate-liability",
       CalculateLiabilityRequest(
-        amlRegulatedActivityLength = EclTaxYear.yearInDays,
+        amlRegulatedActivityLength = EclTaxYear.YearInDays,
         relevantApLength = relevantApLength,
         ukRevenue = relevantApRevenue
       )

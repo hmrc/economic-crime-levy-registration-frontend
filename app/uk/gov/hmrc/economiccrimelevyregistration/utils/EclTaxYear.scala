@@ -21,31 +21,34 @@ import scala.annotation.tailrec
 
 object EclTaxYear {
 
-  private val startYear       = LocalDate.now().getYear
-  private val monthDue        = 9
-  private val dayDue          = 30
-  private val eclFyEndMonth   = 3
-  private val eclFyStartMonth = 4
-  private val eclFyEndDay     = 31
-  private val eclFyStartDay   = 1
+  private def startYear       = LocalDate.now().getYear
+  private val MonthDue        = 9
+  private val DayDue          = 30
+  private val EclFyEndMonth   = 3
+  private val EclFyStartMonth = 4
+  private val EclFyEndDay     = 31
+  private val EclFyStartDay   = 1
 
-  val yearDue: String                      = calculateYearDue().toString
-  private val currentFinancialYear: String = (yearDue.toInt - 1).toString
-  val yearInDays                           = 365
+  def dueDate: LocalDate =
+    LocalDate.of(calculateYearDue(), MonthDue, DayDue)
+
+  def yearDue: String                      = calculateYearDue().toString
+  private def currentFinancialYear: String = (yearDue.toInt - 1).toString
+  val YearInDays: Int                      = 365
 
   @tailrec
   def calculateYearDue(yearDue: Int = startYear, currentDate: LocalDate = LocalDate.now()): Int =
-    if (currentDate.isAfter(LocalDate.of(yearDue, monthDue, dayDue))) {
+    if (currentDate.isAfter(LocalDate.of(yearDue, MonthDue, DayDue))) {
       calculateYearDue(yearDue + 1, currentDate)
     } else {
       yearDue
     }
 
-  private val currentFinancialYearStartDate: LocalDate =
-    LocalDate.of(currentFinancialYear.toInt, eclFyStartMonth, eclFyStartDay)
-  private val currentFinancialYearEndDate: LocalDate   =
-    LocalDate.of(currentFinancialYear.toInt + 1, eclFyEndMonth, eclFyEndDay)
+  private def currentFinancialYearStartDate: LocalDate =
+    LocalDate.of(currentFinancialYear.toInt, EclFyStartMonth, EclFyStartDay)
+  private def currentFinancialYearEndDate: LocalDate   =
+    LocalDate.of(currentFinancialYear.toInt + 1, EclFyEndMonth, EclFyEndDay)
 
-  val currentFyStartYear: String = currentFinancialYearStartDate.getYear.toString
-  val currentFyEndYear: String   = currentFinancialYearEndDate.getYear.toString
+  def currentFyStartYear: String = currentFinancialYearStartDate.getYear.toString
+  def currentFyEndYear: String   = currentFinancialYearEndDate.getYear.toString
 }

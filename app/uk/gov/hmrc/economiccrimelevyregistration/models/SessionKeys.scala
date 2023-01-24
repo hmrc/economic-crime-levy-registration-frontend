@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models.requests
+package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import play.api.mvc.{Request, WrappedRequest}
+object SessionKeys {
 
-case class AuthorisedRequest[A](request: Request[A], internalId: String, groupId: String)
-    extends WrappedRequest[A](request)
+  val EclReference: String = "eclReference"
+
+}

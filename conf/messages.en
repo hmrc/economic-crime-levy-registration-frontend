@@ -43,7 +43,6 @@ journeyRecovery.p2 = This might have happened because you bookmarked a URL in th
 journeyRecovery.p3 = You will need to submit your answers again.
 journeyRecovery.button = Register for the Economic Crime Levy
 
-
 start.title = Register for the Economic Crime Levy
 start.heading = Register for the Economic Crime Levy
 start.p1 = Use this service if you are an organisation or entity registered with HMRC for Anti-Money Laundering (AML) supervision and you need to register for the Economic Crime Levy (ECL).
@@ -280,10 +279,27 @@ checkYourAnswers.nowSend = Now send your registration
 checkYourAnswers.bySubmitting = By submitting this registration you are confirming that, to the best of your knowledge, the details you are providing are correct.
 checkYourAnswers.confirmAndSend = Confirm and send
 
+submitted.title = Registration submitted
+submitted.heading = Registration submitted
+submitted.reference = ECL reference number: {0}
+submitted.subHeading = What happens next
+submitted.p1 = You have successfully registered your eligibility for the Economic Crime Levy (ECL). You will receive an email confirmation. Please save this for your records.
+submitted.p2 = You will need to complete a return and pay the levy on a yearly basis. The next deadline for submitting a return and making a payment is {0}.
+submitted.provide = When you complete your yearly return, you will need to tell us about:
+submitted.provide.b1 = your organisation's accounting period for the last financial year
+submitted.provide.b2 = if you stopped Anti-Money Laundering (AML) regulated activities in the last financial year
+submitted.provide.b3 = if you started AML-regulated activities in the last financial year
+submitted.provide.b4 = the details of the person in your organisation who is completing the return
+submitted.return = You can {0} now or come back to do it later.
+submitted.return.link = <a href="#TODO" class="govuk-link">submit a return</a>
+
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.
 feedback.link = <a href="{0}" class="govuk-link">Send us your feedback</a>
 feedback.p2 = {0}. Your thoughts and ideas will help us to make improvements.
+
+exit.survey.link = <a href="{0}" class="govuk-link">What did you think of this service?</a>
+exit.survey = {0} (takes 30 seconds) to exit survey.
 
 signedOut.title = For your security, we signed you out
 signedOut.heading = For your security, we signed you out

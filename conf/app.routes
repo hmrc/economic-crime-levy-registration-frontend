@@ -71,6 +71,9 @@ GET         /grs-continue                                       uk.gov.hmrc.econ
 GET         /address-lookup-continue                            uk.gov.hmrc.economiccrimelevyregistration.controllers.AddressLookupContinueController.continue(id)
 
 GET         /check-your-answers                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
+POST        /check-your-answers                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onSubmit()
+
+GET         /registration-submitted                             uk.gov.hmrc.economiccrimelevyregistration.controllers.RegistrationSubmittedController.onPageLoad()
 
 GET         /answers-are-not-valid                              uk.gov.hmrc.economiccrimelevyregistration.controllers.JourneyRecoveryController.onPageLoad()
 

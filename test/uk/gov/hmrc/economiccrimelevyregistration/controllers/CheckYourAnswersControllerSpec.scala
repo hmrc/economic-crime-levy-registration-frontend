@@ -16,14 +16,17 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidatedRegistrationAction
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, Registration, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
@@ -35,11 +38,14 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
   val view: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
 
+  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+
   class TestContext(registrationData: Registration) {
     val controller = new CheckYourAnswersController(
       messagesApi,
       fakeAuthorisedAction,
       fakeDataRetrievalAction(registrationData),
+      mockEclRegistrationConnector,
       mcc,
       view,
       new FakeValidatedRegistrationAction(registrationData)
@@ -96,4 +102,19 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     }
   }
 
+  "onSubmit" should {
+    "redirect to the registration submitted page after submitting the registration successfully" in forAll {
+      (createEclSubscriptionResponse: CreateEclSubscriptionResponse, registration: Registration) =>
+        new TestContext(registration) {
+          when(mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq("test-internal-id"))(any()))
+            .thenReturn(Future.successful(createEclSubscriptionResponse))
+
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
+
+          status(result)                                shouldBe SEE_OTHER
+          session(result).get(SessionKeys.EclReference) shouldBe Some(createEclSubscriptionResponse.eclReference)
+          redirectLocation(result)                      shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
+        }
+    }
+  }
 }

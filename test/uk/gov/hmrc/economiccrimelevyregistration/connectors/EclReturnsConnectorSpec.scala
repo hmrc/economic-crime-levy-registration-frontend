@@ -42,7 +42,7 @@ class EclReturnsConnectorSpec extends SpecBase {
         when(
           mockHttpClient.POST[CalculateLiabilityRequest, CalculatedLiability](
             ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(calculateLiabilityRequest.copy(amlRegulatedActivityLength = EclTaxYear.yearInDays)),
+            ArgumentMatchers.eq(calculateLiabilityRequest.copy(amlRegulatedActivityLength = EclTaxYear.YearInDays)),
             any()
           )(any(), any(), any(), any())
         )
@@ -57,7 +57,7 @@ class EclReturnsConnectorSpec extends SpecBase {
         verify(mockHttpClient, times(1))
           .POST[CalculateLiabilityRequest, CalculatedLiability](
             ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(calculateLiabilityRequest.copy(amlRegulatedActivityLength = EclTaxYear.yearInDays)),
+            ArgumentMatchers.eq(calculateLiabilityRequest.copy(amlRegulatedActivityLength = EclTaxYear.YearInDays)),
             any()
           )(any(), any(), any(), any())
 

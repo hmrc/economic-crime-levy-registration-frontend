@@ -70,7 +70,7 @@ class BaseAuthorisedAction @Inject() (
                       .flatMap {
                         case true  =>
                           Future.successful(Ok("Group already has the enrolment - assign the enrolment to the user"))
-                        case false => block(AuthorisedRequest(request, internalId))
+                        case false => block(AuthorisedRequest(request, internalId, groupId))
                       }
                 }
             }
