@@ -47,7 +47,7 @@ class UkRevenuePageNavigator @Inject() (
           )
 
         registration.relevantAp12Months match {
-          case Some(true)  => f(EclTaxYear.yearInDays)
+          case Some(true)  => f(EclTaxYear.YearInDays)
           case Some(false) =>
             registration.relevantApLength match {
               case Some(relevantApLength) => f(relevantApLength)

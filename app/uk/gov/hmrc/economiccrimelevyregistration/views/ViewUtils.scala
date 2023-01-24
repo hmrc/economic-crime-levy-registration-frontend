@@ -49,6 +49,14 @@ object ViewUtils {
     s"$day $month $year"
   }
 
+  def formatLocalDate(localDate: LocalDate)(implicit messages: Messages): String = {
+    val day   = localDate.getDayOfMonth
+    val month = messages(s"date.month.${localDate.getMonthValue}")
+    val year  = localDate.getYear
+
+    s"$day $month $year"
+  }
+
   def formatMoney(amount: Number): String = {
     val formatter = NumberFormat.getNumberInstance
     formatter.format(amount)
