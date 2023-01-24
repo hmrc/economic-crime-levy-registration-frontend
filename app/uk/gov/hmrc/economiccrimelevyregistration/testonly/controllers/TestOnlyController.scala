@@ -46,4 +46,8 @@ class TestOnlyController @Inject() (
     Ok(Json.toJson(request.registration))
   }
 
+  def deEnrol(eclReference: String): Action[AnyContent] = authorise.async { implicit request =>
+    testOnlyConnector.deEnrol(request.groupId, eclReference).map(httpResponse => Ok(httpResponse.body))
+  }
+
 }

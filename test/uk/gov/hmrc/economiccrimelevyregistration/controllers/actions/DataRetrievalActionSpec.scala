@@ -44,11 +44,11 @@ class DataRetrievalActionSpec extends SpecBase {
 
   "transform" should {
     "transform an AuthorisedRequest into a RegistrationDataRequest" in forAll {
-      (internalId: String, registration: Registration) =>
+      (internalId: String, groupId: String, registration: Registration) =>
         when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
 
         val result: Future[RegistrationDataRequest[AnyContentAsEmpty.type]] =
-          dataRetrievalAction.transform(AuthorisedRequest(fakeRequest, internalId))
+          dataRetrievalAction.transform(AuthorisedRequest(fakeRequest, internalId, groupId))
 
         await(result) shouldBe RegistrationDataRequest(fakeRequest, internalId, registration)
     }
