@@ -23,7 +23,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclSubscriptionStatus, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, Registration}
 import uk.gov.hmrc.http.{HttpClient, HttpException, HttpResponse, UpstreamErrorResponse}
 
 import scala.concurrent.Future
@@ -230,6 +230,30 @@ class EclRegistrationConnectorSpec extends SpecBase {
         }
 
         result.getMessage shouldBe "Internal server error"
+    }
+  }
+
+  "submitRegistration" should {
+    "return a subscription response when the http client returns a subscription response" in forAll {
+      (internalId: String, subscriptionResponse: CreateEclSubscriptionResponse) =>
+        val expectedUrl = s"$eclRegistrationUrl/submit-registration/$internalId"
+
+        when(
+          mockHttpClient
+            .POSTEmpty[CreateEclSubscriptionResponse](ArgumentMatchers.eq(expectedUrl), any())(any(), any(), any())
+        ).thenReturn(Future.successful(subscriptionResponse))
+
+        val result = await(connector.submitRegistration(internalId))
+
+        result shouldBe subscriptionResponse
+
+        verify(mockHttpClient, times(1))
+          .POSTEmpty[CreateEclSubscriptionResponse](
+            ArgumentMatchers.eq(expectedUrl),
+            any()
+          )(any(), any(), any())
+
+        reset(mockHttpClient)
     }
   }
 }
