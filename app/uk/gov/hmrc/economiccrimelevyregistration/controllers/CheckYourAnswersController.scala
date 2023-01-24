@@ -21,6 +21,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidatedRegistrationAction}
+import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
@@ -85,7 +86,7 @@ class CheckYourAnswersController @Inject() (
       .submitRegistration(request.internalId)
       .map(rs =>
         Redirect(routes.RegistrationSubmittedController.onPageLoad()).withSession(
-          request.session + ("eclReference" -> rs.eclReference)
+          request.session + (SessionKeys.EclReference -> rs.eclReference)
         )
       )
   }

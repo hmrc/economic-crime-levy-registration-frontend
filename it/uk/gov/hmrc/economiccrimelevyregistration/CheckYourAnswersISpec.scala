@@ -12,7 +12,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErr
 class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.CheckYourAnswersController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.AmlSupervisorController.onPageLoad())
+    behave like authorisedActionRoute(routes.CheckYourAnswersController.onPageLoad())
 
     "respond with 200 status and the Check your answers HTML view when the registration data is valid" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -44,6 +44,26 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
+    }
+  }
+
+  s"POST ${routes.CheckYourAnswersController.onSubmit().url}"  should {
+    behave like authorisedActionRoute(routes.CheckYourAnswersController.onSubmit())
+
+    "redirect to the registration submitted page after submitting the registration successfully" in {
+      stubAuthorisedWithNoGroupEnrolment()
+
+      val registration = random[Registration]
+      val eclReference = random[String]
+
+      stubGetRegistration(registration)
+
+      stubSubmitRegistration(eclReference)
+
+      val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onSubmit()))
+
+      status(result)           shouldBe SEE_OTHER
+      redirectLocation(result) shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
     }
   }
 

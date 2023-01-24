@@ -6,7 +6,9 @@ import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclSubscriptionStatus, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, Registration}
+
+import java.time.Instant
 
 trait EclRegistrationStubs { self: WireMockStubs =>
 
@@ -48,6 +50,14 @@ trait EclRegistrationStubs { self: WireMockStubs =>
           .withStatus(OK)
           .withBody(Json.toJson(errors).toString())
       }
+    )
+
+  def stubSubmitRegistration(eclReference: String): StubMapping =
+    stub(
+      post(urlEqualTo(s"/economic-crime-levy-registration/submit-registration/$testInternalId")),
+      aResponse()
+        .withStatus(OK)
+        .withBody(Json.toJson(CreateEclSubscriptionResponse(Instant.now, eclReference)).toString())
     )
 
 }

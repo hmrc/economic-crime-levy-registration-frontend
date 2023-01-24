@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedAction
+import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RegistrationSubmittedView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -33,12 +34,11 @@ class RegistrationSubmittedController @Inject() (
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    request.session
-      .get("eclReference")
-      .map { eclReference =>
-        Ok(view(eclReference))
-      }
+    val eclReference: String = request.session
+      .get(SessionKeys.EclReference)
       .getOrElse(throw new IllegalStateException("ECL reference number not found in session"))
+
+    Ok(view(eclReference))
   }
 
 }

@@ -43,7 +43,6 @@ journeyRecovery.p2 = This might have happened because you bookmarked a URL in th
 journeyRecovery.p3 = You will need to submit your answers again.
 journeyRecovery.button = Register for the Economic Crime Levy
 
-
 start.title = Register for the Economic Crime Levy
 start.heading = Register for the Economic Crime Levy
 start.p1 = Use this service if you are an organisation or entity registered with HMRC for Anti-Money Laundering (AML) supervision and you need to register for the Economic Crime Levy (ECL).
