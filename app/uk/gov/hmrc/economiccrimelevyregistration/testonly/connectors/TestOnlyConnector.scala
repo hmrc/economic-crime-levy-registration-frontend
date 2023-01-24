@@ -43,4 +43,9 @@ class TestOnlyConnector @Inject() (
       s"$eclRegistrationsUrl/clear-current"
     )
 
+  def deEnrol(groupId: String, eclReference: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+    httpClient.GET(
+      s"$eclRegistrationsUrl/de-enrol/$groupId/$eclReference"
+    )
+
 }
