@@ -16,8 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.utils
 
-import java.time.{Instant, LocalDate}
-import java.util.Date
+import java.time.LocalDate
 import scala.annotation.tailrec
 
 object EclTaxYear {
