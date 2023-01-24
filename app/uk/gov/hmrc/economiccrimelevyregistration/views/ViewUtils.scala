@@ -18,8 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.views
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode}
 
 import java.text.NumberFormat
 import java.time.{LocalDate, ZoneId}
