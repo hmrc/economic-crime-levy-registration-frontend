@@ -28,7 +28,7 @@ import play.api.test.Helpers.{stubBodyParser, stubControllerComponents}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{FakeAuthorisedAction, FakeDataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{FakeAuthorisedActionWithEnrolmentCheck, FakeAuthorisedActionWithoutEnrolmentCheck, FakeDataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.http.HeaderCarrier
@@ -59,7 +59,8 @@ trait SpecBase
   val appConfig: AppConfig                             = app.injector.instanceOf[AppConfig]
   val messages: Messages                               = messagesApi.preferred(fakeRequest)
   val bodyParsers: PlayBodyParsers                     = app.injector.instanceOf[PlayBodyParsers]
-  val fakeAuthorisedAction                             = new FakeAuthorisedAction(bodyParsers)
+  val fakeAuthorisedActionWithEnrolmentCheck           = new FakeAuthorisedActionWithEnrolmentCheck(bodyParsers)
+  val fakeAuthorisedActionWithoutEnrolmentCheck        = new FakeAuthorisedActionWithoutEnrolmentCheck(bodyParsers)
 
   def fakeDataRetrievalAction(data: Registration) = new FakeDataRetrievalAction(data)
 

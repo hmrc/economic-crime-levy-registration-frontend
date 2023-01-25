@@ -20,7 +20,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.{AlfAddress, AlfAddressData, AlfCountry}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.forms.AlfStubFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.models.AlfStubFormData
@@ -33,7 +33,7 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class StubAlfJourneyDataController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  authorise: AuthorisedAction,
+  authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   alfStubFormProvider: AlfStubFormProvider,
   view: StubAlfJourneyDataView

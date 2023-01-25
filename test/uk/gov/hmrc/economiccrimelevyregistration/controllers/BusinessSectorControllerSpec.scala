@@ -47,7 +47,7 @@ class BusinessSectorControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new BusinessSectorController(
       mcc,
-      fakeAuthorisedAction,
+      fakeAuthorisedActionWithEnrolmentCheck,
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,

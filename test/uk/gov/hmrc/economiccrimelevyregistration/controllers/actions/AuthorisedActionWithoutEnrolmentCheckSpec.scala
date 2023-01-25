@@ -32,14 +32,19 @@ import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, EnrolmentsW
 
 import scala.concurrent.Future
 
-class AuthorisedActionSpec extends SpecBase {
+class AuthorisedActionWithoutEnrolmentCheckSpec extends SpecBase {
 
   val defaultBodyParser: BodyParsers.Default                     = app.injector.instanceOf[BodyParsers.Default]
   val mockAuthConnector: AuthConnector                           = mock[AuthConnector]
   val mockEnrolmentStoreProxyService: EnrolmentStoreProxyService = mock[EnrolmentStoreProxyService]
 
   val authorisedAction =
-    new BaseAuthorisedAction(mockAuthConnector, mockEnrolmentStoreProxyService, appConfig, defaultBodyParser)
+    new AuthorisedActionWithoutEnrolmentCheckImpl(
+      mockAuthConnector,
+      mockEnrolmentStoreProxyService,
+      appConfig,
+      defaultBodyParser
+    )
 
   val testAction: Request[_] => Future[Result] = { _ =>
     Future(Ok("Test"))
