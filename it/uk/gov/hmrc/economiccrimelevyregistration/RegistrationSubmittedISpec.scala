@@ -26,7 +26,7 @@ class RegistrationSubmittedISpec extends ISpecBase {
 
   s"GET ${routes.RegistrationSubmittedController.onPageLoad().url}" should {
     "respond with 200 status and the registration submitted HTML view" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      stubAuthorisedWithEclEnrolment()
 
       val eclReference = random[String]
 

@@ -15,7 +15,7 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
   val maxDays = 999
 
   s"GET ${routes.RelevantApLengthController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.RelevantApLengthController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.RelevantApLengthController.onPageLoad())
 
     "respond with 200 status and the relevant AP length view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -33,7 +33,7 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${routes.RelevantApLengthController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(routes.RelevantApLengthController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.RelevantApLengthController.onSubmit())
 
     "save the relevant AP length then redirect to the UK revenue page" in {
       stubAuthorisedWithNoGroupEnrolment()

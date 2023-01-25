@@ -9,7 +9,7 @@ import scala.concurrent.Future
 trait AuthorisedBehaviour {
   self: ISpecBase =>
 
-  def authorisedActionRoute(call: Call): Unit =
+  def authorisedActionWithEnrolmentCheckRoute(call: Call): Unit =
     "authorisedAction" should {
       "go to already registered page if the user has the ECL enrolment" in {
         stubAuthorisedWithEclEnrolment()

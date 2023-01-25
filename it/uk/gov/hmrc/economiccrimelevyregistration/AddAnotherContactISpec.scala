@@ -11,7 +11,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${contacts.routes.AddAnotherContactController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(contacts.routes.AddAnotherContactController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.AddAnotherContactController.onPageLoad())
 
     "respond with 200 status and the Add another contact HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -29,7 +29,7 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${contacts.routes.AddAnotherContactController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(contacts.routes.AddAnotherContactController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.AddAnotherContactController.onSubmit())
 
     "save the selected answer then redirect the second contact name page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()

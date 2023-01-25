@@ -92,16 +92,20 @@ abstract class BaseAuthorisedAction @Inject() (
             credentialRole match {
               case Assistant => Future.successful(Ok("User is not an Admin - request an admin to perform registration"))
               case _         =>
-                eclEnrolment match {
-                  case Some(_) => Future.successful(Ok("Already registered - user already has enrolment"))
-                  case None    =>
-                    enrolmentStoreProxyService
-                      .groupHasEnrolment(groupId)(hc(request))
-                      .flatMap {
-                        case true  =>
-                          Future.successful(Ok("Group already has the enrolment - assign the enrolment to the user"))
-                        case false => block(AuthorisedRequest(request, internalId, groupId))
-                      }
+                if (checkForEclEnrolment) {
+                  eclEnrolment match {
+                    case Some(_) => Future.successful(Ok("Already registered - user already has enrolment"))
+                    case None    =>
+                      enrolmentStoreProxyService
+                        .groupHasEnrolment(groupId)(hc(request))
+                        .flatMap {
+                          case true  =>
+                            Future.successful(Ok("Group already has the enrolment - assign the enrolment to the user"))
+                          case false => block(AuthorisedRequest(request, internalId, groupId))
+                        }
+                  }
+                } else {
+                  block(AuthorisedRequest(request, internalId, groupId))
                 }
             }
         }

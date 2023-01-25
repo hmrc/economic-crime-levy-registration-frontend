@@ -12,7 +12,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
 class IsUkAddressISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.IsUkAddressController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.IsUkAddressController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.IsUkAddressController.onPageLoad())
 
     "respond with 200 status and the is UK address HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -30,7 +30,7 @@ class IsUkAddressISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${routes.IsUkAddressController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(routes.IsUkAddressController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.IsUkAddressController.onSubmit())
 
     "save the selected address option then redirect to the address lookup frontend journey" in {
       stubAuthorisedWithNoGroupEnrolment()

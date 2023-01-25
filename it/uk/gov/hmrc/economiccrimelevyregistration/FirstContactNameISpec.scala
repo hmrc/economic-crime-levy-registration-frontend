@@ -13,7 +13,7 @@ class FirstContactNameISpec extends ISpecBase with AuthorisedBehaviour {
   val nameMaxLength: Int = 160
 
   s"GET ${contacts.routes.FirstContactNameController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(contacts.routes.FirstContactNameController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.FirstContactNameController.onPageLoad())
 
     "respond with 200 status and the first contact name HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -31,7 +31,7 @@ class FirstContactNameISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${contacts.routes.FirstContactNameController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(contacts.routes.FirstContactNameController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.FirstContactNameController.onSubmit())
 
     "save the provided name then redirect to the first contact role page" in {
       stubAuthorisedWithNoGroupEnrolment()

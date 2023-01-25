@@ -13,7 +13,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.AmlSupervisorController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.AmlSupervisorController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlSupervisorController.onPageLoad())
 
     "respond with 200 status and the AML supervisor HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -31,7 +31,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${routes.AmlSupervisorController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(routes.AmlSupervisorController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlSupervisorController.onPageLoad())
 
     "save the selected option then redirect to the relevant AP 12 months page when the answer is either HMRC or another professional body" in {
       stubAuthorisedWithNoGroupEnrolment()

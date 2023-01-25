@@ -13,7 +13,7 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
   val emailMaxLength: Int = 160
 
   s"GET ${contacts.routes.FirstContactEmailController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(contacts.routes.FirstContactEmailController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.FirstContactEmailController.onPageLoad())
 
     "respond with 200 status and the first contact email HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -38,7 +38,7 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${contacts.routes.FirstContactEmailController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(contacts.routes.FirstContactEmailController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.FirstContactEmailController.onSubmit())
 
     "save the provided email address then redirect to the first contact telephone number page" in {
       stubAuthorisedWithNoGroupEnrolment()

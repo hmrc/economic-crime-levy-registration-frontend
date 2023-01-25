@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 class NotLiableISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.NotLiableController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.NotLiableController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.NotLiableController.onPageLoad())
 
     "respond with 200 status and the start HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
