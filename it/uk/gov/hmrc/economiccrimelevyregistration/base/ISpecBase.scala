@@ -39,6 +39,7 @@ abstract class ISpecBase
     with HeaderNames
     with MimeTypes
     with ResultExtractors
+    with OptionValues
     with WireMockHelper
     with WireMockStubs
     with Generators {
@@ -72,7 +73,7 @@ abstract class ISpecBase
       .in(Mode.Test)
       .build()
 
-  val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  val appConfig: AppConfig              = app.injector.instanceOf[AppConfig]
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   /*

@@ -2,7 +2,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status.OK
+import play.api.http.Status.{OK, UNAUTHORIZED}
+import play.api.test.Helpers.WWW_AUTHENTICATE
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 
@@ -36,6 +37,26 @@ trait AuthStubs { self: WireMockStubs =>
            """.stripMargin)
     )
 
+  def stubUnauthorised(): StubMapping =
+    stub(
+      post(urlEqualTo("/auth/authorise"))
+        .withRequestBody(
+          equalToJson(
+            s"""
+               |{
+               |  "authorise": [],
+               |  "retrieve": [ "internalId", "allEnrolments", "groupIdentifier", "affinityGroup", "credentialRole" ]
+               |}
+           """.stripMargin,
+            true,
+            true
+          )
+        ),
+      aResponse()
+        .withStatus(UNAUTHORIZED)
+        .withHeader(WWW_AUTHENTICATE, "MDTP detail=\"MissingBearerToken\"")
+    )
+
   def stubAuthorisedWithAgentAffinityGroup(): StubMapping =
     stub(
       post(urlEqualTo("/auth/authorise"))
@@ -53,8 +74,7 @@ trait AuthStubs { self: WireMockStubs =>
         ),
       aResponse()
         .withStatus(OK)
-        .withBody(
-          s"""
+        .withBody(s"""
              |{
              |  "internalId": "$testInternalId",
              |  "groupIdentifier": "$testGroupId",
@@ -114,8 +134,7 @@ trait AuthStubs { self: WireMockStubs =>
         ),
       aResponse()
         .withStatus(OK)
-        .withBody(
-          s"""
+        .withBody(s"""
              |{
              |  "internalId": "$testInternalId",
              |  "groupIdentifier": "$testGroupId",
