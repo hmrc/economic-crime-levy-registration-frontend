@@ -36,7 +36,7 @@ class AddressLookupContinueControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new AddressLookupContinueController(
       mcc,
-      fakeAuthorisedAction,
+      fakeAuthorisedActionWithEnrolmentCheck,
       fakeDataRetrievalAction(registrationData),
       mockAddressLookupFrontendConnector,
       mockEclRegistrationConnector

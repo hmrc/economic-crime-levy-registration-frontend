@@ -22,7 +22,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedReque
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeAuthorisedAction @Inject() (bodyParsers: PlayBodyParsers) extends AuthorisedAction {
+class FakeAuthorisedActionWithoutEnrolmentCheck @Inject() (bodyParsers: PlayBodyParsers)
+    extends AuthorisedActionWithoutEnrolmentCheck {
 
   override def parser: BodyParser[AnyContent] = bodyParsers.defaultBodyParser
 

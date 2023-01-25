@@ -12,7 +12,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.EntityTypeController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.EntityTypeController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.EntityTypeController.onPageLoad())
 
     "respond with 200 status and the select entity type HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -30,7 +30,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${routes.EntityTypeController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(routes.EntityTypeController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.EntityTypeController.onSubmit())
 
     "save the selected entity type then redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()

@@ -43,7 +43,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new CheckYourAnswersController(
       messagesApi,
-      fakeAuthorisedAction,
+      fakeAuthorisedActionWithEnrolmentCheck,
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       mcc,

@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithoutEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.TestOnlyConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class TestOnlyController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  authorise: AuthorisedAction,
+  authorise: AuthorisedActionWithoutEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   testOnlyConnector: TestOnlyConnector
 )(implicit val ec: ExecutionContext)

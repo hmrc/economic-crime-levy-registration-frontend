@@ -13,7 +13,7 @@ class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
   val journeyId: String = "test-journey-id"
 
   s"GET ${routes.AddressLookupContinueController.continue(journeyId).url}" should {
-    behave like authorisedActionRoute(routes.AddressLookupContinueController.continue(journeyId))
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.AddressLookupContinueController.continue(journeyId))
 
     "retrieve the ALF address data, update the registration with the address and continue the registration journey" in {
       stubAuthorisedWithNoGroupEnrolment()

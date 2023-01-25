@@ -12,7 +12,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.AmlRegulatedActivityController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.AmlRegulatedActivityController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlRegulatedActivityController.onPageLoad())
 
     "respond with 200 status and the Aml regulated HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -35,7 +35,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${routes.AmlRegulatedActivityController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(routes.AmlRegulatedActivityController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlRegulatedActivityController.onSubmit())
 
     "save the selected AML regulated activity option then redirect to the AML supervisor page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()

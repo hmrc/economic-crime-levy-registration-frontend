@@ -13,7 +13,7 @@ class FirstContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
   val roleMaxLength: Int = 60
 
   s"GET ${contacts.routes.FirstContactRoleController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(contacts.routes.FirstContactRoleController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.FirstContactRoleController.onPageLoad())
 
     "respond with 200 status and the first contact role HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -38,7 +38,7 @@ class FirstContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${contacts.routes.FirstContactRoleController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(contacts.routes.FirstContactRoleController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.FirstContactRoleController.onSubmit())
 
     "save the provided role then redirect to the first contact email page" in {
       stubAuthorisedWithNoGroupEnrolment()

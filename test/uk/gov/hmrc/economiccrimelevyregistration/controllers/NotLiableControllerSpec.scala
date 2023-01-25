@@ -32,7 +32,7 @@ class NotLiableControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new NotLiableController(
       mcc,
-      fakeAuthorisedAction,
+      fakeAuthorisedActionWithEnrolmentCheck,
       view,
       fakeDataRetrievalAction(registrationData)
     )

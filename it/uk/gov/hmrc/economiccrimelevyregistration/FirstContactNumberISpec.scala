@@ -13,7 +13,7 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
   val numberMaxLength: Int = 24
 
   s"GET ${contacts.routes.FirstContactNumberController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(contacts.routes.FirstContactNumberController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.FirstContactNumberController.onPageLoad())
 
     "respond with 200 status and the first contact number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -38,7 +38,7 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${contacts.routes.FirstContactNumberController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(contacts.routes.FirstContactNumberController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.FirstContactNumberController.onSubmit())
 
     "save the provided telephone number then redirect to the add another contact page" in {
       stubAuthorisedWithNoGroupEnrolment()

@@ -28,18 +28,23 @@ import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.services.EnrolmentStoreProxyService
-import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, EnrolmentsWithoutEcl}
+import uk.gov.hmrc.economiccrimelevyregistration.EnrolmentsWithEcl
 
 import scala.concurrent.Future
 
-class AuthorisedActionSpec extends SpecBase {
+class AuthorisedActionWithoutEnrolmentCheckSpec extends SpecBase {
 
   val defaultBodyParser: BodyParsers.Default                     = app.injector.instanceOf[BodyParsers.Default]
   val mockAuthConnector: AuthConnector                           = mock[AuthConnector]
   val mockEnrolmentStoreProxyService: EnrolmentStoreProxyService = mock[EnrolmentStoreProxyService]
 
   val authorisedAction =
-    new BaseAuthorisedAction(mockAuthConnector, mockEnrolmentStoreProxyService, appConfig, defaultBodyParser)
+    new AuthorisedActionWithoutEnrolmentCheckImpl(
+      mockAuthConnector,
+      mockEnrolmentStoreProxyService,
+      appConfig,
+      defaultBodyParser
+    )
 
   val testAction: Request[_] => Future[Result] = { _ =>
     Future(Ok("Test"))
@@ -53,11 +58,11 @@ class AuthorisedActionSpec extends SpecBase {
 
   "invokeBlock" should {
     "execute the block and return the result if authorised" in forAll {
-      (internalId: String, enrolmentsWithoutEcl: EnrolmentsWithoutEcl, groupId: String) =>
+      (internalId: String, enrolmentsWithEcl: EnrolmentsWithEcl, groupId: String) =>
         when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
           .thenReturn(
             Future(
-              Some(internalId) and enrolmentsWithoutEcl.enrolments and Some(groupId) and Some(Organisation) and Some(
+              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Organisation) and Some(
                 User
               )
             )
@@ -84,7 +89,7 @@ class AuthorisedActionSpec extends SpecBase {
       }
     }
 
-    "redirect the user to the already registered page if they have the ECL enrolment" in forAll {
+    "redirect the user to the agent not supported page if they have an agent affinity group" in forAll {
       (internalId: String, enrolmentsWithEcl: EnrolmentsWithEcl, groupId: String) =>
         when(
           mockAuthConnector
@@ -92,52 +97,7 @@ class AuthorisedActionSpec extends SpecBase {
         )
           .thenReturn(
             Future(
-              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Organisation) and Some(User)
-            )
-          )
-
-        val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
-
-        status(result)          shouldBe OK
-        contentAsString(result) shouldBe "Already registered - user already has enrolment"
-    }
-
-    "redirect the user to the group already registered page if they do not have the ECL enrolment but the group does" in forAll {
-      (
-        internalId: String,
-        enrolmentsWithoutEcl: EnrolmentsWithoutEcl,
-        groupId: String
-      ) =>
-        when(
-          mockAuthConnector
-            .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
-        )
-          .thenReturn(
-            Future(
-              Some(internalId) and enrolmentsWithoutEcl.enrolments and Some(groupId) and Some(Organisation) and Some(
-                User
-              )
-            )
-          )
-
-        when(mockEnrolmentStoreProxyService.groupHasEnrolment(ArgumentMatchers.eq(groupId))(any()))
-          .thenReturn(Future.successful(true))
-
-        val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
-
-        status(result)          shouldBe OK
-        contentAsString(result) shouldBe "Group already has the enrolment - assign the enrolment to the user"
-    }
-
-    "redirect the user to the agent not supported page if they have an agent affinity group" in forAll {
-      (internalId: String, enrolmentsWithoutEcl: EnrolmentsWithoutEcl, groupId: String) =>
-        when(
-          mockAuthConnector
-            .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
-        )
-          .thenReturn(
-            Future(
-              Some(internalId) and enrolmentsWithoutEcl.enrolments and Some(groupId) and Some(Agent) and Some(User)
+              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Agent) and Some(User)
             )
           )
 

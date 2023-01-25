@@ -11,7 +11,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.ConfirmContactAddressController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.ConfirmContactAddressController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.ConfirmContactAddressController.onPageLoad())
 
     "respond with 200 status and the confirm contact address HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -38,7 +38,7 @@ class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${routes.ConfirmContactAddressController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(routes.ConfirmContactAddressController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.ConfirmContactAddressController.onSubmit())
 
     "save the selected answer then redirect to check your answers page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()

@@ -18,7 +18,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
   val revenueGen: Gen[Long] = Gen.chooseNum[Long](minRevenue, maxRevenue)
 
   s"GET ${routes.UkRevenueController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.UkRevenueController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.UkRevenueController.onPageLoad())
 
     "respond with 200 status and the UK revenue view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -36,7 +36,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${routes.UkRevenueController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(routes.UkRevenueController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.UkRevenueController.onSubmit())
 
     "save the UK revenue then redirect to the entity type page if the amount due is more than 0" in {
       stubAuthorisedWithNoGroupEnrolment()

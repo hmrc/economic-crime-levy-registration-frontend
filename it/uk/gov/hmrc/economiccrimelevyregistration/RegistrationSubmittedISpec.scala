@@ -19,14 +19,17 @@ package uk.gov.hmrc.economiccrimelevyregistration
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 
-class RegistrationSubmittedISpec extends ISpecBase {
+class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.RegistrationSubmittedController.onPageLoad().url}" should {
+    behave like authorisedActionWithoutEnrolmentCheckRoute(routes.RegistrationSubmittedController.onPageLoad())
+
     "respond with 200 status and the registration submitted HTML view" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      stubAuthorisedWithEclEnrolment()
 
       val eclReference = random[String]
 

@@ -17,7 +17,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
   val businessPartnerId: String = "test-business-partner-id"
 
   s"GET ${routes.GrsContinueController.continue(journeyId).url}" should {
-    behave like authorisedActionRoute(routes.GrsContinueController.continue(journeyId))
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.GrsContinueController.continue(journeyId))
 
     "retrieve the incorporated entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
       stubAuthorisedWithNoGroupEnrolment()

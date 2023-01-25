@@ -11,7 +11,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.BusinessSectorController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionRoute(routes.BusinessSectorController.onPageLoad(NormalMode))
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.BusinessSectorController.onPageLoad(NormalMode))
 
     "respond with 200 status and the business sector HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -29,7 +29,7 @@ class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${routes.BusinessSectorController.onSubmit(NormalMode).url}"  should {
-    behave like authorisedActionRoute(routes.BusinessSectorController.onSubmit(NormalMode))
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.BusinessSectorController.onSubmit(NormalMode))
 
     "save the selected business sector option then redirect to the contact name page" in {
       stubAuthorisedWithNoGroupEnrolment()

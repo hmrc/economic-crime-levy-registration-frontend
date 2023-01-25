@@ -50,7 +50,7 @@ class FirstContactNumberControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new FirstContactNumberController(
       mcc,
-      fakeAuthorisedAction,
+      fakeAuthorisedActionWithEnrolmentCheck,
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,

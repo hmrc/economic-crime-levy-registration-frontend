@@ -12,7 +12,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErr
 class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.CheckYourAnswersController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.CheckYourAnswersController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onPageLoad())
 
     "respond with 200 status and the Check your answers HTML view when the registration data is valid" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -48,7 +48,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${routes.CheckYourAnswersController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(routes.CheckYourAnswersController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onSubmit())
 
     "redirect to the registration submitted page after submitting the registration successfully" in {
       stubAuthorisedWithNoGroupEnrolment()

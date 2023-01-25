@@ -11,7 +11,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.RelevantAp12MonthsController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.RelevantAp12MonthsController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.RelevantAp12MonthsController.onPageLoad())
 
     "respond with 200 status and the relevant AP 12 months view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -29,7 +29,7 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${routes.RelevantAp12MonthsController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(routes.RelevantAp12MonthsController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.RelevantAp12MonthsController.onSubmit())
 
     "save the selected option then redirect to the UK revenue page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()

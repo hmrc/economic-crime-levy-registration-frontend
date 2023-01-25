@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, Registra
 class RegisterWithOtherAmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.RegisterWithOtherAmlSupervisorController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(routes.RegisterWithOtherAmlSupervisorController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.RegisterWithOtherAmlSupervisorController.onPageLoad())
 
     "respond with 200 status and the financial conduct authority HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
-import com.google.inject.Inject
+import com.google.inject.{ImplementedBy, Inject}
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
@@ -36,7 +36,35 @@ trait AuthorisedAction
     with FrontendHeaderCarrierProvider
     with ActionFunction[Request, AuthorisedRequest]
 
-class BaseAuthorisedAction @Inject() (
+@ImplementedBy(classOf[AuthorisedActionWithoutEnrolmentCheckImpl])
+trait AuthorisedActionWithoutEnrolmentCheck extends AuthorisedAction
+
+@ImplementedBy(classOf[AuthorisedActionWithEnrolmentCheckImpl])
+trait AuthorisedActionWithEnrolmentCheck extends AuthorisedAction
+
+class AuthorisedActionWithoutEnrolmentCheckImpl @Inject() (
+  override val authConnector: AuthConnector,
+  enrolmentStoreProxyService: EnrolmentStoreProxyService,
+  config: AppConfig,
+  override val parser: BodyParsers.Default
+)(override implicit val executionContext: ExecutionContext)
+    extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
+    with AuthorisedActionWithoutEnrolmentCheck {
+  override val checkForEclEnrolment: Boolean = false
+}
+
+class AuthorisedActionWithEnrolmentCheckImpl @Inject() (
+  override val authConnector: AuthConnector,
+  enrolmentStoreProxyService: EnrolmentStoreProxyService,
+  config: AppConfig,
+  override val parser: BodyParsers.Default
+)(override implicit val executionContext: ExecutionContext)
+    extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
+    with AuthorisedActionWithEnrolmentCheck {
+  override val checkForEclEnrolment: Boolean = true
+}
+
+abstract class BaseAuthorisedAction @Inject() (
   override val authConnector: AuthConnector,
   enrolmentStoreProxyService: EnrolmentStoreProxyService,
   config: AppConfig,
@@ -45,6 +73,8 @@ class BaseAuthorisedAction @Inject() (
     extends AuthorisedAction
     with FrontendHeaderCarrierProvider
     with AuthorisedFunctions {
+
+  val checkForEclEnrolment: Boolean
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
     authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup and credentialRole) {
@@ -62,16 +92,20 @@ class BaseAuthorisedAction @Inject() (
             credentialRole match {
               case Assistant => Future.successful(Ok("User is not an Admin - request an admin to perform registration"))
               case _         =>
-                eclEnrolment match {
-                  case Some(_) => Future.successful(Ok("Already registered - user already has enrolment"))
-                  case None    =>
-                    enrolmentStoreProxyService
-                      .groupHasEnrolment(groupId)(hc(request))
-                      .flatMap {
-                        case true  =>
-                          Future.successful(Ok("Group already has the enrolment - assign the enrolment to the user"))
-                        case false => block(AuthorisedRequest(request, internalId, groupId))
-                      }
+                if (checkForEclEnrolment) {
+                  eclEnrolment match {
+                    case Some(_) => Future.successful(Ok("Already registered - user already has enrolment"))
+                    case None    =>
+                      enrolmentStoreProxyService
+                        .groupHasEnrolment(groupId)(hc(request))
+                        .flatMap {
+                          case true  =>
+                            Future.successful(Ok("Group already has the enrolment - assign the enrolment to the user"))
+                          case false => block(AuthorisedRequest(request, internalId, groupId))
+                        }
+                  }
+                } else {
+                  block(AuthorisedRequest(request, internalId, groupId))
                 }
             }
         }

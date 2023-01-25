@@ -47,7 +47,7 @@ class AddAnotherContactControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new AddAnotherContactController(
       mcc,
-      fakeAuthorisedAction,
+      fakeAuthorisedActionWithEnrolmentCheck,
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,

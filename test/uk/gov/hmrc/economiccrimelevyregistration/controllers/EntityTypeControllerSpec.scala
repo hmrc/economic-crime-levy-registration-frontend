@@ -53,7 +53,7 @@ class EntityTypeControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new EntityTypeController(
       mcc,
-      fakeAuthorisedAction,
+      fakeAuthorisedActionWithEnrolmentCheck,
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,

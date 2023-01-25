@@ -13,7 +13,7 @@ class SecondContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
   val emailMaxLength: Int = 160
 
   s"GET ${contacts.routes.SecondContactEmailController.onPageLoad().url}" should {
-    behave like authorisedActionRoute(contacts.routes.SecondContactEmailController.onPageLoad())
+    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.SecondContactEmailController.onPageLoad())
 
     "respond with 200 status and the second contact email HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -38,7 +38,7 @@ class SecondContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${contacts.routes.SecondContactEmailController.onSubmit().url}"  should {
-    behave like authorisedActionRoute(contacts.routes.SecondContactEmailController.onSubmit())
+    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.SecondContactEmailController.onSubmit())
 
     "save the provided email address then redirect to the second contact telephone number page" in {
       stubAuthorisedWithNoGroupEnrolment()

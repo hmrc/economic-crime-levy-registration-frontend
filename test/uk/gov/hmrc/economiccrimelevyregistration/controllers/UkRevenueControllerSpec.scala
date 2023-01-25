@@ -53,7 +53,7 @@ class UkRevenueControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new UkRevenueController(
       mcc,
-      fakeAuthorisedAction,
+      fakeAuthorisedActionWithEnrolmentCheck,
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
