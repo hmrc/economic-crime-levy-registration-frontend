@@ -34,7 +34,7 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
           .onPageLoad(NormalMode)
     }
 
-    "return a Call to the not liable page  from the AML regulated activity page in NormalMode when the 'No' option is selected" in forAll {
+    "return a Call to the not liable page from the AML regulated activity page in NormalMode when the 'No' option is selected" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
 
