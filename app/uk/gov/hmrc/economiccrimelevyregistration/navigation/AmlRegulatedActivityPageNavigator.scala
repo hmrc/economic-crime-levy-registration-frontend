@@ -18,13 +18,13 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
 class AmlRegulatedActivityPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
-      case Some(true)  => routes.AmlSupervisorController.onPageLoad()
+      case Some(true)  => routes.AmlSupervisorController.onPageLoad(NormalMode)
       case Some(false) => routes.NotLiableController.onPageLoad()
       case _           => routes.JourneyRecoveryController.onPageLoad()
     }

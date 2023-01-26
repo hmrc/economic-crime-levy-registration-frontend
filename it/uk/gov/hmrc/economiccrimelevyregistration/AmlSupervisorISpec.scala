@@ -12,8 +12,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.AmlSupervisorController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlSupervisorController.onPageLoad())
+  s"GET ${routes.AmlSupervisorController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlSupervisorController.onPageLoad(NormalMode))
 
     "respond with 200 status and the AML supervisor HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -22,7 +22,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.AmlSupervisorController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.AmlSupervisorController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -30,8 +30,8 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.AmlSupervisorController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlSupervisorController.onPageLoad())
+  s"POST ${routes.AmlSupervisorController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlSupervisorController.onPageLoad(NormalMode))
 
     "save the selected option then redirect to the relevant AP 12 months page when the answer is either HMRC or another professional body" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -56,7 +56,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.AmlSupervisorController.onSubmit()).withFormUrlEncodedBody(formData: _*)
+        FakeRequest(routes.AmlSupervisorController.onSubmit(NormalMode)).withFormUrlEncodedBody(formData: _*)
       )
 
       status(result) shouldBe SEE_OTHER

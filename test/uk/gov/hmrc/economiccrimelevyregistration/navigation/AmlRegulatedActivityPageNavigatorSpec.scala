@@ -31,7 +31,7 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
         val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.AmlSupervisorController
-          .onPageLoad()
+          .onPageLoad(NormalMode)
     }
 
     "return a Call to the not liable page  from the AML regulated activity page in NormalMode when the 'No' option is selected" in forAll {

@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 
@@ -64,22 +64,22 @@ class AmlSupervisorControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
       new TestContext(registration.copy(amlSupervisor = None)) {
-        val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
       }
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
       (registration: Registration, amlSupervisor: AmlSupervisor) =>
         new TestContext(registration.copy(amlSupervisor = Some(amlSupervisor))) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(amlSupervisor))(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form.fill(amlSupervisor), NormalMode)(fakeRequest, messages).toString
         }
     }
   }
@@ -100,7 +100,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
           }
 
           val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(formData: _*))
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(formData: _*))
 
           status(result) shouldBe SEE_OTHER
 
@@ -110,12 +110,12 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
       new TestContext(registration) {
-        val result: Future[Result]              = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
+        val result: Future[Result]              = controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
         val formWithErrors: Form[AmlSupervisor] = form.bind(Map("value" -> ""))
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString
       }
     }
   }

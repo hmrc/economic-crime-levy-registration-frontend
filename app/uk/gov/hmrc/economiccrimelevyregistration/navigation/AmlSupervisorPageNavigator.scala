@@ -34,6 +34,15 @@ class AmlSupervisorPageNavigator extends PageNavigator {
       case _                   => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call = ???
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    registration.amlSupervisor match {
+      case Some(amlSupervisor) =>
+        amlSupervisor.supervisorType match {
+          case GamblingCommission | FinancialConductAuthority =>
+            routes.RegisterWithOtherAmlSupervisorController.onPageLoad()
+          case Hmrc | Other                                   => routes.CheckYourAnswersController.onPageLoad()
+        }
+      case _                   => routes.JourneyRecoveryController.onPageLoad()
+    }
 
 }

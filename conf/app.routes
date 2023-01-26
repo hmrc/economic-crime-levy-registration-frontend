@@ -9,8 +9,10 @@ GET         /                                                   uk.gov.hmrc.econ
 GET         /did-you-carry-out-aml-regulated-activity           uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onPageLoad()
 POST        /did-you-carry-out-aml-regulated-activity           uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onSubmit()
 
-GET         /who-is-your-aml-supervisor                         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad()
-POST        /who-is-your-aml-supervisor                         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit()
+GET         /who-is-your-aml-supervisor                         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = NormalMode)
+POST        /who-is-your-aml-supervisor                         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/who-is-your-aml-supervisor           uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/who-is-your-aml-supervisor           uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = CheckMode)
 
 GET         /is-relevant-accounting-period-12-months            uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onPageLoad()
 POST        /is-relevant-accounting-period-12-months            uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onSubmit()
