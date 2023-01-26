@@ -74,6 +74,7 @@ class CheckYourAnswersController @Inject() (
           SecondContactRoleSummary.row(),
           SecondContactEmailSummary.row(),
           SecondContactNumberSummary.row(),
+          UseRegisteredAddressSummary.row(),
           ContactAddressSummary.row()
         ).flatten
       ).withCssClass("govuk-!-margin-bottom-9")

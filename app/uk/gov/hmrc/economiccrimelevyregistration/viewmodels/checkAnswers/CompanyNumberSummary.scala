@@ -32,12 +32,7 @@ object CompanyNumberSummary {
 
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.companyNumber.label"),
-        value = value,
-        actions = Seq(
-          ActionItemViewModel("site.change", "#TODO").withVisuallyHiddenText(
-            messages("checkYourAnswers.companyNumber.label")
-          )
-        )
+        value = value
       )
     }
 

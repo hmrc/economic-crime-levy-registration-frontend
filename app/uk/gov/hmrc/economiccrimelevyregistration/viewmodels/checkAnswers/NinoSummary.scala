@@ -32,12 +32,7 @@ object NinoSummary {
 
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.nino.label"),
-        value = value,
-        actions = Seq(
-          ActionItemViewModel("site.change", "#TODO").withVisuallyHiddenText(
-            messages("checkYourAnswers.nino.label")
-          )
-        )
+        value = value
       )
     }
 

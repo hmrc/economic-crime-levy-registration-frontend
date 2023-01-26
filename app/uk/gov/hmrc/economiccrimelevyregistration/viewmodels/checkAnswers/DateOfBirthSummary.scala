@@ -33,12 +33,7 @@ object DateOfBirthSummary {
 
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.dob.label"),
-        value = value,
-        actions = Seq(
-          ActionItemViewModel("site.change", "#TODO").withVisuallyHiddenText(
-            messages("checkYourAnswers.dob.label")
-          )
-        )
+        value = value
       )
     }
 
