@@ -20,15 +20,17 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithoutEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.TestOnlyConnector
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.actions.TestOnlyAuthorisedAction
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TestOnlyController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithoutEnrolmentCheck,
+  testOnlyAuthorise: TestOnlyAuthorisedAction,
   getRegistrationData: DataRetrievalAction,
   testOnlyConnector: TestOnlyConnector
 )(implicit val ec: ExecutionContext)
@@ -46,8 +48,15 @@ class TestOnlyController @Inject() (
     Ok(Json.toJson(request.registration))
   }
 
-  def deEnrol(eclReference: String): Action[AnyContent] = authorise.async { implicit request =>
-    testOnlyConnector.deEnrol(request.groupId, eclReference).map(httpResponse => Ok(httpResponse.body))
+  def deEnrol(): Action[AnyContent] = testOnlyAuthorise.async { implicit request =>
+    request.eclRegistrationReference match {
+      case Some(reference) =>
+        testOnlyConnector
+          .deEnrol(request.groupId, reference)
+          .map(httpResponse => Ok(httpResponse.body))
+      case None            => Future.successful(Ok("No ECL enrolment found"))
+    }
+
   }
 
 }
