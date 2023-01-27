@@ -46,20 +46,20 @@ class EntityTypeController @Inject() (
 
   val form: Form[EntityType] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.entityType)))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    Ok(view(form.prepare(request.registration.entityType), mode))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType =>
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(entityType = Some(entityType)))
             .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(NormalMode, updatedRegistration).map(Redirect)
+              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
             }
       )
   }

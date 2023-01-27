@@ -40,6 +40,8 @@ class IsUkAddressPageNavigator @Inject() (
       case _            => Future.successful(routes.JourneyRecoveryController.onPageLoad())
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
+  override protected def navigateInCheckMode(registration: Registration)(implicit
+    request: RequestHeader
+  ): Future[Call] = ???
 
 }

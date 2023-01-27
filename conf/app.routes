@@ -27,8 +27,10 @@ GET         /you-do-not-need-to-register                        uk.gov.hmrc.econ
 
 GET         /register-with-your-aml-supervisor                  uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterWithOtherAmlSupervisorController.onPageLoad()
 
-GET         /what-is-your-entity-type                           uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad()
-POST        /what-is-your-entity-type                           uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit()
+GET         /what-is-your-entity-type                           uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-entity-type                           uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-entity-type             uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-entity-type             uk.gov.hmrc.economiccrimelevyregistration.controllers.EntityTypeController.onSubmit(mode: Mode = CheckMode)
 
 GET         /what-is-your-business-sector                       uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad(mode: Mode = NormalMode)
 POST        /what-is-your-business-sector                       uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onSubmit(mode: Mode = NormalMode)
@@ -68,7 +70,7 @@ POST        /contact-address                                    uk.gov.hmrc.econ
 GET         /uk-address                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.IsUkAddressController.onPageLoad()
 POST        /uk-address                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.IsUkAddressController.onSubmit()
 
-GET         /grs-continue                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(journeyId)
+GET         /grs-continue                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(mode, journeyId)
 
 GET         /address-lookup-continue                            uk.gov.hmrc.economiccrimelevyregistration.controllers.AddressLookupContinueController.continue(id)
 

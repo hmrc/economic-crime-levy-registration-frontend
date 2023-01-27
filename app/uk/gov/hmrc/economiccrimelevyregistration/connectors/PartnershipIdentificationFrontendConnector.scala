@@ -29,7 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait PartnershipIdentificationFrontendConnector {
   def createPartnershipJourney(
-    partnershipType: EntityType
+    partnershipType: EntityType,
+    mode: Mode
   )(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse]
 
   def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[PartnershipEntityJourneyData]
@@ -45,7 +46,8 @@ class PartnershipIdentificationFrontendConnectorImpl @Inject() (
   private val apiUrl = s"${appConfig.partnershipEntityIdentificationFrontendUrl}/partnership-identification/api"
 
   def createPartnershipJourney(
-    partnershipType: EntityType
+    partnershipType: EntityType,
+    mode: Mode
   )(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] = {
     val serviceNameLabels = ServiceNameLabels()
 
@@ -61,7 +63,7 @@ class PartnershipIdentificationFrontendConnectorImpl @Inject() (
     httpClient.POST[PartnershipEntityCreateJourneyRequest, GrsCreateJourneyResponse](
       url,
       PartnershipEntityCreateJourneyRequest(
-        continueUrl = appConfig.grsContinueUrl,
+        continueUrl = s"${appConfig.grsContinueUrl}?mode=$mode",
         businessVerificationCheck = appConfig.partnershipBvEnabled,
         optServiceName = Some(serviceNameLabels.en.optServiceName),
         deskProServiceId = appConfig.appName,

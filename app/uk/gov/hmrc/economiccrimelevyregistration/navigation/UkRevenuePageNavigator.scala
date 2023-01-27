@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclReturnsConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
@@ -40,7 +40,7 @@ class UkRevenuePageNavigator @Inject() (
           .calculateLiability(_, revenue)
           .map(liability =>
             if (liability.amountDue > 0) {
-              routes.EntityTypeController.onPageLoad()
+              routes.EntityTypeController.onPageLoad(NormalMode)
             } else {
               routes.NotLiableController.onPageLoad()
             }
@@ -58,6 +58,8 @@ class UkRevenuePageNavigator @Inject() (
       case _             => Future.successful(routes.StartController.onPageLoad())
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
+  override protected def navigateInCheckMode(registration: Registration)(implicit
+    request: RequestHeader
+  ): Future[Call] = ???
 
 }

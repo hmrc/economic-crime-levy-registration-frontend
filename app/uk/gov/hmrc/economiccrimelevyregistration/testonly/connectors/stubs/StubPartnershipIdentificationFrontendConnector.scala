@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.PartnershipIdentificationFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
@@ -36,12 +36,12 @@ class StubPartnershipIdentificationFrontendConnector @Inject() (
 ) extends PartnershipIdentificationFrontendConnector
     with GrsStubData[PartnershipEntityJourneyData] {
 
-  override def createPartnershipJourney(partnershipType: EntityType)(implicit
+  override def createPartnershipJourney(partnershipType: EntityType, mode: Mode)(implicit
     hc: HeaderCarrier
   ): Future[GrsCreateJourneyResponse] =
     Future.successful(
       GrsCreateJourneyResponse(
-        journeyStartUrl = "/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data"
+        journeyStartUrl = s"/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data?mode=$mode"
       )
     )
 

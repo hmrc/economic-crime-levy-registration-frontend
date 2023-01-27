@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, ServiceNameLabels, SoleTraderEntityCreateJourneyRequest, SoleTraderEntityJourneyData}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
@@ -26,7 +27,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 trait SoleTraderIdentificationFrontendConnector {
-  def createSoleTraderJourney()(implicit
+  def createSoleTraderJourney(mode: Mode)(implicit
     hc: HeaderCarrier
   ): Future[GrsCreateJourneyResponse]
 
@@ -42,7 +43,7 @@ class SoleTraderIdentificationFrontendConnectorImpl @Inject() (
 ) extends SoleTraderIdentificationFrontendConnector {
   private val apiUrl = s"${appConfig.soleTraderEntityIdentificationFrontendUrl}/sole-trader-identification/api"
 
-  def createSoleTraderJourney()(implicit
+  def createSoleTraderJourney(mode: Mode)(implicit
     hc: HeaderCarrier
   ): Future[GrsCreateJourneyResponse] = {
     val serviceNameLabels = ServiceNameLabels()
@@ -50,7 +51,7 @@ class SoleTraderIdentificationFrontendConnectorImpl @Inject() (
     httpClient.POST[SoleTraderEntityCreateJourneyRequest, GrsCreateJourneyResponse](
       s"$apiUrl/sole-trader-journey",
       SoleTraderEntityCreateJourneyRequest(
-        continueUrl = appConfig.grsContinueUrl,
+        continueUrl = s"${appConfig.grsContinueUrl}?mode=$mode",
         businessVerificationCheck = appConfig.soleTraderBvEnabled,
         optServiceName = Some(serviceNameLabels.en.optServiceName),
         deskProServiceId = appConfig.appName,

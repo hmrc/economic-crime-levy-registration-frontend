@@ -20,6 +20,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.forms.GrsStubFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.models.GrsStubFormData
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.views.html.StubGrsJourneyDataView
@@ -39,18 +40,18 @@ class StubGrsJourneyDataController @Inject() (
 
   val form: Form[GrsStubFormData] = grsStubFormProvider()
 
-  def onPageLoad(): Action[AnyContent] = Action { implicit request =>
-    Ok(view(form.fill(GrsStubFormData("0", "X00000000000001"))))
+  def onPageLoad(mode: Mode): Action[AnyContent] = Action { implicit request =>
+    Ok(view(form.fill(GrsStubFormData("0", "X00000000000001")), mode))
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => BadRequest(view(formWithErrors)),
+        formWithErrors => BadRequest(view(formWithErrors, mode)),
         grsStubFormData =>
           Redirect(
-            s"/register-for-the-economic-crime-levy/grs-continue?journeyId=${grsStubFormData.journeyId}-${request.registration.entityType.get.toString}-${grsStubFormData.businessPartnerId}"
+            s"/register-for-the-economic-crime-levy/grs-continue?mode=$mode&journeyId=${grsStubFormData.journeyId}-${request.registration.entityType.get.toString}-${grsStubFormData.businessPartnerId}"
           )
       )
   }
