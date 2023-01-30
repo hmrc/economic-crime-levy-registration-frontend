@@ -63,18 +63,22 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val eclRegistrationBaseUrl: String = servicesConfig.baseUrl("economic-crime-levy-registration")
   val eclReturnsBaseUrl: String      = servicesConfig.baseUrl("economic-crime-levy-returns")
 
-  val incorporatedEntityIdentificationFrontendUrl: String =
+  val incorporatedEntityIdentificationFrontendBaseUrl: String =
     servicesConfig.baseUrl("incorporated-entity-identification-frontend")
-  val soleTraderEntityIdentificationFrontendUrl: String   = servicesConfig.baseUrl("sole-trader-identification-frontend")
-  val partnershipEntityIdentificationFrontendUrl: String  = servicesConfig.baseUrl("partnership-identification-frontend")
+  val soleTraderEntityIdentificationFrontendBaseUrl: String   =
+    servicesConfig.baseUrl("sole-trader-identification-frontend")
+  val partnershipEntityIdentificationFrontendBaseUrl: String  =
+    servicesConfig.baseUrl("partnership-identification-frontend")
 
   val incorporatedEntityBvEnabled: Boolean = configuration.get[Boolean]("features.incorporatedEntityBvEnabled")
   val partnershipBvEnabled: Boolean        = configuration.get[Boolean]("features.partnershipBvEnabled")
   val soleTraderBvEnabled: Boolean         = configuration.get[Boolean]("features.soleTraderBvEnabled")
 
-  val enrolmentStoreProxyUrl: String = servicesConfig.baseUrl("enrolment-store-proxy")
+  val enrolmentStoreProxyBaseUrl: String = servicesConfig.baseUrl("enrolment-store-proxy")
 
-  val addressLookupFrontendUrl: String = servicesConfig.baseUrl("address-lookup-frontend")
+  val addressLookupFrontendBaseUrl: String = servicesConfig.baseUrl("address-lookup-frontend")
+
+  val emailBaseUrl: String = servicesConfig.baseUrl("email")
 
   val amlProfessionalBodySupervisors: Seq[String] = configuration.get[Seq[String]]("amlProfessionalBodySupervisors")
 }

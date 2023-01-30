@@ -40,7 +40,7 @@ class SoleTraderIdentificationFrontendConnectorImpl @Inject() (
   val messagesApi: MessagesApi,
   ec: ExecutionContext
 ) extends SoleTraderIdentificationFrontendConnector {
-  private val apiUrl = s"${appConfig.soleTraderEntityIdentificationFrontendUrl}/sole-trader-identification/api"
+  private val apiUrl = s"${appConfig.soleTraderEntityIdentificationFrontendBaseUrl}/sole-trader-identification/api"
 
   def createSoleTraderJourney()(implicit
     hc: HeaderCarrier
