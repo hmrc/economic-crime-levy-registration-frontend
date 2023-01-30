@@ -19,12 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.generators
 import org.scalacheck.Arbitrary
 import org.scalacheck.derive.MkArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResponse
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailParameters
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
-import uk.gov.hmrc.economiccrimelevyregistration.models._
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 
 object CachedArbitraries extends EclTestData {
@@ -50,5 +50,6 @@ object CachedArbitraries extends EclTestData {
   implicit lazy val arbCalculateLiabilityRequest: Arbitrary[CalculateLiabilityRequest]                  = mkArb
   implicit lazy val arbCreateEclSubscriptionResponse: Arbitrary[CreateEclSubscriptionResponse]          = mkArb
   implicit lazy val arbRegistrationSubmittedParameters: Arbitrary[RegistrationSubmittedEmailParameters] = mkArb
+  implicit lazy val arbContacts: Arbitrary[Contacts]                                                    = mkArb
 
 }
