@@ -49,7 +49,7 @@ class IncorporatedEntityIdentificationFrontendConnectorImpl @Inject() (
     httpClient.POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
       s"$apiUrl/limited-company-journey",
       IncorporatedEntityCreateJourneyRequest(
-        continueUrl = s"${appConfig.grsContinueUrl}?mode=$mode",
+        continueUrl = s"${appConfig.grsContinueUrl}/${mode.toString.toLowerCase}",
         businessVerificationCheck = appConfig.incorporatedEntityBvEnabled,
         optServiceName = Some(serviceNameLabels.en.optServiceName),
         deskProServiceId = appConfig.appName,

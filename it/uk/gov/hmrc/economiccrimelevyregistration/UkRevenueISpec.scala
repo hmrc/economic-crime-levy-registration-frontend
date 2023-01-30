@@ -61,7 +61,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.EntityTypeController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.EntityTypeController.onPageLoad(NormalMode).url)
     }
 
     "save the UK revenue then redirect to the not liable page if the amount due is 0" in {

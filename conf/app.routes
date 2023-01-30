@@ -70,7 +70,8 @@ POST        /contact-address                                    uk.gov.hmrc.econ
 GET         /uk-address                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.IsUkAddressController.onPageLoad()
 POST        /uk-address                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.IsUkAddressController.onSubmit()
 
-GET         /grs-continue                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(mode, journeyId)
+GET         /grs-continue/normalmode                            uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(mode: Mode = NormalMode, journeyId)
+GET         /grs-continue/checkmode                             uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(mode: Mode = CheckMode, journeyId)
 
 GET         /address-lookup-continue                            uk.gov.hmrc.economiccrimelevyregistration.controllers.AddressLookupContinueController.continue(id)
 

@@ -51,7 +51,7 @@ class SoleTraderIdentificationFrontendConnectorImpl @Inject() (
     httpClient.POST[SoleTraderEntityCreateJourneyRequest, GrsCreateJourneyResponse](
       s"$apiUrl/sole-trader-journey",
       SoleTraderEntityCreateJourneyRequest(
-        continueUrl = s"${appConfig.grsContinueUrl}?mode=$mode",
+        continueUrl = s"${appConfig.grsContinueUrl}/${mode.toString.toLowerCase}",
         businessVerificationCheck = appConfig.soleTraderBvEnabled,
         optServiceName = Some(serviceNameLabels.en.optServiceName),
         deskProServiceId = appConfig.appName,

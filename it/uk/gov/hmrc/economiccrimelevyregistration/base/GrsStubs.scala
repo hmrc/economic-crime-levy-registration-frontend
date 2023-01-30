@@ -15,7 +15,7 @@ trait GrsStubs { self: WireMockStubs =>
           equalToJson(
             s"""
                |{
-               |  "continueUrl" : "http://localhost:14000/register-for-the-economic-crime-levy/grs-continue",
+               |  "continueUrl" : "http://localhost:14000/register-for-the-economic-crime-levy/grs-continue/normalmode",
                |  "businessVerificationCheck" : false,
                |  "optServiceName" : "Register for the Economic Crime Levy",
                |  "deskProServiceId" : "economic-crime-levy-registration-frontend",

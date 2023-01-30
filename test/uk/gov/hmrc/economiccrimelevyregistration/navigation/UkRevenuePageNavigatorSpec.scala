@@ -41,7 +41,7 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
           .thenReturn(Future.successful(calculatedLiability.copy(amountDue = 1)))
 
         await(pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)) shouldBe routes.EntityTypeController
-          .onPageLoad()
+          .onPageLoad(NormalMode)
     }
 
     "return a Call to the not liable page in NormalMode when the amount due is 0" in forAll {

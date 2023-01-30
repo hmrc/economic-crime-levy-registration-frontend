@@ -11,8 +11,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.EntityTypeController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.EntityTypeController.onPageLoad())
+  s"GET ${routes.EntityTypeController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.EntityTypeController.onPageLoad(NormalMode))
 
     "respond with 200 status and the select entity type HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -21,7 +21,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.EntityTypeController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.EntityTypeController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -29,8 +29,8 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.EntityTypeController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.EntityTypeController.onSubmit())
+  s"POST ${routes.EntityTypeController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.EntityTypeController.onSubmit(NormalMode))
 
     "save the selected entity type then redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -45,7 +45,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.EntityTypeController.onSubmit()).withFormUrlEncodedBody(("value", "UkLimitedCompany"))
+        FakeRequest(routes.EntityTypeController.onSubmit(NormalMode)).withFormUrlEncodedBody(("value", "UkLimitedCompany"))
       )
 
       status(result) shouldBe SEE_OTHER
@@ -66,7 +66,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.EntityTypeController.onSubmit()).withFormUrlEncodedBody(("value", "SoleTrader"))
+        FakeRequest(routes.EntityTypeController.onSubmit(NormalMode)).withFormUrlEncodedBody(("value", "SoleTrader"))
       )
 
       status(result) shouldBe SEE_OTHER
@@ -98,7 +98,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     stubUpsertRegistration(updatedRegistration)
 
     val result = callRoute(
-      FakeRequest(routes.EntityTypeController.onSubmit()).withFormUrlEncodedBody(("value", entityType.toString))
+      FakeRequest(routes.EntityTypeController.onSubmit(NormalMode)).withFormUrlEncodedBody(("value", entityType.toString))
     )
 
     status(result) shouldBe SEE_OTHER

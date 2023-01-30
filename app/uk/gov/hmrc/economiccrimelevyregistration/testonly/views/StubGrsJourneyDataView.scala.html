@@ -24,7 +24,7 @@
         layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], continueUrl: String)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = title("Stub GRS Journey Data"),
@@ -33,7 +33,7 @@
 
     <h1 class="govuk-heading-xl">Stub GRS Journey Data</h1>
 
-    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.routes.StubGrsJourneyDataController.onSubmit(mode)) {
+    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.routes.StubGrsJourneyDataController.onSubmit(continueUrl)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

@@ -40,7 +40,8 @@ class StubSoleTraderIdentificationFrontendConnector @Inject() (
   override def createSoleTraderJourney(mode: Mode)(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] =
     Future.successful(
       GrsCreateJourneyResponse(
-        journeyStartUrl = s"/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data?mode=$mode"
+        journeyStartUrl =
+          s"/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}"
       )
     )
 

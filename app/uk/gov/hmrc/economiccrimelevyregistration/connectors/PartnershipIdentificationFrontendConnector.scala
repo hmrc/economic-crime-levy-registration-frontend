@@ -63,7 +63,7 @@ class PartnershipIdentificationFrontendConnectorImpl @Inject() (
     httpClient.POST[PartnershipEntityCreateJourneyRequest, GrsCreateJourneyResponse](
       url,
       PartnershipEntityCreateJourneyRequest(
-        continueUrl = s"${appConfig.grsContinueUrl}?mode=$mode",
+        continueUrl = s"${appConfig.grsContinueUrl}/${mode.toString.toLowerCase}",
         businessVerificationCheck = appConfig.partnershipBvEnabled,
         optServiceName = Some(serviceNameLabels.en.optServiceName),
         deskProServiceId = appConfig.appName,
