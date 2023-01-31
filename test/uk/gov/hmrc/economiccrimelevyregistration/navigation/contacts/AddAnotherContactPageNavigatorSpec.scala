@@ -20,14 +20,14 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWithValidCompanyProfile
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, NormalMode, Registration}
 
 class AddAnotherContactPageNavigatorSpec extends SpecBase {
 
   val pageNavigator = new AddAnotherContactPageNavigator
 
   "nextPage" should {
-    "return a Call to second contact name page in NormalMode when the 'Yes' option is selected" in forAll {
+    "return a Call to the second contact name page in NormalMode when the 'Yes' option is selected" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(true)))
 
@@ -63,6 +63,38 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.IsUkAddressController
           .onPageLoad()
+    }
+
+    "return a Call to the second contact name page in CheckMode when the 'Yes' option is selected and there are no second contact details already present" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(contacts =
+          registration.contacts.copy(secondContact = Some(true), secondContactDetails = ContactDetails.empty)
+        )
+
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe contacts.routes.SecondContactNameController
+          .onPageLoad(CheckMode)
+    }
+
+    "return a Call to the check your answers page in CheckMode when the 'Yes' option is selected and there is a second contact name already present" in forAll {
+      (registration: Registration, secondContactName: String) =>
+        val updatedRegistration = registration.copy(contacts =
+          registration.contacts.copy(
+            secondContact = Some(true),
+            secondContactDetails =
+              ContactDetails(name = Some(secondContactName), role = None, emailAddress = None, telephoneNumber = None)
+          )
+        )
+
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+    }
+
+    "return a Call to the check your answers page when the 'No' option is selected in CheckMode" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(contacts =
+          registration.contacts.copy(secondContact = Some(false), secondContactDetails = ContactDetails.empty)
+        )
+
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
   }
 
