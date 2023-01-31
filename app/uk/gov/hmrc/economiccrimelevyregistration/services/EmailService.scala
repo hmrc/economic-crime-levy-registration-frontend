@@ -35,7 +35,7 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
     hc: HeaderCarrier,
     messages: Messages
   ): Future[Unit] = {
-    val eclDueDate = ViewUtils.formatLocalDate(EclTaxYear.dueDate)
+    val eclDueDate = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)
 
     def sendEmail(name: String, email: String): Future[Unit] =
       emailConnector.sendRegistrationSubmittedEmail(

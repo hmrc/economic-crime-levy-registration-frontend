@@ -81,7 +81,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
           parameters = RegistrationSubmittedEmailParameters(
             name = firstContactName,
             eclRegistrationReference = eclReference,
-            dateDue = ViewUtils.formatLocalDate(EclTaxYear.dueDate)(messagesApi.preferred(Seq(Languages.english)))
+            dateDue = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messagesApi.preferred(Seq(Languages.english)))
           )
         )
       )
