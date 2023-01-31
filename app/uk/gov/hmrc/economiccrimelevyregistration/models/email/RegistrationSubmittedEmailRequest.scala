@@ -25,7 +25,7 @@ object RegistrationSubmittedEmailParameters {
 }
 
 final case class RegistrationSubmittedEmailRequest(
-  to: String,
+  to: Seq[String],
   templateId: String = "ecl_registration_submitted",
   parameters: RegistrationSubmittedEmailParameters,
   force: Boolean = false,

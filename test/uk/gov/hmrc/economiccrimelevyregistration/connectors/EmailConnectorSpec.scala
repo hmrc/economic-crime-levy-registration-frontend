@@ -45,7 +45,7 @@ class EmailConnectorSpec extends SpecBase {
               ArgumentMatchers.eq(expectedUrl),
               ArgumentMatchers.eq(
                 RegistrationSubmittedEmailRequest(
-                  to,
+                  Seq(to),
                   templateId = "ecl_registration_submitted",
                   registrationSubmittedEmailParameters,
                   force = false,
@@ -81,7 +81,7 @@ class EmailConnectorSpec extends SpecBase {
               ArgumentMatchers.eq(expectedUrl),
               ArgumentMatchers.eq(
                 RegistrationSubmittedEmailRequest(
-                  to,
+                  Seq(to),
                   templateId = "ecl_registration_submitted",
                   registrationSubmittedEmailParameters,
                   force = false,
@@ -104,7 +104,7 @@ class EmailConnectorSpec extends SpecBase {
             ArgumentMatchers.eq(expectedUrl),
             ArgumentMatchers.eq(
               RegistrationSubmittedEmailRequest(
-                to,
+                Seq(to),
                 templateId = "ecl_registration_submitted",
                 registrationSubmittedEmailParameters,
                 force = false,

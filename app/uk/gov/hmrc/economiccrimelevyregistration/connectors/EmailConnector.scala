@@ -41,7 +41,7 @@ class EmailConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(im
       .POST[RegistrationSubmittedEmailRequest, Either[UpstreamErrorResponse, HttpResponse]](
         sendEmailUrl,
         RegistrationSubmittedEmailRequest(
-          to = to,
+          to = Seq(to),
           parameters = registrationSubmittedEmailParameters
         )
       )
