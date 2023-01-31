@@ -26,12 +26,13 @@ object RegistrationSubmittedEmailParameters {
 
 final case class RegistrationSubmittedEmailRequest(
   to: Seq[String],
-  templateId: String = "ecl_registration_submitted",
+  templateId: String = RegistrationSubmittedEmailRequest.TemplateId,
   parameters: RegistrationSubmittedEmailParameters,
   force: Boolean = false,
   eventUrl: Option[String] = None
 )
 
 object RegistrationSubmittedEmailRequest {
+  val TemplateId: String                                          = "ecl_registration_submitted"
   implicit val format: OFormat[RegistrationSubmittedEmailRequest] = Json.format[RegistrationSubmittedEmailRequest]
 }

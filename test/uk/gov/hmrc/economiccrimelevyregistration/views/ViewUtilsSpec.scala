@@ -82,7 +82,7 @@ class ViewUtilsSpec extends SpecBase {
   }
 
   "formatMoney" should {
-    "format a moneyary amount with commas" in {
+    "format a monetary amount with commas" in {
       val amount = 1000000000
 
       ViewUtils.formatMoney(amount) shouldBe "1,000,000,000"
