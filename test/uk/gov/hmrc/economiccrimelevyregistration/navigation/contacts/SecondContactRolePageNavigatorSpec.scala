@@ -36,7 +36,7 @@ class SecondContactRolePageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.SecondContactEmailController
-          .onPageLoad()
+          .onPageLoad(NormalMode)
     }
   }
 

@@ -12,8 +12,10 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
 
   val numberMaxLength: Int = 24
 
-  s"GET ${contacts.routes.FirstContactNumberController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.FirstContactNumberController.onPageLoad())
+  s"GET ${contacts.routes.FirstContactNumberController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.FirstContactNumberController.onPageLoad(NormalMode)
+    )
 
     "respond with 200 status and the first contact number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -29,7 +31,7 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
         )
       )
 
-      val result = callRoute(FakeRequest(contacts.routes.FirstContactNumberController.onPageLoad()))
+      val result = callRoute(FakeRequest(contacts.routes.FirstContactNumberController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -37,8 +39,10 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${contacts.routes.FirstContactNumberController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.FirstContactNumberController.onSubmit())
+  s"POST ${contacts.routes.FirstContactNumberController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.FirstContactNumberController.onSubmit(NormalMode)
+    )
 
     "save the provided telephone number then redirect to the add another contact page" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -57,12 +61,13 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(contacts.routes.FirstContactNumberController.onSubmit()).withFormUrlEncodedBody(("value", number))
+        FakeRequest(contacts.routes.FirstContactNumberController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", number))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(contacts.routes.AddAnotherContactController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(contacts.routes.AddAnotherContactController.onPageLoad(NormalMode).url)
     }
   }
 }

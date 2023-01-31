@@ -10,8 +10,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${contacts.routes.AddAnotherContactController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.AddAnotherContactController.onPageLoad())
+  s"GET ${contacts.routes.AddAnotherContactController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)
+    )
 
     "respond with 200 status and the Add another contact HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -20,7 +22,7 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(contacts.routes.AddAnotherContactController.onPageLoad()))
+      val result = callRoute(FakeRequest(contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -28,8 +30,10 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${contacts.routes.AddAnotherContactController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.AddAnotherContactController.onSubmit())
+  s"POST ${contacts.routes.AddAnotherContactController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.AddAnotherContactController.onSubmit(NormalMode)
+    )
 
     "save the selected answer then redirect the second contact name page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -43,12 +47,13 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(contacts.routes.AddAnotherContactController.onSubmit()).withFormUrlEncodedBody(("value", "true"))
+        FakeRequest(contacts.routes.AddAnotherContactController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", "true"))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(contacts.routes.SecondContactNameController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(contacts.routes.SecondContactNameController.onPageLoad(NormalMode).url)
     }
 
     "save the selected answer then redirect to the registered office address page when the No option is selected" in {
@@ -59,7 +64,7 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
         random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
 
       val updatedRegistration = registration.copy(
-        contacts = registration.contacts.copy(secondContact = Some(false)),
+        contacts = registration.contacts.copy(secondContact = Some(false), secondContactDetails = ContactDetails.empty),
         incorporatedEntityJourneyData =
           Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
         partnershipEntityJourneyData = None,
@@ -70,7 +75,8 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(contacts.routes.AddAnotherContactController.onSubmit()).withFormUrlEncodedBody(("value", "false"))
+        FakeRequest(contacts.routes.AddAnotherContactController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", "false"))
       )
 
       status(result) shouldBe SEE_OTHER

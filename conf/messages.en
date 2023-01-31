@@ -270,6 +270,7 @@ checkYourAnswers.firstContactName.label = Contact name
 checkYourAnswers.firstContactRole.label = Role
 checkYourAnswers.firstContactEmail.label = Email address
 checkYourAnswers.firstContactNumber.label = Telephone number
+checkYourAnswers.secondContact.label = Secondary contact
 checkYourAnswers.secondContactName.label = Secondary contact name
 checkYourAnswers.secondContactRole.label = Role
 checkYourAnswers.secondContactEmail.label = Email address

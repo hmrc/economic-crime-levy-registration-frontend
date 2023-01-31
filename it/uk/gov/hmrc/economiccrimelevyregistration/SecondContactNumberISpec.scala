@@ -12,8 +12,10 @@ class SecondContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
 
   val numberMaxLength: Int = 24
 
-  s"GET ${contacts.routes.SecondContactNumberController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.SecondContactNumberController.onPageLoad())
+  s"GET ${contacts.routes.SecondContactNumberController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.SecondContactNumberController.onPageLoad(NormalMode)
+    )
 
     "respond with 200 status and the second contact number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -29,7 +31,7 @@ class SecondContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
         )
       )
 
-      val result = callRoute(FakeRequest(contacts.routes.SecondContactNumberController.onPageLoad()))
+      val result = callRoute(FakeRequest(contacts.routes.SecondContactNumberController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -37,8 +39,10 @@ class SecondContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${contacts.routes.SecondContactNumberController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.SecondContactNumberController.onSubmit())
+  s"POST ${contacts.routes.SecondContactNumberController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.SecondContactNumberController.onSubmit(NormalMode)
+    )
 
     "save the provided telephone number then redirect to the add another contact page" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -63,7 +67,8 @@ class SecondContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(contacts.routes.SecondContactNumberController.onSubmit()).withFormUrlEncodedBody(("value", number))
+        FakeRequest(contacts.routes.SecondContactNumberController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", number))
       )
 
       status(result) shouldBe SEE_OTHER

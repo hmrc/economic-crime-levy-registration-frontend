@@ -35,7 +35,9 @@ class FirstContactNamePageNavigatorSpec extends SpecBase {
             )
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.FirstContactRoleController.onPageLoad()
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.FirstContactRoleController.onPageLoad(
+          NormalMode
+        )
     }
   }
 

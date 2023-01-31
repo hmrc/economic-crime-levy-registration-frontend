@@ -33,6 +33,10 @@ class SecondContactNumberPageNavigator extends PageNavigator {
       case _       => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call = ???
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    registration.contacts.secondContactDetails.telephoneNumber match {
+      case Some(_) => routes.CheckYourAnswersController.onPageLoad()
+      case _       => routes.JourneyRecoveryController.onPageLoad()
+    }
 
 }

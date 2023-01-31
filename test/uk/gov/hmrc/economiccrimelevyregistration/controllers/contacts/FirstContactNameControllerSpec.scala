@@ -27,7 +27,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactNameFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactNamePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.FirstContactNameView
 
@@ -64,11 +64,11 @@ class FirstContactNameControllerSpec extends SpecBase {
       new TestContext(
         registration.copy(contacts = Contacts.empty)
       ) {
-        val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
       }
     }
 
@@ -80,11 +80,11 @@ class FirstContactNameControllerSpec extends SpecBase {
               .copy(firstContactDetails = registration.contacts.firstContactDetails.copy(name = Some(name)))
           )
         ) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(name))(
+          contentAsString(result) shouldBe view(form.fill(name), NormalMode)(
             fakeRequest,
             messages
           ).toString
@@ -109,7 +109,7 @@ class FirstContactNameControllerSpec extends SpecBase {
           .thenReturn(Future.successful(updatedRegistration))
 
         val result: Future[Result] =
-          controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", name)))
+          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", name)))
 
         status(result) shouldBe SEE_OTHER
 
@@ -119,12 +119,12 @@ class FirstContactNameControllerSpec extends SpecBase {
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
       new TestContext(registration) {
-        val result: Future[Result]       = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
+        val result: Future[Result]       = controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
         val formWithErrors: Form[String] = form.bind(Map("value" -> ""))
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString
       }
     }
   }

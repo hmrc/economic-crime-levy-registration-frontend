@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContactFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AddAnotherContactView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -46,23 +46,27 @@ class AddAnotherContactController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.contacts.secondContact)))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    Ok(view(form.prepare(request.registration.contacts.secondContact), mode))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         secondContact => {
-          val updatedContacts: Contacts = request.registration.contacts
-            .copy(secondContact = Some(secondContact))
+          val updatedContacts: Contacts = secondContact match {
+            case true  => request.registration.contacts.copy(secondContact = Some(secondContact))
+            case false =>
+              request.registration.contacts
+                .copy(secondContact = Some(secondContact), secondContactDetails = ContactDetails.empty)
+          }
 
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(contacts = updatedContacts))
             .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
+              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
             }
         }
       )

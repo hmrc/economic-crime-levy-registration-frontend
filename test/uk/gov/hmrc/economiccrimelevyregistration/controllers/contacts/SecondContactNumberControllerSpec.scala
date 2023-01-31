@@ -27,7 +27,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNumberFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.SecondContactNumberView
 
@@ -67,11 +67,11 @@ class SecondContactNumberControllerSpec extends SpecBase {
             Contacts.empty.copy(secondContactDetails = ContactDetails(name = Some(name), None, None, None))
           )
         ) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form, name)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form, name, NormalMode)(fakeRequest, messages).toString
         }
     }
 
@@ -87,7 +87,7 @@ class SecondContactNumberControllerSpec extends SpecBase {
           updatedRegistration
         ) {
           val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onPageLoad()(fakeRequest))
+            await(controller.onPageLoad(NormalMode)(fakeRequest))
           }
 
           result.getMessage shouldBe "No second contact name found in registration data"
@@ -104,11 +104,11 @@ class SecondContactNumberControllerSpec extends SpecBase {
               )
           )
         ) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(number), name)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form.fill(number), name, NormalMode)(fakeRequest, messages).toString
         }
     }
   }
@@ -130,7 +130,7 @@ class SecondContactNumberControllerSpec extends SpecBase {
           .thenReturn(Future.successful(updatedRegistration))
 
         val result: Future[Result] =
-          controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", number)))
+          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", number)))
 
         status(result) shouldBe SEE_OTHER
 
@@ -146,12 +146,13 @@ class SecondContactNumberControllerSpec extends SpecBase {
               .copy(secondContactDetails = registration.contacts.secondContactDetails.copy(name = Some(name)))
           )
         ) {
-          val result: Future[Result]       = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
+          val result: Future[Result]       =
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
           val formWithErrors: Form[String] = form.bind(Map("value" -> ""))
 
           status(result) shouldBe BAD_REQUEST
 
-          contentAsString(result) shouldBe view(formWithErrors, name)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(formWithErrors, name, NormalMode)(fakeRequest, messages).toString
         }
     }
   }

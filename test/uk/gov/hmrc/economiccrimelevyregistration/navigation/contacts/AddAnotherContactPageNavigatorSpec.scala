@@ -32,7 +32,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
         val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(true)))
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe contacts.routes.SecondContactNameController
-          .onPageLoad()
+          .onPageLoad(NormalMode)
     }
 
     "return a Call to the confirm contact address page in NormalMode when the 'No' option is selected and there is a valid address present in the GRS journey data" in forAll {

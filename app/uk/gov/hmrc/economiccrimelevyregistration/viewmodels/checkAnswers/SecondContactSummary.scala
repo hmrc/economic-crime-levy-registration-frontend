@@ -17,26 +17,26 @@
 package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 
-object FirstContactRoleSummary {
+object SecondContactSummary {
 
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.contacts.firstContactDetails.role.map { answer =>
+    request.registration.contacts.secondContact.map { answer =>
+      val value = if (answer) "site.yes" else "site.no"
+
       SummaryListRowViewModel(
-        key = Key("checkYourAnswers.firstContactRole.label"),
-        value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),
+        key = Key("checkYourAnswers.secondContact.label"),
+        value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", contacts.routes.FirstContactRoleController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", contacts.routes.AddAnotherContactController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(
-              messages("checkYourAnswers.firstContactRole.label")
+              messages("checkYourAnswers.secondContact.label")
             )
         )
       )

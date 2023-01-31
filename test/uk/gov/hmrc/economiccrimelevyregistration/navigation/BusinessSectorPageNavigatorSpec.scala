@@ -31,7 +31,7 @@ class BusinessSectorPageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe contacts.routes.FirstContactNameController
-          .onPageLoad()
+          .onPageLoad(NormalMode)
     }
 
     "return a Call to the check your answers page in CheckMode" in forAll {

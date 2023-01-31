@@ -70,6 +70,7 @@ class CheckYourAnswersController @Inject() (
           FirstContactRoleSummary.row(),
           FirstContactEmailSummary.row(),
           FirstContactNumberSummary.row(),
+          SecondContactSummary.row(),
           SecondContactNameSummary.row(),
           SecondContactRoleSummary.row(),
           SecondContactEmailSummary.row(),

@@ -12,8 +12,10 @@ class SecondContactNameISpec extends ISpecBase with AuthorisedBehaviour {
 
   val nameMaxLength: Int = 160
 
-  s"GET ${contacts.routes.SecondContactNameController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.SecondContactNameController.onPageLoad())
+  s"GET ${contacts.routes.SecondContactNameController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.SecondContactNameController.onPageLoad(NormalMode)
+    )
 
     "respond with 200 status and the second contact name HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -22,7 +24,7 @@ class SecondContactNameISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(contacts.routes.SecondContactNameController.onPageLoad()))
+      val result = callRoute(FakeRequest(contacts.routes.SecondContactNameController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -30,8 +32,10 @@ class SecondContactNameISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${contacts.routes.SecondContactNameController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.SecondContactNameController.onSubmit())
+  s"POST ${contacts.routes.SecondContactNameController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.SecondContactNameController.onSubmit(NormalMode)
+    )
 
     "save the provided name then redirect to the second contact role page" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -50,12 +54,13 @@ class SecondContactNameISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(contacts.routes.SecondContactNameController.onSubmit()).withFormUrlEncodedBody(("value", name))
+        FakeRequest(contacts.routes.SecondContactNameController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", name))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(contacts.routes.SecondContactRoleController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(contacts.routes.SecondContactRoleController.onPageLoad(NormalMode).url)
     }
   }
 }

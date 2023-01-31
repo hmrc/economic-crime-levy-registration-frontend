@@ -18,17 +18,21 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
 class FirstContactEmailPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.contacts.firstContactDetails.emailAddress match {
-      case Some(_) => contacts.routes.FirstContactNumberController.onPageLoad()
+      case Some(_) => contacts.routes.FirstContactNumberController.onPageLoad(NormalMode)
       case _       => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call = ???
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    registration.contacts.firstContactDetails.emailAddress match {
+      case Some(_) => routes.CheckYourAnswersController.onPageLoad()
+      case _       => routes.JourneyRecoveryController.onPageLoad()
+    }
 
 }

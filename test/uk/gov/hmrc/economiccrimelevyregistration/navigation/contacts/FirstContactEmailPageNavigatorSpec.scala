@@ -36,7 +36,7 @@ class FirstContactEmailPageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.FirstContactNumberController
-          .onPageLoad()
+          .onPageLoad(NormalMode)
     }
   }
 
