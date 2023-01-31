@@ -57,7 +57,14 @@ class EntityTypeController @Inject() (
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType =>
           eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(entityType = Some(entityType)))
+            .upsertRegistration(
+              request.registration.copy(
+                entityType = Some(entityType),
+                incorporatedEntityJourneyData = None,
+                soleTraderEntityJourneyData = None,
+                partnershipEntityJourneyData = None
+              )
+            )
             .flatMap { updatedRegistration =>
               pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
             }

@@ -40,12 +40,18 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistration(registration)
       stubCreateGrsJourney("/incorporated-entity-identification/api/limited-company-journey")
 
-      val updatedRegistration = registration.copy(entityType = Some(UkLimitedCompany))
+      val updatedRegistration = registration.copy(
+        entityType = Some(UkLimitedCompany),
+        incorporatedEntityJourneyData = None,
+        soleTraderEntityJourneyData = None,
+        partnershipEntityJourneyData = None
+      )
 
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.EntityTypeController.onSubmit(NormalMode)).withFormUrlEncodedBody(("value", "UkLimitedCompany"))
+        FakeRequest(routes.EntityTypeController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", "UkLimitedCompany"))
       )
 
       status(result) shouldBe SEE_OTHER
@@ -61,7 +67,12 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistration(registration)
       stubCreateGrsJourney("/sole-trader-identification/api/sole-trader-journey")
 
-      val updatedRegistration = registration.copy(entityType = Some(SoleTrader))
+      val updatedRegistration = registration.copy(
+        entityType = Some(SoleTrader),
+        incorporatedEntityJourneyData = None,
+        soleTraderEntityJourneyData = None,
+        partnershipEntityJourneyData = None
+      )
 
       stubUpsertRegistration(updatedRegistration)
 
@@ -93,12 +104,18 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     stubGetRegistration(registration)
     stubCreateGrsJourney(s"/partnership-identification/api/$urlPartnershipType")
 
-    val updatedRegistration = registration.copy(entityType = Some(entityType))
+    val updatedRegistration = registration.copy(
+      entityType = Some(entityType),
+      incorporatedEntityJourneyData = None,
+      soleTraderEntityJourneyData = None,
+      partnershipEntityJourneyData = None
+    )
 
     stubUpsertRegistration(updatedRegistration)
 
     val result = callRoute(
-      FakeRequest(routes.EntityTypeController.onSubmit(NormalMode)).withFormUrlEncodedBody(("value", entityType.toString))
+      FakeRequest(routes.EntityTypeController.onSubmit(NormalMode))
+        .withFormUrlEncodedBody(("value", entityType.toString))
     )
 
     status(result) shouldBe SEE_OTHER

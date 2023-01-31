@@ -94,7 +94,12 @@ class EntityTypeControllerSpec extends SpecBase {
     "save the selected entity type then redirect to the next page" in forAll {
       (registration: Registration, entityType: EntityType, mode: Mode) =>
         new TestContext(registration) {
-          val updatedRegistration: Registration = registration.copy(entityType = Some(entityType))
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(entityType),
+            incorporatedEntityJourneyData = None,
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = None
+          )
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
