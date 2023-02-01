@@ -17,8 +17,8 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
   val revenueGen: Gen[Long] = Gen.chooseNum[Long](minRevenue, maxRevenue)
 
-  s"GET ${routes.UkRevenueController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.UkRevenueController.onPageLoad())
+  s"GET ${routes.UkRevenueController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.UkRevenueController.onPageLoad(NormalMode))
 
     "respond with 200 status and the UK revenue view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -27,7 +27,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.UkRevenueController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.UkRevenueController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -35,8 +35,8 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.UkRevenueController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.UkRevenueController.onSubmit())
+  s"POST ${routes.UkRevenueController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.UkRevenueController.onSubmit(NormalMode))
 
     "save the UK revenue then redirect to the entity type page if the amount due is more than 0" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -55,7 +55,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       )
 
       val result = callRoute(
-        FakeRequest(routes.UkRevenueController.onSubmit())
+        FakeRequest(routes.UkRevenueController.onSubmit(NormalMode))
           .withFormUrlEncodedBody(("value", ukRevenue.toString))
       )
 
@@ -81,7 +81,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       )
 
       val result = callRoute(
-        FakeRequest(routes.UkRevenueController.onSubmit())
+        FakeRequest(routes.UkRevenueController.onSubmit(NormalMode))
           .withFormUrlEncodedBody(("value", ukRevenue.toString))
       )
 

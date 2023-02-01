@@ -46,6 +46,9 @@ class UkRevenuePageNavigator @Inject() (
             }
           )
 
+        // TODO: Can we refactor any of this to remove the duplication for CheckMode?
+        // TODO: Do we really mean to go to the start of the journey rather than the recovery page?
+
         registration.relevantAp12Months match {
           case Some(true)  => f(EclTaxYear.YearInDays)
           case Some(false) =>
@@ -60,6 +63,29 @@ class UkRevenuePageNavigator @Inject() (
 
   override protected def navigateInCheckMode(registration: Registration)(implicit
     request: RequestHeader
-  ): Future[Call] = ???
+  ): Future[Call] =
+    registration.relevantApRevenue match {
+      case Some(revenue) =>
+        val f: Int => Future[Call] = eclReturnsConnector
+          .calculateLiability(_, revenue)
+          .map(liability =>
+            if (liability.amountDue > 0) {
+              routes.CheckYourAnswersController.onPageLoad()
+            } else {
+              routes.NotLiableController.onPageLoad()
+            }
+          )
+
+        registration.relevantAp12Months match {
+          case Some(true)  => f(EclTaxYear.YearInDays)
+          case Some(false) =>
+            registration.relevantApLength match {
+              case Some(relevantApLength) => f(relevantApLength)
+              case _                      => Future.successful(routes.StartController.onPageLoad())
+            }
+          case _           => Future.successful(routes.StartController.onPageLoad())
+        }
+      case _             => Future.successful(routes.StartController.onPageLoad())
+    }
 
 }

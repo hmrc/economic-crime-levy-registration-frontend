@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantAp12MonthsFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantAp12MonthsPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantAp12MonthsView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -46,22 +46,22 @@ class RelevantAp12MonthsController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.relevantAp12Months)))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    Ok(view(form.prepare(request.registration.relevantAp12Months), mode))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         relevantAp12Months =>
           eclRegistrationConnector
             .upsertRegistration(
               request.registration.copy(relevantAp12Months = Some(relevantAp12Months))
             )
             .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
+              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
             }
       )
   }

@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
 class AmlSupervisorPageNavigator extends PageNavigator {
 
@@ -29,7 +29,7 @@ class AmlSupervisorPageNavigator extends PageNavigator {
         amlSupervisor.supervisorType match {
           case GamblingCommission | FinancialConductAuthority =>
             routes.RegisterWithOtherAmlSupervisorController.onPageLoad()
-          case Hmrc | Other                                   => routes.RelevantAp12MonthsController.onPageLoad()
+          case Hmrc | Other                                   => routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
         }
       case _                   => routes.JourneyRecoveryController.onPageLoad()
     }

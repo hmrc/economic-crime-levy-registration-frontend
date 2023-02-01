@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 
@@ -65,11 +65,11 @@ class UkRevenueControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
       new TestContext(registration.copy(relevantApRevenue = None)) {
-        val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
       }
     }
 
@@ -78,11 +78,11 @@ class UkRevenueControllerSpec extends SpecBase {
         new TestContext(
           registration.copy(relevantApRevenue = Some(ukRevenue))
         ) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(ukRevenue))(
+          contentAsString(result) shouldBe view(form.fill(ukRevenue), NormalMode)(
             fakeRequest,
             messages
           ).toString
@@ -103,7 +103,7 @@ class UkRevenueControllerSpec extends SpecBase {
           .thenReturn(Future.successful(updatedRegistration))
 
         val result: Future[Result] =
-          controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", ukRevenue.toString)))
+          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", ukRevenue.toString)))
 
         status(result) shouldBe SEE_OTHER
 
@@ -117,12 +117,12 @@ class UkRevenueControllerSpec extends SpecBase {
     ) { (registration: Registration, invalidRevenue: String) =>
       new TestContext(registration) {
         val result: Future[Result]     =
-          controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", invalidRevenue)))
+          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", invalidRevenue)))
         val formWithErrors: Form[Long] = form.bind(Map("value" -> invalidRevenue))
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString
       }
     }
   }

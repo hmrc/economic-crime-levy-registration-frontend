@@ -61,7 +61,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.RelevantAp12MonthsController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.RelevantAp12MonthsController.onPageLoad(NormalMode).url)
     }
   }
 

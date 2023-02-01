@@ -14,8 +14,8 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
   val minDays = 1
   val maxDays = 999
 
-  s"GET ${routes.RelevantApLengthController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.RelevantApLengthController.onPageLoad())
+  s"GET ${routes.RelevantApLengthController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.RelevantApLengthController.onPageLoad(NormalMode))
 
     "respond with 200 status and the relevant AP length view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -24,7 +24,7 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.RelevantApLengthController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.RelevantApLengthController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -32,8 +32,8 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.RelevantApLengthController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.RelevantApLengthController.onSubmit())
+  s"POST ${routes.RelevantApLengthController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.RelevantApLengthController.onSubmit(NormalMode))
 
     "save the relevant AP length then redirect to the UK revenue page" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -48,13 +48,13 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.RelevantApLengthController.onSubmit())
+        FakeRequest(routes.RelevantApLengthController.onSubmit(NormalMode))
           .withFormUrlEncodedBody(("value", relevantApLength.toString))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.UkRevenueController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.UkRevenueController.onPageLoad(NormalMode).url)
     }
   }
 }

@@ -57,7 +57,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
         val updatedRegistration   = registration.copy(amlSupervisor = Some(amlSupervisor))
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.RelevantAp12MonthsController
-          .onPageLoad()
+          .onPageLoad(NormalMode)
     }
 
     "return a Call to the check your answers page in CheckMode when either the HMRC or Other AML Supervisor option is selected" in forAll {

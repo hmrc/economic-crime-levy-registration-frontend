@@ -16,14 +16,20 @@ POST        /who-is-your-aml-supervisor                                uk.gov.hm
 GET         /change-answer/who-is-your-aml-supervisor                  uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/who-is-your-aml-supervisor                  uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = CheckMode)
 
-GET         /is-relevant-accounting-period-12-months                   uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onPageLoad()
-POST        /is-relevant-accounting-period-12-months                   uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onSubmit()
+GET         /is-relevant-accounting-period-12-months                   uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onPageLoad(mode: Mode = NormalMode)
+POST        /is-relevant-accounting-period-12-months                   uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/is-relevant-accounting-period-12-months     uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/is-relevant-accounting-period-12-months     uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onSubmit(mode: Mode = CheckMode)
 
-GET         /how-long-is-your-relevant-accounting-period               uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantApLengthController.onPageLoad()
-POST        /how-long-is-your-relevant-accounting-period               uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantApLengthController.onSubmit()
+GET         /how-long-is-your-relevant-accounting-period               uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantApLengthController.onPageLoad(mode: Mode = NormalMode)
+POST        /how-long-is-your-relevant-accounting-period               uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantApLengthController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/how-long-is-your-relevant-accounting-period uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantApLengthController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/how-long-is-your-relevant-accounting-period uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantApLengthController.onSubmit(mode: Mode = CheckMode)
 
-GET         /uk-revenue-for-accounting-period                          uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad()
-POST        /uk-revenue-for-accounting-period                          uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit()
+GET         /uk-revenue-for-accounting-period                          uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad(mode: Mode = NormalMode)
+POST        /uk-revenue-for-accounting-period                          uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/uk-revenue-for-accounting-period            uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/uk-revenue-for-accounting-period            uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit(mode: Mode = CheckMode)
 
 GET         /you-do-not-need-to-register                               uk.gov.hmrc.economiccrimelevyregistration.controllers.NotLiableController.onPageLoad()
 

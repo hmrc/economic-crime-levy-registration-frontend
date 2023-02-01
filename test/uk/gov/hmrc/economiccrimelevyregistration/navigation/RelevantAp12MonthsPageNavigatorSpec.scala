@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
 class RelevantAp12MonthsPageNavigatorSpec extends SpecBase {
 
@@ -30,14 +30,23 @@ class RelevantAp12MonthsPageNavigatorSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration = registration.copy(relevantAp12Months = Some(true))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.UkRevenueController.onPageLoad()
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.UkRevenueController.onPageLoad(
+          NormalMode
+        )
     }
 
-    "return a Call to the relevant AP length page from the relevant AP 12 months page in NormalMode when the 'No' option is selected" in forAll {
+    "return a Call to the check your answers page from the relevant AP 12 months page in CheckMode when the 'Yes' option is selected" in forAll {
       registration: Registration =>
+        val updatedRegistration = registration.copy(relevantAp12Months = Some(true))
+
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+    }
+
+    "return a Call to the relevant AP length page from the relevant AP 12 months page in either mode when the 'No' option is selected" in forAll {
+      (registration: Registration, mode: Mode) =>
         val updatedRegistration = registration.copy(relevantAp12Months = Some(false))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.RelevantApLengthController.onPageLoad()
+        pageNavigator.nextPage(mode, updatedRegistration) shouldBe routes.RelevantApLengthController.onPageLoad(mode)
     }
   }
 

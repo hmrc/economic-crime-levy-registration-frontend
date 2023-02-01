@@ -34,9 +34,10 @@ object AmlRegulatedActivitySummary {
         key = Key("checkYourAnswers.amlRegulatedActivity.label"),
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.AmlRegulatedActivityController.onPageLoad(CheckMode).url).withVisuallyHiddenText(
-            messages("checkYourAnswers.amlRegulatedActivity.label")
-          )
+          ActionItemViewModel("site.change", routes.AmlRegulatedActivityController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(
+              messages("checkYourAnswers.amlRegulatedActivity.label")
+            )
         )
       )
     }

@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -46,20 +46,20 @@ class UkRevenueController @Inject() (
 
   val form: Form[Long] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.relevantApRevenue)))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    Ok(view(form.prepare(request.registration.relevantApRevenue), mode))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         revenue =>
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(relevantApRevenue = Some(revenue)))
             .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(NormalMode, updatedRegistration).map(Redirect)
+              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
             }
       )
   }
