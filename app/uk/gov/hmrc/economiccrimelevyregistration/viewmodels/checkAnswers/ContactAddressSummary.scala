@@ -17,6 +17,8 @@
 package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -30,11 +32,17 @@ object ContactAddressSummary {
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.address.label"),
         value = ValueViewModel(AddressViewModel.htmlContent(answer)),
-        actions = Seq(
-          ActionItemViewModel("site.change", "#TODO").withVisuallyHiddenText(
-            messages("checkYourAnswers.address.label")
-          )
-        )
+        actions = request.registration.useRegisteredOfficeAddressAsContactAddress match {
+          case Some(true)  => Seq.empty
+          case Some(false) =>
+            Seq(
+              ActionItemViewModel("site.change", routes.IsUkAddressController.onPageLoad(CheckMode).url)
+                .withVisuallyHiddenText(
+                  messages("checkYourAnswers.address.label")
+                )
+            )
+          case _           => throw new IllegalStateException("Use registered office address as contact address answer not found")
+        }
       )
     }
 

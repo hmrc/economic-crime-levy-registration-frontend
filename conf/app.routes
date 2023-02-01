@@ -90,16 +90,21 @@ POST        /second-contact-telephone                                  uk.gov.hm
 GET         /change-answer/second-contact-telephone                    uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/second-contact-telephone                    uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.SecondContactNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /contact-address                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.ConfirmContactAddressController.onPageLoad()
-POST        /contact-address                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.ConfirmContactAddressController.onSubmit()
+GET         /contact-address                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.ConfirmContactAddressController.onPageLoad(mode: Mode = NormalMode)
+POST        /contact-address                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.ConfirmContactAddressController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/contact-address                             uk.gov.hmrc.economiccrimelevyregistration.controllers.ConfirmContactAddressController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/contact-address                             uk.gov.hmrc.economiccrimelevyregistration.controllers.ConfirmContactAddressController.onSubmit(mode: Mode = CheckMode)
 
-GET         /uk-address                                                uk.gov.hmrc.economiccrimelevyregistration.controllers.IsUkAddressController.onPageLoad()
-POST        /uk-address                                                uk.gov.hmrc.economiccrimelevyregistration.controllers.IsUkAddressController.onSubmit()
+GET         /uk-address                                                uk.gov.hmrc.economiccrimelevyregistration.controllers.IsUkAddressController.onPageLoad(mode: Mode = NormalMode)
+POST        /uk-address                                                uk.gov.hmrc.economiccrimelevyregistration.controllers.IsUkAddressController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/uk-address                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.IsUkAddressController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/uk-address                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.IsUkAddressController.onSubmit(mode: Mode = CheckMode)
 
 GET         /grs-continue/normalmode                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(mode: Mode = NormalMode, journeyId)
 GET         /grs-continue/checkmode                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.GrsContinueController.continue(mode: Mode = CheckMode, journeyId)
 
-GET         /address-lookup-continue                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.AddressLookupContinueController.continue(id)
+GET         /address-lookup-continue/normalmode                        uk.gov.hmrc.economiccrimelevyregistration.controllers.AddressLookupContinueController.continue(mode: Mode = NormalMode, id)
+GET         /address-lookup-continue/checkmode                         uk.gov.hmrc.economiccrimelevyregistration.controllers.AddressLookupContinueController.continue(mode: Mode = CheckMode, id)
 
 GET         /check-your-answers                                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
 POST        /check-your-answers                                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onSubmit()

@@ -20,6 +20,7 @@ import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.AddressLookupFrontendConnector
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -33,8 +34,10 @@ class StubAddressLookupFrontendConnector @Inject() (
 )(implicit
   val messagesApi: MessagesApi
 ) extends AddressLookupFrontendConnector {
-  override def initJourney(ukMode: Boolean)(implicit hc: HeaderCarrier): Future[String] =
-    Future.successful("/register-for-the-economic-crime-levy/test-only/stub-alf-journey-data")
+  override def initJourney(ukMode: Boolean, mode: Mode)(implicit hc: HeaderCarrier): Future[String] =
+    Future.successful(
+      s"/register-for-the-economic-crime-levy/test-only/stub-alf-journey-data?continueUrl=${mode.toString.toLowerCase}"
+    )
 
   override def getAddress(journeyId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData] = {
     val decodedBytes = Base64.getDecoder.decode(

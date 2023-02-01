@@ -23,6 +23,7 @@ import play.api.http.Status._
 import play.api.http.HeaderNames._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
 import uk.gov.hmrc.http.{HttpClient, HttpResponse, UpstreamErrorResponse}
 
@@ -41,7 +42,8 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
     val expectedJourneyConfig: AlfJourneyConfig =
       AlfJourneyConfig(
         options = AlfOptions(
-          continueUrl = "http://localhost:14000/register-for-the-economic-crime-levy/address-lookup-continue",
+          continueUrl =
+            "http://localhost:14000/register-for-the-economic-crime-levy/address-lookup-continue/normalmode",
           homeNavHref = "/register-for-the-economic-crime-levy",
           signOutHref = "http://localhost:14000/register-for-the-economic-crime-levy/account/sign-out-survey",
           accessibilityFooterUrl = "/accessibility-statement/register-for-the-economic-crime-levy",
@@ -65,7 +67,7 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
         )
           .thenReturn(Future.successful(Right(response)))
 
-        val result = await(connector.initJourney(ukMode))
+        val result = await(connector.initJourney(ukMode, NormalMode))
 
         result shouldBe journeyUrl
 
@@ -92,7 +94,7 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(Right(response)))
 
       val result: IllegalStateException = intercept[IllegalStateException] {
-        await(connector.initJourney(ukMode))
+        await(connector.initJourney(ukMode, NormalMode))
       }
 
       result.getMessage shouldBe "Location header not present in response"
@@ -120,7 +122,7 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(Left(response)))
 
       val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
-        await(connector.initJourney(ukMode))
+        await(connector.initJourney(ukMode, NormalMode))
       }
 
       result.getMessage shouldBe "Internal server error"

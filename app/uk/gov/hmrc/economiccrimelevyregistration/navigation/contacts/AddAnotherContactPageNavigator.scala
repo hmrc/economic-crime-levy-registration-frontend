@@ -28,8 +28,8 @@ class AddAnotherContactPageNavigator extends PageNavigator {
       case Some(true)  => contacts.routes.SecondContactNameController.onPageLoad(NormalMode)
       case Some(false) =>
         registration.grsAddressToEclAddress match {
-          case Some(_) => routes.ConfirmContactAddressController.onPageLoad()
-          case _       => routes.IsUkAddressController.onPageLoad()
+          case Some(_) => routes.ConfirmContactAddressController.onPageLoad(NormalMode)
+          case _       => routes.IsUkAddressController.onPageLoad(NormalMode)
         }
       case _           => routes.JourneyRecoveryController.onPageLoad()
     }

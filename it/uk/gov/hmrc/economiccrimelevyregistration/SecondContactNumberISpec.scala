@@ -73,7 +73,7 @@ class SecondContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.ConfirmContactAddressController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.ConfirmContactAddressController.onPageLoad(NormalMode).url)
     }
   }
 }

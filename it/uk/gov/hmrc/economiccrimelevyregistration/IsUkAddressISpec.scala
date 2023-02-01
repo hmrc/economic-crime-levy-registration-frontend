@@ -11,8 +11,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
 
 class IsUkAddressISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.IsUkAddressController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.IsUkAddressController.onPageLoad())
+  s"GET ${routes.IsUkAddressController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.IsUkAddressController.onPageLoad(NormalMode))
 
     "respond with 200 status and the is UK address HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -21,7 +21,7 @@ class IsUkAddressISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.IsUkAddressController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.IsUkAddressController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -29,8 +29,8 @@ class IsUkAddressISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.IsUkAddressController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.IsUkAddressController.onSubmit())
+  s"POST ${routes.IsUkAddressController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.IsUkAddressController.onSubmit(NormalMode))
 
     "save the selected address option then redirect to the address lookup frontend journey" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -43,7 +43,8 @@ class IsUkAddressISpec extends ISpecBase with AuthorisedBehaviour {
       val expectedJourneyConfig: AlfJourneyConfig =
         AlfJourneyConfig(
           options = AlfOptions(
-            continueUrl = "http://localhost:14000/register-for-the-economic-crime-levy/address-lookup-continue",
+            continueUrl =
+              "http://localhost:14000/register-for-the-economic-crime-levy/address-lookup-continue/normalmode",
             homeNavHref = "/register-for-the-economic-crime-levy",
             signOutHref = "http://localhost:14000/register-for-the-economic-crime-levy/account/sign-out-survey",
             accessibilityFooterUrl = "/accessibility-statement/register-for-the-economic-crime-levy",
@@ -61,7 +62,7 @@ class IsUkAddressISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.IsUkAddressController.onSubmit())
+        FakeRequest(routes.IsUkAddressController.onSubmit(NormalMode))
           .withFormUrlEncodedBody(("value", contactAddressIsUk.toString))
       )
 

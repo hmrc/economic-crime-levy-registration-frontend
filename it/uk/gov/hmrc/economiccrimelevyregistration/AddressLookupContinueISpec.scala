@@ -6,14 +6,16 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
   val journeyId: String = "test-journey-id"
 
-  s"GET ${routes.AddressLookupContinueController.continue(journeyId).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.AddressLookupContinueController.continue(journeyId))
+  s"GET ${routes.AddressLookupContinueController.continue(NormalMode, journeyId).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      routes.AddressLookupContinueController.continue(NormalMode, journeyId)
+    )
 
     "retrieve the ALF address data, update the registration with the address and continue the registration journey" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -44,7 +46,7 @@ class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubUpsertRegistration(updatedRegistration)
 
-      val result = callRoute(FakeRequest(routes.AddressLookupContinueController.continue(journeyId)))
+      val result = callRoute(FakeRequest(routes.AddressLookupContinueController.continue(NormalMode, journeyId)))
 
       status(result) shouldBe SEE_OTHER
 

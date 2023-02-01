@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -46,21 +46,22 @@ class IsUkAddressController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(
       view(
-        form.prepare(request.registration.contactAddressIsUk)
+        form.prepare(request.registration.contactAddressIsUk),
+        mode
       )
     )
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
         formWithErrors =>
           Future.successful(
-            BadRequest(view(formWithErrors))
+            BadRequest(view(formWithErrors, mode))
           ),
         contactAddressIsUk =>
           eclRegistrationConnector
@@ -68,7 +69,7 @@ class IsUkAddressController @Inject() (
               request.registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
             )
             .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(NormalMode, updatedRegistration).map(Redirect)
+              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
             }
       )
   }

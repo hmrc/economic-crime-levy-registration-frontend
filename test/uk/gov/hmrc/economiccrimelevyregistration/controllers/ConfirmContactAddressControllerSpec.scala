@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWi
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ConfirmContactAddressView
@@ -79,13 +79,14 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
         new TestContext(
           updatedRegistration
         ) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
           contentAsString(result) shouldBe view(
             form,
-            AddressViewModel.insetText(updatedRegistration.grsAddressToEclAddress.get)
+            AddressViewModel.insetText(updatedRegistration.grsAddressToEclAddress.get),
+            NormalMode
           )(fakeRequest, messages).toString
         }
     }
@@ -104,7 +105,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
           updatedRegistration
         ) {
           val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onPageLoad()(fakeRequest))
+            await(controller.onPageLoad(NormalMode)(fakeRequest))
           }
 
           result.getMessage shouldBe "No registered office address found in registration data"
@@ -128,13 +129,14 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
         new TestContext(
           updatedRegistration
         ) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
           contentAsString(result) shouldBe view(
             form.fill(useRegisteredOfficeAddressAsContactAddress),
-            AddressViewModel.insetText(updatedRegistration.grsAddressToEclAddress.get)
+            AddressViewModel.insetText(updatedRegistration.grsAddressToEclAddress.get),
+            NormalMode
           )(fakeRequest, messages).toString
         }
     }
@@ -153,7 +155,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit()(
+            controller.onSubmit(NormalMode)(
               fakeRequest.withFormUrlEncodedBody(("value", useRegisteredOfficeAddressAsContactAddress.toString))
             )
 
@@ -177,14 +179,16 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
         )
 
         new TestContext(updatedRegistration) {
-          val result: Future[Result]        = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
+          val result: Future[Result]        =
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
           val formWithErrors: Form[Boolean] = form.bind(Map("value" -> ""))
 
           status(result) shouldBe BAD_REQUEST
 
           contentAsString(result) shouldBe view(
             formWithErrors,
-            AddressViewModel.insetText(updatedRegistration.grsAddressToEclAddress.get)
+            AddressViewModel.insetText(updatedRegistration.grsAddressToEclAddress.get),
+            NormalMode
           )(fakeRequest, messages).toString
         }
     }

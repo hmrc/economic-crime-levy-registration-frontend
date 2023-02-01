@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
 
 import scala.concurrent.Future
 
@@ -34,21 +34,22 @@ class ConfirmContactAddressPageNavigatorSpec extends SpecBase {
   val pageNavigator = new ConfirmContactAddressPageNavigator(mockEclRegistrationConnector)
 
   "nextPage" should {
-    "return a Call to the UK address question page in NormalMode when the answer is no" in forAll {
-      (registration: Registration) =>
+    "return a Call to the UK address question page in either mode when the answer is no" in forAll {
+      (registration: Registration, mode: Mode) =>
         val updatedRegistration: Registration =
           registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(false))
 
         await(
-          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+          pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.IsUkAddressController
-          .onPageLoad()
+          .onPageLoad(mode)
     }
 
-    "return a Call to the check your answers page in NormalMode when the answer is yes" in forAll {
+    "return a Call to the check your answers page in either mode when the answer is yes" in forAll {
       (
         registration: Registration,
-        incorporatedEntityJourneyDataWithValidCompanyProfile: IncorporatedEntityJourneyDataWithValidCompanyProfile
+        incorporatedEntityJourneyDataWithValidCompanyProfile: IncorporatedEntityJourneyDataWithValidCompanyProfile,
+        mode: Mode
       ) =>
         val updatedRegistration = registration.copy(
           useRegisteredOfficeAddressAsContactAddress = Some(true),
@@ -66,7 +67,7 @@ class ConfirmContactAddressPageNavigatorSpec extends SpecBase {
           .thenReturn(Future.successful(updatedRegistration))
 
         await(
-          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+          pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.CheckYourAnswersController
           .onPageLoad()
     }

@@ -10,8 +10,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.ConfirmContactAddressController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.ConfirmContactAddressController.onPageLoad())
+  s"GET ${routes.ConfirmContactAddressController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.ConfirmContactAddressController.onPageLoad(NormalMode))
 
     "respond with 200 status and the confirm contact address HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -29,7 +29,7 @@ class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(updatedRegistration)
 
-      val result = callRoute(FakeRequest(routes.ConfirmContactAddressController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.ConfirmContactAddressController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -37,8 +37,8 @@ class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.ConfirmContactAddressController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.ConfirmContactAddressController.onSubmit())
+  s"POST ${routes.ConfirmContactAddressController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.ConfirmContactAddressController.onSubmit(NormalMode))
 
     "save the selected answer then redirect to check your answers page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -61,7 +61,8 @@ class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration.copy(contactAddress = updatedRegistration.grsAddressToEclAddress))
 
       val result = callRoute(
-        FakeRequest(routes.ConfirmContactAddressController.onSubmit()).withFormUrlEncodedBody(("value", "true"))
+        FakeRequest(routes.ConfirmContactAddressController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", "true"))
       )
 
       status(result) shouldBe SEE_OTHER
@@ -81,12 +82,13 @@ class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.ConfirmContactAddressController.onSubmit()).withFormUrlEncodedBody(("value", "false"))
+        FakeRequest(routes.ConfirmContactAddressController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", "false"))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.IsUkAddressController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.IsUkAddressController.onPageLoad(NormalMode).url)
     }
   }
 }

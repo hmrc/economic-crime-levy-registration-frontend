@@ -49,7 +49,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
         )
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.ConfirmContactAddressController
-          .onPageLoad()
+          .onPageLoad(NormalMode)
     }
 
     "return a Call to the contact address in the UK page in NormalMode when the 'No' option is selected and there is no valid address present in the GRS journey data" in forAll {
@@ -62,7 +62,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
         )
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.IsUkAddressController
-          .onPageLoad()
+          .onPageLoad(NormalMode)
     }
 
     "return a Call to the second contact name page in CheckMode when the 'Yes' option is selected and there are no second contact details already present" in forAll {

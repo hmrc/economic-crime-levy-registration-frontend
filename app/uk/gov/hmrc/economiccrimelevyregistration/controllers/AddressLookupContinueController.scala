@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.models.EclAddress
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -36,14 +36,21 @@ class AddressLookupContinueController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController {
 
-  def continue(id: String): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
-    addressLookupFrontendConnector.getAddress(id).flatMap { alfAddressData =>
-      eclRegistrationConnector
-        .upsertRegistration(
-          request.registration.copy(contactAddress = alfAddressToEclAddress(alfAddressData))
-        )
-        .map(_ => Redirect(routes.CheckYourAnswersController.onPageLoad()))
-    }
+  def continue(mode: Mode, id: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
+    implicit request =>
+      addressLookupFrontendConnector.getAddress(id).flatMap { alfAddressData =>
+        eclRegistrationConnector
+          .upsertRegistration(
+            request.registration.copy(contactAddress = alfAddressToEclAddress(alfAddressData))
+          )
+          .map(_ =>
+            mode match {
+              // At present we don't care about the mode as this is the last page in the journey so will always
+              // redirect to the check your answers page.
+              case _ => Redirect(routes.CheckYourAnswersController.onPageLoad())
+            }
+          )
+      }
   }
 
   private def alfAddressToEclAddress(alfAddressData: AlfAddressData): Option[EclAddress] =
