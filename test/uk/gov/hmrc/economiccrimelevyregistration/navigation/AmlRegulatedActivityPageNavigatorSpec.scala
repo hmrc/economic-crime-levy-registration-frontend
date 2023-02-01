@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
 class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
 
@@ -34,11 +34,18 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
           .onPageLoad(NormalMode)
     }
 
-    "return a Call to the not liable page from the AML regulated activity page in NormalMode when the 'No' option is selected" in forAll {
+    "return a Call to the check your answers page from the AML regulated activity page in CheckMode when the 'Yes' option is selected" in forAll {
       registration: Registration =>
+        val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
+
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+    }
+
+    "return a Call to the not liable page from the AML regulated activity page in either mode when the 'No' option is selected" in forAll {
+      (registration: Registration, mode: Mode) =>
         val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.NotLiableController.onPageLoad()
+        pageNavigator.nextPage(mode, updatedRegistration) shouldBe routes.NotLiableController.onPageLoad()
     }
   }
 

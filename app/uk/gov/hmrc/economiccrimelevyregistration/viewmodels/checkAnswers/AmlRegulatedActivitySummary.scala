@@ -17,6 +17,8 @@
 package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
@@ -32,7 +34,7 @@ object AmlRegulatedActivitySummary {
         key = Key("checkYourAnswers.amlRegulatedActivity.label"),
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", "#TODO").withVisuallyHiddenText(
+          ActionItemViewModel("site.change", routes.AmlRegulatedActivityController.onPageLoad(CheckMode).url).withVisuallyHiddenText(
             messages("checkYourAnswers.amlRegulatedActivity.label")
           )
         )

@@ -37,7 +37,7 @@
 
     @button(
         ButtonViewModel(messages("journeyRecovery.button"))
-                .asLink(AmlRegulatedActivityController.onPageLoad().url)
+                .asLink(AmlRegulatedActivityController.onPageLoad(NormalMode).url)
     )
 
 }

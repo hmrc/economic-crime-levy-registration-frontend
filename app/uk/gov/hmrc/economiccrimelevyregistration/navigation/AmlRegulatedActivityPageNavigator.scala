@@ -29,6 +29,11 @@ class AmlRegulatedActivityPageNavigator extends PageNavigator {
       case _           => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call = ???
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    registration.carriedOutAmlRegulatedActivityInCurrentFy match {
+      case Some(true) => routes.CheckYourAnswersController.onPageLoad()
+      case Some(false) => routes.NotLiableController.onPageLoad()
+      case _ => routes.JourneyRecoveryController.onPageLoad()
+    }
 
 }
