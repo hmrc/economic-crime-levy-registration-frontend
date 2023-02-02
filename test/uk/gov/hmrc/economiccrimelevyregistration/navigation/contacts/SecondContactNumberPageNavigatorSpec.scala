@@ -71,9 +71,7 @@ class SecondContactNumberPageNavigatorSpec extends SpecBase {
       (registration: Registration, telephoneNumber: String) =>
         val updatedRegistration: Registration =
           registration.copy(
-            contacts = registration.contacts.copy(secondContactDetails =
-              registration.contacts.secondContactDetails.copy(telephoneNumber = Some(telephoneNumber))
-            )
+            contacts = registration.contacts.copy(secondContactDetails = validContactDetails)
           )
 
         pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()

@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclReturnsConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
@@ -33,44 +33,23 @@ class UkRevenuePageNavigator @Inject() (
     with FrontendHeaderCarrierProvider {
   override protected def navigateInNormalMode(registration: Registration)(implicit
     request: RequestHeader
-  ): Future[Call] =
-    registration.relevantApRevenue match {
-      case Some(revenue) =>
-        val f: Int => Future[Call] = eclReturnsConnector
-          .calculateLiability(_, revenue)
-          .map(liability =>
-            if (liability.amountDue > 0) {
-              routes.EntityTypeController.onPageLoad(NormalMode)
-            } else {
-              routes.NotLiableController.onPageLoad()
-            }
-          )
-
-        // TODO: Can we refactor any of this to remove the duplication for CheckMode?
-        // TODO: Do we really mean to go to the start of the journey rather than the recovery page?
-
-        registration.relevantAp12Months match {
-          case Some(true)  => f(EclTaxYear.YearInDays)
-          case Some(false) =>
-            registration.relevantApLength match {
-              case Some(relevantApLength) => f(relevantApLength)
-              case _                      => Future.successful(routes.StartController.onPageLoad())
-            }
-          case _           => Future.successful(routes.StartController.onPageLoad())
-        }
-      case _             => Future.successful(routes.StartController.onPageLoad())
-    }
+  ): Future[Call] = navigate(NormalMode, registration)
 
   override protected def navigateInCheckMode(registration: Registration)(implicit
     request: RequestHeader
-  ): Future[Call] =
+  ): Future[Call] = navigate(CheckMode, registration)
+
+  private def navigate(mode: Mode, registration: Registration)(implicit request: RequestHeader): Future[Call] =
     registration.relevantApRevenue match {
       case Some(revenue) =>
         val f: Int => Future[Call] = eclReturnsConnector
           .calculateLiability(_, revenue)
           .map(liability =>
             if (liability.amountDue > 0) {
-              routes.CheckYourAnswersController.onPageLoad()
+              mode match {
+                case NormalMode => routes.EntityTypeController.onPageLoad(NormalMode)
+                case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
+              }
             } else {
               routes.NotLiableController.onPageLoad()
             }
@@ -81,11 +60,11 @@ class UkRevenuePageNavigator @Inject() (
           case Some(false) =>
             registration.relevantApLength match {
               case Some(relevantApLength) => f(relevantApLength)
-              case _                      => Future.successful(routes.StartController.onPageLoad())
+              case _                      => Future.successful(routes.JourneyRecoveryController.onPageLoad())
             }
-          case _           => Future.successful(routes.StartController.onPageLoad())
+          case _           => Future.successful(routes.JourneyRecoveryController.onPageLoad())
         }
-      case _             => Future.successful(routes.StartController.onPageLoad())
+      case _             => Future.successful(routes.JourneyRecoveryController.onPageLoad())
     }
 
 }

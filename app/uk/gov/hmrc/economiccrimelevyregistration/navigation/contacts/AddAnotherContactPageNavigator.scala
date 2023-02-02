@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
 class AddAnotherContactPageNavigator extends PageNavigator {
@@ -37,9 +37,9 @@ class AddAnotherContactPageNavigator extends PageNavigator {
   override protected def navigateInCheckMode(registration: Registration): Call =
     registration.contacts.secondContact match {
       case Some(true)  =>
-        registration.contacts.secondContactDetails.name match {
-          case Some(_) => routes.CheckYourAnswersController.onPageLoad()
-          case _       => contacts.routes.SecondContactNameController.onPageLoad(CheckMode)
+        registration.contacts.secondContactDetails match {
+          case ContactDetails(Some(_), Some(_), Some(_), Some(_)) => routes.CheckYourAnswersController.onPageLoad()
+          case _                                                  => contacts.routes.SecondContactNameController.onPageLoad(CheckMode)
         }
       case Some(false) => routes.CheckYourAnswersController.onPageLoad()
       case _           => routes.JourneyRecoveryController.onPageLoad()

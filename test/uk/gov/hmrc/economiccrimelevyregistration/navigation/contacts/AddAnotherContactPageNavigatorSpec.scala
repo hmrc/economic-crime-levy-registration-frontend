@@ -76,12 +76,11 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
     }
 
     "return a Call to the check your answers page in CheckMode when the 'Yes' option is selected and there is a second contact name already present" in forAll {
-      (registration: Registration, secondContactName: String) =>
+      registration: Registration =>
         val updatedRegistration = registration.copy(contacts =
           registration.contacts.copy(
             secondContact = Some(true),
-            secondContactDetails =
-              ContactDetails(name = Some(secondContactName), role = None, emailAddress = None, telephoneNumber = None)
+            secondContactDetails = validContactDetails
           )
         )
 

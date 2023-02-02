@@ -166,5 +166,11 @@ trait EclTestData {
   val testInternalId: String               = alphaNumericString
   val testGroupId: String                  = alphaNumericString
   val testEclRegistrationReference: String = alphaNumericString
+  val validContactDetails: ContactDetails  = ContactDetails(
+    name = Some(alphaNumericString),
+    role = Some(alphaNumericString),
+    emailAddress = Some(alphaNumericString),
+    telephoneNumber = Some(alphaNumericString)
+  )
 
 }

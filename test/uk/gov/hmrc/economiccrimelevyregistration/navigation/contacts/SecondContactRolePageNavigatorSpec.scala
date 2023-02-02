@@ -43,23 +43,17 @@ class SecondContactRolePageNavigatorSpec extends SpecBase {
       (registration: Registration, role: String) =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
-            registration.contacts.copy(secondContactDetails =
-              registration.contacts.secondContactDetails.copy(role = Some(role), emailAddress = None)
-            )
+            registration.contacts.copy(secondContactDetails = validContactDetails.copy(emailAddress = None))
           )
 
         pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe contacts.routes.SecondContactEmailController
           .onPageLoad(CheckMode)
     }
 
-    "return a Call to the check your answers page in CheckMode when a second contact email is already present" in forAll {
+    "return a Call to the check your answers page in CheckMode when second contact details are already present" in forAll {
       (registration: Registration, role: String, emailAddress: String) =>
         val updatedRegistration: Registration =
-          registration.copy(contacts =
-            registration.contacts.copy(secondContactDetails =
-              registration.contacts.secondContactDetails.copy(role = Some(role), emailAddress = Some(emailAddress))
-            )
-          )
+          registration.copy(contacts = registration.contacts.copy(secondContactDetails = validContactDetails))
 
         pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }

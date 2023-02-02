@@ -28,22 +28,22 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 object ContactAddressSummary {
 
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.contactAddress.map { answer =>
-      SummaryListRowViewModel(
-        key = Key("checkYourAnswers.address.label"),
-        value = ValueViewModel(AddressViewModel.htmlContent(answer)),
-        actions = request.registration.useRegisteredOfficeAddressAsContactAddress match {
-          case Some(true)  => Seq.empty
-          case Some(false) =>
-            Seq(
-              ActionItemViewModel("site.change", routes.IsUkAddressController.onPageLoad(CheckMode).url)
-                .withVisuallyHiddenText(
-                  messages("checkYourAnswers.address.label")
-                )
+    for {
+      useRegisteredOfficeAddressAsContactAddress <- request.registration.useRegisteredOfficeAddressAsContactAddress
+      answer                                     <- request.registration.contactAddress
+    } yield SummaryListRowViewModel(
+      key = Key("checkYourAnswers.address.label"),
+      value = ValueViewModel(AddressViewModel.htmlContent(answer)),
+      actions = if (useRegisteredOfficeAddressAsContactAddress) {
+        Seq.empty
+      } else {
+        Seq(
+          ActionItemViewModel("site.change", routes.IsUkAddressController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(
+              messages("checkYourAnswers.address.label")
             )
-          case _           => throw new IllegalStateException("Use registered office address as contact address answer not found")
-        }
-      )
-    }
+        )
+      }
+    )
 
 }
