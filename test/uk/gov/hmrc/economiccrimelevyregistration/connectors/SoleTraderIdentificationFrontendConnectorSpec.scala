@@ -29,7 +29,7 @@ import scala.concurrent.Future
 class SoleTraderIdentificationFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
   val connector                  = new SoleTraderIdentificationFrontendConnectorImpl(appConfig, mockHttpClient)
-  val apiUrl                     = s"${appConfig.soleTraderEntityIdentificationFrontendUrl}/sole-trader-identification/api"
+  val apiUrl                     = s"${appConfig.soleTraderEntityIdentificationFrontendBaseUrl}/sole-trader-identification/api"
 
   "createSoleTraderJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {

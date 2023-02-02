@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.views
 
+import com.ibm.icu.text.SimpleDateFormat
 import play.api.data.Form
 import play.api.i18n.Messages
 
@@ -49,13 +50,17 @@ object ViewUtils {
     s"$day $month $year"
   }
 
-  def formatLocalDate(localDate: LocalDate)(implicit messages: Messages): String = {
-    val day   = localDate.getDayOfMonth
-    val month = messages(s"date.month.${localDate.getMonthValue}")
-    val year  = localDate.getYear
+  def formatLocalDate(localDate: LocalDate, translate: Boolean = true)(implicit messages: Messages): String =
+    if (translate) {
+      val day   = localDate.getDayOfMonth
+      val month = messages(s"date.month.${localDate.getMonthValue}")
+      val year  = localDate.getYear
 
-    s"$day $month $year"
-  }
+      s"$day $month $year"
+    } else {
+      val formatter = new SimpleDateFormat("d MMMM yyyy")
+      formatter.format(Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant))
+    }
 
   def formatMoney(amount: Number): String = {
     val formatter = NumberFormat.getNumberInstance

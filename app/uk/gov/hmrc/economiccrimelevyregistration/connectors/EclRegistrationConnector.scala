@@ -45,10 +45,13 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
 
   def deleteRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
     httpClient
-      .DELETE[HttpResponse](
+      .DELETE[Either[UpstreamErrorResponse, HttpResponse]](
         s"$eclRegistrationUrl/registrations/$internalId"
       )
-      .map(_ => ())
+      .map {
+        case Left(e)  => throw e
+        case Right(_) => ()
+      }
 
   def getSubscriptionStatus(businessPartnerId: String)(implicit hc: HeaderCarrier): Future[EclSubscriptionStatus] =
     httpClient.GET[EclSubscriptionStatus](

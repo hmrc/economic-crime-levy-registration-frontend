@@ -32,7 +32,7 @@ import scala.concurrent.Future
 class AddressLookupFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
   val connector                  = new AddressLookupFrontendConnectorImpl(appConfig, mockHttpClient)
-  val baseUrl                    = appConfig.addressLookupFrontendUrl
+  val baseUrl                    = appConfig.addressLookupFrontendBaseUrl
 
   "initJourney" should {
     val expectedUrl = s"$baseUrl/api/init"

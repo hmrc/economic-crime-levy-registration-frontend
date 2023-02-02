@@ -42,7 +42,7 @@ class AddressLookupFrontendConnectorImpl @Inject() (
   ec: ExecutionContext
 ) extends AddressLookupFrontendConnector
     with HttpErrorFunctions {
-  private val baseUrl = appConfig.addressLookupFrontendUrl
+  private val baseUrl = appConfig.addressLookupFrontendBaseUrl
 
   def initJourney(ukMode: Boolean, mode: Mode)(implicit
     hc: HeaderCarrier

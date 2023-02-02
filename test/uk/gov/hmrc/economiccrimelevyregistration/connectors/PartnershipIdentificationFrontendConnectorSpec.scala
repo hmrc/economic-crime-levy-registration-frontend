@@ -31,7 +31,7 @@ import scala.concurrent.Future
 class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
   val connector                  = new PartnershipIdentificationFrontendConnectorImpl(appConfig, mockHttpClient)
-  val apiUrl                     = s"${appConfig.partnershipEntityIdentificationFrontendUrl}/partnership-identification/api"
+  val apiUrl                     = s"${appConfig.partnershipEntityIdentificationFrontendBaseUrl}/partnership-identification/api"
 
   "createPartnershipJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {

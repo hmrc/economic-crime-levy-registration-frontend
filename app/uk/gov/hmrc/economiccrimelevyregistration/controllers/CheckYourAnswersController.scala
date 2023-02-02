@@ -22,6 +22,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
+import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
@@ -39,7 +40,8 @@ class CheckYourAnswersController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
-  validateRegistrationData: ValidatedRegistrationAction
+  validateRegistrationData: ValidatedRegistrationAction,
+  emailService: EmailService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -86,10 +88,14 @@ class CheckYourAnswersController @Inject() (
   def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     eclRegistrationConnector
       .submitRegistration(request.internalId)
-      .map(rs =>
-        Redirect(routes.RegistrationSubmittedController.onPageLoad()).withSession(
-          request.session + (SessionKeys.EclReference -> rs.eclReference)
-        )
+      .flatMap(response =>
+        emailService
+          .sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference)
+          .map(_ =>
+            Redirect(routes.RegistrationSubmittedController.onPageLoad()).withSession(
+              request.session + (SessionKeys.EclReference -> response.eclReference)
+            )
+          )
       )
   }
 }

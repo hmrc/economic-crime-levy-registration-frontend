@@ -20,6 +20,9 @@ import play.api.data.Form
 import play.api.data.Forms.{single, text}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 
+import java.time.{Instant, LocalDate}
+import java.util.Date
+
 class ViewUtilsSpec extends SpecBase {
 
   val testForm: Form[String] = Form(
@@ -53,6 +56,36 @@ class ViewUtilsSpec extends SpecBase {
       ViewUtils.title(testTitle, Some("Test Section"))(
         messages
       ) shouldBe "Test Title - Test Section - Register for the Economic Crime Levy - GOV.UK"
+    }
+  }
+
+  "formatDate" should {
+    "correctly format a date" in {
+      val date = Date.from(Instant.parse("2007-12-03T10:15:30.00Z"))
+
+      ViewUtils.formatDate(date)(messages) shouldBe "3 December 2007"
+    }
+  }
+
+  "formatLocalDate" should {
+    "correctly format a translated local date" in {
+      val localDate = LocalDate.parse("2007-12-03")
+
+      ViewUtils.formatLocalDate(localDate)(messages) shouldBe "3 December 2007"
+    }
+
+    "correctly format a non-translated local date" in {
+      val localDate = LocalDate.parse("2007-12-03")
+
+      ViewUtils.formatLocalDate(localDate, translate = false)(messages) shouldBe "3 December 2007"
+    }
+  }
+
+  "formatMoney" should {
+    "format a monetary amount with commas" in {
+      val amount = 1000000000
+
+      ViewUtils.formatMoney(amount) shouldBe "1,000,000,000"
     }
   }
 

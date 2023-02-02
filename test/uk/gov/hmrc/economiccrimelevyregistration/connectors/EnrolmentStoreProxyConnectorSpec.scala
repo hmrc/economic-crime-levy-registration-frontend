@@ -29,7 +29,7 @@ class EnrolmentStoreProxyConnectorSpec extends SpecBase {
 
   val mockHttpClient: HttpClient = mock[HttpClient]
   val connector                  = new EnrolmentStoreProxyConnector(appConfig, mockHttpClient)
-  val enrolmentStoreUrl: String  = s"${appConfig.enrolmentStoreProxyUrl}/enrolment-store"
+  val enrolmentStoreUrl: String  = s"${appConfig.enrolmentStoreProxyBaseUrl}/enrolment-store"
 
   "getEnrolmentsForGroup" should {
 

@@ -86,19 +86,55 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
       val response = HttpResponse(NO_CONTENT, "", Map.empty)
 
-      when(mockHttpClient.DELETE[HttpResponse](ArgumentMatchers.eq(expectedUrl), any())(any(), any(), any()))
-        .thenReturn(Future.successful(response))
+      when(
+        mockHttpClient.DELETE[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any())(
+          any(),
+          any(),
+          any()
+        )
+      )
+        .thenReturn(Future.successful(Right(response)))
 
       val result: Unit = await(connector.deleteRegistration(internalId))
       result shouldBe ()
 
       verify(mockHttpClient, times(1))
-        .DELETE[HttpResponse](
+        .DELETE[Either[UpstreamErrorResponse, HttpResponse]](
           ArgumentMatchers.eq(expectedUrl),
           any()
         )(any(), any(), any())
 
       reset(mockHttpClient)
+    }
+
+    "throw an UpstreamErrorResponse exception when the http client returns a error response" in forAll {
+      internalId: String =>
+        val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId"
+
+        val response = UpstreamErrorResponse("Internal server error", INTERNAL_SERVER_ERROR)
+
+        when(
+          mockHttpClient.DELETE[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any())(
+            any(),
+            any(),
+            any()
+          )
+        )
+          .thenReturn(Future.successful(Left(response)))
+
+        val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
+          await(connector.deleteRegistration(internalId))
+        }
+
+        result.getMessage shouldBe "Internal server error"
+
+        verify(mockHttpClient, times(1))
+          .DELETE[Either[UpstreamErrorResponse, HttpResponse]](
+            ArgumentMatchers.eq(expectedUrl),
+            any()
+          )(any(), any(), any())
+
+        reset(mockHttpClient)
     }
   }
 
