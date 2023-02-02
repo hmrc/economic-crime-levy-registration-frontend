@@ -19,11 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AmlRegulatedActivityDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -39,6 +40,7 @@ class AmlRegulatedActivityController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: AmlRegulatedActivityFormProvider,
   pageNavigator: AmlRegulatedActivityPageNavigator,
+  dataCleaner: AmlRegulatedActivityDataCleanup,
   view: AmlRegulatedActivityView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -55,21 +57,16 @@ class AmlRegulatedActivityController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-        amlRegulatedActivity => {
-          val updatedRegistration = if (amlRegulatedActivity) {
-            request.registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity))
-          } else {
-            Registration
-              .empty(request.internalId)
-              .copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity))
-          }
-
+        amlRegulatedActivity =>
           eclRegistrationConnector
-            .upsertRegistration(updatedRegistration)
+            .upsertRegistration(
+              dataCleaner.cleanup(
+                request.registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity))
+              )
+            )
             .map { updatedRegistration =>
               Redirect(pageNavigator.nextPage(mode, updatedRegistration))
             }
-        }
       )
   }
 }

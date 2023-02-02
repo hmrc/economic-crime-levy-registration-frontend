@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantAp12MonthsDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
@@ -39,6 +40,7 @@ class RelevantAp12MonthsController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: RelevantAp12MonthsFormProvider,
   pageNavigator: RelevantAp12MonthsPageNavigator,
+  dataCleaner: RelevantAp12MonthsDataCleanup,
   view: RelevantAp12MonthsView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -58,11 +60,12 @@ class RelevantAp12MonthsController @Inject() (
         relevantAp12Months =>
           eclRegistrationConnector
             .upsertRegistration(
-              request.registration.copy(relevantAp12Months = Some(relevantAp12Months))
+              dataCleaner.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
             )
             .map { updatedRegistration =>
               Redirect(pageNavigator.nextPage(mode, updatedRegistration))
             }
       )
   }
+
 }

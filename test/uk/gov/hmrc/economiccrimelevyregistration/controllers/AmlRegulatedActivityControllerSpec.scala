@@ -23,6 +23,7 @@ import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AmlRegulatedActivityDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
@@ -44,6 +45,10 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
     override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
   }
 
+  val dataCleanup: AmlRegulatedActivityDataCleanup = new AmlRegulatedActivityDataCleanup {
+    override def cleanup(registration: Registration): Registration = registration
+  }
+
   class TestContext(registrationData: Registration) {
     val controller = new AmlRegulatedActivityController(
       mcc,
@@ -52,6 +57,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
       mockEclRegistrationConnector,
       formProvider,
       pageNavigator,
+      dataCleanup,
       view
     )
   }
@@ -84,36 +90,11 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the selected answer then redirect to the next page" in forAll { registration: Registration =>
-      new TestContext(registration) {
-        val carriedOutAmlRegulatedActivity = true
-
-        val updatedRegistration: Registration =
-          registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity))
-
-        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-          .thenReturn(Future.successful(updatedRegistration))
-
-        val result: Future[Result] =
-          controller.onSubmit(NormalMode)(
-            fakeRequest.withFormUrlEncodedBody(("value", carriedOutAmlRegulatedActivity.toString))
-          )
-
-        status(result) shouldBe SEE_OTHER
-
-        redirectLocation(result) shouldBe Some(onwardRoute.url)
-      }
-    }
-
-    "save the selected answer, clear out all the other answers and then redirect to the next page" in forAll {
-      registration: Registration =>
+    "save the selected answer then redirect to the next page" in forAll {
+      (registration: Registration, carriedOutAmlRegulatedActivity: Boolean) =>
         new TestContext(registration) {
-          val carriedOutAmlRegulatedActivity = false
-
           val updatedRegistration: Registration =
-            Registration
-              .empty(registration.internalId)
-              .copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity))
+            registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))

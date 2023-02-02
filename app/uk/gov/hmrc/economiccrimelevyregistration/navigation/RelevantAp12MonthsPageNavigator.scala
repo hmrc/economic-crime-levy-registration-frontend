@@ -31,7 +31,7 @@ class RelevantAp12MonthsPageNavigator extends PageNavigator {
 
   override protected def navigateInCheckMode(registration: Registration): Call =
     registration.relevantAp12Months match {
-      case Some(true)  => routes.CheckYourAnswersController.onPageLoad()
+      case Some(true)  => routes.UkRevenueController.onPageLoad(CheckMode)
       case Some(false) => routes.RelevantApLengthController.onPageLoad(CheckMode)
       case _           => routes.JourneyRecoveryController.onPageLoad()
     }
