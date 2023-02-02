@@ -27,6 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidat
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, Registration, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
@@ -39,6 +40,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val view: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEmailService: EmailService                         = mock[EmailService]
 
   class TestContext(registrationData: Registration) {
     val controller = new CheckYourAnswersController(
@@ -48,7 +50,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       mockEclRegistrationConnector,
       mcc,
       view,
-      new FakeValidatedRegistrationAction(registrationData)
+      new FakeValidatedRegistrationAction(registrationData),
+      mockEmailService
     )
   }
 
@@ -103,11 +106,19 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "redirect to the registration submitted page after submitting the registration successfully" in forAll {
+    "redirect to the registration submitted page after submitting the registration and sending email successfully" in forAll {
       (createEclSubscriptionResponse: CreateEclSubscriptionResponse, registration: Registration) =>
         new TestContext(registration) {
           when(mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq("test-internal-id"))(any()))
             .thenReturn(Future.successful(createEclSubscriptionResponse))
+
+          when(
+            mockEmailService.sendRegistrationSubmittedEmails(
+              ArgumentMatchers.eq(registration.contacts),
+              ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference)
+            )(any(), any())
+          )
+            .thenReturn(Future.successful(()))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 

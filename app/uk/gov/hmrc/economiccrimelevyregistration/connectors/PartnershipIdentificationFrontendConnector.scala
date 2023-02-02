@@ -42,7 +42,7 @@ class PartnershipIdentificationFrontendConnectorImpl @Inject() (
   val messagesApi: MessagesApi,
   ec: ExecutionContext
 ) extends PartnershipIdentificationFrontendConnector {
-  private val apiUrl = s"${appConfig.partnershipEntityIdentificationFrontendUrl}/partnership-identification/api"
+  private val apiUrl = s"${appConfig.partnershipEntityIdentificationFrontendBaseUrl}/partnership-identification/api"
 
   def createPartnershipJourney(
     partnershipType: EntityType

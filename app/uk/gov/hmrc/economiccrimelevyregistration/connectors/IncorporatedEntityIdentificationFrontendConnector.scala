@@ -38,7 +38,7 @@ class IncorporatedEntityIdentificationFrontendConnectorImpl @Inject() (
   ec: ExecutionContext
 ) extends IncorporatedEntityIdentificationFrontendConnector {
   private val apiUrl =
-    s"${appConfig.incorporatedEntityIdentificationFrontendUrl}/incorporated-entity-identification/api"
+    s"${appConfig.incorporatedEntityIdentificationFrontendBaseUrl}/incorporated-entity-identification/api"
 
   def createLimitedCompanyJourney()(implicit
     hc: HeaderCarrier

@@ -31,8 +31,6 @@ import java.time.{Instant, LocalDate}
 
 final case class PartnershipType(entityType: EntityType)
 
-final case class ValidRegistration(registration: Registration)
-
 final case class EnrolmentsWithEcl(enrolments: Enrolments)
 
 final case class EnrolmentsWithoutEcl(enrolments: Enrolments)

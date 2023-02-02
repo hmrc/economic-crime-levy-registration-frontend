@@ -6,8 +6,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, Languages, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
 class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -53,12 +56,35 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     "redirect to the registration submitted page after submitting the registration successfully" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val eclReference = random[String]
+      val registration      = random[Registration]
+      val eclReference      = random[String]
+      val contactDetails    = random[ContactDetails]
+      val firstContactName  = random[String]
+      val firstContactEmail = random[String]
 
-      stubGetRegistration(registration)
+      val registrationWithOneContact = registration.copy(contacts =
+        Contacts(
+          firstContactDetails =
+            contactDetails.copy(name = Some(firstContactName), emailAddress = Some(firstContactEmail)),
+          secondContact = Some(false),
+          secondContactDetails = ContactDetails(None, None, None, None)
+        )
+      )
+
+      stubGetRegistration(registrationWithOneContact)
 
       stubSubmitRegistration(eclReference)
+
+      stubSendRegistrationSubmittedEmail(
+        RegistrationSubmittedEmailRequest(
+          to = Seq(firstContactEmail),
+          parameters = RegistrationSubmittedEmailParameters(
+            name = firstContactName,
+            eclRegistrationReference = eclReference,
+            dateDue = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messagesApi.preferred(Seq(Languages.english)))
+          )
+        )
+      )
 
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onSubmit()))
 
