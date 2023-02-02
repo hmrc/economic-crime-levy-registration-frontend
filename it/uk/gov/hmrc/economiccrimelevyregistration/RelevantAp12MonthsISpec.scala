@@ -38,7 +38,8 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val updatedRegistration = registration.copy(relevantAp12Months = Some(true))
+      val updatedRegistration =
+        registration.copy(relevantAp12Months = Some(true), relevantApLength = None, relevantApRevenue = None)
 
       stubUpsertRegistration(updatedRegistration)
 
@@ -58,7 +59,8 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val updatedRegistration = registration.copy(relevantAp12Months = Some(false))
+      val updatedRegistration =
+        registration.copy(relevantAp12Months = Some(false), relevantApLength = None, relevantApRevenue = None)
 
       stubUpsertRegistration(updatedRegistration)
 

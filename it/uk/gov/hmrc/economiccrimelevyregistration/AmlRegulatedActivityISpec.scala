@@ -49,7 +49,8 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.AmlRegulatedActivityController.onSubmit(NormalMode)).withFormUrlEncodedBody(("value", "true"))
+        FakeRequest(routes.AmlRegulatedActivityController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", "true"))
       )
 
       status(result) shouldBe SEE_OTHER
@@ -64,12 +65,14 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
+      val updatedRegistration =
+        Registration.empty(registration.internalId).copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
 
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.AmlRegulatedActivityController.onSubmit(NormalMode)).withFormUrlEncodedBody(("value", "false"))
+        FakeRequest(routes.AmlRegulatedActivityController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", "false"))
       )
 
       status(result) shouldBe SEE_OTHER
