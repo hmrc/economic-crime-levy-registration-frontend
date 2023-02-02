@@ -25,6 +25,7 @@ import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AmlSupervisorDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
@@ -46,6 +47,10 @@ class AmlSupervisorControllerSpec extends SpecBase {
     override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
   }
 
+  val dataCleanup: AmlSupervisorDataCleanup = new AmlSupervisorDataCleanup {
+    override def cleanup(registration: Registration): Registration = registration
+  }
+
   implicit val arbAmlSupervisor: Arbitrary[AmlSupervisor] = arbAmlSupervisor(appConfig)
 
   class TestContext(registrationData: Registration) {
@@ -57,6 +62,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
       formProvider,
       appConfig,
       pageNavigator,
+      dataCleanup,
       view
     )
   }
