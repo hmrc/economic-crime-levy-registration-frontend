@@ -53,7 +53,7 @@ class RelevantApLengthControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new RelevantApLengthController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck,
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,

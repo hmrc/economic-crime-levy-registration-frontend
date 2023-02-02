@@ -47,7 +47,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new AmlRegulatedActivityController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck,
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
@@ -84,11 +84,36 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the selected answer then redirect to the next page" in forAll {
-      (registration: Registration, carriedOutAmlRegulatedActivity: Boolean) =>
+    "save the selected answer then redirect to the next page" in forAll { registration: Registration =>
+      new TestContext(registration) {
+        val carriedOutAmlRegulatedActivity = true
+
+        val updatedRegistration: Registration =
+          registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity))
+
+        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          .thenReturn(Future.successful(updatedRegistration))
+
+        val result: Future[Result] =
+          controller.onSubmit(NormalMode)(
+            fakeRequest.withFormUrlEncodedBody(("value", carriedOutAmlRegulatedActivity.toString))
+          )
+
+        status(result) shouldBe SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(onwardRoute.url)
+      }
+    }
+
+    "save the selected answer, clear out all the other answers and then redirect to the next page" in forAll {
+      registration: Registration =>
         new TestContext(registration) {
+          val carriedOutAmlRegulatedActivity = false
+
           val updatedRegistration: Registration =
-            registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity))
+            Registration
+              .empty(registration.internalId)
+              .copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))

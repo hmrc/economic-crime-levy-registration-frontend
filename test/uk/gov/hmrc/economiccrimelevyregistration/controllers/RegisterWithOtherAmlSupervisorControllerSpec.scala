@@ -35,7 +35,7 @@ class RegisterWithOtherAmlSupervisorControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new RegisterWithOtherAmlSupervisorController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck,
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       gcView,
       fcaView

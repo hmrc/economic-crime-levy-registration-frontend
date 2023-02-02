@@ -39,7 +39,7 @@ class EmailServiceSpec extends SpecBase {
         val updatedContacts = contacts.copy(
           firstContactDetails =
             contacts.firstContactDetails.copy(name = Some(firstContactName), emailAddress = Some(firstContactEmail)),
-          secondContactDetails = ContactDetails(None, None, None, None)
+          secondContactDetails = ContactDetails.empty
         )
 
         val expectedFirstContactParams = RegistrationSubmittedEmailParameters(

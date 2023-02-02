@@ -46,7 +46,7 @@ class GrsContinueControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new GrsContinueController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck,
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockIncorporatedEntityIdentificationFrontendConnector,
       mockSoleTraderIdentificationFrontendConnector,

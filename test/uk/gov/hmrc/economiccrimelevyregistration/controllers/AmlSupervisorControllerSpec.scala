@@ -51,7 +51,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new AmlSupervisorController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck,
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,

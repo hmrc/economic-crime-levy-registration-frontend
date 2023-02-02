@@ -53,7 +53,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new ConfirmContactAddressController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck,
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
