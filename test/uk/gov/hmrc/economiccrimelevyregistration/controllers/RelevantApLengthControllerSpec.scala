@@ -24,6 +24,7 @@ import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantApLengthDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantApLengthFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
@@ -47,6 +48,10 @@ class RelevantApLengthControllerSpec extends SpecBase {
     ): Call = onwardRoute
   }
 
+  val dataCleanup: RelevantApLengthDataCleanup = new RelevantApLengthDataCleanup {
+    override def cleanup(registration: Registration): Registration = registration
+  }
+
   val minDays = 1
   val maxDays = 999
 
@@ -58,6 +63,7 @@ class RelevantApLengthControllerSpec extends SpecBase {
       mockEclRegistrationConnector,
       formProvider,
       pageNavigator,
+      dataCleanup,
       view
     )
   }

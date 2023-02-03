@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantApLengthDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
@@ -39,6 +40,7 @@ class RelevantApLengthController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: RelevantApLengthFormProvider,
   pageNavigator: RelevantApLengthPageNavigator,
+  dataCleaner: RelevantApLengthDataCleanup,
   view: RelevantApLengthView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -57,7 +59,9 @@ class RelevantApLengthController @Inject() (
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         relevantApLength =>
           eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(relevantApLength = Some(relevantApLength)))
+            .upsertRegistration(
+              dataCleaner.cleanup(request.registration.copy(relevantApLength = Some(relevantApLength)))
+            )
             .map { updatedRegistration =>
               Redirect(pageNavigator.nextPage(mode, updatedRegistration))
             }

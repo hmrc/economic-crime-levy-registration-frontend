@@ -17,25 +17,21 @@
 package uk.gov.hmrc.economiccrimelevyregistration.cleanup
 
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{FinancialConductAuthority, GamblingCommission}
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, Registration}
 
 import javax.inject.Inject
 
 class AmlSupervisorDataCleanup @Inject() () extends DataCleanup {
   def cleanup(registration: Registration): Registration =
     registration.amlSupervisor match {
-      case Some(amlSupervisor) =>
-        amlSupervisor.supervisorType match {
-          case GamblingCommission | FinancialConductAuthority =>
-            Registration
-              .empty(registration.internalId)
-              .copy(
-                carriedOutAmlRegulatedActivityInCurrentFy = registration.carriedOutAmlRegulatedActivityInCurrentFy,
-                amlSupervisor = registration.amlSupervisor
-              )
-          case _                                              => registration
-        }
-      case _                   => registration
+      case Some(AmlSupervisor(GamblingCommission | FinancialConductAuthority, _)) =>
+        Registration
+          .empty(registration.internalId)
+          .copy(
+            carriedOutAmlRegulatedActivityInCurrentFy = registration.carriedOutAmlRegulatedActivityInCurrentFy,
+            amlSupervisor = registration.amlSupervisor
+          )
+      case _                                                                      => registration
     }
 
 }
