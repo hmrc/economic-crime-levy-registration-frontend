@@ -10,14 +10,14 @@ trait EnrolmentStoreProxyStubs { self: WireMockStubs =>
 
   def stubNoGroupEnrolment(): StubMapping =
     stub(
-      get(urlEqualTo(s"/enrolment-store/groups/$testGroupId/enrolments")),
+      get(urlEqualTo(s"/enrolment-store-proxy/enrolment-store/groups/$testGroupId/enrolments")),
       aResponse()
         .withStatus(NO_CONTENT)
     )
 
   def stubWithGroupEclEnrolment(): StubMapping =
     stub(
-      get(urlEqualTo(s"/enrolment-store/groups/$testGroupId/enrolments")),
+      get(urlEqualTo(s"/enrolment-store-proxy/enrolment-store/groups/$testGroupId/enrolments")),
       aResponse()
         .withStatus(OK)
         .withBody(s"""
