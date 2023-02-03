@@ -40,7 +40,7 @@ class RelevantAp12MonthsController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: RelevantAp12MonthsFormProvider,
   pageNavigator: RelevantAp12MonthsPageNavigator,
-  dataCleaner: RelevantAp12MonthsDataCleanup,
+  dataCleanup: RelevantAp12MonthsDataCleanup,
   view: RelevantAp12MonthsView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -60,7 +60,7 @@ class RelevantAp12MonthsController @Inject() (
         relevantAp12Months =>
           eclRegistrationConnector
             .upsertRegistration(
-              dataCleaner.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
+              dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
             )
             .map { updatedRegistration =>
               Redirect(pageNavigator.nextPage(mode, updatedRegistration))

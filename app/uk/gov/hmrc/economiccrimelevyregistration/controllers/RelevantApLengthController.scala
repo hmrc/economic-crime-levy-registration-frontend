@@ -40,7 +40,7 @@ class RelevantApLengthController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: RelevantApLengthFormProvider,
   pageNavigator: RelevantApLengthPageNavigator,
-  dataCleaner: RelevantApLengthDataCleanup,
+  dataCleanup: RelevantApLengthDataCleanup,
   view: RelevantApLengthView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -60,7 +60,7 @@ class RelevantApLengthController @Inject() (
         relevantApLength =>
           eclRegistrationConnector
             .upsertRegistration(
-              dataCleaner.cleanup(request.registration.copy(relevantApLength = Some(relevantApLength)))
+              dataCleanup.cleanup(request.registration.copy(relevantApLength = Some(relevantApLength)))
             )
             .map { updatedRegistration =>
               Redirect(pageNavigator.nextPage(mode, updatedRegistration))

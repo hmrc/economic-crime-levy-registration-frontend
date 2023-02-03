@@ -61,14 +61,18 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected AML regulated activity option then redirect to the not liable page when the No option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration = random[Registration].copy(internalId = testInternalId)
 
       stubGetRegistration(registration)
 
       val updatedRegistration =
-        Registration.empty(registration.internalId).copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
+        Registration
+          .empty(testInternalId)
+          .copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
 
       stubUpsertRegistration(updatedRegistration)
+
+      stubDeleteRegistration()
 
       val result = callRoute(
         FakeRequest(routes.AmlRegulatedActivityController.onSubmit(NormalMode))

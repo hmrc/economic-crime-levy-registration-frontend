@@ -39,13 +39,14 @@ class UkRevenueControllerSpec extends SpecBase {
   val formProvider: UkRevenueFormProvider = new UkRevenueFormProvider()
   val form: Form[Long]                    = formProvider()
 
-  val pageNavigator: UkRevenuePageNavigator = new UkRevenuePageNavigator(mock[EclReturnsConnector]) {
-    override protected def navigateInNormalMode(
-      registration: Registration
-    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
-  }
-
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+
+  val pageNavigator: UkRevenuePageNavigator =
+    new UkRevenuePageNavigator(mockEclRegistrationConnector, mock[EclReturnsConnector]) {
+      override protected def navigateInNormalMode(
+        registration: Registration
+      )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
+    }
 
   val minRevenue = 0L
   val maxRevenue = 99999999999L

@@ -16,24 +16,39 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.Call
+import play.api.mvc.{Call, RequestHeader}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
-class AmlRegulatedActivityPageNavigator extends PageNavigator {
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
+class AmlRegulatedActivityPageNavigator @Inject() (eclRegistrationConnector: EclRegistrationConnector)(implicit
+  ec: ExecutionContext
+) extends AsyncPageNavigator
+    with FrontendHeaderCarrierProvider {
+
+  override protected def navigateInNormalMode(
+    registration: Registration
+  )(implicit request: RequestHeader): Future[Call] =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
-      case Some(true)  => routes.AmlSupervisorController.onPageLoad(NormalMode)
-      case Some(false) => routes.NotLiableController.onPageLoad()
-      case _           => routes.JourneyRecoveryController.onPageLoad()
+      case Some(true)  => Future.successful(routes.AmlSupervisorController.onPageLoad(NormalMode))
+      case Some(false) => notLiable(registration.internalId)
+      case _           => Future.successful(routes.JourneyRecoveryController.onPageLoad())
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
+  override protected def navigateInCheckMode(
+    registration: Registration
+  )(implicit request: RequestHeader): Future[Call] =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
-      case Some(true)  => routes.CheckYourAnswersController.onPageLoad()
-      case Some(false) => routes.NotLiableController.onPageLoad()
-      case _           => routes.JourneyRecoveryController.onPageLoad()
+      case Some(true)  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
+      case Some(false) => notLiable(registration.internalId)
+      case _           => Future.successful(routes.JourneyRecoveryController.onPageLoad())
     }
+
+  private def notLiable(internalId: String)(implicit request: RequestHeader): Future[Call] =
+    eclRegistrationConnector.deleteRegistration(internalId).map(_ => routes.NotLiableController.onPageLoad())
 
 }

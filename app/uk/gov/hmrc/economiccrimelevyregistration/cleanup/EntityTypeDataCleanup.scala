@@ -20,14 +20,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 import javax.inject.Inject
 
-class AmlRegulatedActivityDataCleanup @Inject() () extends DataCleanup {
+class EntityTypeDataCleanup @Inject() () extends DataCleanup {
   def cleanup(registration: Registration): Registration =
-    registration.carriedOutAmlRegulatedActivityInCurrentFy match {
-      case Some(false) =>
-        Registration
-          .empty(registration.internalId)
-          .copy(carriedOutAmlRegulatedActivityInCurrentFy = registration.carriedOutAmlRegulatedActivityInCurrentFy)
-      case _           => registration
-    }
+    registration.copy(
+      incorporatedEntityJourneyData = None,
+      soleTraderEntityJourneyData = None,
+      partnershipEntityJourneyData = None
+    )
 
 }

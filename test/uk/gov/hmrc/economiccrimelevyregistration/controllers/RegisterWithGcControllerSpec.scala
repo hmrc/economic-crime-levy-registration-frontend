@@ -20,14 +20,15 @@ import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.Helpers.{contentAsString, status}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.NotLiableView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.GamblingCommissionView
 
 import scala.concurrent.Future
 
-class NotLiableControllerSpec extends SpecBase {
-  val view: NotLiableView = app.injector.instanceOf[NotLiableView]
+class RegisterWithGcControllerSpec extends SpecBase {
 
-  val controller = new NotLiableController(
+  val view: GamblingCommissionView = app.injector.instanceOf[GamblingCommissionView]
+
+  val controller = new RegisterWithGcController(
     mcc,
     fakeAuthorisedActionWithEnrolmentCheck("test-internal-id"),
     view

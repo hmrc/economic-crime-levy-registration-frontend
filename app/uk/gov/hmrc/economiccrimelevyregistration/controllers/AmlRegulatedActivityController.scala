@@ -19,7 +19,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AmlRegulatedActivityDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
@@ -40,7 +39,6 @@ class AmlRegulatedActivityController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: AmlRegulatedActivityFormProvider,
   pageNavigator: AmlRegulatedActivityPageNavigator,
-  dataCleaner: AmlRegulatedActivityDataCleanup,
   view: AmlRegulatedActivityView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -60,12 +58,10 @@ class AmlRegulatedActivityController @Inject() (
         amlRegulatedActivity =>
           eclRegistrationConnector
             .upsertRegistration(
-              dataCleaner.cleanup(
-                request.registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity))
-              )
+              request.registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity))
             )
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
+            .flatMap { updatedRegistration =>
+              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
             }
       )
   }

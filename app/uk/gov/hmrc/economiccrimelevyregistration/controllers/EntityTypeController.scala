@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
@@ -39,6 +40,7 @@ class EntityTypeController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: EntityTypeFormProvider,
   pageNavigator: EntityTypePageNavigator,
+  dataCleanup: EntityTypeDataCleanup,
   view: EntityTypeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -58,11 +60,10 @@ class EntityTypeController @Inject() (
         entityType =>
           eclRegistrationConnector
             .upsertRegistration(
-              request.registration.copy(
-                entityType = Some(entityType),
-                incorporatedEntityJourneyData = None,
-                soleTraderEntityJourneyData = None,
-                partnershipEntityJourneyData = None
+              dataCleanup.cleanup(
+                request.registration.copy(
+                  entityType = Some(entityType)
+                )
               )
             )
             .flatMap { updatedRegistration =>

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.{Call, RequestHeader}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclReturnsConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, EclReturnsConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
@@ -27,9 +27,11 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UkRevenuePageNavigator @Inject() (
+  eclRegistrationConnector: EclRegistrationConnector,
   eclReturnsConnector: EclReturnsConnector
-)(implicit ec: ExecutionContext)
-    extends AsyncPageNavigator
+)(implicit
+  ec: ExecutionContext
+) extends AsyncPageNavigator
     with FrontendHeaderCarrierProvider {
   override protected def navigateInNormalMode(registration: Registration)(implicit
     request: RequestHeader
@@ -44,14 +46,16 @@ class UkRevenuePageNavigator @Inject() (
       case Some(revenue) =>
         val f: Int => Future[Call] = eclReturnsConnector
           .calculateLiability(_, revenue)
-          .map(liability =>
+          .flatMap(liability =>
             if (liability.amountDue > 0) {
               mode match {
-                case NormalMode => routes.EntityTypeController.onPageLoad(NormalMode)
-                case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
+                case NormalMode => Future.successful(routes.EntityTypeController.onPageLoad(NormalMode))
+                case CheckMode  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
               }
             } else {
-              routes.NotLiableController.onPageLoad()
+              eclRegistrationConnector
+                .deleteRegistration(registration.internalId)
+                .map(_ => routes.NotLiableController.onPageLoad())
             }
           )
 
@@ -64,7 +68,8 @@ class UkRevenuePageNavigator @Inject() (
             }
           case _           => Future.successful(routes.JourneyRecoveryController.onPageLoad())
         }
-      case _             => Future.successful(routes.JourneyRecoveryController.onPageLoad())
+
+      case _ => Future.successful(routes.JourneyRecoveryController.onPageLoad())
     }
 
 }

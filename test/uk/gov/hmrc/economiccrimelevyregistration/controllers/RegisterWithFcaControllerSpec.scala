@@ -20,21 +20,22 @@ import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.Helpers.{contentAsString, status}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.NotLiableView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.FinancialConductAuthorityView
 
 import scala.concurrent.Future
 
-class NotLiableControllerSpec extends SpecBase {
-  val view: NotLiableView = app.injector.instanceOf[NotLiableView]
+class RegisterWithFcaControllerSpec extends SpecBase {
 
-  val controller = new NotLiableController(
+  val view: FinancialConductAuthorityView = app.injector.instanceOf[FinancialConductAuthorityView]
+
+  val controller = new RegisterWithFcaController(
     mcc,
     fakeAuthorisedActionWithEnrolmentCheck("test-internal-id"),
     view
   )
 
   "onPageLoad" should {
-    "return OK and the correct view" in {
+    "return OK and correct view" in {
       val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
       status(result) shouldBe OK

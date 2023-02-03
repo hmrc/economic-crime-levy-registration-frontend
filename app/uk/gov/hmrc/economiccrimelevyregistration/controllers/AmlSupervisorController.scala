@@ -19,7 +19,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AmlSupervisorDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
@@ -42,7 +41,6 @@ class AmlSupervisorController @Inject() (
   formProvider: AmlSupervisorFormProvider,
   appConfig: AppConfig,
   pageNavigator: AmlSupervisorPageNavigator,
-  dataCleaner: AmlSupervisorDataCleanup,
   view: AmlSupervisorView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -61,9 +59,9 @@ class AmlSupervisorController @Inject() (
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         amlSupervisor =>
           eclRegistrationConnector
-            .upsertRegistration(dataCleaner.cleanup(request.registration.copy(amlSupervisor = Some(amlSupervisor))))
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
+            .upsertRegistration(request.registration.copy(amlSupervisor = Some(amlSupervisor)))
+            .flatMap { updatedRegistration =>
+              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
             }
       )
   }

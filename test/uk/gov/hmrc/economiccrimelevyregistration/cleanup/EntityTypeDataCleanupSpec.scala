@@ -20,17 +20,17 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-class RelevantAp12MonthsDataCleanupSpec extends SpecBase {
+class EntityTypeDataCleanupSpec extends SpecBase {
 
-  val dataCleanup = new RelevantAp12MonthsDataCleanup
+  val dataCleanup = new EntityTypeDataCleanup
 
   "cleanup" should {
-    "return a registration with the relevant AP length and relevant AP revenue set to none" in forAll {
-      registration: Registration =>
-        dataCleanup.cleanup(registration) shouldBe registration.copy(
-          relevantApLength = None,
-          relevantApRevenue = None
-        )
+    "return a registration with the GRS journey data set to none" in forAll { registration: Registration =>
+      dataCleanup.cleanup(registration) shouldBe registration.copy(
+        incorporatedEntityJourneyData = None,
+        partnershipEntityJourneyData = None,
+        soleTraderEntityJourneyData = None
+      )
     }
   }
 

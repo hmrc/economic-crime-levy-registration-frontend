@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
@@ -24,9 +23,11 @@ import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AddAnotherContactDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContactFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AddAnotherContactView
 
@@ -46,6 +47,10 @@ class AddAnotherContactControllerSpec extends SpecBase {
     override protected def navigateInCheckMode(registration: Registration): Call = onwardRoute
   }
 
+  val dataCleanup: AddAnotherContactDataCleanup = new AddAnotherContactDataCleanup {
+    override def cleanup(registration: Registration): Registration = registration
+  }
+
   class TestContext(registrationData: Registration) {
     val controller = new AddAnotherContactController(
       mcc,
@@ -54,6 +59,7 @@ class AddAnotherContactControllerSpec extends SpecBase {
       mockEclRegistrationConnector,
       formProvider,
       pageNavigator,
+      dataCleanup,
       view
     )
   }
@@ -84,14 +90,8 @@ class AddAnotherContactControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, secondContact: Boolean) =>
         new TestContext(registration) {
-          val updatedRegistration: Registration = secondContact match {
-            case true  => registration.copy(contacts = registration.contacts.copy(secondContact = Some(secondContact)))
-            case false =>
-              registration.copy(contacts =
-                registration.contacts
-                  .copy(secondContact = Some(secondContact), secondContactDetails = ContactDetails.empty)
-              )
-          }
+          val updatedRegistration: Registration =
+            registration.copy(contacts = registration.contacts.copy(secondContact = Some(secondContact)))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))

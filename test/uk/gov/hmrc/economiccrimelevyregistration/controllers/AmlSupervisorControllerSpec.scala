@@ -16,18 +16,17 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, Result}
+import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AmlSupervisorDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
@@ -43,12 +42,10 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
-  }
-
-  val dataCleanup: AmlSupervisorDataCleanup = new AmlSupervisorDataCleanup {
-    override def cleanup(registration: Registration): Registration = registration
+  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator(mockEclRegistrationConnector) {
+    override protected def navigateInNormalMode(registration: Registration)(implicit
+      request: RequestHeader
+    ): Future[Call] = Future.successful(onwardRoute)
   }
 
   implicit val arbAmlSupervisor: Arbitrary[AmlSupervisor] = arbAmlSupervisor(appConfig)
@@ -62,7 +59,6 @@ class AmlSupervisorControllerSpec extends SpecBase {
       formProvider,
       appConfig,
       pageNavigator,
-      dataCleanup,
       view
     )
   }

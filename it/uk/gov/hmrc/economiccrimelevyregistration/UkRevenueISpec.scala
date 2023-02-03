@@ -67,7 +67,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
     "save the UK revenue then redirect to the not liable page if the amount due is 0" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration = random[Registration].copy(internalId = testInternalId)
       val ukRevenue    = revenueGen.sample.get
 
       stubGetRegistration(registration.copy(relevantAp12Months = Some(true)))
@@ -75,6 +75,9 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       val updatedRegistration = registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(ukRevenue))
 
       stubUpsertRegistration(updatedRegistration)
+
+      stubDeleteRegistration()
+
       stubCalculateLiability(
         CalculateLiabilityRequest(EclTaxYear.YearInDays, EclTaxYear.YearInDays, ukRevenue),
         liable = false

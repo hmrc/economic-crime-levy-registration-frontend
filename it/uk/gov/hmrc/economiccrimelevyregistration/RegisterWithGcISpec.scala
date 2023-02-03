@@ -25,23 +25,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, Registration}
 
-class RegisterWithOtherAmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
+class RegisterWithGcISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.RegisterWithOtherAmlSupervisorController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.RegisterWithOtherAmlSupervisorController.onPageLoad())
-
-    "respond with 200 status and the financial conduct authority HTML view" in {
-      stubAuthorisedWithNoGroupEnrolment()
-
-      val registration = random[Registration]
-
-      stubGetRegistration(registration.copy(amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None))))
-
-      val result = callRoute(FakeRequest(routes.RegisterWithOtherAmlSupervisorController.onPageLoad()))
-
-      status(result) shouldBe OK
-      html(result)     should include("You need to register with the FCA")
-    }
+  s"GET ${routes.RegisterWithGcController.onPageLoad().url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.RegisterWithGcController.onPageLoad())
 
     "respond with 200 status and the gambling commission HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -50,7 +37,7 @@ class RegisterWithOtherAmlSupervisorISpec extends ISpecBase with AuthorisedBehav
 
       stubGetRegistration(registration.copy(amlSupervisor = Some(AmlSupervisor(GamblingCommission, None))))
 
-      val result = callRoute(FakeRequest(routes.RegisterWithOtherAmlSupervisorController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.RegisterWithGcController.onPageLoad()))
 
       status(result) shouldBe OK
       html(result)     should include("You need to register with the GC")

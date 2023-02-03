@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
@@ -24,8 +23,10 @@ import play.api.http.Status.OK
 import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
@@ -52,6 +53,10 @@ class EntityTypeControllerSpec extends SpecBase {
     )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
   }
 
+  val dataCleanup: EntityTypeDataCleanup = new EntityTypeDataCleanup {
+    override def cleanup(registration: Registration): Registration = registration
+  }
+
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
   class TestContext(registrationData: Registration) {
@@ -62,6 +67,7 @@ class EntityTypeControllerSpec extends SpecBase {
       mockEclRegistrationConnector,
       formProvider,
       pageNavigator,
+      dataCleanup,
       view
     )
   }
@@ -95,10 +101,7 @@ class EntityTypeControllerSpec extends SpecBase {
       (registration: Registration, entityType: EntityType, mode: Mode) =>
         new TestContext(registration) {
           val updatedRegistration: Registration = registration.copy(
-            entityType = Some(entityType),
-            incorporatedEntityJourneyData = None,
-            soleTraderEntityJourneyData = None,
-            partnershipEntityJourneyData = None
+            entityType = Some(entityType)
           )
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))

@@ -22,16 +22,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 class RelevantApLengthDataCleanupSpec extends SpecBase {
 
-  val dataCleaner = new RelevantApLengthDataCleanup
+  val dataCleanup = new RelevantApLengthDataCleanup
 
   "cleanup" should {
-    "return a registration with the relevant AP revenue set to none" in forAll {
-      (registration: Registration, relevantApLength: Int) =>
-        val updatedRegistration = registration.copy(relevantApLength = Some(relevantApLength))
-
-        dataCleaner.cleanup(updatedRegistration) shouldBe updatedRegistration.copy(
-          relevantApRevenue = None
-        )
+    "return a registration with the relevant AP revenue set to none" in forAll { registration: Registration =>
+      dataCleanup.cleanup(registration) shouldBe registration.copy(
+        relevantApRevenue = None
+      )
     }
   }
 

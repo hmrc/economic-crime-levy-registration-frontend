@@ -19,16 +19,16 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.NotLiableView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.GamblingCommissionView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class NotLiableController @Inject() (
+class RegisterWithGcController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  view: NotLiableView
+  view: GamblingCommissionView
 ) extends FrontendBaseController
     with I18nSupport {
 

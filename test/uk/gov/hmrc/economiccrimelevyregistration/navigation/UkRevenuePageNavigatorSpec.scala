@@ -18,18 +18,19 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclReturnsConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, EclReturnsConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculatedLiability, CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 import scala.concurrent.Future
 
 class UkRevenuePageNavigatorSpec extends SpecBase {
 
-  val mockEclReturnsConnector: EclReturnsConnector = mock[EclReturnsConnector]
+  val mockEclReturnsConnector: EclReturnsConnector           = mock[EclReturnsConnector]
+  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val pageNavigator = new UkRevenuePageNavigator(mockEclReturnsConnector)
+  val pageNavigator = new UkRevenuePageNavigator(mockEclRegistrationConnector, mockEclReturnsConnector)
 
   "nextPage" should {
     "return a Call to the entity type page in NormalMode when the amount due is more than 0" in forAll {
@@ -61,6 +62,8 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
       (registration: Registration, ukRevenue: Long, calculatedLiability: CalculatedLiability, mode: Mode) =>
         val updatedRegistration: Registration =
           registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(ukRevenue))
+
+        when(mockEclRegistrationConnector.deleteRegistration(any())(any())).thenReturn(Future.successful(()))
 
         when(mockEclReturnsConnector.calculateLiability(any(), any())(any()))
           .thenReturn(Future.successful(calculatedLiability.copy(amountDue = 0)))
