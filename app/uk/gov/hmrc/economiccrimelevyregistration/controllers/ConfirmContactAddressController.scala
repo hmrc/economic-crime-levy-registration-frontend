@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.ConfirmContactAddressDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
@@ -41,6 +42,7 @@ class ConfirmContactAddressController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: ConfirmContactAddressFormProvider,
   pageNavigator: ConfirmContactAddressPageNavigator,
+  dataCleanup: ConfirmContactAddressDataCleanup,
   view: ConfirmContactAddressView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -80,8 +82,10 @@ class ConfirmContactAddressController @Inject() (
         useRegisteredOfficeAddressAsContactAddress =>
           eclRegistrationConnector
             .upsertRegistration(
-              request.registration
-                .copy(useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress))
+              dataCleanup.cleanup(
+                request.registration
+                  .copy(useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress))
+              )
             )
             .flatMap { updatedRegistration =>
               pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)

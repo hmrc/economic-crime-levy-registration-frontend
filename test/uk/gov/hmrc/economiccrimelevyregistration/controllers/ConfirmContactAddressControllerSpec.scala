@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
@@ -25,8 +24,10 @@ import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWithValidCompanyProfile
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.ConfirmContactAddressDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
@@ -50,6 +51,10 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
     )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
   }
 
+  val dataCleanup: ConfirmContactAddressDataCleanup = new ConfirmContactAddressDataCleanup {
+    override def cleanup(registration: Registration): Registration = registration
+  }
+
   class TestContext(registrationData: Registration) {
     val controller = new ConfirmContactAddressController(
       mcc,
@@ -58,6 +63,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
       mockEclRegistrationConnector,
       formProvider,
       pageNavigator,
+      dataCleanup,
       view
     )
   }

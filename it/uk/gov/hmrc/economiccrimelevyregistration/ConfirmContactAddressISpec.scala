@@ -77,7 +77,8 @@ class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val updatedRegistration = registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(false))
+      val updatedRegistration =
+        registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(false), contactAddress = None)
 
       stubUpsertRegistration(updatedRegistration)
 

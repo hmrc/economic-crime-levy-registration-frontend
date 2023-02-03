@@ -32,10 +32,10 @@ class RelevantApLengthPageNavigatorSpec extends SpecBase {
       pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.UkRevenueController.onPageLoad(NormalMode)
     }
 
-    "return a Call to the check your answers page in CheckMode" in forAll { (registration: Registration, length: Int) =>
+    "return a Call to the UK revenue page in CheckMode" in forAll { (registration: Registration, length: Int) =>
       val updatedRegistration = registration.copy(relevantApLength = Some(length))
 
-      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.UkRevenueController.onPageLoad(CheckMode)
     }
   }
 
