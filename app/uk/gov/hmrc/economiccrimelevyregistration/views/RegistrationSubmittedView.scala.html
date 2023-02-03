@@ -54,7 +54,7 @@
         <li>@messages("submitted.provide.b4")</li>
     </ul>
 
-    <p class="govuk-body">@Html(messages("submitted.return", messages("submitted.return.link")))</p>
+    <p class="govuk-body">@Html(messages("submitted.return", messages("submitted.return.link", appConfig.submitReturnUrl)))</p>
 
     <p class="govuk-body">@Html(messages("exit.survey", messages("exit.survey.link", appConfig.exitSurveyUrl)))</p>
 

@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
@@ -33,24 +33,20 @@ class ConfirmContactAddressPageNavigator @Inject() (eclRegistrationConnector: Ec
   override protected def navigateInNormalMode(
     registration: Registration
   )(implicit request: RequestHeader): Future[Call] =
-    registration.useRegisteredOfficeAddressAsContactAddress match {
-      case Some(true)  =>
-        eclRegistrationConnector
-          .upsertRegistration(registration = registration.copy(contactAddress = registration.grsAddressToEclAddress))
-          .map(_ => routes.CheckYourAnswersController.onPageLoad())
-      case Some(false) => Future.successful(routes.IsUkAddressController.onPageLoad(NormalMode))
-      case _           => Future.successful(routes.JourneyRecoveryController.onPageLoad())
-    }
+    navigate(registration, NormalMode)
 
   override protected def navigateInCheckMode(registration: Registration)(implicit
     request: RequestHeader
   ): Future[Call] =
+    navigate(registration, CheckMode)
+
+  private def navigate(registration: Registration, mode: Mode)(implicit request: RequestHeader): Future[Call] =
     registration.useRegisteredOfficeAddressAsContactAddress match {
       case Some(true)  =>
         eclRegistrationConnector
           .upsertRegistration(registration = registration.copy(contactAddress = registration.grsAddressToEclAddress))
           .map(_ => routes.CheckYourAnswersController.onPageLoad())
-      case Some(false) => Future.successful(routes.IsUkAddressController.onPageLoad(CheckMode))
+      case Some(false) => Future.successful(routes.IsUkAddressController.onPageLoad(mode))
       case _           => Future.successful(routes.JourneyRecoveryController.onPageLoad())
     }
 

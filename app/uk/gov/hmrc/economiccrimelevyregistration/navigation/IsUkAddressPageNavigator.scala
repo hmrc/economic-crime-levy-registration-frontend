@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.AddressLookupFrontendConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.http.HttpVerbs.GET
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
@@ -35,18 +35,17 @@ class IsUkAddressPageNavigator @Inject() (
   override protected def navigateInNormalMode(
     registration: Registration
   )(implicit request: RequestHeader): Future[Call] =
-    registration.contactAddressIsUk match {
-      case Some(ukMode) =>
-        addressLookupFrontendConnector.initJourney(ukMode, NormalMode).map(journeyUrl => Call(GET, journeyUrl))
-      case _            => Future.successful(routes.JourneyRecoveryController.onPageLoad())
-    }
+    navigate(registration, NormalMode)
 
   override protected def navigateInCheckMode(
     registration: Registration
   )(implicit request: RequestHeader): Future[Call] =
+    navigate(registration, CheckMode)
+
+  private def navigate(registration: Registration, mode: Mode)(implicit request: RequestHeader): Future[Call] =
     registration.contactAddressIsUk match {
       case Some(ukMode) =>
-        addressLookupFrontendConnector.initJourney(ukMode, CheckMode).map(journeyUrl => Call(GET, journeyUrl))
+        addressLookupFrontendConnector.initJourney(ukMode, mode).map(journeyUrl => Call(GET, journeyUrl))
       case _            => Future.successful(routes.JourneyRecoveryController.onPageLoad())
     }
 
