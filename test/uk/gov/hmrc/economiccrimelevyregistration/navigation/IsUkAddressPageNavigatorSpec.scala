@@ -22,7 +22,7 @@ import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.AddressLookupFrontendConnector
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
 import uk.gov.hmrc.http.HttpVerbs.GET
 
 import scala.concurrent.Future
@@ -34,14 +34,17 @@ class IsUkAddressPageNavigatorSpec extends SpecBase {
   val pageNavigator = new IsUkAddressPageNavigator(mockAddressLookupFrontendConnector)
 
   "nextPage" should {
-    "return a call to the address lookup journey in NormalMode" in forAll {
-      (registration: Registration, contactAddressIsUk: Boolean, journeyUrl: String) =>
+    "return a call to the address lookup journey in either mode" in forAll {
+      (registration: Registration, contactAddressIsUk: Boolean, journeyUrl: String, mode: Mode) =>
         val updatedRegistration: Registration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
 
-        when(mockAddressLookupFrontendConnector.initJourney(ArgumentMatchers.eq(contactAddressIsUk))(any()))
+        when(
+          mockAddressLookupFrontendConnector
+            .initJourney(ArgumentMatchers.eq(contactAddressIsUk), ArgumentMatchers.eq(mode))(any())
+        )
           .thenReturn(Future.successful(journeyUrl))
 
-        await(pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
+        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
     }
   }
 

@@ -20,7 +20,7 @@ import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.http.HttpVerbs.GET
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
@@ -37,31 +37,37 @@ class EntityTypePageNavigator @Inject() (
 
   override protected def navigateInNormalMode(
     registration: Registration
-  )(implicit request: RequestHeader): Future[Call] =
+  )(implicit request: RequestHeader): Future[Call] = navigateInEitherMode(registration, NormalMode)
+
+  override protected def navigateInCheckMode(
+    registration: Registration
+  )(implicit request: RequestHeader): Future[Call] = navigateInEitherMode(registration, CheckMode)
+
+  private def navigateInEitherMode(registration: Registration, mode: Mode)(implicit
+    request: RequestHeader
+  ): Future[Call] =
     registration.entityType match {
       case Some(entityType) =>
         entityType match {
           case UkLimitedCompany =>
             incorporatedEntityIdentificationFrontendConnector
-              .createLimitedCompanyJourney()
+              .createLimitedCompanyJourney(mode)
               .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
 
           case SoleTrader =>
             soleTraderIdentificationFrontendConnector
-              .createSoleTraderJourney()
+              .createSoleTraderJourney(mode)
               .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
 
           case GeneralPartnership | ScottishPartnership | LimitedPartnership | ScottishLimitedPartnership |
               LimitedLiabilityPartnership =>
             partnershipIdentificationFrontendConnector
-              .createPartnershipJourney(entityType)
+              .createPartnershipJourney(entityType, mode)
               .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
 
           case Other => ???
         }
       case _                => Future.successful(routes.JourneyRecoveryController.onPageLoad())
     }
-
-  override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
 
 }

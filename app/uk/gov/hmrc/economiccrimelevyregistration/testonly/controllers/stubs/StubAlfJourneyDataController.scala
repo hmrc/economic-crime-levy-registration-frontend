@@ -42,7 +42,7 @@ class StubAlfJourneyDataController @Inject() (
 
   val form: Form[AlfStubFormData] = alfStubFormProvider()
 
-  def onPageLoad(): Action[AnyContent] = Action { implicit request =>
+  def onPageLoad(continueUrl: String): Action[AnyContent] = Action { implicit request =>
     val defaultAddressJson = Json.toJson(
       AlfAddressData(
         id = None,
@@ -56,14 +56,14 @@ class StubAlfJourneyDataController @Inject() (
       )
     )
 
-    Ok(view(form.fill(AlfStubFormData(Json.prettyPrint(defaultAddressJson)))))
+    Ok(view(form.fill(AlfStubFormData(Json.prettyPrint(defaultAddressJson))), continueUrl))
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+  def onSubmit(continueUrl: String): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => BadRequest(view(formWithErrors)),
+        formWithErrors => BadRequest(view(formWithErrors, continueUrl)),
         alfStubFormData => {
           val base64encodedAddressJson = Base64.getEncoder
             .encodeToString(alfStubFormData.addressJson.getBytes)
@@ -72,7 +72,7 @@ class StubAlfJourneyDataController @Inject() (
             .replace("=", "-")
 
           Redirect(
-            s"/register-for-the-economic-crime-levy/address-lookup-continue?id=$base64encodedAddressJson"
+            s"/register-for-the-economic-crime-levy/address-lookup-continue/$continueUrl?id=$base64encodedAddressJson"
           )
         }
       )

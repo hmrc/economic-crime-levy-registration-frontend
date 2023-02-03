@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactRoleFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactRolePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.SecondContactRoleView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -46,15 +46,15 @@ class SecondContactRoleController @Inject() (
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.contacts.secondContactDetails.role), secondContactName(request)))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    Ok(view(form.prepare(request.registration.contacts.secondContactDetails.role), secondContactName(request), mode))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, secondContactName(request)))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, secondContactName(request), mode))),
         role => {
           val updatedContacts: Contacts = request.registration.contacts
             .copy(secondContactDetails = request.registration.contacts.secondContactDetails.copy(role = Some(role)))
@@ -62,7 +62,7 @@ class SecondContactRoleController @Inject() (
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(contacts = updatedContacts))
             .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
+              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
             }
         }
       )

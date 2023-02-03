@@ -22,6 +22,7 @@ import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.HttpClient
 
@@ -34,7 +35,7 @@ class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
 
   "createPartnershipJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {
-      (grsCreateJourneyResponse: GrsCreateJourneyResponse, partnershipType: PartnershipType) =>
+      (grsCreateJourneyResponse: GrsCreateJourneyResponse, partnershipType: PartnershipType, mode: Mode) =>
         val entityType = partnershipType.entityType
 
         val expectedUrl: String = entityType match {
@@ -53,7 +54,8 @@ class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
           )
 
           PartnershipEntityCreateJourneyRequest(
-            continueUrl = "http://localhost:14000/register-for-the-economic-crime-levy/grs-continue",
+            continueUrl =
+              s"http://localhost:14000/register-for-the-economic-crime-levy/grs-continue/${mode.toString.toLowerCase}",
             businessVerificationCheck = false,
             optServiceName = Some(serviceNameLabels.en.optServiceName),
             deskProServiceId = "economic-crime-levy-registration-frontend",
@@ -72,7 +74,7 @@ class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
         )
           .thenReturn(Future.successful(grsCreateJourneyResponse))
 
-        val result = await(connector.createPartnershipJourney(entityType))
+        val result = await(connector.createPartnershipJourney(entityType, mode))
 
         result shouldBe grsCreateJourneyResponse
 
@@ -86,12 +88,13 @@ class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
         reset(mockHttpClient)
     }
 
-    "throw an IllegalArgumentException if an entity type that is not a partnership is passed through" in {
-      val result = intercept[IllegalArgumentException] {
-        await(connector.createPartnershipJourney(UkLimitedCompany))
-      }
+    "throw an IllegalArgumentException if an entity type that is not a partnership is passed through" in forAll {
+      mode: Mode =>
+        val result = intercept[IllegalArgumentException] {
+          await(connector.createPartnershipJourney(UkLimitedCompany, mode))
+        }
 
-      result.getMessage shouldBe "UkLimitedCompany is not a valid partnership type"
+        result.getMessage shouldBe "UkLimitedCompany is not a valid partnership type"
     }
   }
 

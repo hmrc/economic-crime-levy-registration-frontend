@@ -32,7 +32,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new JourneyRecoveryController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck,
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       view
     )

@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.SoleTraderIdentificationFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, FullName, GrsCreateJourneyResponse, RegistrationStatus, SoleTraderEntityJourneyData, VerificationStatus}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
@@ -37,10 +37,11 @@ class StubSoleTraderIdentificationFrontendConnector @Inject() (
 ) extends SoleTraderIdentificationFrontendConnector
     with GrsStubData[SoleTraderEntityJourneyData] {
 
-  override def createSoleTraderJourney()(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] =
+  override def createSoleTraderJourney(mode: Mode)(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] =
     Future.successful(
       GrsCreateJourneyResponse(
-        journeyStartUrl = "/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data"
+        journeyStartUrl =
+          s"/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}"
       )
     )
 

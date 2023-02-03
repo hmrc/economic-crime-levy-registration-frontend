@@ -19,11 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AddAnotherContactDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContactFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AddAnotherContactView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -39,6 +40,7 @@ class AddAnotherContactController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: AddAnotherContactFormProvider,
   pageNavigator: AddAnotherContactPageNavigator,
+  dataCleanup: AddAnotherContactDataCleanup,
   view: AddAnotherContactView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -46,25 +48,26 @@ class AddAnotherContactController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.contacts.secondContact)))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    Ok(view(form.prepare(request.registration.contacts.secondContact), mode))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        secondContact => {
-          val updatedContacts: Contacts = request.registration.contacts
-            .copy(secondContact = Some(secondContact))
-
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+        secondContact =>
           eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(contacts = updatedContacts))
+            .upsertRegistration(
+              dataCleanup.cleanup(
+                request.registration
+                  .copy(contacts = request.registration.contacts.copy(secondContact = Some(secondContact)))
+              )
+            )
             .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
+              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
             }
-        }
       )
   }
 }

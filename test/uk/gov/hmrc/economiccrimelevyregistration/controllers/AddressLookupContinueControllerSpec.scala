@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 
 import scala.concurrent.Future
@@ -36,7 +36,7 @@ class AddressLookupContinueControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new AddressLookupContinueController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck,
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockAddressLookupFrontendConnector,
       mockEclRegistrationConnector
@@ -71,7 +71,7 @@ class AddressLookupContinueControllerSpec extends SpecBase {
             mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any())
           ).thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe SEE_OTHER
 

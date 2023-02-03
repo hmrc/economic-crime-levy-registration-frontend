@@ -22,7 +22,7 @@
         button: GovukButton
 )
 
-@(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @legendHtml = {
     <h1 class="govuk-heading-l">@messages("relevantAp12Months.heading")</h1>
@@ -31,7 +31,7 @@
 }
 
 @layout(pageTitle = titleWithForm(form, messages("relevantAp12Months.title"))) {
-    @formHelper(action = RelevantAp12MonthsController.onSubmit()) {
+    @formHelper(action = RelevantAp12MonthsController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }

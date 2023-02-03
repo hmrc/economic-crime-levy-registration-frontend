@@ -32,12 +32,7 @@ object SaUtrSummary {
 
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.saUtr.label"),
-        value = value,
-        actions = Seq(
-          ActionItemViewModel("site.change", "#TODO").withVisuallyHiddenText(
-            messages("checkYourAnswers.saUtr.label")
-          )
-        )
+        value = value
       )
     }
 

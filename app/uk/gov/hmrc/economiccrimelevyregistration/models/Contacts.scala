@@ -25,7 +25,7 @@ final case class Contacts(
 )
 
 object Contacts {
-  def empty: Contacts = Contacts(ContactDetails(None, None, None, None), None, ContactDetails(None, None, None, None))
+  def empty: Contacts = Contacts(ContactDetails.empty, None, ContactDetails.empty)
 
   implicit val format: OFormat[Contacts] = Json.format[Contacts]
 }
@@ -38,5 +38,7 @@ final case class ContactDetails(
 )
 
 object ContactDetails {
+  def empty: ContactDetails = ContactDetails(None, None, None, None)
+
   implicit val format: OFormat[ContactDetails] = Json.format[ContactDetails]
 }

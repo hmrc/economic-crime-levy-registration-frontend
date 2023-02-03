@@ -67,7 +67,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
           firstContactDetails =
             contactDetails.copy(name = Some(firstContactName), emailAddress = Some(firstContactEmail)),
           secondContact = Some(false),
-          secondContactDetails = ContactDetails(None, None, None, None)
+          secondContactDetails = ContactDetails.empty
         )
       )
 

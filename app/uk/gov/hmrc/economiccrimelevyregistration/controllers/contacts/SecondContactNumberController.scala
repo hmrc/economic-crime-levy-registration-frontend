@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNumberFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.SecondContactNumberView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -46,17 +46,21 @@ class SecondContactNumberController @Inject() (
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(
-      view(form.prepare(request.registration.contacts.secondContactDetails.telephoneNumber), secondContactName(request))
+      view(
+        form.prepare(request.registration.contacts.secondContactDetails.telephoneNumber),
+        secondContactName(request),
+        mode
+      )
     )
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, secondContactName(request)))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, secondContactName(request), mode))),
         telephoneNumber => {
           val updatedContacts: Contacts = request.registration.contacts
             .copy(secondContactDetails =
@@ -66,7 +70,7 @@ class SecondContactNumberController @Inject() (
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(contacts = updatedContacts))
             .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
+              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
             }
         }
       )

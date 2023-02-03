@@ -20,13 +20,13 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, Result}
+import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
 
@@ -40,14 +40,19 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+  val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator(
+    mockEclRegistrationConnector
+  ) {
+    override protected def navigateInNormalMode(registration: Registration)(implicit
+      request: RequestHeader
+    ): Future[Call] =
+      Future.successful(onwardRoute)
   }
 
   class TestContext(registrationData: Registration) {
     val controller = new AmlRegulatedActivityController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck,
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
@@ -59,11 +64,11 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
       new TestContext(registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = None)) {
-        val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
       }
     }
 
@@ -72,10 +77,10 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
         new TestContext(
           registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity))
         ) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result)          shouldBe OK
-          contentAsString(result) shouldBe view(form.fill(carriedOutAmlRegulatedActivity))(
+          contentAsString(result) shouldBe view(form.fill(carriedOutAmlRegulatedActivity), NormalMode)(
             fakeRequest,
             messages
           ).toString
@@ -94,7 +99,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit()(
+            controller.onSubmit(NormalMode)(
               fakeRequest.withFormUrlEncodedBody(("value", carriedOutAmlRegulatedActivity.toString))
             )
 
@@ -106,12 +111,12 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
       new TestContext(registration) {
-        val result: Future[Result]        = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
+        val result: Future[Result]        = controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
         val formWithErrors: Form[Boolean] = form.bind(Map("value" -> ""))
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString
       }
     }
   }

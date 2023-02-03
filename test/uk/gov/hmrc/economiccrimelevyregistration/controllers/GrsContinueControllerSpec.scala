@@ -46,7 +46,7 @@ class GrsContinueControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new GrsContinueController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck,
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockIncorporatedEntityIdentificationFrontendConnector,
       mockSoleTraderIdentificationFrontendConnector,
@@ -56,7 +56,7 @@ class GrsContinueControllerSpec extends SpecBase {
   }
 
   "continue" should {
-    "retrieve the incorporated entity GRS journey data and continue if registration was successful and the business partner is not already subscribed to ECL" in forAll {
+    "retrieve the incorporated entity GRS journey data and continue to the next page in normal mode if registration was successful and the business partner is not already subscribed to ECL" in forAll {
       (
         journeyId: String,
         registration: Registration,
@@ -90,11 +90,53 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe SEE_OTHER
 
           redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
+        }
+    }
+
+    "retrieve the incorporated entity GRS journey data and go to the check your answers page in check mode if registration was successful and the business partner is not already subscribed to ECL" in forAll {
+      (
+        journeyId: String,
+        registration: Registration,
+        incorporatedEntityJourneyData: IncorporatedEntityJourneyData,
+        businessPartnerId: String
+      ) =>
+        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+          val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
+            incorporatedEntityJourneyData.copy(
+              identifiersMatch = true,
+              registration = successfulGrsRegistrationResult(businessPartnerId),
+              businessVerification = None
+            )
+
+          when(
+            mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
+
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(UkLimitedCompany),
+            incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = None
+          )
+
+          when(
+            mockEclRegistrationConnector.getSubscriptionStatus(ArgumentMatchers.eq(businessPartnerId))(any())
+          ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] = controller.continue(CheckMode, journeyId)(fakeRequest)
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
         }
     }
 
@@ -123,7 +165,7 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe OK
 
@@ -160,7 +202,7 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe OK
 
@@ -193,7 +235,7 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe OK
 
@@ -236,7 +278,7 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe OK
 
@@ -246,7 +288,7 @@ class GrsContinueControllerSpec extends SpecBase {
         }
     }
 
-    "retrieve the sole trader entity GRS journey data and continue if registration was successful and the business partner is not already subscribed to ECL" in forAll {
+    "retrieve the sole trader entity GRS journey data and continue to the next page in normal mode if registration was successful and the business partner is not already subscribed to ECL" in forAll {
       (
         journeyId: String,
         registration: Registration,
@@ -280,11 +322,53 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe SEE_OTHER
 
           redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
+        }
+    }
+
+    "retrieve the sole trader entity GRS journey data and go to the check your answers page in check mode if registration was successful and the business partner is not already subscribed to ECL" in forAll {
+      (
+        journeyId: String,
+        registration: Registration,
+        soleTraderEntityJourneyData: SoleTraderEntityJourneyData,
+        businessPartnerId: String
+      ) =>
+        new TestContext(registration.copy(entityType = Some(SoleTrader))) {
+          val updatedSoleTraderEntityJourneyData: SoleTraderEntityJourneyData =
+            soleTraderEntityJourneyData.copy(
+              identifiersMatch = true,
+              registration = successfulGrsRegistrationResult(businessPartnerId),
+              businessVerification = None
+            )
+
+          when(
+            mockSoleTraderIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(updatedSoleTraderEntityJourneyData))
+
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(SoleTrader),
+            soleTraderEntityJourneyData = Some(updatedSoleTraderEntityJourneyData),
+            incorporatedEntityJourneyData = None,
+            partnershipEntityJourneyData = None
+          )
+
+          when(
+            mockEclRegistrationConnector.getSubscriptionStatus(ArgumentMatchers.eq(businessPartnerId))(any())
+          ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] = controller.continue(CheckMode, journeyId)(fakeRequest)
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
         }
     }
 
@@ -313,7 +397,7 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe OK
 
@@ -350,7 +434,7 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe OK
 
@@ -383,7 +467,7 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe OK
 
@@ -426,7 +510,7 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe OK
 
@@ -436,7 +520,7 @@ class GrsContinueControllerSpec extends SpecBase {
         }
     }
 
-    "retrieve the partnership entity GRS journey data and continue if registration was successful and the business partner is not already subscribed to ECL" in forAll {
+    "retrieve the partnership entity GRS journey data and continue to the next page in normal mode if registration was successful and the business partner is not already subscribed to ECL" in forAll {
       (
         journeyId: String,
         registration: Registration,
@@ -472,11 +556,55 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe SEE_OTHER
 
           redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
+        }
+    }
+
+    "retrieve the partnership entity GRS journey data and go to the check your answers page in check mode if registration was successful and the business partner is not already subscribed to ECL" in forAll {
+      (
+        journeyId: String,
+        registration: Registration,
+        partnershipEntityJourneyData: PartnershipEntityJourneyData,
+        partnershipType: PartnershipType,
+        businessPartnerId: String
+      ) =>
+        val entityType = partnershipType.entityType
+        new TestContext(registration.copy(entityType = Some(entityType))) {
+          val updatedPartnershipEntityJourneyData: PartnershipEntityJourneyData =
+            partnershipEntityJourneyData.copy(
+              identifiersMatch = true,
+              registration = successfulGrsRegistrationResult(businessPartnerId),
+              businessVerification = None
+            )
+
+          when(
+            mockPartnershipIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(updatedPartnershipEntityJourneyData))
+
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(entityType),
+            partnershipEntityJourneyData = Some(updatedPartnershipEntityJourneyData),
+            incorporatedEntityJourneyData = None,
+            soleTraderEntityJourneyData = None
+          )
+
+          when(
+            mockEclRegistrationConnector.getSubscriptionStatus(ArgumentMatchers.eq(businessPartnerId))(any())
+          ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] = controller.continue(CheckMode, journeyId)(fakeRequest)
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
         }
     }
 
@@ -507,7 +635,7 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe OK
 
@@ -546,7 +674,7 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe OK
 
@@ -581,7 +709,7 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe OK
 
@@ -626,7 +754,7 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] = controller.continue(journeyId)(fakeRequest)
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe OK
 
@@ -641,7 +769,7 @@ class GrsContinueControllerSpec extends SpecBase {
         new TestContext(registration.copy(entityType = None)) {
 
           val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.continue(journeyId)(fakeRequest))
+            await(controller.continue(NormalMode, journeyId)(fakeRequest))
           }
 
           result.getMessage shouldBe "No valid entity type found in registration data"
@@ -677,7 +805,7 @@ class GrsContinueControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.continue(journeyId)(fakeRequest))
+            await(controller.continue(NormalMode, journeyId)(fakeRequest))
           }
 
           result.getMessage shouldBe s"Invalid result received from GRS: identifiersMatch: $identifiersMatch, registration: $registrationNotCalled, businessVerification: $noBv"

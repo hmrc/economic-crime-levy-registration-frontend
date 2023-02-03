@@ -12,8 +12,10 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
 
   val emailMaxLength: Int = 160
 
-  s"GET ${contacts.routes.FirstContactEmailController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.FirstContactEmailController.onPageLoad())
+  s"GET ${contacts.routes.FirstContactEmailController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.FirstContactEmailController.onPageLoad(NormalMode)
+    )
 
     "respond with 200 status and the first contact email HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -29,7 +31,7 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
         )
       )
 
-      val result = callRoute(FakeRequest(contacts.routes.FirstContactEmailController.onPageLoad()))
+      val result = callRoute(FakeRequest(contacts.routes.FirstContactEmailController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -37,8 +39,10 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${contacts.routes.FirstContactEmailController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.FirstContactEmailController.onSubmit())
+  s"POST ${contacts.routes.FirstContactEmailController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.FirstContactEmailController.onSubmit(NormalMode)
+    )
 
     "save the provided email address then redirect to the first contact telephone number page" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -57,12 +61,13 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(contacts.routes.FirstContactEmailController.onSubmit()).withFormUrlEncodedBody(("value", email))
+        FakeRequest(contacts.routes.FirstContactEmailController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", email))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(contacts.routes.FirstContactNumberController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(contacts.routes.FirstContactNumberController.onPageLoad(NormalMode).url)
     }
   }
 }

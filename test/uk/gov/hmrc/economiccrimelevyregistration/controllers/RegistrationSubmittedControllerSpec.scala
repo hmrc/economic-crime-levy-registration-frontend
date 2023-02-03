@@ -30,7 +30,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
   val controller = new RegistrationSubmittedController(
     mcc,
-    fakeAuthorisedActionWithoutEnrolmentCheck,
+    fakeAuthorisedActionWithoutEnrolmentCheck("test-internal-id"),
     view
   )
 

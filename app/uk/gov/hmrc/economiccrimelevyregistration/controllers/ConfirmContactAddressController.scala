@@ -19,12 +19,13 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.ConfirmContactAddressDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ConfirmContactAddressView
@@ -41,6 +42,7 @@ class ConfirmContactAddressController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: ConfirmContactAddressFormProvider,
   pageNavigator: ConfirmContactAddressPageNavigator,
+  dataCleanup: ConfirmContactAddressDataCleanup,
   view: ConfirmContactAddressView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -53,16 +55,17 @@ class ConfirmContactAddressController @Inject() (
       throw new IllegalStateException("No registered office address found in registration data")
     )
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(
       view(
         form.prepare(request.registration.useRegisteredOfficeAddressAsContactAddress),
-        AddressViewModel.insetText(address(request))
+        AddressViewModel.insetText(address(request)),
+        mode
       )
     )
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
@@ -71,18 +74,21 @@ class ConfirmContactAddressController @Inject() (
             BadRequest(
               view(
                 formWithErrors,
-                AddressViewModel.insetText(address(request))
+                AddressViewModel.insetText(address(request)),
+                mode
               )
             )
           ),
         useRegisteredOfficeAddressAsContactAddress =>
           eclRegistrationConnector
             .upsertRegistration(
-              request.registration
-                .copy(useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress))
+              dataCleanup.cleanup(
+                request.registration
+                  .copy(useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress))
+              )
             )
             .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(NormalMode, updatedRegistration).map(Redirect)
+              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
             }
       )
   }

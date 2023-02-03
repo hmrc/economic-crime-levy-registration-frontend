@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactNameFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactNamePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.FirstContactNameView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -46,15 +46,15 @@ class FirstContactNameController @Inject() (
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.contacts.firstContactDetails.name)))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    Ok(view(form.prepare(request.registration.contacts.firstContactDetails.name), mode))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         name => {
           val updatedContacts: Contacts = request.registration.contacts
             .copy(firstContactDetails = request.registration.contacts.firstContactDetails.copy(name = Some(name)))
@@ -62,7 +62,7 @@ class FirstContactNameController @Inject() (
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(contacts = updatedContacts))
             .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
+              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
             }
         }
       )

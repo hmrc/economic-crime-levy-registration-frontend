@@ -20,8 +20,6 @@ import play.api.http.Status.OK
 import play.api.mvc.Result
 import play.api.test.Helpers.{contentAsString, status}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.NotLiableView
 
 import scala.concurrent.Future
@@ -29,24 +27,19 @@ import scala.concurrent.Future
 class NotLiableControllerSpec extends SpecBase {
   val view: NotLiableView = app.injector.instanceOf[NotLiableView]
 
-  class TestContext(registrationData: Registration) {
-    val controller = new NotLiableController(
-      mcc,
-      fakeAuthorisedActionWithEnrolmentCheck,
-      view,
-      fakeDataRetrievalAction(registrationData)
-    )
-  }
+  val controller = new NotLiableController(
+    mcc,
+    fakeAuthorisedActionWithEnrolmentCheck("test-internal-id"),
+    view
+  )
 
   "onPageLoad" should {
-    "return OK and the correct view" in forAll { registration: Registration =>
-      new TestContext(registration) {
-        val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+    "return OK and the correct view" in {
+      val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
-        status(result) shouldBe OK
+      status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view()(fakeRequest, messages).toString
-      }
+      contentAsString(result) shouldBe view()(fakeRequest, messages).toString
     }
   }
 }

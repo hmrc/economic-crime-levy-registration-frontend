@@ -39,18 +39,18 @@ class StubGrsJourneyDataController @Inject() (
 
   val form: Form[GrsStubFormData] = grsStubFormProvider()
 
-  def onPageLoad(): Action[AnyContent] = Action { implicit request =>
-    Ok(view(form.fill(GrsStubFormData("0", "X00000000000001"))))
+  def onPageLoad(continueUrl: String): Action[AnyContent] = Action { implicit request =>
+    Ok(view(form.fill(GrsStubFormData("0", "X00000000000001")), continueUrl))
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+  def onSubmit(continueUrl: String): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => BadRequest(view(formWithErrors)),
+        formWithErrors => BadRequest(view(formWithErrors, continueUrl)),
         grsStubFormData =>
           Redirect(
-            s"/register-for-the-economic-crime-levy/grs-continue?journeyId=${grsStubFormData.journeyId}-${request.registration.entityType.get.toString}-${grsStubFormData.businessPartnerId}"
+            s"/register-for-the-economic-crime-levy/grs-continue/$continueUrl?journeyId=${grsStubFormData.journeyId}-${request.registration.entityType.get.toString}-${grsStubFormData.businessPartnerId}"
           )
       )
   }

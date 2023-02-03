@@ -17,6 +17,8 @@
 package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -26,16 +28,22 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 object ContactAddressSummary {
 
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.contactAddress.map { answer =>
-      SummaryListRowViewModel(
-        key = Key("checkYourAnswers.address.label"),
-        value = ValueViewModel(AddressViewModel.htmlContent(answer)),
-        actions = Seq(
-          ActionItemViewModel("site.change", "#TODO").withVisuallyHiddenText(
-            messages("checkYourAnswers.address.label")
-          )
+    for {
+      useRegisteredOfficeAddressAsContactAddress <- request.registration.useRegisteredOfficeAddressAsContactAddress
+      answer                                     <- request.registration.contactAddress
+    } yield SummaryListRowViewModel(
+      key = Key("checkYourAnswers.address.label"),
+      value = ValueViewModel(AddressViewModel.htmlContent(answer)),
+      actions = if (useRegisteredOfficeAddressAsContactAddress) {
+        Seq.empty
+      } else {
+        Seq(
+          ActionItemViewModel("site.change", routes.IsUkAddressController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(
+              messages("checkYourAnswers.address.label")
+            )
         )
-      )
-    }
+      }
+    )
 
 }

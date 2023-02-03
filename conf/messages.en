@@ -270,10 +270,12 @@ checkYourAnswers.firstContactName.label = Contact name
 checkYourAnswers.firstContactRole.label = Role
 checkYourAnswers.firstContactEmail.label = Email address
 checkYourAnswers.firstContactNumber.label = Telephone number
+checkYourAnswers.secondContact.label = Secondary contact
 checkYourAnswers.secondContactName.label = Secondary contact name
 checkYourAnswers.secondContactRole.label = Role
 checkYourAnswers.secondContactEmail.label = Email address
 checkYourAnswers.secondContactNumber.label = Telephone number
+checkYourAnswers.useRegisteredAddress.label = Use registered address
 checkYourAnswers.address.label = Address
 checkYourAnswers.nowSend = Now send your registration
 checkYourAnswers.bySubmitting = By submitting this registration you are confirming that, to the best of your knowledge, the details you are providing are correct.
@@ -291,7 +293,7 @@ submitted.provide.b2 = if you stopped Anti-Money Laundering (AML) regulated acti
 submitted.provide.b3 = if you started AML-regulated activities in the last financial year
 submitted.provide.b4 = the details of the person in your organisation who is completing the return
 submitted.return = You can {0} now or come back to do it later.
-submitted.return.link = <a href="#TODO" class="govuk-link">submit a return</a>
+submitted.return.link = <a href="{0}" class="govuk-link">submit a return</a>
 
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.

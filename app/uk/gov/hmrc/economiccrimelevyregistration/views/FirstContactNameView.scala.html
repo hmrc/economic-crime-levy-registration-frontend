@@ -24,7 +24,7 @@
         govukButton: GovukButton
 )
 
-@(form: Form[String])(implicit request: Request[_], messages: Messages)
+@(form: Form[String], mode: Mode)(implicit request: Request[_], messages: Messages)
 
     @labelHtml = {
         <h1 class="govuk-heading-l">@messages("firstContactName.heading")</h1>
@@ -33,7 +33,7 @@
     }
 
     @layout(pageTitle = titleWithForm(form, messages("firstContactName.title"))) {
-        @formHelper(action = FirstContactNameController.onSubmit()) {
+        @formHelper(action = FirstContactNameController.onSubmit(mode)) {
             @if(form.errors.nonEmpty) {
                 @govukErrorSummary(ErrorSummaryViewModel(form))
             }

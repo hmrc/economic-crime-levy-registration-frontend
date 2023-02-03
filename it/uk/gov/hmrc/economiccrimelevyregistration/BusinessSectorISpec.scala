@@ -50,7 +50,7 @@ class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(contacts.routes.FirstContactNameController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(contacts.routes.FirstContactNameController.onPageLoad(NormalMode).url)
     }
   }
 }

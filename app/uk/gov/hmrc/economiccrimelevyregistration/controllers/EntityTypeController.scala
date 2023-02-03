@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
@@ -39,6 +40,7 @@ class EntityTypeController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: EntityTypeFormProvider,
   pageNavigator: EntityTypePageNavigator,
+  dataCleanup: EntityTypeDataCleanup,
   view: EntityTypeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -46,20 +48,26 @@ class EntityTypeController @Inject() (
 
   val form: Form[EntityType] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.entityType)))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    Ok(view(form.prepare(request.registration.entityType), mode))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType =>
           eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(entityType = Some(entityType)))
+            .upsertRegistration(
+              dataCleanup.cleanup(
+                request.registration.copy(
+                  entityType = Some(entityType)
+                )
+              )
+            )
             .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(NormalMode, updatedRegistration).map(Redirect)
+              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
             }
       )
   }

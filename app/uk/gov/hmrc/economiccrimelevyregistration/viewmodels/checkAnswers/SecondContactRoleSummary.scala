@@ -18,6 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
+import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
@@ -32,9 +34,10 @@ object SecondContactRoleSummary {
         key = Key("checkYourAnswers.secondContactRole.label"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),
         actions = Seq(
-          ActionItemViewModel("site.change", "#TODO").withVisuallyHiddenText(
-            messages("checkYourAnswers.secondContactRole.label")
-          )
+          ActionItemViewModel("site.change", contacts.routes.SecondContactRoleController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(
+              messages("checkYourAnswers.secondContactRole.label")
+            )
         )
       )
     }

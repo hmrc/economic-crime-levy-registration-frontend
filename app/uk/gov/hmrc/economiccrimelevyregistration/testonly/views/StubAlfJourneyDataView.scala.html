@@ -24,7 +24,7 @@
         layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 )
 
-@(form: Form[AlfStubFormData])(implicit request: Request[_], messages: Messages)
+@(form: Form[AlfStubFormData], continueUrl: String)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = title("Stub Address Lookup Journey Data"),
@@ -33,7 +33,7 @@
 
     <h1 class="govuk-heading-xl">Stub Address Lookup Journey Data</h1>
 
-    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.routes.StubAlfJourneyDataController.onSubmit()) {
+    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.routes.StubAlfJourneyDataController.onSubmit(continueUrl)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

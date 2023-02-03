@@ -43,6 +43,10 @@ final case class IncorporatedEntityJourneyDataWithSuccessfulRegistration(
   incorporatedEntityJourneyData: IncorporatedEntityJourneyData
 )
 
+final case class EligibleAmlSupervisor(amlSupervisor: AmlSupervisor)
+
+final case class IneligibleAmlSupervisor(amlSupervisor: AmlSupervisor)
+
 final case class IncorporatedEntityJourneyDataWithValidCompanyProfile(
   incorporatedEntityJourneyData: IncorporatedEntityJourneyData
 )
@@ -143,6 +147,24 @@ trait EclTestData {
     }
   }
 
+  def arbEligibleAmlSupervisor(appConfig: AppConfig): Arbitrary[EligibleAmlSupervisor] = Arbitrary {
+    for {
+      amlSupervisorType     <- Gen.oneOf(Seq(AmlSupervisorType.Hmrc, AmlSupervisorType.Other))
+      otherProfessionalBody <- Gen.oneOf(appConfig.amlProfessionalBodySupervisors)
+    } yield amlSupervisorType match {
+      case AmlSupervisorType.Other =>
+        EligibleAmlSupervisor(AmlSupervisor(AmlSupervisorType.Other, Some(otherProfessionalBody)))
+      case _                       => EligibleAmlSupervisor(AmlSupervisor(amlSupervisorType, None))
+    }
+  }
+
+  implicit val arbIneligibleAmlSupervisor: Arbitrary[IneligibleAmlSupervisor] = Arbitrary {
+    for {
+      amlSupervisorType <-
+        Gen.oneOf(Seq(AmlSupervisorType.FinancialConductAuthority, AmlSupervisorType.GamblingCommission))
+    } yield IneligibleAmlSupervisor(AmlSupervisor(amlSupervisorType, None))
+  }
+
   def successfulGrsRegistrationResult(businessPartnerId: String): GrsRegistrationResult =
     GrsRegistrationResult(Registered, registeredBusinessPartnerId = Some(businessPartnerId), None)
 
@@ -164,5 +186,11 @@ trait EclTestData {
   val testInternalId: String               = alphaNumericString
   val testGroupId: String                  = alphaNumericString
   val testEclRegistrationReference: String = alphaNumericString
+  val validContactDetails: ContactDetails  = ContactDetails(
+    name = Some(alphaNumericString),
+    role = Some(alphaNumericString),
+    emailAddress = Some(alphaNumericString),
+    telephoneNumber = Some(alphaNumericString)
+  )
 
 }

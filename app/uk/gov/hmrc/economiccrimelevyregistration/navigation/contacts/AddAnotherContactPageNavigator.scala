@@ -18,22 +18,31 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
 class AddAnotherContactPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.contacts.secondContact match {
-      case Some(true)  => contacts.routes.SecondContactNameController.onPageLoad()
+      case Some(true)  => contacts.routes.SecondContactNameController.onPageLoad(NormalMode)
       case Some(false) =>
         registration.grsAddressToEclAddress match {
-          case Some(_) => routes.ConfirmContactAddressController.onPageLoad()
-          case _       => routes.IsUkAddressController.onPageLoad()
+          case Some(_) => routes.ConfirmContactAddressController.onPageLoad(NormalMode)
+          case _       => routes.IsUkAddressController.onPageLoad(NormalMode)
         }
       case _           => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call = ???
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    registration.contacts.secondContact match {
+      case Some(true)  =>
+        registration.contacts.secondContactDetails match {
+          case ContactDetails(Some(_), Some(_), Some(_), Some(_)) => routes.CheckYourAnswersController.onPageLoad()
+          case _                                                  => contacts.routes.SecondContactNameController.onPageLoad(CheckMode)
+        }
+      case Some(false) => routes.CheckYourAnswersController.onPageLoad()
+      case _           => routes.JourneyRecoveryController.onPageLoad()
+    }
 
 }

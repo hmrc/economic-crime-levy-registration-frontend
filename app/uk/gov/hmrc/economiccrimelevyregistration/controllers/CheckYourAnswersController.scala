@@ -72,10 +72,12 @@ class CheckYourAnswersController @Inject() (
           FirstContactRoleSummary.row(),
           FirstContactEmailSummary.row(),
           FirstContactNumberSummary.row(),
+          SecondContactSummary.row(),
           SecondContactNameSummary.row(),
           SecondContactRoleSummary.row(),
           SecondContactEmailSummary.row(),
           SecondContactNumberSummary.row(),
+          UseRegisteredAddressSummary.row(),
           ContactAddressSummary.row()
         ).flatten
       ).withCssClass("govuk-!-margin-bottom-9")

@@ -11,8 +11,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.AmlRegulatedActivityController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlRegulatedActivityController.onPageLoad())
+  s"GET ${routes.AmlRegulatedActivityController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlRegulatedActivityController.onPageLoad(NormalMode))
 
     "respond with 200 status and the Aml regulated HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -24,7 +24,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.AmlRegulatedActivityController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.AmlRegulatedActivityController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -34,8 +34,8 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.AmlRegulatedActivityController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlRegulatedActivityController.onSubmit())
+  s"POST ${routes.AmlRegulatedActivityController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlRegulatedActivityController.onSubmit(NormalMode))
 
     "save the selected AML regulated activity option then redirect to the AML supervisor page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -49,27 +49,34 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.AmlRegulatedActivityController.onSubmit()).withFormUrlEncodedBody(("value", "true"))
+        FakeRequest(routes.AmlRegulatedActivityController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", "true"))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.AmlSupervisorController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.AmlSupervisorController.onPageLoad(NormalMode).url)
     }
 
     "save the selected AML regulated activity option then redirect to the not liable page when the No option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration = random[Registration].copy(internalId = testInternalId)
 
       stubGetRegistration(registration)
 
-      val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
+      val updatedRegistration =
+        Registration
+          .empty(testInternalId)
+          .copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
 
       stubUpsertRegistration(updatedRegistration)
 
+      stubDeleteRegistration()
+
       val result = callRoute(
-        FakeRequest(routes.AmlRegulatedActivityController.onSubmit()).withFormUrlEncodedBody(("value", "false"))
+        FakeRequest(routes.AmlRegulatedActivityController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", "false"))
       )
 
       status(result) shouldBe SEE_OTHER

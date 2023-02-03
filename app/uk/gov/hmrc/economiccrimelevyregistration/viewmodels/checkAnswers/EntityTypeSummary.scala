@@ -18,6 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
@@ -34,9 +36,10 @@ object EntityTypeSummary {
         key = Key("checkYourAnswers.entityType.label"),
         value = value,
         actions = Seq(
-          ActionItemViewModel("site.change", "#TODO").withVisuallyHiddenText(
-            messages("checkYourAnswers.entityType.label")
-          )
+          ActionItemViewModel("site.change", routes.EntityTypeController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(
+              messages("checkYourAnswers.entityType.label")
+            )
         )
       )
     }

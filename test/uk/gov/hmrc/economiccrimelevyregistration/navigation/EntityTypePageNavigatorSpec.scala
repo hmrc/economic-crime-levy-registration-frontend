@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{SoleTrader, UkLimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.GrsCreateJourneyResponse
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
 import uk.gov.hmrc.http.HttpVerbs.GET
 
 import scala.concurrent.Future
@@ -46,40 +46,45 @@ class EntityTypePageNavigatorSpec extends SpecBase {
   )
 
   "nextPage" should {
-    "return a Call to the limited company GRS journey in NormalMode when the limited company option is selected" in forAll {
-      (registration: Registration, journeyUrl: String) =>
+    "return a Call to the limited company GRS journey irrespective of mode when the limited company option is selected" in forAll {
+      (registration: Registration, journeyUrl: String, mode: Mode) =>
         val updatedRegistration: Registration = registration.copy(entityType = Some(UkLimitedCompany))
 
-        when(mockIncorporatedEntityIdentificationFrontendConnector.createLimitedCompanyJourney()(any()))
-          .thenReturn(Future.successful(GrsCreateJourneyResponse(journeyUrl)))
-
-        await(pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
-    }
-
-    "return a Call to the sole trader GRS journey in NormalMode when the sole trader option is selected" in forAll {
-      (registration: Registration, journeyUrl: String) =>
-        val updatedRegistration: Registration = registration.copy(entityType = Some(SoleTrader))
-
-        when(mockSoleTraderIdentificationFrontendConnector.createSoleTraderJourney()(any()))
-          .thenReturn(Future.successful(GrsCreateJourneyResponse(journeyUrl)))
-
-        await(pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
-    }
-
-    "return a Call to the partnership GRS journey in NormalMode when a partnership option is selected" in forAll {
-      (registration: Registration, partnershipType: PartnershipType, journeyUrl: String) =>
-        val entityType: EntityType = partnershipType.entityType
-
-        val updatedRegistration: Registration = registration.copy(entityType = Some(entityType))
-
         when(
-          mockPartnershipIdentificationFrontendConnector.createPartnershipJourney(ArgumentMatchers.eq(entityType))(
+          mockIncorporatedEntityIdentificationFrontendConnector.createLimitedCompanyJourney(ArgumentMatchers.eq(mode))(
             any()
           )
         )
           .thenReturn(Future.successful(GrsCreateJourneyResponse(journeyUrl)))
 
-        await(pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
+        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
+    }
+
+    "return a Call to the sole trader GRS journey irrespective of mode when the sole trader option is selected" in forAll {
+      (registration: Registration, journeyUrl: String, mode: Mode) =>
+        val updatedRegistration: Registration = registration.copy(entityType = Some(SoleTrader))
+
+        when(mockSoleTraderIdentificationFrontendConnector.createSoleTraderJourney(ArgumentMatchers.eq(mode))(any()))
+          .thenReturn(Future.successful(GrsCreateJourneyResponse(journeyUrl)))
+
+        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
+    }
+
+    "return a Call to the partnership GRS journey irrespective of mode when a partnership option is selected" in forAll {
+      (registration: Registration, partnershipType: PartnershipType, journeyUrl: String, mode: Mode) =>
+        val entityType: EntityType = partnershipType.entityType
+
+        val updatedRegistration: Registration = registration.copy(entityType = Some(entityType))
+
+        when(
+          mockPartnershipIdentificationFrontendConnector
+            .createPartnershipJourney(ArgumentMatchers.eq(entityType), ArgumentMatchers.eq(mode))(
+              any()
+            )
+        )
+          .thenReturn(Future.successful(GrsCreateJourneyResponse(journeyUrl)))
+
+        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
     }
   }
 

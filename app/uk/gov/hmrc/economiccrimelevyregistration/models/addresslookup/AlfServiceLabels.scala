@@ -21,6 +21,7 @@ import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.Languages._
+import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 
 final case class AlfEnCyLabels(en: AlfLabels, cy: AlfLabels)
@@ -28,7 +29,9 @@ final case class AlfEnCyLabels(en: AlfLabels, cy: AlfLabels)
 object AlfEnCyLabels {
   def apply(appConfig: AppConfig)(implicit messagesApi: MessagesApi): AlfEnCyLabels = {
     def betaBanner(lang: Lang): String = new StandardBetaBanner()
-      .apply(appConfig.feedbackUrl(routes.IsUkAddressController.onPageLoad().url))(messagesApi.preferred(Seq(lang)))
+      .apply(appConfig.feedbackUrl(routes.IsUkAddressController.onPageLoad(NormalMode).url))(
+        messagesApi.preferred(Seq(lang))
+      )
       .content
       .asHtml
       .body

@@ -44,26 +44,26 @@ class GrsContinueController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController {
 
-  def continue(journeyId: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
+  def continue(mode: Mode, journeyId: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
     implicit request =>
       request.registration.entityType match {
         case Some(UkLimitedCompany) =>
           incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(incorporatedEntityJourneyData = Some(jd))
-              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration))
+              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, mode))
           }
 
         case Some(SoleTrader) =>
           soleTraderIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(soleTraderEntityJourneyData = Some(jd))
-              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration))
+              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, mode))
           }
 
         case Some(GeneralPartnership) | Some(ScottishPartnership) | Some(LimitedPartnership) |
             Some(ScottishLimitedPartnership) | Some(LimitedLiabilityPartnership) =>
           partnershipIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(partnershipEntityJourneyData = Some(jd))
-              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration))
+              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, mode))
           }
 
         case _ => throw new IllegalStateException("No valid entity type found in registration data")
@@ -86,7 +86,8 @@ class GrsContinueController @Inject() (
   private def handleGrsAndBvResult(
     identifiersMatch: Boolean,
     bvResult: Option[BusinessVerificationResult],
-    grsResult: GrsRegistrationResult
+    grsResult: GrsRegistrationResult,
+    mode: Mode
   )(implicit hc: HeaderCarrier): Future[Result] =
     (identifiersMatch, bvResult, grsResult.registrationStatus, grsResult.registeredBusinessPartnerId) match {
       case (false, _, _, _)                                  => Future.successful(Ok("Identifiers do not match"))
@@ -94,7 +95,11 @@ class GrsContinueController @Inject() (
         Future.successful(Ok("Failed business verification"))
       case (_, _, _, Some(businessPartnerId))                =>
         eclRegistrationConnector.getSubscriptionStatus(businessPartnerId).map {
-          case EclSubscriptionStatus(NotSubscribed)                        => Redirect(routes.BusinessSectorController.onPageLoad(NormalMode))
+          case EclSubscriptionStatus(NotSubscribed)                        =>
+            mode match {
+              case NormalMode => Redirect(routes.BusinessSectorController.onPageLoad(NormalMode))
+              case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad())
+            }
           case EclSubscriptionStatus(Subscribed(eclRegistrationReference)) =>
             Ok(s"Business is already subscribed to ECL with registration reference $eclRegistrationReference")
         }

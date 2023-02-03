@@ -22,6 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 
 import scala.concurrent.Future
 
@@ -32,7 +33,7 @@ class SoleTraderIdentificationFrontendConnectorSpec extends SpecBase {
 
   "createSoleTraderJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {
-      (grsCreateJourneyResponse: GrsCreateJourneyResponse) =>
+      (grsCreateJourneyResponse: GrsCreateJourneyResponse, mode: Mode) =>
         val expectedUrl = s"$apiUrl/sole-trader-journey"
 
         val expectedSoleTraderEntityCreateJourneyRequest: SoleTraderEntityCreateJourneyRequest = {
@@ -42,7 +43,8 @@ class SoleTraderIdentificationFrontendConnectorSpec extends SpecBase {
           )
 
           SoleTraderEntityCreateJourneyRequest(
-            continueUrl = "http://localhost:14000/register-for-the-economic-crime-levy/grs-continue",
+            continueUrl =
+              s"http://localhost:14000/register-for-the-economic-crime-levy/grs-continue/${mode.toString.toLowerCase}",
             businessVerificationCheck = false,
             optServiceName = Some(serviceNameLabels.en.optServiceName),
             deskProServiceId = "economic-crime-levy-registration-frontend",
@@ -61,7 +63,7 @@ class SoleTraderIdentificationFrontendConnectorSpec extends SpecBase {
         )
           .thenReturn(Future.successful(grsCreateJourneyResponse))
 
-        val result = await(connector.createSoleTraderJourney())
+        val result = await(connector.createSoleTraderJourney(mode))
 
         result shouldBe grsCreateJourneyResponse
 
@@ -79,8 +81,6 @@ class SoleTraderIdentificationFrontendConnectorSpec extends SpecBase {
   "getJourneyData" should {
     "return journey data for a given journey id" in forAll {
       (soleTraderEntityJourneyData: SoleTraderEntityJourneyData, journeyId: String) =>
-        println(soleTraderEntityJourneyData)
-
         val expectedUrl = s"$apiUrl/journey/$journeyId"
 
         when(

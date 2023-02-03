@@ -1,8 +1,8 @@
-GET         /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onPageLoad()
-POST        /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onSubmit()
+GET         /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onPageLoad(continueUrl)
+POST        /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onSubmit(continueUrl)
 
-GET         /stub-alf-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubAlfJourneyDataController.onPageLoad()
-POST        /stub-alf-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubAlfJourneyDataController.onSubmit()
+GET         /stub-alf-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubAlfJourneyDataController.onPageLoad(continueUrl)
+POST        /stub-alf-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubAlfJourneyDataController.onSubmit(continueUrl)
 
 GET         /clear-all                    uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.TestOnlyController.clearAllData()
 GET         /clear-current                uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.TestOnlyController.clearCurrentData()

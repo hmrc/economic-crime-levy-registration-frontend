@@ -23,7 +23,7 @@ appConfig: AppConfig
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(messages("registerWith.title", messages("registerWith.title.gc")))) {
+@layout(pageTitle = title(messages("registerWith.title", messages("registerWith.title.gc"))), showBackLink = false) {
 
 <h1 class="govuk-heading-l">@messages("registerWith.heading", messages("registerWith.heading.gc"))</h1>
 

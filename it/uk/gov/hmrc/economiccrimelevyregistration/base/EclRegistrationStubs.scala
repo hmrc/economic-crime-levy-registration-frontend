@@ -20,6 +20,13 @@ trait EclRegistrationStubs { self: WireMockStubs =>
         .withBody(Json.toJson(registration).toString())
     )
 
+  def stubDeleteRegistration(): StubMapping =
+    stub(
+      delete(urlEqualTo(s"/economic-crime-levy-registration/registrations/$testInternalId")),
+      aResponse()
+        .withStatus(NO_CONTENT)
+    )
+
   def stubUpsertRegistration(registration: Registration): StubMapping =
     stub(
       put(urlEqualTo("/economic-crime-levy-registration/registrations"))

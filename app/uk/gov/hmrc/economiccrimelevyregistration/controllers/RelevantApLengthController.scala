@@ -19,11 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantApLengthDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantApLengthFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantApLengthPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantApLengthView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -39,6 +40,7 @@ class RelevantApLengthController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: RelevantApLengthFormProvider,
   pageNavigator: RelevantApLengthPageNavigator,
+  dataCleanup: RelevantApLengthDataCleanup,
   view: RelevantApLengthView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -46,20 +48,22 @@ class RelevantApLengthController @Inject() (
 
   val form: Form[Int] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.relevantApLength)))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    Ok(view(form.prepare(request.registration.relevantApLength), mode))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         relevantApLength =>
           eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(relevantApLength = Some(relevantApLength)))
+            .upsertRegistration(
+              dataCleanup.cleanup(request.registration.copy(relevantApLength = Some(relevantApLength)))
+            )
             .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
+              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
             }
       )
   }

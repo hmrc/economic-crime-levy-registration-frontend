@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
 
@@ -51,7 +51,7 @@ class IsUkAddressControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new IsUkAddressController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck,
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
@@ -68,11 +68,11 @@ class IsUkAddressControllerSpec extends SpecBase {
         val updatedRegistration = registration.copy(contactAddressIsUk = None)
 
         new TestContext(updatedRegistration) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form)(
+          contentAsString(result) shouldBe view(form, NormalMode)(
             fakeRequest,
             messages
           ).toString
@@ -87,11 +87,12 @@ class IsUkAddressControllerSpec extends SpecBase {
         val updatedRegistration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
 
         new TestContext(updatedRegistration) {
-          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result)          shouldBe OK
           contentAsString(result) shouldBe view(
-            form.fill(contactAddressIsUk)
+            form.fill(contactAddressIsUk),
+            NormalMode
           )(
             fakeRequest,
             messages
@@ -111,7 +112,7 @@ class IsUkAddressControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", contactAddressIsUk.toString)))
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", contactAddressIsUk.toString)))
 
           status(result) shouldBe SEE_OTHER
 
@@ -127,12 +128,13 @@ class IsUkAddressControllerSpec extends SpecBase {
         val updatedRegistration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
 
         new TestContext(updatedRegistration) {
-          val result: Future[Result]        = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
+          val result: Future[Result]        =
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
           val formWithErrors: Form[Boolean] = form.bind(Map("value" -> ""))
 
           status(result) shouldBe BAD_REQUEST
 
-          contentAsString(result) shouldBe view(formWithErrors)(
+          contentAsString(result) shouldBe view(formWithErrors, NormalMode)(
             fakeRequest,
             messages
           ).toString

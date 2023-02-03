@@ -17,9 +17,9 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.{Call, RequestHeader}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclReturnsConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, EclReturnsConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
@@ -27,22 +27,35 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UkRevenuePageNavigator @Inject() (
+  eclRegistrationConnector: EclRegistrationConnector,
   eclReturnsConnector: EclReturnsConnector
-)(implicit ec: ExecutionContext)
-    extends AsyncPageNavigator
+)(implicit
+  ec: ExecutionContext
+) extends AsyncPageNavigator
     with FrontendHeaderCarrierProvider {
   override protected def navigateInNormalMode(registration: Registration)(implicit
     request: RequestHeader
-  ): Future[Call] =
+  ): Future[Call] = navigate(NormalMode, registration)
+
+  override protected def navigateInCheckMode(registration: Registration)(implicit
+    request: RequestHeader
+  ): Future[Call] = navigate(CheckMode, registration)
+
+  private def navigate(mode: Mode, registration: Registration)(implicit request: RequestHeader): Future[Call] =
     registration.relevantApRevenue match {
       case Some(revenue) =>
         val f: Int => Future[Call] = eclReturnsConnector
           .calculateLiability(_, revenue)
-          .map(liability =>
+          .flatMap(liability =>
             if (liability.amountDue > 0) {
-              routes.EntityTypeController.onPageLoad()
+              mode match {
+                case NormalMode => Future.successful(routes.EntityTypeController.onPageLoad(NormalMode))
+                case CheckMode  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
+              }
             } else {
-              routes.NotLiableController.onPageLoad()
+              eclRegistrationConnector
+                .deleteRegistration(registration.internalId)
+                .map(_ => routes.NotLiableController.onPageLoad())
             }
           )
 
@@ -51,13 +64,12 @@ class UkRevenuePageNavigator @Inject() (
           case Some(false) =>
             registration.relevantApLength match {
               case Some(relevantApLength) => f(relevantApLength)
-              case _                      => Future.successful(routes.StartController.onPageLoad())
+              case _                      => Future.successful(routes.JourneyRecoveryController.onPageLoad())
             }
-          case _           => Future.successful(routes.StartController.onPageLoad())
+          case _           => Future.successful(routes.JourneyRecoveryController.onPageLoad())
         }
-      case _             => Future.successful(routes.StartController.onPageLoad())
-    }
 
-  override protected def navigateInCheckMode(registration: Registration): Future[Call] = ???
+      case _ => Future.successful(routes.JourneyRecoveryController.onPageLoad())
+    }
 
 }

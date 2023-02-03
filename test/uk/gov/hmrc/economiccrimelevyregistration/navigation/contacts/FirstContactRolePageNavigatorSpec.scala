@@ -18,8 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 
 class FirstContactRolePageNavigatorSpec extends SpecBase {
 
@@ -35,7 +35,22 @@ class FirstContactRolePageNavigatorSpec extends SpecBase {
             )
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.FirstContactEmailController.onPageLoad()
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe contacts.routes.FirstContactEmailController
+          .onPageLoad(
+            NormalMode
+          )
+    }
+
+    "return a Call to the check your answers page in CheckMode" in forAll {
+      (registration: Registration, role: String) =>
+        val updatedRegistration: Registration =
+          registration.copy(contacts =
+            registration.contacts.copy(firstContactDetails =
+              registration.contacts.firstContactDetails.copy(role = Some(role))
+            )
+          )
+
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
   }
 

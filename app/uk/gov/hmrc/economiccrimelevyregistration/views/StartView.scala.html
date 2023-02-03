@@ -36,7 +36,7 @@
 
     @button(
         ButtonViewModel(messages("site.start"))
-                .asLink(AmlRegulatedActivityController.onPageLoad().url)
+                .asLink(AmlRegulatedActivityController.onPageLoad(NormalMode).url)
                 .asStartButton()
                 .withAttribute("id" -> "start")
                 .withCssClass("govuk-!-margin-top-2 govuk-!-margin-bottom-8")

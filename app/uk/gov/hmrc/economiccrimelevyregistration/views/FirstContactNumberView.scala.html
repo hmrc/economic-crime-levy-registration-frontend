@@ -25,7 +25,7 @@
 )
 
 
-@(form: Form[String], name: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[String], name: String, mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @labelHtml = {
     <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("firstContactNumber.heading", name))</h1>
@@ -33,7 +33,7 @@
 }
 
 @layout(pageTitle = titleWithForm(form, messages("firstContactNumber.title", name))) {
-    @formHelper(action = FirstContactNumberController.onSubmit()) {
+    @formHelper(action = FirstContactNumberController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }

@@ -48,20 +48,20 @@ class AmlSupervisorController @Inject() (
 
   val form: Form[AmlSupervisor] = formProvider(appConfig)
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.amlSupervisor)))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    Ok(view(form.prepare(request.registration.amlSupervisor), mode))
   }
 
-  def onSubmit: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         amlSupervisor =>
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(amlSupervisor = Some(amlSupervisor)))
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(NormalMode, updatedRegistration))
+            .flatMap { updatedRegistration =>
+              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
             }
       )
   }

@@ -45,7 +45,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new CheckYourAnswersController(
       messagesApi,
-      fakeAuthorisedActionWithEnrolmentCheck,
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       mcc,
@@ -88,10 +88,12 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             FirstContactRoleSummary.row(),
             FirstContactEmailSummary.row(),
             FirstContactNumberSummary.row(),
+            SecondContactSummary.row(),
             SecondContactNameSummary.row(),
             SecondContactRoleSummary.row(),
             SecondContactEmailSummary.row(),
             SecondContactNumberSummary.row(),
+            UseRegisteredAddressSummary.row(),
             ContactAddressSummary.row()
           ).flatten
         ).withCssClass("govuk-!-margin-bottom-9")
@@ -109,7 +111,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "redirect to the registration submitted page after submitting the registration and sending email successfully" in forAll {
       (createEclSubscriptionResponse: CreateEclSubscriptionResponse, registration: Registration) =>
         new TestContext(registration) {
-          when(mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq("test-internal-id"))(any()))
+          when(mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq(registration.internalId))(any()))
             .thenReturn(Future.successful(createEclSubscriptionResponse))
 
           when(

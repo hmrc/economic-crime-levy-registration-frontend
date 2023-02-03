@@ -10,8 +10,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.RelevantAp12MonthsController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.RelevantAp12MonthsController.onPageLoad())
+  s"GET ${routes.RelevantAp12MonthsController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.RelevantAp12MonthsController.onPageLoad(NormalMode))
 
     "respond with 200 status and the relevant AP 12 months view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -20,7 +20,7 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.RelevantAp12MonthsController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.RelevantAp12MonthsController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -28,8 +28,8 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.RelevantAp12MonthsController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.RelevantAp12MonthsController.onSubmit())
+  s"POST ${routes.RelevantAp12MonthsController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.RelevantAp12MonthsController.onSubmit(NormalMode))
 
     "save the selected option then redirect to the UK revenue page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -38,17 +38,18 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val updatedRegistration = registration.copy(relevantAp12Months = Some(true))
+      val updatedRegistration =
+        registration.copy(relevantAp12Months = Some(true), relevantApLength = None, relevantApRevenue = None)
 
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.RelevantAp12MonthsController.onSubmit()).withFormUrlEncodedBody(("value", "true"))
+        FakeRequest(routes.RelevantAp12MonthsController.onSubmit(NormalMode)).withFormUrlEncodedBody(("value", "true"))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.UkRevenueController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.UkRevenueController.onPageLoad(NormalMode).url)
     }
 
     "save the selected option then redirect to the relevant AP length page when the No option is selected" in {
@@ -58,17 +59,18 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val updatedRegistration = registration.copy(relevantAp12Months = Some(false))
+      val updatedRegistration =
+        registration.copy(relevantAp12Months = Some(false), relevantApLength = None, relevantApRevenue = None)
 
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.RelevantAp12MonthsController.onSubmit()).withFormUrlEncodedBody(("value", "false"))
+        FakeRequest(routes.RelevantAp12MonthsController.onSubmit(NormalMode)).withFormUrlEncodedBody(("value", "false"))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.RelevantApLengthController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.RelevantApLengthController.onPageLoad(NormalMode).url)
     }
   }
 }

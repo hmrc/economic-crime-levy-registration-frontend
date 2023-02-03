@@ -12,8 +12,10 @@ class SecondContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
 
   val emailMaxLength: Int = 160
 
-  s"GET ${contacts.routes.SecondContactEmailController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.SecondContactEmailController.onPageLoad())
+  s"GET ${contacts.routes.SecondContactEmailController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.SecondContactEmailController.onPageLoad(NormalMode)
+    )
 
     "respond with 200 status and the second contact email HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -29,7 +31,7 @@ class SecondContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
         )
       )
 
-      val result = callRoute(FakeRequest(contacts.routes.SecondContactEmailController.onPageLoad()))
+      val result = callRoute(FakeRequest(contacts.routes.SecondContactEmailController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -37,8 +39,10 @@ class SecondContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${contacts.routes.SecondContactEmailController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(contacts.routes.SecondContactEmailController.onSubmit())
+  s"POST ${contacts.routes.SecondContactEmailController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.SecondContactEmailController.onSubmit(NormalMode)
+    )
 
     "save the provided email address then redirect to the second contact telephone number page" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -57,12 +61,13 @@ class SecondContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(contacts.routes.SecondContactEmailController.onSubmit()).withFormUrlEncodedBody(("value", email))
+        FakeRequest(contacts.routes.SecondContactEmailController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", email))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(contacts.routes.SecondContactNumberController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(contacts.routes.SecondContactNumberController.onPageLoad(NormalMode).url)
     }
   }
 }
