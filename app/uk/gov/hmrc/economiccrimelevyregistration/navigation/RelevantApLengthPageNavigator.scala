@@ -18,19 +18,19 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
 class RelevantApLengthPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.relevantApLength match {
-      case Some(_) => routes.UkRevenueController.onPageLoad(NormalMode)
-      case _       => routes.JourneyRecoveryController.onPageLoad()
-    }
+    navigate(registration, NormalMode)
 
   override protected def navigateInCheckMode(registration: Registration): Call =
+    navigate(registration, CheckMode)
+
+  private def navigate(registration: Registration, mode: Mode): Call =
     registration.relevantApLength match {
-      case Some(_) => routes.UkRevenueController.onPageLoad(CheckMode)
+      case Some(_) => routes.UkRevenueController.onPageLoad(mode)
       case _       => routes.JourneyRecoveryController.onPageLoad()
     }
 
