@@ -29,7 +29,8 @@ class EnrolmentStoreProxyConnector @Inject() (appConfig: AppConfig, httpClient: 
   ec: ExecutionContext
 ) {
 
-  private val enrolmentStoreUrl: String = s"${appConfig.enrolmentStoreProxyBaseUrl}/enrolment-store"
+  private val enrolmentStoreUrl: String =
+    s"${appConfig.enrolmentStoreProxyBaseUrl}/enrolment-store-proxy/enrolment-store"
 
   def getEnrolmentsForGroup(groupId: String)(implicit hc: HeaderCarrier): Future[Option[GroupEnrolmentsResponse]] =
     httpClient.GET[Option[GroupEnrolmentsResponse]](
