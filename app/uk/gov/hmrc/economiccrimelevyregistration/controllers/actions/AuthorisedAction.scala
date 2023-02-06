@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
 import com.google.inject.{ImplementedBy, Inject}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
@@ -27,6 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EnrolmentStoreProxyService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.UserAlreadyEnrolled
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,38 +45,48 @@ trait AuthorisedActionWithoutEnrolmentCheck extends AuthorisedAction
 trait AuthorisedActionWithEnrolmentCheck extends AuthorisedAction
 
 class AuthorisedActionWithoutEnrolmentCheckImpl @Inject() (
+  cc: ControllerComponents,
   override val authConnector: AuthConnector,
   enrolmentStoreProxyService: EnrolmentStoreProxyService,
   config: AppConfig,
-  override val parser: BodyParsers.Default
+  override val parser: BodyParsers.Default,
+  userAlreadyEnrolledView: UserAlreadyEnrolled
 )(override implicit val executionContext: ExecutionContext)
-    extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
+    extends BaseAuthorisedAction(cc, authConnector, enrolmentStoreProxyService, config, parser, userAlreadyEnrolledView)
     with AuthorisedActionWithoutEnrolmentCheck {
   override val checkForEclEnrolment: Boolean = false
 }
 
 class AuthorisedActionWithEnrolmentCheckImpl @Inject() (
+  cc: ControllerComponents,
   override val authConnector: AuthConnector,
   enrolmentStoreProxyService: EnrolmentStoreProxyService,
   config: AppConfig,
-  override val parser: BodyParsers.Default
+  override val parser: BodyParsers.Default,
+  userAlreadyEnrolledView: UserAlreadyEnrolled
 )(override implicit val executionContext: ExecutionContext)
-    extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
-    with AuthorisedActionWithEnrolmentCheck {
+    extends BaseAuthorisedAction(cc, authConnector, enrolmentStoreProxyService, config, parser, userAlreadyEnrolledView)
+    with AuthorisedActionWithEnrolmentCheck
+    with I18nSupport {
   override val checkForEclEnrolment: Boolean = true
 }
 
 abstract class BaseAuthorisedAction @Inject() (
+  cc: ControllerComponents,
   override val authConnector: AuthConnector,
   enrolmentStoreProxyService: EnrolmentStoreProxyService,
   config: AppConfig,
-  val parser: BodyParsers.Default
+  val parser: BodyParsers.Default,
+  userAlreadyEnrolledView: UserAlreadyEnrolled
 )(implicit val executionContext: ExecutionContext)
     extends AuthorisedAction
     with FrontendHeaderCarrierProvider
-    with AuthorisedFunctions {
+    with AuthorisedFunctions
+    with I18nSupport {
 
   val checkForEclEnrolment: Boolean
+
+  override def messagesApi: MessagesApi = cc.messagesApi
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
     authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup and credentialRole) {
@@ -94,7 +106,16 @@ abstract class BaseAuthorisedAction @Inject() (
               case _         =>
                 if (checkForEclEnrolment) {
                   eclEnrolment match {
-                    case Some(_) => Future.successful(Ok("Already registered - user already has enrolment"))
+                    case Some(e) =>
+                      val eclRegistrationReference =
+                        e.getIdentifier(EclEnrolment.IdentifierKey)
+                          .getOrElseFail(
+                            s"Unable to retrieve ECL reference number from enrolment with key ${EclEnrolment.ServiceName} and identifier ${EclEnrolment.IdentifierKey}"
+                          )
+                          .value
+                      Future.successful(
+                        Ok(userAlreadyEnrolledView(eclRegistrationReference)(request, request2Messages(request)))
+                      )
                     case None    =>
                       enrolmentStoreProxyService
                         .groupHasEnrolment(groupId)(hc(request))

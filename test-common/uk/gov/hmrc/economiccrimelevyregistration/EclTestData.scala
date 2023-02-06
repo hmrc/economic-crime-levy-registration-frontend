@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.scalacheck.{Arbitrary, Gen}
-import uk.gov.hmrc.auth.core.{Enrolments, Enrolment => AuthEnrolment}
+import uk.gov.hmrc.auth.core.{EnrolmentIdentifier, Enrolments, Enrolment => AuthEnrolment}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -31,7 +31,7 @@ import java.time.{Instant, LocalDate}
 
 final case class PartnershipType(entityType: EntityType)
 
-final case class EnrolmentsWithEcl(enrolments: Enrolments)
+final case class EnrolmentsWithEcl(enrolments: Enrolments, eclReferenceNumber: String)
 
 final case class EnrolmentsWithoutEcl(enrolments: Enrolments)
 
@@ -77,10 +77,15 @@ trait EclTestData {
 
   implicit val arbEnrolmentsWithEcl: Arbitrary[EnrolmentsWithEcl] = Arbitrary {
     for {
-      enrolments  <- Arbitrary.arbitrary[Enrolments]
-      enrolment   <- Arbitrary.arbitrary[AuthEnrolment]
-      eclEnrolment = enrolment.copy(key = EclEnrolment.ServiceName)
-    } yield EnrolmentsWithEcl(enrolments.copy(enrolments.enrolments + eclEnrolment))
+      enrolments         <- Arbitrary.arbitrary[Enrolments]
+      enrolment          <- Arbitrary.arbitrary[AuthEnrolment]
+      eclReferenceNumber <- Arbitrary.arbitrary[String]
+      eclEnrolment        = enrolment.copy(
+                              key = EclEnrolment.ServiceName,
+                              identifiers =
+                                Seq(EnrolmentIdentifier(key = EclEnrolment.IdentifierKey, value = eclReferenceNumber))
+                            )
+    } yield EnrolmentsWithEcl(enrolments.copy(enrolments.enrolments + eclEnrolment), eclReferenceNumber)
   }
 
   implicit val arbEnrolmentsWithoutEcl: Arbitrary[EnrolmentsWithoutEcl] = Arbitrary {

@@ -295,6 +295,12 @@ submitted.provide.b4 = the details of the person in your organisation who is com
 submitted.return = You can {0} now or come back to do it later.
 submitted.return.link = <a href="{0}" class="govuk-link">submit a return</a>
 
+userHasEnrolment.title = You have already registered for the Economic Crime Levy
+userHasEnrolment.heading = You have already registered for the Economic Crime Levy
+userHasEnrolment.body.p1 = Your ECL reference number is {0}.
+userHasEnrolment.body.p2 = You can {0} if you are ready.
+userHasEnrolment.body.p2.link = <a href="{0}" class="govuk-link">submit a return</a>
+
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.
 feedback.link = <a href="{0}" class="govuk-link">Send us your feedback</a>

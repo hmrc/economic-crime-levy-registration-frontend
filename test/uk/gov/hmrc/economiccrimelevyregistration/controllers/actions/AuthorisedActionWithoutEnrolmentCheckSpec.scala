@@ -29,21 +29,25 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.services.EnrolmentStoreProxyService
 import uk.gov.hmrc.economiccrimelevyregistration.EnrolmentsWithEcl
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.UserAlreadyEnrolled
 
 import scala.concurrent.Future
 
 class AuthorisedActionWithoutEnrolmentCheckSpec extends SpecBase {
 
+  val userAlreadyEnrolledView: UserAlreadyEnrolled               = app.injector.instanceOf[UserAlreadyEnrolled]
   val defaultBodyParser: BodyParsers.Default                     = app.injector.instanceOf[BodyParsers.Default]
   val mockAuthConnector: AuthConnector                           = mock[AuthConnector]
   val mockEnrolmentStoreProxyService: EnrolmentStoreProxyService = mock[EnrolmentStoreProxyService]
 
   val authorisedAction =
     new AuthorisedActionWithoutEnrolmentCheckImpl(
+      mcc,
       mockAuthConnector,
       mockEnrolmentStoreProxyService,
       appConfig,
-      defaultBodyParser
+      defaultBodyParser,
+      userAlreadyEnrolledView
     )
 
   val testAction: Request[_] => Future[Result] = { _ =>

@@ -26,7 +26,7 @@ trait AuthorisedBehaviour {
         val result: Future[Result] = callRoute(FakeRequest(call))
 
         status(result)          shouldBe OK
-        contentAsString(result) shouldBe "Already registered - user already has enrolment"
+        contentAsString(result) should include("You have already registered for the Economic Crime Levy")
       }
 
       "go to the group already registered if the user does not have the ECL enrolment but the group does" in {

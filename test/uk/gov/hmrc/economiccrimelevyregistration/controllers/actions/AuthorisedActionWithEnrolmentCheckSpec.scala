@@ -28,22 +28,26 @@ import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.services.EnrolmentStoreProxyService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.UserAlreadyEnrolled
 import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, EnrolmentsWithoutEcl}
 
 import scala.concurrent.Future
 
 class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
 
+  val userAlreadyEnrolledView: UserAlreadyEnrolled               = app.injector.instanceOf[UserAlreadyEnrolled]
   val defaultBodyParser: BodyParsers.Default                     = app.injector.instanceOf[BodyParsers.Default]
   val mockAuthConnector: AuthConnector                           = mock[AuthConnector]
   val mockEnrolmentStoreProxyService: EnrolmentStoreProxyService = mock[EnrolmentStoreProxyService]
 
   val authorisedAction =
     new AuthorisedActionWithEnrolmentCheckImpl(
+      mcc,
       mockAuthConnector,
       mockEnrolmentStoreProxyService,
       appConfig,
-      defaultBodyParser
+      defaultBodyParser,
+      userAlreadyEnrolledView
     )
 
   val testAction: Request[_] => Future[Result] = { _ =>
@@ -104,7 +108,10 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
         status(result)          shouldBe OK
-        contentAsString(result) shouldBe "Already registered - user already has enrolment"
+        contentAsString(result) shouldBe userAlreadyEnrolledView(enrolmentsWithEcl.eclReferenceNumber)(
+          fakeRequest,
+          messages
+        ).toString
     }
 
     "redirect the user to the group already registered page if they do not have the ECL enrolment but the group does" in forAll {
