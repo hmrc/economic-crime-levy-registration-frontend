@@ -19,16 +19,16 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResponse
 import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 
 import scala.concurrent.Future
 
 class EnrolmentStoreProxyConnectorSpec extends SpecBase {
 
   val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new EnrolmentStoreProxyConnector(appConfig, mockHttpClient)
+  val connector                  = new EnrolmentStoreProxyConnectorImpl(appConfig, mockHttpClient)
   val enrolmentStoreUrl: String  = s"${appConfig.enrolmentStoreProxyBaseUrl}/enrolment-store-proxy/enrolment-store"
 
   "getEnrolmentsForGroup" should {

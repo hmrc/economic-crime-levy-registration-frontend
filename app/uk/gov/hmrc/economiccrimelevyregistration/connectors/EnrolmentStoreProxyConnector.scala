@@ -21,13 +21,16 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResp
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-class EnrolmentStoreProxyConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit
+trait EnrolmentStoreProxyConnector {
+  def getEnrolmentsForGroup(groupId: String)(implicit hc: HeaderCarrier): Future[Option[GroupEnrolmentsResponse]]
+}
+
+class EnrolmentStoreProxyConnectorImpl @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit
   ec: ExecutionContext
-) {
+) extends EnrolmentStoreProxyConnector {
 
   private val enrolmentStoreUrl: String =
     s"${appConfig.enrolmentStoreProxyBaseUrl}/enrolment-store-proxy/enrolment-store"

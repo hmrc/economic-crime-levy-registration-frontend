@@ -16,59 +16,39 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, EclReturnsConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-import scala.concurrent.Future
-
 class UkRevenuePageNavigatorSpec extends SpecBase {
 
-  val mockEclReturnsConnector: EclReturnsConnector           = mock[EclReturnsConnector]
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-
-  val pageNavigator = new UkRevenuePageNavigator(mockEclRegistrationConnector, mockEclReturnsConnector)
+  val pageNavigator = new UkRevenuePageNavigator
 
   "nextPage" should {
-    "return a Call to the entity type page in NormalMode when the amount due is more than 0" in forAll {
-      (registration: Registration, ukRevenue: Long, calculatedLiability: CalculatedLiability) =>
+    "return a Call to the entity type page in NormalMode when the revenue meets threshold flag is true" in forAll {
+      (registration: Registration, ukRevenue: Long) =>
         val updatedRegistration: Registration =
-          registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(ukRevenue))
+          registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(true))
 
-        when(mockEclReturnsConnector.calculateLiability(any(), any())(any()))
-          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = 1)))
-
-        await(pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)) shouldBe routes.EntityTypeController
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.EntityTypeController
           .onPageLoad(NormalMode)
     }
 
-    "return a Call to the check your answers page in CheckMode when the amount due is more than 0" in forAll {
-      (registration: Registration, ukRevenue: Long, calculatedLiability: CalculatedLiability) =>
+    "return a Call to the check your answers page in CheckMode when the revenue meets threshold flag is true" in forAll {
+      (registration: Registration, ukRevenue: Long) =>
         val updatedRegistration: Registration =
-          registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(ukRevenue))
+          registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(true))
 
-        when(mockEclReturnsConnector.calculateLiability(any(), any())(any()))
-          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = 1)))
-
-        await(
-          pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
-        ) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
 
-    "return a Call to the not liable page in either mode when the amount due is 0" in forAll {
-      (registration: Registration, ukRevenue: Long, calculatedLiability: CalculatedLiability, mode: Mode) =>
+    "return a Call to the not liable page in either mode when the revenue meets threshold flag is false" in forAll {
+      (registration: Registration, ukRevenue: Long, mode: Mode) =>
         val updatedRegistration: Registration =
-          registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(ukRevenue))
+          registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(false))
 
-        when(mockEclRegistrationConnector.deleteRegistration(any())(any())).thenReturn(Future.successful(()))
-
-        when(mockEclReturnsConnector.calculateLiability(any(), any())(any()))
-          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = 0)))
-
-        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe routes.NotLiableController
+        pageNavigator.nextPage(mode, updatedRegistration) shouldBe routes.NotLiableController
           .onPageLoad()
     }
   }

@@ -49,10 +49,11 @@ abstract class ISpecBase
   implicit def ec: ExecutionContext            = global
 
   val additionalAppConfig: Map[String, Any] = Map(
-    "metrics.enabled"         -> false,
-    "auditing.enabled"        -> false,
-    "features.grsStubEnabled" -> false,
-    "features.alfStubEnabled" -> false
+    "metrics.enabled"                         -> false,
+    "auditing.enabled"                        -> false,
+    "features.grsStubEnabled"                 -> false,
+    "features.alfStubEnabled"                 -> false,
+    "features.enrolmentStoreProxyStubEnabled" -> false
   ) ++ setWireMockPort(
     "auth",
     "economic-crime-levy-registration",
