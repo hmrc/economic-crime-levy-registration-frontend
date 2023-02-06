@@ -46,7 +46,11 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration.copy(relevantAp12Months = Some(true)))
 
-      val updatedRegistration = registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(ukRevenue))
+      val updatedRegistration = registration.copy(
+        relevantAp12Months = Some(true),
+        relevantApRevenue = Some(ukRevenue),
+        revenueMeetsThreshold = Some(true)
+      )
 
       stubUpsertRegistration(updatedRegistration)
       stubCalculateLiability(
@@ -72,11 +76,13 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration.copy(relevantAp12Months = Some(true)))
 
-      val updatedRegistration = registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(ukRevenue))
+      val updatedRegistration = registration.copy(
+        relevantAp12Months = Some(true),
+        relevantApRevenue = Some(ukRevenue),
+        revenueMeetsThreshold = Some(false)
+      )
 
       stubUpsertRegistration(updatedRegistration)
-
-      stubDeleteRegistration()
 
       stubCalculateLiability(
         CalculateLiabilityRequest(EclTaxYear.YearInDays, EclTaxYear.YearInDays, ukRevenue),

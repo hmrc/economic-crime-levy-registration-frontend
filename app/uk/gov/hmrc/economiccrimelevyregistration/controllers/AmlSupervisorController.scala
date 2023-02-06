@@ -60,8 +60,8 @@ class AmlSupervisorController @Inject() (
         amlSupervisor =>
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(amlSupervisor = Some(amlSupervisor)))
-            .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
+            .map { updatedRegistration =>
+              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
             }
       )
   }

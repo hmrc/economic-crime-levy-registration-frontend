@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import org.scalacheck.{Arbitrary, Gen}
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
@@ -29,6 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclReturnsService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 
 import scala.concurrent.Future
@@ -40,12 +41,11 @@ class UkRevenueControllerSpec extends SpecBase {
   val form: Form[Long]                    = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclReturnsService: EclReturnsService               = mock[EclReturnsService]
 
   val pageNavigator: UkRevenuePageNavigator =
-    new UkRevenuePageNavigator(mockEclRegistrationConnector, mock[EclReturnsConnector]) {
-      override protected def navigateInNormalMode(
-        registration: Registration
-      )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
+    new UkRevenuePageNavigator {
+      override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
     }
 
   val minRevenue = 0L
@@ -57,6 +57,7 @@ class UkRevenueControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
+      mockEclReturnsService,
       formProvider,
       pageNavigator,
       view
@@ -94,13 +95,21 @@ class UkRevenueControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the provided UK revenue then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      Gen.chooseNum[Long](minRevenue, maxRevenue)
-    ) { (registration: Registration, ukRevenue: Long) =>
+      Gen.chooseNum[Long](minRevenue, maxRevenue),
+      Arbitrary.arbitrary[Option[Boolean]]
+    ) { (registration: Registration, ukRevenue: Long, revenueMeetsThreshold: Option[Boolean]) =>
       new TestContext(registration) {
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue))
 
-        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+        when(mockEclReturnsService.checkIfRevenueMeetsThreshold(ArgumentMatchers.eq(updatedRegistration))(any()))
+          .thenReturn(Future.successful(revenueMeetsThreshold))
+
+        when(
+          mockEclRegistrationConnector.upsertRegistration(
+            ArgumentMatchers.eq(updatedRegistration.copy(revenueMeetsThreshold = revenueMeetsThreshold))
+          )(any())
+        )
           .thenReturn(Future.successful(updatedRegistration))
 
         val result: Future[Result] =

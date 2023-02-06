@@ -25,6 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclReturnsService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -37,6 +38,7 @@ class UkRevenueController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
+  eclReturnsService: EclReturnsService,
   formProvider: UkRevenueFormProvider,
   pageNavigator: UkRevenuePageNavigator,
   view: UkRevenueView
@@ -55,12 +57,17 @@ class UkRevenueController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-        revenue =>
-          eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(relevantApRevenue = Some(revenue)))
-            .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
-            }
+        revenue => {
+          val updatedRegistration = request.registration.copy(relevantApRevenue = Some(revenue))
+
+          eclReturnsService.checkIfRevenueMeetsThreshold(updatedRegistration).flatMap { revenueMeetsThreshold =>
+            eclRegistrationConnector
+              .upsertRegistration(updatedRegistration.copy(revenueMeetsThreshold = revenueMeetsThreshold))
+              .map { updatedRegistration =>
+                Redirect(pageNavigator.nextPage(mode, updatedRegistration))
+              }
+          }
+        }
       )
   }
 

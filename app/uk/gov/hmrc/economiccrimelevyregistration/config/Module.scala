@@ -35,8 +35,9 @@ class Module(environment: Environment, configuration: Configuration) extends Abs
 
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
 
-    val grsStubEnabled = configuration.get[Boolean]("features.grsStubEnabled")
-    val alfStubEnabled = configuration.get[Boolean]("features.alfStubEnabled")
+    val grsStubEnabled                 = configuration.get[Boolean]("features.grsStubEnabled")
+    val alfStubEnabled                 = configuration.get[Boolean]("features.alfStubEnabled")
+    val enrolmentStoreProxyStubEnabled = configuration.get[Boolean]("features.enrolmentStoreProxyStubEnabled")
 
     if (grsStubEnabled) {
       bind(classOf[IncorporatedEntityIdentificationFrontendConnector])
@@ -71,6 +72,16 @@ class Module(environment: Environment, configuration: Configuration) extends Abs
     } else {
       bind(classOf[AddressLookupFrontendConnector])
         .to(classOf[AddressLookupFrontendConnectorImpl])
+        .asEagerSingleton()
+    }
+
+    if (enrolmentStoreProxyStubEnabled) {
+      bind(classOf[EnrolmentStoreProxyConnector])
+        .to(classOf[StubEnrolmentStoreProxyConnector])
+        .asEagerSingleton()
+    } else {
+      bind(classOf[EnrolmentStoreProxyConnector])
+        .to(classOf[EnrolmentStoreProxyConnectorImpl])
         .asEagerSingleton()
     }
 

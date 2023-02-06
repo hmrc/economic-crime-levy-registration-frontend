@@ -72,8 +72,6 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubUpsertRegistration(updatedRegistration)
 
-      stubDeleteRegistration()
-
       val result = callRoute(
         FakeRequest(routes.AmlRegulatedActivityController.onSubmit(NormalMode))
           .withFormUrlEncodedBody(("value", "false"))

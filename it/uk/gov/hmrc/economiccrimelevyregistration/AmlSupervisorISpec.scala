@@ -78,8 +78,6 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubUpsertRegistration(updatedRegistration)
 
-      stubDeleteRegistration()
-
       val result = callRoute(
         FakeRequest(routes.AmlSupervisorController.onSubmit(NormalMode))
           .withFormUrlEncodedBody("value" -> GamblingCommission.toString)
@@ -103,8 +101,6 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       val updatedRegistration = registration.copy(amlSupervisor = Some(amlSupervisor))
 
       stubUpsertRegistration(updatedRegistration)
-
-      stubDeleteRegistration()
 
       val result = callRoute(
         FakeRequest(routes.AmlSupervisorController.onSubmit(NormalMode))

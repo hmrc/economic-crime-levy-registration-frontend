@@ -16,53 +16,44 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.{Call, RequestHeader}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisorType, NormalMode, Registration}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
-class AmlSupervisorPageNavigator @Inject() (eclRegistrationConnector: EclRegistrationConnector)(implicit
-  ec: ExecutionContext
-) extends AsyncPageNavigator
-    with FrontendHeaderCarrierProvider {
+class AmlSupervisorPageNavigator @Inject() () extends PageNavigator {
 
   override protected def navigateInNormalMode(
     registration: Registration
-  )(implicit request: RequestHeader): Future[Call] =
+  ): Call =
     registration.amlSupervisor match {
       case Some(amlSupervisor) =>
         amlSupervisor.supervisorType match {
-          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(registration.internalId, t)
-          case Hmrc | Other                                         => Future.successful(routes.RelevantAp12MonthsController.onPageLoad(NormalMode))
+          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t)
+          case Hmrc | Other                                         => routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
         }
-      case _                   => Future.successful(routes.JourneyRecoveryController.onPageLoad())
+      case _                   => routes.JourneyRecoveryController.onPageLoad()
     }
 
   override protected def navigateInCheckMode(
     registration: Registration
-  )(implicit request: RequestHeader): Future[Call] =
+  ): Call =
     registration.amlSupervisor match {
       case Some(amlSupervisor) =>
         amlSupervisor.supervisorType match {
-          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(registration.internalId, t)
-          case Hmrc | Other                                         => Future.successful(routes.CheckYourAnswersController.onPageLoad())
+          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t)
+          case Hmrc | Other                                         => routes.CheckYourAnswersController.onPageLoad()
         }
-      case _                   => Future.successful(routes.JourneyRecoveryController.onPageLoad())
+      case _                   => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  private def registerWithGcOrFca(internalId: String, amlSupervisorType: AmlSupervisorType)(implicit
-    request: RequestHeader
-  ): Future[Call] = eclRegistrationConnector.deleteRegistration(internalId).map { _ =>
+  private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType): Call =
     amlSupervisorType match {
       case GamblingCommission        => routes.RegisterWithGcController.onPageLoad()
       case FinancialConductAuthority => routes.RegisterWithFcaController.onPageLoad()
       case _                         => routes.JourneyRecoveryController.onPageLoad()
     }
-  }
 
 }

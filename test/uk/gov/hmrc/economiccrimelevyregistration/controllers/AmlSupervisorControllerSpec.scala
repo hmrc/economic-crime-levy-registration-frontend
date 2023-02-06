@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
@@ -42,10 +42,8 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator(mockEclRegistrationConnector) {
-    override protected def navigateInNormalMode(registration: Registration)(implicit
-      request: RequestHeader
-    ): Future[Call] = Future.successful(onwardRoute)
+  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator {
+    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
   }
 
   implicit val arbAmlSupervisor: Arbitrary[AmlSupervisor] = arbAmlSupervisor(appConfig)
