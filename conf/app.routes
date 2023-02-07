@@ -112,7 +112,9 @@ POST        /check-your-answers                                               uk
 
 GET         /registration-submitted                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.RegistrationSubmittedController.onPageLoad()
 
-GET         /answers-are-not-valid                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.JourneyRecoveryController.onPageLoad()
+GET         /answers-are-not-valid                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.answersAreInvalid()
+
+GET         /already-registered-for-economic-crime-levy                       uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.userAlreadyEnrolled()
 
 GET         /account/sign-out-survey                                          uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
 GET         /account/sign-out                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()

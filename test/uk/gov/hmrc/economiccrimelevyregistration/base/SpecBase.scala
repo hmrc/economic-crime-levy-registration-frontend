@@ -60,11 +60,11 @@ trait SpecBase
   val messages: Messages                               = messagesApi.preferred(fakeRequest)
   val bodyParsers: PlayBodyParsers                     = app.injector.instanceOf[PlayBodyParsers]
 
-  def fakeAuthorisedActionWithEnrolmentCheck(internalId: String)    =
+  def fakeAuthorisedActionWithEnrolmentCheck(internalId: String)                                                     =
     new FakeAuthorisedActionWithEnrolmentCheck(internalId, bodyParsers)
-  def fakeAuthorisedActionWithoutEnrolmentCheck(internalId: String) =
-    new FakeAuthorisedActionWithoutEnrolmentCheck(internalId, bodyParsers)
-  def fakeDataRetrievalAction(data: Registration)                   = new FakeDataRetrievalAction(data)
+  def fakeAuthorisedActionWithoutEnrolmentCheck(internalId: String, eclRegistrationReference: Option[String] = None) =
+    new FakeAuthorisedActionWithoutEnrolmentCheck(eclRegistrationReference, internalId, bodyParsers)
+  def fakeDataRetrievalAction(data: Registration)                                                                    = new FakeDataRetrievalAction(data)
 
   def onwardRoute: Call = Call(GET, "/foo")
 

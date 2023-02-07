@@ -30,13 +30,13 @@ class SecondContactNumberPageNavigator extends PageNavigator {
           case Some(_) => routes.ConfirmContactAddressController.onPageLoad(NormalMode)
           case _       => routes.IsUkAddressController.onPageLoad(NormalMode)
         }
-      case _       => routes.JourneyRecoveryController.onPageLoad()
+      case _       => routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call =
     registration.contacts.secondContactDetails match {
       case ContactDetails(Some(_), Some(_), Some(_), Some(_)) => routes.CheckYourAnswersController.onPageLoad()
-      case _                                                  => routes.JourneyRecoveryController.onPageLoad()
+      case _                                                  => routes.NotableErrorController.answersAreInvalid()
     }
 
 }

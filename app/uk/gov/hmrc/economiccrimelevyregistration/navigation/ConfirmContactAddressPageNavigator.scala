@@ -47,7 +47,7 @@ class ConfirmContactAddressPageNavigator @Inject() (eclRegistrationConnector: Ec
           .upsertRegistration(registration = registration.copy(contactAddress = registration.grsAddressToEclAddress))
           .map(_ => routes.CheckYourAnswersController.onPageLoad())
       case Some(false) => Future.successful(routes.IsUkAddressController.onPageLoad(mode))
-      case _           => Future.successful(routes.JourneyRecoveryController.onPageLoad())
+      case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
 }

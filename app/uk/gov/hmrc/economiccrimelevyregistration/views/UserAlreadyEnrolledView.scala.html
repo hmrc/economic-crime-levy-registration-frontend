@@ -23,12 +23,12 @@ appConfig: AppConfig
 
 @(eclReferenceNumber: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(messages("userHasEnrolment.title"))) {
+@layout(pageTitle = title(messages("userAlreadyEnrolled.title"))) {
 
-<h1 class="govuk-heading-l">@messages("userHasEnrolment.heading")</h1>
+<h1 class="govuk-heading-l">@messages("userAlreadyEnrolled.heading")</h1>
 
-<p class="govuk-body">@messages("userHasEnrolment.body.p1", eclReferenceNumber)</p>
+<p class="govuk-body">@messages("userAlreadyEnrolled.body.p1", eclReferenceNumber)</p>
 
-<p class="govuk-body">@Html(messages("userHasEnrolment.body.p2", messages("userHasEnrolment.body.p2.link", appConfig.submitReturnUrl)))</p>
+<p class="govuk-body">@Html(messages("userAlreadyEnrolled.body.p2", messages("userAlreadyEnrolled.body.p2.link", appConfig.submitReturnUrl)))</p>
 
 }

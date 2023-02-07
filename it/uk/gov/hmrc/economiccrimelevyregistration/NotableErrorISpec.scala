@@ -24,22 +24,35 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-class JourneyRecoveryISpec extends ISpecBase with AuthorisedBehaviour {
+class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.JourneyRecoveryController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.JourneyRecoveryController.onPageLoad())
+  s"GET ${routes.NotableErrorController.answersAreInvalid().url}"   should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.NotableErrorController.answersAreInvalid())
 
-    "respond with 200 status and the start HTML view" in {
+    "respond with 200 status and the answers are invalid HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.JourneyRecoveryController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.NotableErrorController.answersAreInvalid()))
 
       status(result) shouldBe OK
       html(result)     should include("The answers you provided are not valid")
+    }
+  }
+
+  s"GET ${routes.NotableErrorController.userAlreadyEnrolled().url}" should {
+    behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.userAlreadyEnrolled())
+
+    "respond with 200 status and the user already enrolled HTML view" in {
+      stubAuthorisedWithEclEnrolment()
+
+      val result = callRoute(FakeRequest(routes.NotableErrorController.userAlreadyEnrolled()))
+
+      status(result) shouldBe OK
+      html(result)     should include("You have already registered for the Economic Crime Levy")
     }
   }
 

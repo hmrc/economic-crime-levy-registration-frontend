@@ -28,7 +28,7 @@ class FakeAuthorisedActionWithEnrolmentCheck @Inject() (internalId: String, body
   override def parser: BodyParser[AnyContent] = bodyParsers.defaultBodyParser
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
-    block(AuthorisedRequest(request, internalId, "test-group-id"))
+    block(AuthorisedRequest(request, internalId, "test-group-id", None))
 
   override protected def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 

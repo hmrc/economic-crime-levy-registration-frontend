@@ -26,13 +26,13 @@ class FirstContactNumberPageNavigator extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.contacts.firstContactDetails.telephoneNumber match {
       case Some(_) => contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)
-      case _       => routes.JourneyRecoveryController.onPageLoad()
+      case _       => routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call =
     registration.contacts.firstContactDetails.telephoneNumber match {
       case Some(_) => routes.CheckYourAnswersController.onPageLoad()
-      case _       => routes.JourneyRecoveryController.onPageLoad()
+      case _       => routes.NotableErrorController.answersAreInvalid()
     }
 
 }

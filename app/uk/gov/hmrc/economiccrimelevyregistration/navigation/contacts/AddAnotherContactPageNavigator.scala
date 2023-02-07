@@ -31,7 +31,7 @@ class AddAnotherContactPageNavigator extends PageNavigator {
           case Some(_) => routes.ConfirmContactAddressController.onPageLoad(NormalMode)
           case _       => routes.IsUkAddressController.onPageLoad(NormalMode)
         }
-      case _           => routes.JourneyRecoveryController.onPageLoad()
+      case _           => routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call =
@@ -42,7 +42,7 @@ class AddAnotherContactPageNavigator extends PageNavigator {
           case _                                                  => contacts.routes.SecondContactNameController.onPageLoad(CheckMode)
         }
       case Some(false) => routes.CheckYourAnswersController.onPageLoad()
-      case _           => routes.JourneyRecoveryController.onPageLoad()
+      case _           => routes.NotableErrorController.answersAreInvalid()
     }
 
 }

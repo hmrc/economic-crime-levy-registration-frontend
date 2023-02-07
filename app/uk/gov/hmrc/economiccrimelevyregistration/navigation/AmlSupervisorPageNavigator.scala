@@ -34,7 +34,7 @@ class AmlSupervisorPageNavigator @Inject() () extends PageNavigator {
           case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t)
           case Hmrc | Other                                         => routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
         }
-      case _                   => routes.JourneyRecoveryController.onPageLoad()
+      case _                   => routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(
@@ -46,14 +46,14 @@ class AmlSupervisorPageNavigator @Inject() () extends PageNavigator {
           case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t)
           case Hmrc | Other                                         => routes.CheckYourAnswersController.onPageLoad()
         }
-      case _                   => routes.JourneyRecoveryController.onPageLoad()
+      case _                   => routes.NotableErrorController.answersAreInvalid()
     }
 
   private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType): Call =
     amlSupervisorType match {
       case GamblingCommission        => routes.RegisterWithGcController.onPageLoad()
       case FinancialConductAuthority => routes.RegisterWithFcaController.onPageLoad()
-      case _                         => routes.JourneyRecoveryController.onPageLoad()
+      case _                         => routes.NotableErrorController.answersAreInvalid()
     }
 
 }

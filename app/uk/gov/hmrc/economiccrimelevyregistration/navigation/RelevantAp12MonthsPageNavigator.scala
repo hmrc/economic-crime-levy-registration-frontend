@@ -32,7 +32,7 @@ class RelevantAp12MonthsPageNavigator extends PageNavigator {
     registration.relevantAp12Months match {
       case Some(true)  => routes.UkRevenueController.onPageLoad(mode)
       case Some(false) => routes.RelevantApLengthController.onPageLoad(mode)
-      case _           => routes.JourneyRecoveryController.onPageLoad()
+      case _           => routes.NotableErrorController.answersAreInvalid()
     }
 
 }
