@@ -16,25 +16,17 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 
-import play.api.i18n.MessagesApi
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.PartnershipIdentificationFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
-import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.utils.Base64Utils
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.Future
 
-class StubPartnershipIdentificationFrontendConnector @Inject() (
-  appConfig: AppConfig,
-  httpClient: HttpClient
-)(implicit
-  val messagesApi: MessagesApi
-) extends PartnershipIdentificationFrontendConnector
-    with GrsStubData[PartnershipEntityJourneyData] {
+class StubPartnershipIdentificationFrontendConnector @Inject() () extends PartnershipIdentificationFrontendConnector {
 
   override def createPartnershipJourney(partnershipType: EntityType, mode: Mode)(implicit
     hc: HeaderCarrier
@@ -42,32 +34,11 @@ class StubPartnershipIdentificationFrontendConnector @Inject() (
     Future.successful(
       GrsCreateJourneyResponse(
         journeyStartUrl =
-          s"/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}"
+          s"/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}&entityType=${partnershipType.toString}"
       )
     )
 
   override def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[PartnershipEntityJourneyData] =
-    handleJourneyId(journeyId)
+    Future.successful(Json.parse(Base64Utils.base64UrlDecode(journeyId)).as[PartnershipEntityJourneyData])
 
-  override def buildJourneyData(
-    identifiersMatch: Boolean,
-    registrationStatus: RegistrationStatus,
-    verificationStatus: Option[VerificationStatus] = None,
-    entityType: EntityType,
-    businessPartnerId: String
-  ): Future[PartnershipEntityJourneyData] =
-    Future.successful(
-      PartnershipEntityJourneyData(
-        companyProfile = entityType match {
-          case GeneralPartnership | ScottishPartnership => None
-          case _                                        =>
-            Some(companyProfile)
-        },
-        sautr = Some("1234567890"),
-        postcode = Some("AA11AA"),
-        identifiersMatch = identifiersMatch,
-        businessVerification = verificationStatus.map(BusinessVerificationResult(_)),
-        registration = registrationResult(registrationStatus, businessPartnerId)
-      )
-    )
 }

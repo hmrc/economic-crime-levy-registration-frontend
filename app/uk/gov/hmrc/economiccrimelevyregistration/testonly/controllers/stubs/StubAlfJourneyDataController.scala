@@ -24,10 +24,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.{AlfAddress, AlfAddressData, AlfCountry}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.forms.AlfStubFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.models.AlfStubFormData
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.utils.Base64Utils
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.views.html.StubAlfJourneyDataView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
-import java.util.Base64
 import javax.inject.{Inject, Singleton}
 
 @Singleton
@@ -64,17 +64,11 @@ class StubAlfJourneyDataController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => BadRequest(view(formWithErrors, continueUrl)),
-        alfStubFormData => {
-          val base64encodedAddressJson = Base64.getEncoder
-            .encodeToString(alfStubFormData.addressJson.getBytes)
-            .replace("+", ".")
-            .replace("/", "_")
-            .replace("=", "-")
-
+        alfStubFormData =>
           Redirect(
-            s"/register-for-the-economic-crime-levy/address-lookup-continue/$continueUrl?id=$base64encodedAddressJson"
+            s"/register-for-the-economic-crime-levy/address-lookup-continue/$continueUrl?id=${Base64Utils
+              .base64UrlEncode(alfStubFormData.addressJson)}"
           )
-        }
       )
   }
 

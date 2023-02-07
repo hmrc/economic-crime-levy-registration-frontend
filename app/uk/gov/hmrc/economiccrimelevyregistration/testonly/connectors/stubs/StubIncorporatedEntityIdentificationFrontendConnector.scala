@@ -16,50 +16,29 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 
-import play.api.i18n.MessagesApi
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.IncorporatedEntityIdentificationFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, GrsCreateJourneyResponse, IncorporatedEntityJourneyData, RegistrationStatus, VerificationStatus}
-import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UkLimitedCompany
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, IncorporatedEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.utils.Base64Utils
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.Future
 
-class StubIncorporatedEntityIdentificationFrontendConnector @Inject() (
-  appConfig: AppConfig,
-  httpClient: HttpClient
-)(implicit
-  val messagesApi: MessagesApi
-) extends IncorporatedEntityIdentificationFrontendConnector
-    with GrsStubData[IncorporatedEntityJourneyData] {
+class StubIncorporatedEntityIdentificationFrontendConnector @Inject() ()
+    extends IncorporatedEntityIdentificationFrontendConnector {
 
   override def createLimitedCompanyJourney(mode: Mode)(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] =
     Future.successful(
       GrsCreateJourneyResponse(
         journeyStartUrl =
-          s"/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}"
+          s"/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}&entityType=${UkLimitedCompany.toString}"
       )
     )
 
   override def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData] =
-    handleJourneyId(journeyId)
+    Future.successful(Json.parse(Base64Utils.base64UrlDecode(journeyId)).as[IncorporatedEntityJourneyData])
 
-  override def buildJourneyData(
-    identifiersMatch: Boolean,
-    registrationStatus: RegistrationStatus,
-    verificationStatus: Option[VerificationStatus] = None,
-    entityType: EntityType,
-    businessPartnerId: String
-  ): Future[IncorporatedEntityJourneyData] =
-    Future.successful(
-      IncorporatedEntityJourneyData(
-        companyProfile = companyProfile,
-        ctutr = "1234567890",
-        identifiersMatch = identifiersMatch,
-        businessVerification = verificationStatus.map(BusinessVerificationResult(_)),
-        registration = registrationResult(registrationStatus, businessPartnerId)
-      )
-    )
 }

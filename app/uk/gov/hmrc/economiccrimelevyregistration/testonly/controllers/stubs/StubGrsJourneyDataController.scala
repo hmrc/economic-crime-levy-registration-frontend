@@ -18,10 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs
 
 import play.api.data.Form
 import play.api.i18n.I18nSupport
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.forms.GrsStubFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.models.GrsStubFormData
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.utils.Base64Utils
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.views.html.StubGrsJourneyDataView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -35,23 +39,44 @@ class StubGrsJourneyDataController @Inject() (
   grsStubFormProvider: GrsStubFormProvider,
   view: StubGrsJourneyDataView
 ) extends FrontendBaseController
+    with GrsStubData
     with I18nSupport {
 
   val form: Form[GrsStubFormData] = grsStubFormProvider()
 
-  def onPageLoad(continueUrl: String): Action[AnyContent] = Action { implicit request =>
-    Ok(view(form.fill(GrsStubFormData("0", "X00000000000001")), continueUrl))
+  def onPageLoad(continueUrl: String, entityType: String): Action[AnyContent] = Action { implicit request =>
+    val e: EntityType = EntityType.enumerable.value(entityType).get
+
+    Ok(
+      view(
+        form.fill(GrsStubFormData(Json.prettyPrint(constructDefaultGrsStubFormData(e)))),
+        registrationFailedPartyTypeMismatchJson,
+        registrationNotCalledIdentifierMismatchJson,
+        registrationNotCalledBvFailedJson,
+        continueUrl
+      )
+    )
   }
 
   def onSubmit(continueUrl: String): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => BadRequest(view(formWithErrors, continueUrl)),
+        formWithErrors =>
+          BadRequest(
+            view(
+              formWithErrors,
+              registrationFailedPartyTypeMismatchJson,
+              registrationNotCalledIdentifierMismatchJson,
+              registrationNotCalledBvFailedJson,
+              continueUrl
+            )
+          ),
         grsStubFormData =>
           Redirect(
             s"/register-for-the-economic-crime-levy/grs-continue/" +
-              s"$continueUrl?journeyId=${grsStubFormData.journeyId}-${request.registration.entityType.get.toString}-${grsStubFormData.businessPartnerId}"
+              s"$continueUrl?journeyId=${Base64Utils
+                .base64UrlEncode(grsStubFormData.grsJourneyDataJson)}"
           )
       )
   }

@@ -1,4 +1,4 @@
-GET         /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onPageLoad(continueUrl)
+GET         /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onPageLoad(continueUrl, entityType)
 POST        /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onSubmit(continueUrl)
 
 GET         /stub-alf-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubAlfJourneyDataController.onPageLoad(continueUrl)
