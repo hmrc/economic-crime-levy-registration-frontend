@@ -67,7 +67,7 @@ class EntityTypePageNavigator @Inject() (
 
           case Other => ???
         }
-      case _                => Future.successful(routes.JourneyRecoveryController.onPageLoad())
+      case _                => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
 }

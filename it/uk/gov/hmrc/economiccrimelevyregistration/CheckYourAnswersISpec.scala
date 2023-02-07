@@ -46,7 +46,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.JourneyRecoveryController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.NotableErrorController.answersAreInvalid().url)
     }
   }
 

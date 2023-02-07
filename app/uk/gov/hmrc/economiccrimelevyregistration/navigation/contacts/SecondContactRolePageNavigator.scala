@@ -26,7 +26,7 @@ class SecondContactRolePageNavigator extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.contacts.secondContactDetails.role match {
       case Some(_) => contacts.routes.SecondContactEmailController.onPageLoad(NormalMode)
-      case _       => routes.JourneyRecoveryController.onPageLoad()
+      case _       => routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call =
@@ -36,7 +36,7 @@ class SecondContactRolePageNavigator extends PageNavigator {
           case ContactDetails(Some(_), Some(_), Some(_), Some(_)) => routes.CheckYourAnswersController.onPageLoad()
           case _                                                  => contacts.routes.SecondContactEmailController.onPageLoad(CheckMode)
         }
-      case _       => routes.JourneyRecoveryController.onPageLoad()
+      case _       => routes.NotableErrorController.answersAreInvalid()
     }
 
 }

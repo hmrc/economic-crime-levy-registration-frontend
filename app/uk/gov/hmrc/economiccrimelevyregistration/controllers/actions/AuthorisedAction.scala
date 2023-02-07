@@ -24,6 +24,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EnrolmentStoreProxyService
@@ -84,7 +85,9 @@ abstract class BaseAuthorisedAction @Inject() (
         val affinityGroup: AffinityGroup   = optAffinityGroup.getOrElseFail("Unable to retrieve affinityGroup")
         val credentialRole: CredentialRole = optCredentialRole.getOrElseFail("Unable to retrieve credentialRole")
 
-        val eclEnrolment: Option[Enrolment] = enrolments.enrolments.find(_.key == EclEnrolment.ServiceName)
+        val eclEnrolment: Option[Enrolment]          = enrolments.enrolments.find(_.key == EclEnrolment.ServiceName)
+        val eclRegistrationReference: Option[String] =
+          eclEnrolment.flatMap(_.getIdentifier(EclEnrolment.IdentifierKey).map(_.value))
 
         affinityGroup match {
           case Agent => Future.successful(Ok("Agent account not supported - must be an organisation or individual"))
@@ -94,18 +97,18 @@ abstract class BaseAuthorisedAction @Inject() (
               case _         =>
                 if (checkForEclEnrolment) {
                   eclEnrolment match {
-                    case Some(_) => Future.successful(Ok("Already registered - user already has enrolment"))
+                    case Some(_) => Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
                     case None    =>
                       enrolmentStoreProxyService
                         .groupHasEnrolment(groupId)(hc(request))
                         .flatMap {
                           case true  =>
                             Future.successful(Ok("Group already has the enrolment - assign the enrolment to the user"))
-                          case false => block(AuthorisedRequest(request, internalId, groupId))
+                          case false => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
                         }
                   }
                 } else {
-                  block(AuthorisedRequest(request, internalId, groupId))
+                  block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
                 }
             }
         }

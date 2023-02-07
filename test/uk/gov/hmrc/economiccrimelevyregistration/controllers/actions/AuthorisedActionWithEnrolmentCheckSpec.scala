@@ -26,6 +26,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.services.EnrolmentStoreProxyService
 import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, EnrolmentsWithoutEcl}
@@ -103,8 +104,8 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
-        status(result)          shouldBe OK
-        contentAsString(result) shouldBe "Already registered - user already has enrolment"
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.NotableErrorController.userAlreadyEnrolled().url
     }
 
     "redirect the user to the group already registered page if they do not have the ECL enrolment but the group does" in forAll {

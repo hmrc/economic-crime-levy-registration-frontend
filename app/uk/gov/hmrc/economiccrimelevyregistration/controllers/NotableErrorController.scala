@@ -18,23 +18,35 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.JourneyRecoveryView
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, AuthorisedActionWithoutEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AnswersAreInvalidView, UserAlreadyEnrolledView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class JourneyRecoveryController @Inject() (
+class NotableErrorController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  authorise: AuthorisedActionWithEnrolmentCheck,
+  authoriseWithoutEnrolmentCheck: AuthorisedActionWithoutEnrolmentCheck,
+  authoriseWithEnrolmentCheck: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  view: JourneyRecoveryView
+  userAlreadyEnrolledView: UserAlreadyEnrolledView,
+  answersAreInvalidView: AnswersAreInvalidView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view())
+  def answersAreInvalid: Action[AnyContent] = (authoriseWithEnrolmentCheck andThen getRegistrationData) {
+    implicit request =>
+      Ok(answersAreInvalidView())
   }
 
+  def userAlreadyEnrolled: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
+    Ok(
+      userAlreadyEnrolledView(
+        request.eclRegistrationReference.getOrElse(
+          throw new IllegalStateException("ECL registration reference not found in request")
+        )
+      )
+    )
+  }
 }

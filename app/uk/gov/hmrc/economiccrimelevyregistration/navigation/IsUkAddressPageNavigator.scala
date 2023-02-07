@@ -46,7 +46,7 @@ class IsUkAddressPageNavigator @Inject() (
     registration.contactAddressIsUk match {
       case Some(ukMode) =>
         addressLookupFrontendConnector.initJourney(ukMode, mode).map(journeyUrl => Call(GET, journeyUrl))
-      case _            => Future.successful(routes.JourneyRecoveryController.onPageLoad())
+      case _            => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
 }

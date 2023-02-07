@@ -37,9 +37,9 @@ class UkRevenuePageNavigator @Inject() () extends PageNavigator {
               case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
             }
           case Some(false) => routes.NotLiableController.onPageLoad()
-          case _           => routes.JourneyRecoveryController.onPageLoad()
+          case _           => routes.NotableErrorController.answersAreInvalid()
         }
-      case _       => routes.JourneyRecoveryController.onPageLoad()
+      case _       => routes.NotableErrorController.answersAreInvalid()
     }
 
 }

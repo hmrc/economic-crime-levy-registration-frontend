@@ -33,7 +33,7 @@ class ValidatedRegistrationActionImpl @Inject() (eclRegistrationConnector: EclRe
 
   override def filter[A](request: RegistrationDataRequest[A]): Future[Option[Result]] =
     eclRegistrationConnector.getRegistrationValidationErrors(request.internalId)(hc(request)).map {
-      case Some(_) => Some(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+      case Some(_) => Some(Redirect(routes.NotableErrorController.answersAreInvalid()))
       case None    => None
     }
 }

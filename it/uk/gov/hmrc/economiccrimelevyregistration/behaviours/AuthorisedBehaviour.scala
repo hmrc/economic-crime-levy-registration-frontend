@@ -3,6 +3,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.behaviours
 import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
 import scala.concurrent.Future
 
@@ -25,8 +26,8 @@ trait AuthorisedBehaviour {
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
-        status(result)          shouldBe OK
-        contentAsString(result) shouldBe "Already registered - user already has enrolment"
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.NotableErrorController.userAlreadyEnrolled().url
       }
 
       "go to the group already registered if the user does not have the ECL enrolment but the group does" in {

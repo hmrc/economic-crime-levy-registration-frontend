@@ -31,7 +31,7 @@ class RelevantApLengthPageNavigator extends PageNavigator {
   private def navigate(registration: Registration, mode: Mode): Call =
     registration.relevantApLength match {
       case Some(_) => routes.UkRevenueController.onPageLoad(mode)
-      case _       => routes.JourneyRecoveryController.onPageLoad()
+      case _       => routes.NotableErrorController.answersAreInvalid()
     }
 
 }

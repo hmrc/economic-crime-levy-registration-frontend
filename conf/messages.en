@@ -36,12 +36,12 @@ error.date.invalid = The date entered must be a real date
 error.required = Please enter a value
 error.summary.title = There is a problem
 
-journeyRecovery.title = The answers you provided are not valid
-journeyRecovery.heading = The answers you provided are not valid
-journeyRecovery.p1 = The answers you provided are not valid or are incomplete.
-journeyRecovery.p2 = This might have happened because you bookmarked a URL in the journey and tried to come back to it after 30 days.
-journeyRecovery.p3 = You will need to submit your answers again.
-journeyRecovery.button = Register for the Economic Crime Levy
+answersAreInvalid.title = The answers you provided are not valid
+answersAreInvalid.heading = The answers you provided are not valid
+answersAreInvalid.p1 = The answers you provided are not valid or are incomplete.
+answersAreInvalid.p2 = This might have happened because you bookmarked a URL in the journey and tried to come back to it after 30 days.
+answersAreInvalid.p3 = You will need to submit your answers again.
+answersAreInvalid.button = Register for the Economic Crime Levy
 
 start.title = Register for the Economic Crime Levy
 start.heading = Register for the Economic Crime Levy
@@ -294,6 +294,12 @@ submitted.provide.b3 = if you started AML-regulated activities in the last finan
 submitted.provide.b4 = the details of the person in your organisation who is completing the return
 submitted.return = You can {0} now or come back to do it later.
 submitted.return.link = <a href="{0}" class="govuk-link">submit a return</a>
+
+userAlreadyEnrolled.title = You have already registered for the Economic Crime Levy
+userAlreadyEnrolled.heading = You have already registered for the Economic Crime Levy
+userAlreadyEnrolled.body.p1 = Your ECL reference number is {0}.
+userAlreadyEnrolled.body.p2 = You can {0} if you are ready.
+userAlreadyEnrolled.body.p2.link = <a href="{0}" class="govuk-link">submit a return</a>
 
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.

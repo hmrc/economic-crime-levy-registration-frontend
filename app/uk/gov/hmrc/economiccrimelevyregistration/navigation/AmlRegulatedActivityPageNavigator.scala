@@ -30,7 +30,7 @@ class AmlRegulatedActivityPageNavigator @Inject() () extends PageNavigator {
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  => routes.AmlSupervisorController.onPageLoad(NormalMode)
       case Some(false) => routes.NotLiableController.onPageLoad()
-      case _           => routes.JourneyRecoveryController.onPageLoad()
+      case _           => routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(
@@ -39,7 +39,7 @@ class AmlRegulatedActivityPageNavigator @Inject() () extends PageNavigator {
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  => routes.CheckYourAnswersController.onPageLoad()
       case Some(false) => routes.NotLiableController.onPageLoad()
-      case _           => routes.JourneyRecoveryController.onPageLoad()
+      case _           => routes.NotableErrorController.answersAreInvalid()
     }
 
 }
