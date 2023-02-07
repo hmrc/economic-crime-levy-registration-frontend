@@ -27,7 +27,7 @@ class EnrolmentStoreProxyService @Inject() (enrolmentStoreProxyConnector: Enrolm
   ec: ExecutionContext
 ) {
 
-  def groupHasEnrolment(groupId: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+  def getEclReferenceFromGroupEnrolment(groupId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     enrolmentStoreProxyConnector.getEnrolmentsForGroup(groupId).flatMap {
       case Some(groupEnrolmentsResponse: GroupEnrolmentsResponse) =>
         Future.successful(groupEnrolmentsResponse.enrolments.exists(e => e.service == EclEnrolment.ServiceName))

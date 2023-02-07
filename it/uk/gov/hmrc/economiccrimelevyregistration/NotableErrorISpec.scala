@@ -56,4 +56,18 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
+  s"GET ${routes.NotableErrorController.orgAlreadyRegistered().url}" should {
+    behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.orgAlreadyRegistered())
+
+    "respond with 200 status and the org already registered HTML view" in {
+      stubAuthorised()
+      stubWithGroupEclEnrolment()
+
+      val result = callRoute(FakeRequest(routes.NotableErrorController.orgAlreadyRegistered()))
+
+      status(result) shouldBe OK
+      html(result) should include("Your organisation is already registered for the Economic Crime Levy")
+    }
+  }
+
 }

@@ -37,12 +37,13 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   def feedbackUrl(backUrl: String): String =
     s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${SafeRedirectUrl(backUrl).encodedUrl}"
 
-  val signInUrl: String       = configuration.get[String]("urls.signIn")
-  val signOutUrl: String      = configuration.get[String]("urls.signOut")
-  val eclSignOutUrl: String   = configuration.get[String]("urls.eclSignOut")
-  val grsContinueUrl: String  = configuration.get[String]("urls.grsContinue")
-  val alfContinueUrl: String  = configuration.get[String]("urls.alfContinue")
-  val submitReturnUrl: String = configuration.get[String]("urls.submitReturn")
+  val signInUrl: String         = configuration.get[String]("urls.signIn")
+  val signOutUrl: String        = configuration.get[String]("urls.signOut")
+  val eclSignOutUrl: String     = configuration.get[String]("urls.eclSignOut")
+  val grsContinueUrl: String    = configuration.get[String]("urls.grsContinue")
+  val alfContinueUrl: String    = configuration.get[String]("urls.alfContinue")
+  val submitReturnUrl: String   = configuration.get[String]("urls.submitReturn")
+  val claimEnrolmentUrl: String = configuration.get[String]("urls.claimEnrolment")
 
   val accessibilityStatementServicePath: String =
     configuration.get[String]("accessibility-statement.service-path")
@@ -71,9 +72,11 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val partnershipEntityIdentificationFrontendBaseUrl: String  =
     servicesConfig.baseUrl("partnership-identification-frontend")
 
-  val incorporatedEntityBvEnabled: Boolean = configuration.get[Boolean]("features.incorporatedEntityBvEnabled")
-  val partnershipBvEnabled: Boolean        = configuration.get[Boolean]("features.partnershipBvEnabled")
-  val soleTraderBvEnabled: Boolean         = configuration.get[Boolean]("features.soleTraderBvEnabled")
+  val incorporatedEntityBvEnabled: Boolean                = configuration.get[Boolean]("features.incorporatedEntityBvEnabled")
+  val partnershipBvEnabled: Boolean                       = configuration.get[Boolean]("features.partnershipBvEnabled")
+  val soleTraderBvEnabled: Boolean                        = configuration.get[Boolean]("features.soleTraderBvEnabled")
+  val enrolmentStoreProxyStubReturnsEclReference: Boolean =
+    configuration.get[Boolean]("features.enrolmentStoreProxyStubReturnsEclReference")
 
   val enrolmentStoreProxyBaseUrl: String = servicesConfig.baseUrl("enrolment-store-proxy")
 
