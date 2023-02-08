@@ -57,13 +57,13 @@ class NotableErrorController @Inject() (
   }
 
   def groupAlreadyEnrolled: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
-    val eclRegistrationReference = request.eclRegistrationReference.getOrElse(
+    val eclRegistrationReference  = request.eclRegistrationReference.getOrElse(
       throw new IllegalStateException("ECL registration reference not found in request")
     )
-    val addLevyUrl               =
-      s"${appConfig.addLevyUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
+    val taxAndSchemeManagementUrl =
+      s"${appConfig.taxAndSchemeManagement}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
 
-    Ok(groupAlreadyEnrolledView(eclRegistrationReference, addLevyUrl))
+    Ok(groupAlreadyEnrolledView(eclRegistrationReference, taxAndSchemeManagementUrl))
   }
 
   def agentCannotRegister: Action[AnyContent] = authoriseAgentsAllowed { implicit request =>

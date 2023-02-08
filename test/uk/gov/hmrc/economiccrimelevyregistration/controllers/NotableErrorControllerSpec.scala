@@ -78,13 +78,13 @@ class NotableErrorControllerSpec extends SpecBase {
   "groupAlreadyEnrolled" should {
     "return OK and the correct view" in forAll { (registration: Registration, eclRegistrationReference: String) =>
       new TestContext(registration, Some(eclRegistrationReference)) {
-        val result: Future[Result] = controller.groupAlreadyEnrolled()(fakeRequest)
-        val addLevyUrl             =
-          s"${appConfig.addLevyUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
+        val result: Future[Result]    = controller.groupAlreadyEnrolled()(fakeRequest)
+        val taxAndSchemeManagementUrl =
+          s"${appConfig.taxAndSchemeManagement}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe groupAlreadyEnrolledView(eclRegistrationReference, addLevyUrl)(
+        contentAsString(result) shouldBe groupAlreadyEnrolledView(eclRegistrationReference, taxAndSchemeManagementUrl)(
           fakeRequest,
           messages
         ).toString
