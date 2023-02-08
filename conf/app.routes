@@ -116,7 +116,7 @@ GET         /answers-are-not-valid                                            uk
 
 GET         /already-registered-for-economic-crime-levy                       uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.userAlreadyEnrolled()
 
-GET         /add-levy                                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.orgAlreadyRegistered()
+GET         /add-levy                                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.groupAlreadyEnrolled()
 
 GET         /account/sign-out-survey                                          uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
 GET         /account/sign-out                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()

@@ -37,7 +37,7 @@ trait AuthorisedBehaviour {
         val result: Future[Result] = callRoute(FakeRequest(call))
 
         status(result)          shouldBe SEE_OTHER
-        redirectLocation(result).value shouldBe routes.NotableErrorController.orgAlreadyRegistered().url
+        redirectLocation(result).value shouldBe routes.NotableErrorController.groupAlreadyEnrolled().url
       }
 
       "go to the agent not supported page if the user has an agent affinity group" in {

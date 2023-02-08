@@ -15,17 +15,18 @@
  *@
 
 @this(
-        layout: templates.Layout
+layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 )
 
-@(eclReferenceNumber: String, addLevyUrl: String)(implicit request: Request[_], messages: Messages)
+@(eclReferenceNumber: String)(implicit request: Request[_], messages: Messages)
 
-    @layout(pageTitle = title(messages("orgAlreadyRegistered.title"))) {
+@layout(
+pageTitle = title("Stub Tax and scheme management"),
+isWelshTranslationAvailable = Some(false)
+) {
 
-        <h1 class="govuk-heading-l">@messages("orgAlreadyRegistered.heading")</h1>
+<h1 class="govuk-heading-xl">Stub Tax and scheme management</h1>
 
-        <p class="govuk-body">@messages("orgAlreadyRegistered.body.p1", eclReferenceNumber)</p>
+<p class="govuk-body">ECL reference number: @eclReferenceNumber</p>
 
-        <p class="govuk-body">@Html(messages("orgAlreadyRegistered.body.p2", messages("orgAlreadyRegistered.body.p2.link", addLevyUrl)))</p>
-
-    }
+}

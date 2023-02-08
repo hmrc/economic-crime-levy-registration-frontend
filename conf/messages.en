@@ -301,11 +301,11 @@ userAlreadyEnrolled.body.p1 = Your ECL reference number is {0}.
 userAlreadyEnrolled.body.p2 = You can {0} if you are ready.
 userAlreadyEnrolled.body.p2.link = <a href="{0}" class="govuk-link">submit a return</a>
 
-orgAlreadyRegistered.title = Your organisation is already registered for the Economic Crime Levy
-orgAlreadyRegistered.heading = Your organisation is already registered for the Economic Crime Levy
-orgAlreadyRegistered.body.p1 = Your ECL reference number is {0}.
-orgAlreadyRegistered.body.p2 = You can {0}.
-orgAlreadyRegistered.body.p2.link = <a href="{0}" class="govuk-link">add this levy to your business tax account</a>
+groupAlreadyEnrolled.title = Your organisation is already registered for the Economic Crime Levy
+groupAlreadyEnrolled.heading = Your organisation is already registered for the Economic Crime Levy
+groupAlreadyEnrolled.body.p1 = Your ECL reference number is {0}.
+groupAlreadyEnrolled.body.p2 = You can {0}.
+groupAlreadyEnrolled.body.p2.link = <a href="{0}" class="govuk-link">add this levy to your business tax account</a>
 
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.

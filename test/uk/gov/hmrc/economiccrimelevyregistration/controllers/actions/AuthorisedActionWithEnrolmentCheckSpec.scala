@@ -133,7 +133,7 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
         status(result)                 shouldBe SEE_OTHER
-        redirectLocation(result).value shouldBe routes.NotableErrorController.orgAlreadyRegistered().url
+        redirectLocation(result).value shouldBe routes.NotableErrorController.groupAlreadyEnrolled().url
     }
 
     "redirect the user to the agent not supported page if they have an agent affinity group" in forAll {

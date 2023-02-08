@@ -103,7 +103,7 @@ abstract class BaseAuthorisedAction @Inject() (
                         .getEclReferenceFromGroupEnrolment(groupId)(hc(request))
                         .flatMap {
                           case Some(_) =>
-                            Future.successful(Redirect(routes.NotableErrorController.orgAlreadyRegistered().url))
+                            Future.successful(Redirect(routes.NotableErrorController.groupAlreadyEnrolled().url))
                           case None    => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
                         }
                   }

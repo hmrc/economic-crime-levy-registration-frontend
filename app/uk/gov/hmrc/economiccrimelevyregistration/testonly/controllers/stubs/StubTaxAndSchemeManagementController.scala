@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.testonly.views.html.StubAddLevyView
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.views.html.StubTaxAndSchemeManagementView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -26,7 +26,7 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class StubTaxAndSchemeManagementController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  view: StubAddLevyView
+  view: StubTaxAndSchemeManagementView
 ) extends FrontendBaseController
     with I18nSupport {
 
