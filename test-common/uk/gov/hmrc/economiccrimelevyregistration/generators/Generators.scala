@@ -82,12 +82,9 @@ trait Generators {
 
   def nonBooleans: Gen[String] =
     arbitrary[String]
-      .suchThat(_.nonEmpty)
+      .suchThat(!_.isBlank)
       .suchThat(_ != "true")
       .suchThat(_ != "false")
-
-  def nonEmptyString: Gen[String] =
-    arbitrary[String] suchThat (_.nonEmpty)
 
   def nonBlankString: Gen[String] = arbitrary[String] suchThat (!_.isBlank)
 
