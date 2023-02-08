@@ -68,8 +68,8 @@ class AuthorisedActionWithoutEnrolmentCheckSpec extends SpecBase {
             )
           )
 
-        when(mockEnrolmentStoreProxyService.groupHasEnrolment(ArgumentMatchers.eq(groupId))(any()))
-          .thenReturn(Future.successful(false))
+        when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
+          .thenReturn(Future.successful(None))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
@@ -101,8 +101,8 @@ class AuthorisedActionWithoutEnrolmentCheckSpec extends SpecBase {
             )
           )
 
-        when(mockEnrolmentStoreProxyService.groupHasEnrolment(ArgumentMatchers.eq(groupId))(any()))
-          .thenReturn(Future.successful(false))
+        when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
+          .thenReturn(Future.successful(None))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 

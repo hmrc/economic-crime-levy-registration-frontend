@@ -21,6 +21,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AnswersAreInvalidView, OrgAlreadyRegisteredView, UserAlreadyEnrolledView}
 
 import scala.concurrent.Future
@@ -37,6 +38,7 @@ class NotableErrorControllerSpec extends SpecBase {
       fakeAuthorisedActionWithoutEnrolmentCheck(registrationData.internalId, eclRegistrationReference),
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      appConfig,
       userAlreadyEnrolledView,
       orgAlreadyEnrolledView,
       answersAreInvalidView
@@ -74,10 +76,12 @@ class NotableErrorControllerSpec extends SpecBase {
     "return OK and the correct view" in forAll { (registration: Registration, eclRegistrationReference: String) =>
       new TestContext(registration, Some(eclRegistrationReference)) {
         val result: Future[Result] = controller.orgAlreadyRegistered()(fakeRequest)
+        val claimEclEnrolmentUrl   =
+          s"${appConfig.claimEnrolmentUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe orgAlreadyEnrolledView(eclRegistrationReference)(
+        contentAsString(result) shouldBe orgAlreadyEnrolledView(eclRegistrationReference, claimEclEnrolmentUrl)(
           fakeRequest,
           messages
         ).toString
