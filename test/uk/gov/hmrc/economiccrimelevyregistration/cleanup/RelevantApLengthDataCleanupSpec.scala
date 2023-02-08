@@ -25,9 +25,9 @@ class RelevantApLengthDataCleanupSpec extends SpecBase {
   val dataCleanup = new RelevantApLengthDataCleanup
 
   "cleanup" should {
-    "return a registration with the relevant AP revenue set to none" in forAll { registration: Registration =>
+    "return a registration with the revenue meets threshold flag set to none" in forAll { registration: Registration =>
       dataCleanup.cleanup(registration) shouldBe registration.copy(
-        relevantApRevenue = None
+        revenueMeetsThreshold = None
       )
     }
   }

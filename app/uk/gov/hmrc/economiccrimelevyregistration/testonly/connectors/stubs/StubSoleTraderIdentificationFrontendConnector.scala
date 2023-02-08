@@ -16,57 +16,28 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 
-import play.api.i18n.MessagesApi
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.SoleTraderIdentificationFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{BusinessVerificationResult, FullName, GrsCreateJourneyResponse, RegistrationStatus, SoleTraderEntityJourneyData, VerificationStatus}
-import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.SoleTrader
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.utils.Base64Utils
+import uk.gov.hmrc.http.HeaderCarrier
 
-import java.time.Instant
-import java.util.Date
 import javax.inject.Inject
 import scala.concurrent.Future
 
-class StubSoleTraderIdentificationFrontendConnector @Inject() (
-  appConfig: AppConfig,
-  httpClient: HttpClient
-)(implicit
-  val messagesApi: MessagesApi
-) extends SoleTraderIdentificationFrontendConnector
-    with GrsStubData[SoleTraderEntityJourneyData] {
+class StubSoleTraderIdentificationFrontendConnector @Inject() () extends SoleTraderIdentificationFrontendConnector {
 
   override def createSoleTraderJourney(mode: Mode)(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] =
     Future.successful(
       GrsCreateJourneyResponse(
         journeyStartUrl =
-          s"/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}"
+          s"/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}&entityType=${SoleTrader.toString}"
       )
     )
 
   override def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[SoleTraderEntityJourneyData] =
-    handleJourneyId(journeyId)
+    Future.successful(Json.parse(Base64Utils.base64UrlDecode(journeyId)).as[SoleTraderEntityJourneyData])
 
-  override def buildJourneyData(
-    identifiersMatch: Boolean,
-    registrationStatus: RegistrationStatus,
-    verificationStatus: Option[VerificationStatus] = None,
-    entityType: EntityType,
-    businessPartnerId: String
-  ): Future[SoleTraderEntityJourneyData] =
-    Future.successful(
-      SoleTraderEntityJourneyData(
-        fullName = FullName(
-          firstName = "John",
-          lastName = "Doe"
-        ),
-        dateOfBirth = Date.from(Instant.parse("1975-01-31T00:00:00.00Z")),
-        nino = Some("BB111111B"),
-        sautr = Some("1234567890"),
-        identifiersMatch = identifiersMatch,
-        businessVerification = verificationStatus.map(BusinessVerificationResult(_)),
-        registration = registrationResult(registrationStatus, businessPartnerId)
-      )
-    )
 }

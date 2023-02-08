@@ -14,17 +14,22 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.economiccrimelevyregistration.testonly.models.GrsStubFormData
+
 @this(
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
-        govukInput: GovukInput,
+        govukTextarea: GovukTextarea,
         govukButton: GovukButton,
-        govukTable: GovukTable,
-        govukInsetText: GovukInsetText,
         layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 )
+@(form: Form[GrsStubFormData], registrationSuccessBvDisabledJson: String, registrationSuccessBvEnabledJson: String, registrationFailedPartyTypeMismatchJson: String, registrationFailedGenericJson: String, registrationNotCalledIdentifierMismatchJson: String, registrationNotCalledBvFailedJson: String, continueUrl: String, entityType: String)(implicit request: Request[_], messages: Messages)
 
-@(form: Form[_], continueUrl: String)(implicit request: Request[_], messages: Messages)
+<script>
+        function populateTextArea(journeyData) {
+            document.getElementById("grsJourneyDataJson").value = JSON.stringify(journeyData, null, 2);
+        }
+</script>
 
 @layout(
     pageTitle = title("Stub GRS Journey Data"),
@@ -33,162 +38,56 @@
 
     <h1 class="govuk-heading-xl">Stub GRS Journey Data</h1>
 
-    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.routes.StubGrsJourneyDataController.onSubmit(continueUrl)) {
+    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.routes.StubGrsJourneyDataController.onSubmit(continueUrl, entityType)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @govukInput(
-            InputViewModel(
-                field = form("journeyId"),
-                label = LabelViewModel(messages("Enter a journey ID"))
-            ).withHint(Hint(content = Text("Use the default '0' for successful registration and verification")))
-        )
+        @govukTextarea(Textarea(
+            id = "grsJourneyDataJson",
+            name = "grsJourneyDataJson",
+            label = Label(
+                classes = "govuk-label--m",
+                content = Text("Configure the GRS journey data JSON to be returned")
+            ),
+            rows = 30,
+            value = Some(registrationSuccessBvDisabledJson)
+        ))
 
-        @govukInput(
-            InputViewModel(
-                field = form("businessPartnerId"),
-                label = LabelViewModel(messages("Enter a business partner ID"))
-            ).withHint(Hint(content = Text("This will be ignored if you have specified a scenario which does not return a business partner ID")))
-        )
+        <p class="govuk-body">
+            The default JSON in this form simulates a happy path through GRS based on the given entity type (Registration success - BV disabled).</p>
+
+        <p class="govuk-body">
+            Use the buttons below or change the data manually to replicate other GRS scenarios.</p>
+
+        <a id="registrationSuccessBvDisabled" class="govuk-button govuk-button--secondary" href="#grsJourneyDataJson" onclick="populateTextArea(@registrationSuccessBvDisabledJson)">
+            Registration success - BV disabled</a>
+        <br>
+
+        <a id="registrationSuccessBvEnabled" class="govuk-button govuk-button--secondary" href="#grsJourneyDataJson" onclick="populateTextArea(@registrationSuccessBvEnabledJson)">
+            Registration success - BV enabled</a>
+        <br>
+
+        <a id="registrationFailedPartyTypeMismatch" class="govuk-button govuk-button--secondary" href="#grsJourneyDataJson" onclick="populateTextArea(@registrationFailedPartyTypeMismatchJson)">
+            Registration failed - party type mismatch</a>
+        <br>
+
+        <a id="registrationFailedGeneric" class="govuk-button govuk-button--secondary" href="#grsJourneyDataJson" onclick="populateTextArea(@registrationFailedGenericJson)">
+            Registration failed - generic</a>
+        <br>
+
+        <a id="registrationNotCalledIdentifierMismatch" class="govuk-button govuk-button--secondary" href="#grsJourneyDataJson" onclick="populateTextArea(@registrationNotCalledIdentifierMismatchJson)">
+            Registration not called - identifiers do not match</a>
+        <br>
+
+        <a id="registrationNotCalledBvFailed" class="govuk-button govuk-button--secondary" href="#grsJourneyDataJson" onclick="populateTextArea(@registrationNotCalledBvFailedJson)">
+            Registration not called - business verification failed</a>
+        <br>
 
         @govukButton(
             ButtonViewModel("Save and continue")
         )
     }
-
-    @govukInsetText(InsetText(
-        content = Text("Any journey ID value other than those explicitly defined in the following tables will result in successful registration and verification, e.g. 0.")
-    ))
-
-    <p class="govuk-body">The following journey IDs represent GRS journeys with BV <b>enabled</b>.</p>
-
-    @govukTable(Table(
-        rows = Seq(
-            Seq(
-                TableRow(
-                    content = Text("(other) e.g. 0")
-                ),
-                TableRow(
-                    content = Text("Yes")
-                ),
-                TableRow(
-                    content = Text("REGISTERED")
-                ),
-                TableRow(
-                    content = Text("PASS")
-                )
-            ),
-            Seq(
-                TableRow(
-                    content = Text("1")
-                ),
-                TableRow(
-                    content = Text("Yes")
-                ),
-                TableRow(
-                    content = Text("REGISTRATION_NOT_CALLED")
-                ),
-                TableRow(
-                    content = Text("FAIL")
-                )
-            ),
-            Seq(
-                TableRow(
-                    content = Text("2")
-                ),
-                TableRow(
-                    content = Text("No")
-                ),
-                TableRow(
-                    content = Text("REGISTRATION_NOT_CALLED")
-                ),
-                TableRow(
-                    content = Text("UNCHALLENGED")
-                )
-            ),
-            Seq(
-                TableRow(
-                    content = Text("3")
-                ),
-                TableRow(
-                    content = Text("Yes")
-                ),
-                TableRow(
-                    content = Text("REGISTRATION_FAILED")
-                ),
-                TableRow(
-                    content = Text("PASS")
-                )
-            )
-        ),
-        head = Some(Seq(
-            HeadCell(
-                content = Text("Journey ID")
-            ),
-            HeadCell(
-                content = Text("Identifiers Match")
-            ),
-            HeadCell(
-                content = Text("Registration Status")
-            ),
-            HeadCell(
-                content = Text("Verification Status")
-            )
-        ))
-    ))
-
-    <p class="govuk-body govuk-!-margin-top-8">The following journey IDs represent GRS journeys with BV <b>disabled</b>
-        and therefore no verification status is present.</p>
-
-    @govukTable(Table(
-        rows = Seq(
-            Seq(
-                TableRow(
-                    content = Text("4")
-                ),
-                TableRow(
-                    content = Text("Yes")
-                ),
-                TableRow(
-                    content = Text("REGISTERED")
-                )
-            ),
-            Seq(
-                TableRow(
-                    content = Text("5")
-                ),
-                TableRow(
-                    content = Text("No")
-                ),
-                TableRow(
-                    content = Text("REGISTRATION_NOT_CALLED")
-                )
-            ),
-            Seq(
-                TableRow(
-                    content = Text("6")
-                ),
-                TableRow(
-                    content = Text("Yes")
-                ),
-                TableRow(
-                    content = Text("REGISTRATION_FAILED")
-                )
-            )
-        ),
-        head = Some(Seq(
-            HeadCell(
-                content = Text("Journey ID")
-            ),
-            HeadCell(
-                content = Text("Identifiers Match")
-            ),
-            HeadCell(
-                content = Text("Registration Status")
-            )
-        ))
-    ))
 
 }

@@ -22,9 +22,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.AddressLookupFrontendConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.utils.Base64Utils
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
-import java.util.Base64
 import javax.inject.Inject
 import scala.concurrent.Future
 
@@ -39,14 +39,6 @@ class StubAddressLookupFrontendConnector @Inject() (
       s"/register-for-the-economic-crime-levy/test-only/stub-alf-journey-data?continueUrl=${mode.toString.toLowerCase}"
     )
 
-  override def getAddress(journeyId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData] = {
-    val decodedBytes = Base64.getDecoder.decode(
-      journeyId
-        .replace(".", "+")
-        .replace("_", "/")
-        .replace("-", "=")
-    )
-
-    Future.successful(Json.parse(new String(decodedBytes)).as[AlfAddressData])
-  }
+  override def getAddress(journeyId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData] =
+    Future.successful(Json.parse(Base64Utils.base64UrlDecode(journeyId)).as[AlfAddressData])
 }

@@ -19,12 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.grs
 import play.api.libs.json.{Json, OFormat}
 
 final case class PartnershipEntityJourneyData(
+  companyProfile: Option[CompanyProfile],
   sautr: Option[String],
   postcode: Option[String],
   identifiersMatch: Boolean,
   businessVerification: Option[BusinessVerificationResult],
-  registration: GrsRegistrationResult,
-  companyProfile: Option[CompanyProfile]
+  registration: GrsRegistrationResult
 )
 
 object PartnershipEntityJourneyData {

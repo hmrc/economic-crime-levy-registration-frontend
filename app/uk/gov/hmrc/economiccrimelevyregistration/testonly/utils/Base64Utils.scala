@@ -14,8 +14,27 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.testonly.models
+package uk.gov.hmrc.economiccrimelevyregistration.testonly.utils
 
-case class GrsStubFormData(
-  grsJourneyDataJson: String
-)
+import java.util.Base64
+
+object Base64Utils {
+
+  def base64UrlEncode(valueToEncode: String): String = Base64.getEncoder
+    .encodeToString(valueToEncode.getBytes)
+    .replace("+", ".")
+    .replace("/", "_")
+    .replace("=", "-")
+
+  def base64UrlDecode(valueToDecode: String): String = {
+    val decodedBytes = Base64.getDecoder.decode(
+      valueToDecode
+        .replace(".", "+")
+        .replace("_", "/")
+        .replace("-", "=")
+    )
+
+    new String(decodedBytes)
+  }
+
+}
