@@ -21,14 +21,16 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AnswersAreInvalidView, UserAlreadyEnrolledView}
+import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AnswersAreInvalidView, GroupAlreadyEnrolledView, UserAlreadyEnrolledView}
 
 import scala.concurrent.Future
 
 class NotableErrorControllerSpec extends SpecBase {
 
-  val answersAreInvalidView: AnswersAreInvalidView     = app.injector.instanceOf[AnswersAreInvalidView]
-  val userAlreadyEnrolledView: UserAlreadyEnrolledView = app.injector.instanceOf[UserAlreadyEnrolledView]
+  val answersAreInvalidView: AnswersAreInvalidView       = app.injector.instanceOf[AnswersAreInvalidView]
+  val userAlreadyEnrolledView: UserAlreadyEnrolledView   = app.injector.instanceOf[UserAlreadyEnrolledView]
+  val groupAlreadyEnrolledView: GroupAlreadyEnrolledView = app.injector.instanceOf[GroupAlreadyEnrolledView]
 
   class TestContext(registrationData: Registration, eclRegistrationReference: Option[String] = None) {
     val controller = new NotableErrorController(
@@ -36,7 +38,9 @@ class NotableErrorControllerSpec extends SpecBase {
       fakeAuthorisedActionWithoutEnrolmentCheck(registrationData.internalId, eclRegistrationReference),
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      appConfig,
       userAlreadyEnrolledView,
+      groupAlreadyEnrolledView,
       answersAreInvalidView
     )
   }
@@ -61,6 +65,23 @@ class NotableErrorControllerSpec extends SpecBase {
         status(result) shouldBe OK
 
         contentAsString(result) shouldBe userAlreadyEnrolledView(eclRegistrationReference)(
+          fakeRequest,
+          messages
+        ).toString
+      }
+    }
+  }
+
+  "groupAlreadyEnrolled" should {
+    "return OK and the correct view" in forAll { (registration: Registration, eclRegistrationReference: String) =>
+      new TestContext(registration, Some(eclRegistrationReference)) {
+        val result: Future[Result] = controller.groupAlreadyEnrolled()(fakeRequest)
+        val addLevyUrl             =
+          s"${appConfig.addLevyUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
+
+        status(result) shouldBe OK
+
+        contentAsString(result) shouldBe groupAlreadyEnrolledView(eclRegistrationReference, addLevyUrl)(
           fakeRequest,
           messages
         ).toString

@@ -16,16 +16,32 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EnrolmentStoreProxyConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResponse
+import uk.gov.hmrc.economiccrimelevyregistration.models.KeyValue
+import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.Future
 
-class StubEnrolmentStoreProxyConnector @Inject() extends EnrolmentStoreProxyConnector {
+class StubEnrolmentStoreProxyConnector @Inject() (appConfig: AppConfig) extends EnrolmentStoreProxyConnector {
   override def getEnrolmentsForGroup(groupId: String)(implicit
     hc: HeaderCarrier
-  ): Future[Option[GroupEnrolmentsResponse]] = Future.successful(None)
+  ): Future[Option[GroupEnrolmentsResponse]] =
+    if (appConfig.enrolmentStoreProxyStubReturnsEclReference) {
+      val groupEnrolmentsWithEcl = GroupEnrolmentsResponse(
+        Seq(
+          Enrolment(
+            service = EclEnrolment.ServiceName,
+            identifiers = Seq(KeyValue(key = EclEnrolment.IdentifierKey, value = "XMECL0000000001"))
+          )
+        )
+      )
+
+      Future.successful(Some(groupEnrolmentsWithEcl))
+    } else {
+      Future.successful(None)
+    }
 
 }

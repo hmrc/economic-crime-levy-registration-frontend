@@ -35,7 +35,10 @@ final case class EnrolmentsWithEcl(enrolments: Enrolments, eclReferenceNumber: S
 
 final case class EnrolmentsWithoutEcl(enrolments: Enrolments)
 
-final case class GroupEnrolmentsResponseWithEcl(groupEnrolmentsResponse: GroupEnrolmentsResponse)
+final case class GroupEnrolmentsResponseWithEcl(
+  groupEnrolmentsResponse: GroupEnrolmentsResponse,
+  eclReferenceNumber: String
+)
 
 final case class GroupEnrolmentsResponseWithoutEcl(groupEnrolmentsResponse: GroupEnrolmentsResponse)
 
@@ -101,7 +104,8 @@ trait EclTestData {
     } yield GroupEnrolmentsResponseWithEcl(
       GroupEnrolmentsResponse(
         authEnrolmentsToEnrolments(enrolmentsWithEcl.enrolments)
-      )
+      ),
+      enrolmentsWithEcl.eclReferenceNumber
     )
   }
 

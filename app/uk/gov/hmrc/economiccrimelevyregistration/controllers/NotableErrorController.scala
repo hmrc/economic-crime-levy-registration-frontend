@@ -18,8 +18,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, AuthorisedActionWithoutEnrolmentCheck, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AnswersAreInvalidView, UserAlreadyEnrolledView}
+import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AnswersAreInvalidView, GroupAlreadyEnrolledView, UserAlreadyEnrolledView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -30,7 +32,9 @@ class NotableErrorController @Inject() (
   authoriseWithoutEnrolmentCheck: AuthorisedActionWithoutEnrolmentCheck,
   authoriseWithEnrolmentCheck: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  appConfig: AppConfig,
   userAlreadyEnrolledView: UserAlreadyEnrolledView,
+  groupAlreadyEnrolledView: GroupAlreadyEnrolledView,
   answersAreInvalidView: AnswersAreInvalidView
 ) extends FrontendBaseController
     with I18nSupport {
@@ -48,5 +52,15 @@ class NotableErrorController @Inject() (
         )
       )
     )
+  }
+
+  def groupAlreadyEnrolled: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
+    val eclRegistrationReference = request.eclRegistrationReference.getOrElse(
+      throw new IllegalStateException("ECL registration reference not found in request")
+    )
+    val addLevyUrl               =
+      s"${appConfig.addLevyUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
+
+    Ok(groupAlreadyEnrolledView(eclRegistrationReference, addLevyUrl))
   }
 }

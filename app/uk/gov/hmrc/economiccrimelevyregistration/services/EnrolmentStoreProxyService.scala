@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EnrolmentStoreProxyConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, GroupEnrolmentsResponse}
+import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -27,10 +27,11 @@ class EnrolmentStoreProxyService @Inject() (enrolmentStoreProxyConnector: Enrolm
   ec: ExecutionContext
 ) {
 
-  def groupHasEnrolment(groupId: String)(implicit hc: HeaderCarrier): Future[Boolean] =
-    enrolmentStoreProxyConnector.getEnrolmentsForGroup(groupId).flatMap {
-      case Some(groupEnrolmentsResponse: GroupEnrolmentsResponse) =>
-        Future.successful(groupEnrolmentsResponse.enrolments.exists(e => e.service == EclEnrolment.ServiceName))
-      case None                                                   => Future.successful(false)
-    }
+  def getEclReferenceFromGroupEnrolment(groupId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
+    enrolmentStoreProxyConnector
+      .getEnrolmentsForGroup(groupId)
+      .map(
+        _.flatMap(_.enrolments.find(_.service == EclEnrolment.ServiceName))
+          .flatMap(_.identifiers.find(_.key == EclEnrolment.IdentifierKey).map(_.value))
+      )
 }

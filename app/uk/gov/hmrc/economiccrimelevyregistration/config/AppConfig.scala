@@ -43,6 +43,7 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val grsContinueUrl: String  = configuration.get[String]("urls.grsContinue")
   val alfContinueUrl: String  = configuration.get[String]("urls.alfContinue")
   val submitReturnUrl: String = configuration.get[String]("urls.submitReturn")
+  val addLevyUrl: String      = configuration.get[String]("urls.addLevy")
 
   val accessibilityStatementServicePath: String =
     configuration.get[String]("accessibility-statement.service-path")
@@ -71,9 +72,11 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val partnershipEntityIdentificationFrontendBaseUrl: String  =
     servicesConfig.baseUrl("partnership-identification-frontend")
 
-  val incorporatedEntityBvEnabled: Boolean = configuration.get[Boolean]("features.incorporatedEntityBvEnabled")
-  val partnershipBvEnabled: Boolean        = configuration.get[Boolean]("features.partnershipBvEnabled")
-  val soleTraderBvEnabled: Boolean         = configuration.get[Boolean]("features.soleTraderBvEnabled")
+  val incorporatedEntityBvEnabled: Boolean                = configuration.get[Boolean]("features.incorporatedEntityBvEnabled")
+  val partnershipBvEnabled: Boolean                       = configuration.get[Boolean]("features.partnershipBvEnabled")
+  val soleTraderBvEnabled: Boolean                        = configuration.get[Boolean]("features.soleTraderBvEnabled")
+  val enrolmentStoreProxyStubReturnsEclReference: Boolean =
+    configuration.get[Boolean]("features.enrolmentStoreProxyStubReturnsEclReference")
 
   val enrolmentStoreProxyBaseUrl: String = servicesConfig.baseUrl("enrolment-store-proxy")
 

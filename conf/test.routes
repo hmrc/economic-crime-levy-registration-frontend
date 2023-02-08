@@ -1,11 +1,13 @@
-GET         /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onPageLoad(continueUrl, entityType)
-POST        /stub-grs-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onSubmit(continueUrl, entityType)
+GET         /stub-grs-journey-data                                                   uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onPageLoad(continueUrl, entityType)
+POST        /stub-grs-journey-data                                                   uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onSubmit(continueUrl, entityType)
 
-GET         /stub-alf-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubAlfJourneyDataController.onPageLoad(continueUrl)
-POST        /stub-alf-journey-data        uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubAlfJourneyDataController.onSubmit(continueUrl)
+GET         /stub-alf-journey-data                                                   uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubAlfJourneyDataController.onPageLoad(continueUrl)
+POST        /stub-alf-journey-data                                                   uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubAlfJourneyDataController.onSubmit(continueUrl)
 
-GET         /clear-all                    uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.TestOnlyController.clearAllData()
-GET         /clear-current                uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.TestOnlyController.clearCurrentData()
-GET         /registration-data            uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.TestOnlyController.getRegistrationData()
+GET         /stub-tax-and-scheme-management/services/:serviceName/:identifier/users  uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubTaxAndSchemeManagementController.onPageLoad(serviceName, identifier)
 
-GET         /de-enrol                     uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.TestOnlyController.deEnrol()
+GET         /clear-all                                                               uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.TestOnlyController.clearAllData()
+GET         /clear-current                                                           uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.TestOnlyController.clearCurrentData()
+GET         /registration-data                                                       uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.TestOnlyController.getRegistrationData()
+
+GET         /de-enrol                                                                uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.TestOnlyController.deEnrol()

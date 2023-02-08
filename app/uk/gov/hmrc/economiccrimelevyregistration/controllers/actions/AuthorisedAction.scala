@@ -100,15 +100,23 @@ abstract class BaseAuthorisedAction @Inject() (
                     case Some(_) => Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
                     case None    =>
                       enrolmentStoreProxyService
-                        .groupHasEnrolment(groupId)(hc(request))
+                        .getEclReferenceFromGroupEnrolment(groupId)(hc(request))
                         .flatMap {
-                          case true  =>
-                            Future.successful(Ok("Group already has the enrolment - assign the enrolment to the user"))
-                          case false => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
+                          case Some(_) =>
+                            Future.successful(Redirect(routes.NotableErrorController.groupAlreadyEnrolled().url))
+                          case None    => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
                         }
                   }
                 } else {
-                  block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
+                  eclRegistrationReference match {
+                    case Some(_) => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
+                    case None    =>
+                      enrolmentStoreProxyService
+                        .getEclReferenceFromGroupEnrolment(groupId)(hc(request))
+                        .flatMap { eclReferenceFromGroupEnrolment =>
+                          block(AuthorisedRequest(request, internalId, groupId, eclReferenceFromGroupEnrolment))
+                        }
+                  }
                 }
             }
         }
