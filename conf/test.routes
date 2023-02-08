@@ -1,5 +1,5 @@
-GET         /stub-grs-journey-data                                                   uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onPageLoad(continueUrl)
-POST        /stub-grs-journey-data                                                   uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onSubmit(continueUrl)
+GET         /stub-grs-journey-data                                                   uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onPageLoad(continueUrl, entityType)
+POST        /stub-grs-journey-data                                                   uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubGrsJourneyDataController.onSubmit(continueUrl, entityType)
 
 GET         /stub-alf-journey-data                                                   uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubAlfJourneyDataController.onPageLoad(continueUrl)
 POST        /stub-alf-journey-data                                                   uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.StubAlfJourneyDataController.onSubmit(continueUrl)

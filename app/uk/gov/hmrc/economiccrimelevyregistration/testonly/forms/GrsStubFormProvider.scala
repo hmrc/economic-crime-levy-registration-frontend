@@ -26,8 +26,7 @@ class GrsStubFormProvider extends Mappings {
   def apply(): Form[GrsStubFormData] =
     Form(
       mapping(
-        "journeyId"         -> text(),
-        "businessPartnerId" -> text()
+        "grsJourneyDataJson" -> text()
       )(GrsStubFormData.apply)(GrsStubFormData.unapply)
     )
 }

@@ -20,8 +20,11 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.forms.GrsStubFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.models.GrsStubFormData
+import uk.gov.hmrc.economiccrimelevyregistration.testonly.utils.Base64Utils
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.views.html.StubGrsJourneyDataView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -35,25 +38,70 @@ class StubGrsJourneyDataController @Inject() (
   grsStubFormProvider: GrsStubFormProvider,
   view: StubGrsJourneyDataView
 ) extends FrontendBaseController
+    with GrsStubData
     with I18nSupport {
 
   val form: Form[GrsStubFormData] = grsStubFormProvider()
 
-  def onPageLoad(continueUrl: String): Action[AnyContent] = Action { implicit request =>
-    Ok(view(form.fill(GrsStubFormData("0", "X00000000000001")), continueUrl))
+  private val registrationSuccessBvDisabledF: EntityType => String           =
+    constructGrsStubFormData(_, None, registered, identifiersMatch = true)
+  private val registrationSuccessBvEnabledF: EntityType => String            =
+    constructGrsStubFormData(_, bvPassed, registered, identifiersMatch = true)
+  private val registrationFailedPartyTypeMismatchF: EntityType => String     =
+    constructGrsStubFormData(_, None, registrationFailedPartyTypeMismatch, identifiersMatch = true)
+  private val registrationFailedGenericF: EntityType => String               =
+    constructGrsStubFormData(_, None, registrationFailedGeneric, identifiersMatch = true)
+  private val registrationNotCalledIdentifierMismatchF: EntityType => String =
+    constructGrsStubFormData(_, None, registrationNotCalled, identifiersMatch = false)
+  private val registrationNotCalledBvFailedF: EntityType => String           =
+    constructGrsStubFormData(_, bvFailed, registrationNotCalled, identifiersMatch = true)
+
+  def onPageLoad(continueUrl: String, entityType: String): Action[AnyContent] = Action { implicit request =>
+    val e: EntityType = EntityType.enumerable.value(entityType).get
+
+    Ok(
+      view(
+        form,
+        registrationSuccessBvDisabledF(e),
+        registrationSuccessBvEnabledF(e),
+        registrationFailedPartyTypeMismatchF(e),
+        registrationFailedGenericF(e),
+        registrationNotCalledIdentifierMismatchF(e),
+        registrationNotCalledBvFailedF(e),
+        continueUrl,
+        entityType
+      )
+    )
   }
 
-  def onSubmit(continueUrl: String): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors => BadRequest(view(formWithErrors, continueUrl)),
-        grsStubFormData =>
-          Redirect(
-            s"/register-for-the-economic-crime-levy/grs-continue/" +
-              s"$continueUrl?journeyId=${grsStubFormData.journeyId}-${request.registration.entityType.get.toString}-${grsStubFormData.businessPartnerId}"
-          )
-      )
+  def onSubmit(continueUrl: String, entityType: String): Action[AnyContent] = (authorise andThen getRegistrationData) {
+    implicit request =>
+      val e: EntityType = EntityType.enumerable.value(entityType).get
+
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            BadRequest(
+              view(
+                formWithErrors,
+                registrationSuccessBvDisabledF(e),
+                registrationSuccessBvEnabledF(e),
+                registrationFailedPartyTypeMismatchF(e),
+                registrationFailedGenericF(e),
+                registrationNotCalledIdentifierMismatchF(e),
+                registrationNotCalledBvFailedF(e),
+                continueUrl,
+                entityType
+              )
+            ),
+          grsStubFormData =>
+            Redirect(
+              s"/register-for-the-economic-crime-levy/grs-continue/" +
+                s"$continueUrl?journeyId=${Base64Utils
+                  .base64UrlEncode(grsStubFormData.grsJourneyDataJson)}"
+            )
+        )
   }
 
 }

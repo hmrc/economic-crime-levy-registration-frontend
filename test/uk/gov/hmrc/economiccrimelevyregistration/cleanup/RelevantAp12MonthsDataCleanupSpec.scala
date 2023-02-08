@@ -25,11 +25,22 @@ class RelevantAp12MonthsDataCleanupSpec extends SpecBase {
   val dataCleanup = new RelevantAp12MonthsDataCleanup
 
   "cleanup" should {
-    "return a registration with the relevant AP length and relevant AP revenue set to none" in forAll {
+    "return a registration with the relevant AP length and revenue meets threshold flag set to none when relevant AP 12 months is true" in forAll {
       registration: Registration =>
-        dataCleanup.cleanup(registration) shouldBe registration.copy(
+        val updatedRegistration = registration.copy(relevantAp12Months = Some(true))
+
+        dataCleanup.cleanup(updatedRegistration) shouldBe updatedRegistration.copy(
           relevantApLength = None,
-          relevantApRevenue = None
+          revenueMeetsThreshold = None
+        )
+    }
+
+    "return a registration with the revenue meets threshold flag set to none when relevant AP 12 months is false" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(relevantAp12Months = Some(false))
+
+        dataCleanup.cleanup(updatedRegistration) shouldBe updatedRegistration.copy(
+          revenueMeetsThreshold = None
         )
     }
   }

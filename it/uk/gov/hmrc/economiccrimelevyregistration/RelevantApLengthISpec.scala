@@ -43,7 +43,8 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val updatedRegistration = registration.copy(relevantApLength = Some(relevantApLength), relevantApRevenue = None)
+      val updatedRegistration =
+        registration.copy(relevantApLength = Some(relevantApLength), revenueMeetsThreshold = None)
 
       stubUpsertRegistration(updatedRegistration)
 
