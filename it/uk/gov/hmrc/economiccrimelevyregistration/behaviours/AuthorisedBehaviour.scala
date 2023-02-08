@@ -36,7 +36,7 @@ trait AuthorisedBehaviour {
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
-        status(result)          shouldBe SEE_OTHER
+        status(result)                 shouldBe SEE_OTHER
         redirectLocation(result).value shouldBe routes.NotableErrorController.groupAlreadyEnrolled().url
       }
 
@@ -45,8 +45,8 @@ trait AuthorisedBehaviour {
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
-        status(result)          shouldBe OK
-        contentAsString(result) shouldBe "Agent account not supported - must be an organisation or individual"
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.NotableErrorController.agentCannotRegister().url
       }
 
       "go to the assistant not supported page if the user has an assistant credential role" in {
@@ -75,8 +75,29 @@ trait AuthorisedBehaviour {
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.NotableErrorController.agentCannotRegister().url
+      }
+
+      "go to the assistant not supported page if the user has an assistant credential role" in {
+        stubAuthorisedWithAssistantCredentialRole()
+
+        val result: Future[Result] = callRoute(FakeRequest(call))
+
         status(result)          shouldBe OK
-        contentAsString(result) shouldBe "Agent account not supported - must be an organisation or individual"
+        contentAsString(result) shouldBe "User is not an Admin - request an admin to perform registration"
+      }
+    }
+
+  def authorisedActionAgentsAllowedRoute(call: Call): Unit =
+    "authorisedActionWithoutEnrolmentCheckRoute" should {
+      "redirect to sign in when there is no auth session" in {
+        stubUnauthorised()
+
+        val result: Future[Result] = callRoute(FakeRequest(call))
+
+        status(result)               shouldBe SEE_OTHER
+        redirectLocation(result).value should startWith(appConfig.signInUrl)
       }
 
       "go to the assistant not supported page if the user has an assistant credential role" in {

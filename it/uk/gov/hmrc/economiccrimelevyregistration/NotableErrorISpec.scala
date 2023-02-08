@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.NotableErrorController.answersAreInvalid().url}"   should {
+  s"GET ${routes.NotableErrorController.answersAreInvalid().url}"    should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.NotableErrorController.answersAreInvalid())
 
     "respond with 200 status and the answers are invalid HTML view" in {
@@ -43,7 +43,7 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"GET ${routes.NotableErrorController.userAlreadyEnrolled().url}" should {
+  s"GET ${routes.NotableErrorController.userAlreadyEnrolled().url}"  should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.userAlreadyEnrolled())
 
     "respond with 200 status and the user already enrolled HTML view" in {
@@ -66,7 +66,20 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
       val result = callRoute(FakeRequest(routes.NotableErrorController.groupAlreadyEnrolled()))
 
       status(result) shouldBe OK
-      html(result) should include("Your organisation is already registered for the Economic Crime Levy")
+      html(result)     should include("Your organisation is already registered for the Economic Crime Levy")
+    }
+  }
+
+  s"GET ${routes.NotableErrorController.agentCannotRegister().url}"  should {
+    behave like authorisedActionAgentsAllowedRoute(routes.NotableErrorController.agentCannotRegister())
+
+    "respond with 200 status and the agent cannot register HTML view" in {
+      stubAuthorisedWithAgentAffinityGroup()
+
+      val result = callRoute(FakeRequest(routes.NotableErrorController.agentCannotRegister()))
+
+      status(result) shouldBe OK
+      html(result)     should include("You cannot use this service to register for the Economic Crime Levy")
     }
   }
 

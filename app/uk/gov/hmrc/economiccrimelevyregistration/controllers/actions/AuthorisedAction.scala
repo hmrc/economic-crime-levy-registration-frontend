@@ -43,6 +43,9 @@ trait AuthorisedActionWithoutEnrolmentCheck extends AuthorisedAction
 @ImplementedBy(classOf[AuthorisedActionWithEnrolmentCheckImpl])
 trait AuthorisedActionWithEnrolmentCheck extends AuthorisedAction
 
+@ImplementedBy(classOf[AuthorisedActionAgentsAllowedImpl])
+trait AuthorisedActionAgentsAllowed extends AuthorisedAction
+
 class AuthorisedActionWithoutEnrolmentCheckImpl @Inject() (
   override val authConnector: AuthConnector,
   enrolmentStoreProxyService: EnrolmentStoreProxyService,
@@ -52,6 +55,7 @@ class AuthorisedActionWithoutEnrolmentCheckImpl @Inject() (
     extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
     with AuthorisedActionWithoutEnrolmentCheck {
   override val checkForEclEnrolment: Boolean = false
+  override val agentsAllowed: Boolean        = false
 }
 
 class AuthorisedActionWithEnrolmentCheckImpl @Inject() (
@@ -63,6 +67,19 @@ class AuthorisedActionWithEnrolmentCheckImpl @Inject() (
     extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
     with AuthorisedActionWithEnrolmentCheck {
   override val checkForEclEnrolment: Boolean = true
+  override val agentsAllowed: Boolean        = false
+}
+
+class AuthorisedActionAgentsAllowedImpl @Inject() (
+  override val authConnector: AuthConnector,
+  enrolmentStoreProxyService: EnrolmentStoreProxyService,
+  config: AppConfig,
+  override val parser: BodyParsers.Default
+)(override implicit val executionContext: ExecutionContext)
+    extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
+    with AuthorisedActionAgentsAllowed {
+  override val checkForEclEnrolment: Boolean = false
+  override val agentsAllowed: Boolean        = true
 }
 
 abstract class BaseAuthorisedAction @Inject() (
@@ -76,6 +93,7 @@ abstract class BaseAuthorisedAction @Inject() (
     with AuthorisedFunctions {
 
   val checkForEclEnrolment: Boolean
+  val agentsAllowed: Boolean
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
     authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup and credentialRole) {
@@ -90,7 +108,12 @@ abstract class BaseAuthorisedAction @Inject() (
           eclEnrolment.flatMap(_.getIdentifier(EclEnrolment.IdentifierKey).map(_.value))
 
         affinityGroup match {
-          case Agent => Future.successful(Ok("Agent account not supported - must be an organisation or individual"))
+          case Agent =>
+            if (agentsAllowed) {
+              block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
+            } else {
+              Future.successful(Redirect(routes.NotableErrorController.agentCannotRegister()))
+            }
           case _     =>
             credentialRole match {
               case Assistant => Future.successful(Ok("User is not an Admin - request an admin to perform registration"))
