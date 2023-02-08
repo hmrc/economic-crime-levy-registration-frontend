@@ -58,9 +58,9 @@ class NotableErrorController @Inject() (
     val eclRegistrationReference = request.eclRegistrationReference.getOrElse(
       throw new IllegalStateException("ECL registration reference not found in request")
     )
-    val claimEnrolmentUrl        =
-      s"${appConfig.claimEnrolmentUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
+    val addLevyUrl               =
+      s"${appConfig.addLevyUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
 
-    Ok(orgAlreadyRegisteredView(eclRegistrationReference, claimEnrolmentUrl))
+    Ok(orgAlreadyRegisteredView(eclRegistrationReference, addLevyUrl))
   }
 }

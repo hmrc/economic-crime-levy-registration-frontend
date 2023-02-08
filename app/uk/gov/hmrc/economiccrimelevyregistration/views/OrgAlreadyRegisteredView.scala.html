@@ -18,7 +18,7 @@
         layout: templates.Layout
 )
 
-@(eclReferenceNumber: String, claimEnrolmentUrl: String)(implicit request: Request[_], messages: Messages)
+@(eclReferenceNumber: String, addLevyUrl: String)(implicit request: Request[_], messages: Messages)
 
     @layout(pageTitle = title(messages("orgAlreadyRegistered.title"))) {
 
@@ -26,6 +26,6 @@
 
         <p class="govuk-body">@messages("orgAlreadyRegistered.body.p1", eclReferenceNumber)</p>
 
-        <p class="govuk-body">@Html(messages("orgAlreadyRegistered.body.p2", messages("orgAlreadyRegistered.body.p2.link", claimEnrolmentUrl)))</p>
+        <p class="govuk-body">@Html(messages("orgAlreadyRegistered.body.p2", messages("orgAlreadyRegistered.body.p2.link", addLevyUrl)))</p>
 
     }

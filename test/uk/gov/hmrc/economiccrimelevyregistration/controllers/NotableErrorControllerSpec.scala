@@ -76,12 +76,12 @@ class NotableErrorControllerSpec extends SpecBase {
     "return OK and the correct view" in forAll { (registration: Registration, eclRegistrationReference: String) =>
       new TestContext(registration, Some(eclRegistrationReference)) {
         val result: Future[Result] = controller.orgAlreadyRegistered()(fakeRequest)
-        val claimEclEnrolmentUrl   =
-          s"${appConfig.claimEnrolmentUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
+        val addLevyUrl             =
+          s"${appConfig.addLevyUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe orgAlreadyEnrolledView(eclRegistrationReference, claimEclEnrolmentUrl)(
+        contentAsString(result) shouldBe orgAlreadyEnrolledView(eclRegistrationReference, addLevyUrl)(
           fakeRequest,
           messages
         ).toString
