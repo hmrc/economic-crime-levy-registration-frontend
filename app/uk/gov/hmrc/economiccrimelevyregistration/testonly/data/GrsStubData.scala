@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.testonly.data
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, ScottishLimitedPartnership, ScottishPartnership, SoleTrader, UkLimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus.Fail
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus.{Fail, Pass}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 
 import java.time.Instant
@@ -28,15 +28,23 @@ import java.util.Date
 
 trait GrsStubData {
 
-  private val defaultIncorporatedEntityJourneyData: IncorporatedEntityJourneyData = IncorporatedEntityJourneyData(
+  private def defaultIncorporatedEntityJourneyData(
+    businessVerification: Option[BusinessVerificationResult],
+    registrationResult: GrsRegistrationResult,
+    identifiersMatch: Boolean
+  ): IncorporatedEntityJourneyData = IncorporatedEntityJourneyData(
     companyProfile = validCompanyProfile(partnership = false),
     ctutr = "1234567890",
-    identifiersMatch = true,
-    businessVerification = None,
-    registration = registered()
+    identifiersMatch = identifiersMatch,
+    businessVerification = businessVerification,
+    registration = registrationResult
   )
 
-  private val defaultSoleTraderJourneyData: SoleTraderEntityJourneyData = SoleTraderEntityJourneyData(
+  private def defaultSoleTraderJourneyData(
+    businessVerification: Option[BusinessVerificationResult],
+    registrationResult: GrsRegistrationResult,
+    identifiersMatch: Boolean
+  ): SoleTraderEntityJourneyData = SoleTraderEntityJourneyData(
     fullName = FullName(
       firstName = "John",
       lastName = "Doe"
@@ -44,12 +52,17 @@ trait GrsStubData {
     dateOfBirth = Date.from(Instant.parse("1975-01-31T00:00:00.00Z")),
     nino = Some("BB111111B"),
     sautr = Some("1234567890"),
-    identifiersMatch = true,
-    businessVerification = None,
-    registration = registered()
+    identifiersMatch = identifiersMatch,
+    businessVerification = businessVerification,
+    registration = registrationResult
   )
 
-  private def defaultPartnershipJourneyData(entityType: EntityType): PartnershipEntityJourneyData =
+  private def defaultPartnershipJourneyData(
+    entityType: EntityType,
+    businessVerification: Option[BusinessVerificationResult],
+    registrationResult: GrsRegistrationResult,
+    identifiersMatch: Boolean
+  ): PartnershipEntityJourneyData =
     PartnershipEntityJourneyData(
       companyProfile = entityType match {
         case GeneralPartnership | ScottishPartnership => None
@@ -58,9 +71,9 @@ trait GrsStubData {
       },
       sautr = Some("1234567890"),
       postcode = Some("AA11AA"),
-      identifiersMatch = true,
-      businessVerification = None,
-      registration = registered()
+      identifiersMatch = identifiersMatch,
+      businessVerification = businessVerification,
+      registration = registrationResult
     )
 
   private def validCompanyProfile(partnership: Boolean): CompanyProfile = CompanyProfile(
@@ -79,19 +92,19 @@ trait GrsStubData {
     )
   )
 
-  private def registered(): GrsRegistrationResult = GrsRegistrationResult(
+  val registered: GrsRegistrationResult = GrsRegistrationResult(
     registrationStatus = Registered,
     registeredBusinessPartnerId = Some("X00000000000001"),
     failures = None
   )
 
-  private val registrationNotCalled: GrsRegistrationResult = GrsRegistrationResult(
+  val registrationNotCalled: GrsRegistrationResult = GrsRegistrationResult(
     registrationStatus = RegistrationNotCalled,
     registeredBusinessPartnerId = None,
     failures = None
   )
 
-  private val registrationFailed: GrsRegistrationResult = GrsRegistrationResult(
+  val registrationFailedPartyTypeMismatch: GrsRegistrationResult = GrsRegistrationResult(
     registrationStatus = RegistrationFailed,
     registeredBusinessPartnerId = None,
     failures = Some(
@@ -104,35 +117,36 @@ trait GrsStubData {
     )
   )
 
-  val registrationFailedPartyTypeMismatchJson: String =
-    Json.prettyPrint(
-      Json.obj(
-        "registration" -> Json.toJson(registrationFailed)
-      )
-    )
+  val registrationFailedGeneric: GrsRegistrationResult = GrsRegistrationResult(
+    registrationStatus = RegistrationFailed,
+    registeredBusinessPartnerId = None,
+    failures = None
+  )
 
-  val registrationNotCalledIdentifierMismatchJson: String =
-    Json.prettyPrint(
-      Json.obj(
-        "identifiersMatch" -> false,
-        "registration"     -> Json.toJson(registrationNotCalled)
-      )
-    )
+  val bvFailed: Option[BusinessVerificationResult] = Some(BusinessVerificationResult(Fail))
+  val bvPassed: Option[BusinessVerificationResult] = Some(BusinessVerificationResult(Pass))
 
-  val registrationNotCalledBvFailedJson: String =
-    Json.prettyPrint(
-      Json.obj(
-        "businessVerification" -> Json.toJson(BusinessVerificationResult(Fail)),
-        "registration"         -> Json.toJson(registrationNotCalled)
+  def constructGrsStubFormData(
+    entityType: EntityType,
+    businessVerification: Option[BusinessVerificationResult] = None,
+    registrationResult: GrsRegistrationResult,
+    identifiersMatch: Boolean
+  ): String = entityType match {
+    case UkLimitedCompany =>
+      Json.prettyPrint(
+        Json.toJson(defaultIncorporatedEntityJourneyData(businessVerification, registrationResult, identifiersMatch))
       )
-    )
-
-  def constructDefaultGrsStubFormData(entityType: EntityType): JsValue = entityType match {
-    case UkLimitedCompany => Json.toJson(defaultIncorporatedEntityJourneyData)
-    case SoleTrader       => Json.toJson(defaultSoleTraderJourneyData)
+    case SoleTrader       =>
+      Json.prettyPrint(
+        Json.toJson(defaultSoleTraderJourneyData(businessVerification, registrationResult, identifiersMatch))
+      )
     case GeneralPartnership | ScottishPartnership | LimitedPartnership | LimitedLiabilityPartnership |
         ScottishLimitedPartnership =>
-      Json.toJson(defaultPartnershipJourneyData(entityType))
+      Json.prettyPrint(
+        Json.toJson(
+          defaultPartnershipJourneyData(entityType, businessVerification, registrationResult, identifiersMatch)
+        )
+      )
     case o                => throw new IllegalStateException(s"$o is not a valid GRS entity type")
   }
 

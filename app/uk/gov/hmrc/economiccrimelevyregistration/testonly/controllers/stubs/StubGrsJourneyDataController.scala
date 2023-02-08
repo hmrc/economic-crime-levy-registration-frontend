@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs
 
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
@@ -44,41 +43,65 @@ class StubGrsJourneyDataController @Inject() (
 
   val form: Form[GrsStubFormData] = grsStubFormProvider()
 
+  private val registrationSuccessBvDisabledF: EntityType => String           =
+    constructGrsStubFormData(_, None, registered, identifiersMatch = true)
+  private val registrationSuccessBvEnabledF: EntityType => String            =
+    constructGrsStubFormData(_, bvPassed, registered, identifiersMatch = true)
+  private val registrationFailedPartyTypeMismatchF: EntityType => String     =
+    constructGrsStubFormData(_, None, registrationFailedPartyTypeMismatch, identifiersMatch = true)
+  private val registrationFailedGenericF: EntityType => String               =
+    constructGrsStubFormData(_, None, registrationFailedGeneric, identifiersMatch = true)
+  private val registrationNotCalledIdentifierMismatchF: EntityType => String =
+    constructGrsStubFormData(_, None, registrationNotCalled, identifiersMatch = false)
+  private val registrationNotCalledBvFailedF: EntityType => String           =
+    constructGrsStubFormData(_, bvFailed, registrationNotCalled, identifiersMatch = true)
+
   def onPageLoad(continueUrl: String, entityType: String): Action[AnyContent] = Action { implicit request =>
     val e: EntityType = EntityType.enumerable.value(entityType).get
 
     Ok(
       view(
-        form.fill(GrsStubFormData(Json.prettyPrint(constructDefaultGrsStubFormData(e)))),
-        registrationFailedPartyTypeMismatchJson,
-        registrationNotCalledIdentifierMismatchJson,
-        registrationNotCalledBvFailedJson,
-        continueUrl
+        form,
+        registrationSuccessBvDisabledF(e),
+        registrationSuccessBvEnabledF(e),
+        registrationFailedPartyTypeMismatchF(e),
+        registrationFailedGenericF(e),
+        registrationNotCalledIdentifierMismatchF(e),
+        registrationNotCalledBvFailedF(e),
+        continueUrl,
+        entityType
       )
     )
   }
 
-  def onSubmit(continueUrl: String): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors =>
-          BadRequest(
-            view(
-              formWithErrors,
-              registrationFailedPartyTypeMismatchJson,
-              registrationNotCalledIdentifierMismatchJson,
-              registrationNotCalledBvFailedJson,
-              continueUrl
+  def onSubmit(continueUrl: String, entityType: String): Action[AnyContent] = (authorise andThen getRegistrationData) {
+    implicit request =>
+      val e: EntityType = EntityType.enumerable.value(entityType).get
+
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            BadRequest(
+              view(
+                formWithErrors,
+                registrationSuccessBvDisabledF(e),
+                registrationSuccessBvEnabledF(e),
+                registrationFailedPartyTypeMismatchF(e),
+                registrationFailedGenericF(e),
+                registrationNotCalledIdentifierMismatchF(e),
+                registrationNotCalledBvFailedF(e),
+                continueUrl,
+                entityType
+              )
+            ),
+          grsStubFormData =>
+            Redirect(
+              s"/register-for-the-economic-crime-levy/grs-continue/" +
+                s"$continueUrl?journeyId=${Base64Utils
+                  .base64UrlEncode(grsStubFormData.grsJourneyDataJson)}"
             )
-          ),
-        grsStubFormData =>
-          Redirect(
-            s"/register-for-the-economic-crime-levy/grs-continue/" +
-              s"$continueUrl?journeyId=${Base64Utils
-                .base64UrlEncode(grsStubFormData.grsJourneyDataJson)}"
-          )
-      )
+        )
   }
 
 }

@@ -1,31 +1,35 @@
 @*
-* Copyright 2023 HM Revenue & Customs
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*@
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
 @import uk.gov.hmrc.economiccrimelevyregistration.testonly.models.GrsStubFormData
-@import uk.gov.hmrc.economiccrimelevyregistration.testonly.views.html.CodeTemplate
 
 @this(
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukTextarea: GovukTextarea,
         govukButton: GovukButton,
-        govukDetails: GovukDetails,
-        code: CodeTemplate,
         layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 )
-@(form: Form[GrsStubFormData], registrationFailedPartyTypeMismatchJson: String, registrationNotCalledIdentifierMismatchJson: String, registrationNotCalledBvFailedJson: String, continueUrl: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[GrsStubFormData], registrationSuccessBvDisabledJson: String, registrationSuccessBvEnabledJson: String, registrationFailedPartyTypeMismatchJson: String, registrationFailedGenericJson: String, registrationNotCalledIdentifierMismatchJson: String, registrationNotCalledBvFailedJson: String, continueUrl: String, entityType: String)(implicit request: Request[_], messages: Messages)
+
+<script>
+        function populateTextArea(journeyData) {
+            document.getElementById("grsJourneyDataJson").value = JSON.stringify(journeyData, null, 2);
+        }
+</script>
 
 @layout(
     pageTitle = title("Stub GRS Journey Data"),
@@ -34,7 +38,7 @@
 
     <h1 class="govuk-heading-xl">Stub GRS Journey Data</h1>
 
-    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.routes.StubGrsJourneyDataController.onSubmit(continueUrl)) {
+    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs.routes.StubGrsJourneyDataController.onSubmit(continueUrl, entityType)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -43,32 +47,43 @@
         @govukTextarea(Textarea(
             id = "grsJourneyDataJson",
             name = "grsJourneyDataJson",
-            rows = 25,
             label = Label(
                 classes = "govuk-label--m",
                 content = Text("Configure the GRS journey data JSON to be returned")
             ),
-            value = form.value.map(_.grsJourneyDataJson)
+            rows = 30,
+            value = Some(registrationSuccessBvDisabledJson)
         ))
 
-        <h1 class="govuk-heading-m">Other GRS scenarios</h1>
         <p class="govuk-body">
-            By default, this form field contains happy path GRS journey data JSON for the given entity type. In order to replicate other GRS scenarios, include JSON from one of the following options or change the existing values.</p>
+            The default JSON in this form simulates a happy path through GRS based on the given entity type (Registration success - BV disabled).</p>
 
-        @govukDetails(Details(
-            summary = Text("Registration failed - party type mismatch"),
-            content = HtmlContent(code(registrationFailedPartyTypeMismatchJson))
-        ))
+        <p class="govuk-body">
+            Use the buttons below or change the data manually to replicate other GRS scenarios.</p>
 
-        @govukDetails(Details(
-            summary = Text("Registration not called - identifiers do not match"),
-            content = HtmlContent(code(registrationNotCalledIdentifierMismatchJson))
-        ))
+        <a id="registrationSuccessBvDisabled" class="govuk-button govuk-button--secondary" href="#grsJourneyDataJson" onclick="populateTextArea(@registrationSuccessBvDisabledJson)">
+            Registration success - BV disabled</a>
+        <br>
 
-        @govukDetails(Details(
-            summary = Text("Registration not called - business verification failed"),
-            content = HtmlContent(code(registrationNotCalledBvFailedJson))
-        ))
+        <a id="registrationSuccessBvEnabled" class="govuk-button govuk-button--secondary" href="#grsJourneyDataJson" onclick="populateTextArea(@registrationSuccessBvEnabledJson)">
+            Registration success - BV enabled</a>
+        <br>
+
+        <a id="registrationFailedPartyTypeMismatch" class="govuk-button govuk-button--secondary" href="#grsJourneyDataJson" onclick="populateTextArea(@registrationFailedPartyTypeMismatchJson)">
+            Registration failed - party type mismatch</a>
+        <br>
+
+        <a id="registrationFailedGeneric" class="govuk-button govuk-button--secondary" href="#grsJourneyDataJson" onclick="populateTextArea(@registrationFailedGenericJson)">
+            Registration failed - generic</a>
+        <br>
+
+        <a id="registrationNotCalledIdentifierMismatch" class="govuk-button govuk-button--secondary" href="#grsJourneyDataJson" onclick="populateTextArea(@registrationNotCalledIdentifierMismatchJson)">
+            Registration not called - identifiers do not match</a>
+        <br>
+
+        <a id="registrationNotCalledBvFailed" class="govuk-button govuk-button--secondary" href="#grsJourneyDataJson" onclick="populateTextArea(@registrationNotCalledBvFailedJson)">
+            Registration not called - business verification failed</a>
+        <br>
 
         @govukButton(
             ButtonViewModel("Save and continue")

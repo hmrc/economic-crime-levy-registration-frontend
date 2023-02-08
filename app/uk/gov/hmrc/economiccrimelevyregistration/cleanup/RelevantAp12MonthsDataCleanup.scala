@@ -22,6 +22,9 @@ import javax.inject.Inject
 
 class RelevantAp12MonthsDataCleanup @Inject() () extends DataCleanup {
   def cleanup(registration: Registration): Registration =
-    registration.copy(relevantApLength = None, relevantApRevenue = None)
+    registration.relevantAp12Months match {
+      case Some(true) => registration.copy(relevantApLength = None, revenueMeetsThreshold = None)
+      case _          => registration.copy(revenueMeetsThreshold = None)
+    }
 
 }

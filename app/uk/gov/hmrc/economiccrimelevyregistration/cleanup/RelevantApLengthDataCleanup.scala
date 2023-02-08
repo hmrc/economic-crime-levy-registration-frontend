@@ -22,6 +22,6 @@ import javax.inject.Inject
 
 class RelevantApLengthDataCleanup @Inject() () extends DataCleanup {
   def cleanup(registration: Registration): Registration =
-    registration.copy(relevantApRevenue = None)
+    registration.copy(revenueMeetsThreshold = None)
 
 }
