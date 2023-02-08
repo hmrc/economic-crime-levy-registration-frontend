@@ -118,6 +118,8 @@ GET         /already-registered-for-economic-crime-levy                       uk
 
 GET         /add-levy                                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.groupAlreadyEnrolled()
 
+GET         /agent-cannot-register                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.agentCannotRegister()
+
 GET         /account/sign-out-survey                                          uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
 GET         /account/sign-out                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
 GET         /account/signed-out                                               uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()
