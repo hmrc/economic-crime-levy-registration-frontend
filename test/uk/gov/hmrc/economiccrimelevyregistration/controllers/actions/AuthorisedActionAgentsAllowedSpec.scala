@@ -27,6 +27,7 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.economiccrimelevyregistration.EnrolmentsWithEcl
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.services.EnrolmentStoreProxyService
 
@@ -105,8 +106,8 @@ class AuthorisedActionAgentsAllowedSpec extends SpecBase {
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
-        status(result)          shouldBe OK
-        contentAsString(result) shouldBe "User is not an Admin - request an admin to perform registration"
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.NotableErrorController.assistantCannotRegister().url
     }
 
     "throw an IllegalStateException if there is no internal id" in {

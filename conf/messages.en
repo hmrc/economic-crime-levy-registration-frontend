@@ -314,6 +314,11 @@ agentCannotRegister.p2 = Your client must register using their own Government Ga
 agentCannotRegister.p3 = Go to your {0}.
 agentCannotRegister.p3.link = <a href="https://www.gov.uk/guidance/sign-in-to-your-agent-services-account" class="govuk-link">agent services account</a>
 
+assistantCannotRegister.title = You must be an administrator to register for this service
+assistantCannotRegister.heading = You must be an administrator to register for this service
+assistantCannotRegister.p1 = You are not an administrator for your organisation. You cannot use this service to register for the Economic Crime Levy (ECL).
+assistantCannotRegister.p2 = You will need to ask an administrator in your organisation to add you to the account.
+
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.
 feedback.link = <a href="{0}" class="govuk-link">Send us your feedback</a>

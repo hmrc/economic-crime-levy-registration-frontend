@@ -19,9 +19,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionAgentsAllowed, AuthorisedActionWithEnrolmentCheck, AuthorisedActionWithoutEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AgentCannotRegisterView, AnswersAreInvalidView, GroupAlreadyEnrolledView, UserAlreadyEnrolledView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AgentCannotRegisterView, AnswersAreInvalidView, AssistantCannotRegisterView, GroupAlreadyEnrolledView, UserAlreadyEnrolledView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -32,12 +32,14 @@ class NotableErrorController @Inject() (
   authoriseWithoutEnrolmentCheck: AuthorisedActionWithoutEnrolmentCheck,
   authoriseWithEnrolmentCheck: AuthorisedActionWithEnrolmentCheck,
   authoriseAgentsAllowed: AuthorisedActionAgentsAllowed,
+  authoriseAssistantsAllowed: AuthorisedActionAssistantsAllowed,
   getRegistrationData: DataRetrievalAction,
   appConfig: AppConfig,
   userAlreadyEnrolledView: UserAlreadyEnrolledView,
   groupAlreadyEnrolledView: GroupAlreadyEnrolledView,
   answersAreInvalidView: AnswersAreInvalidView,
-  agentCannotRegisterView: AgentCannotRegisterView
+  agentCannotRegisterView: AgentCannotRegisterView,
+  assistantCannotRegisterView: AssistantCannotRegisterView
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -68,5 +70,9 @@ class NotableErrorController @Inject() (
 
   def agentCannotRegister: Action[AnyContent] = authoriseAgentsAllowed { implicit request =>
     Ok(agentCannotRegisterView())
+  }
+
+  def assistantCannotRegister: Action[AnyContent] = authoriseAssistantsAllowed { implicit request =>
+    Ok(assistantCannotRegisterView())
   }
 }
