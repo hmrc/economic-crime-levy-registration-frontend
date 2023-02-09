@@ -37,6 +37,9 @@ trait AuthorisedAction
     with FrontendHeaderCarrierProvider
     with ActionFunction[Request, AuthorisedRequest]
 
+@ImplementedBy(classOf[AuthorisedActionUnrestrictedImpl])
+trait AuthorisedActionUnrestricted extends AuthorisedAction
+
 @ImplementedBy(classOf[AuthorisedActionWithoutEnrolmentCheckImpl])
 trait AuthorisedActionWithoutEnrolmentCheck extends AuthorisedAction
 
@@ -48,6 +51,19 @@ trait AuthorisedActionAgentsAllowed extends AuthorisedAction
 
 @ImplementedBy(classOf[AuthorisedActionAssistantsAllowedImpl])
 trait AuthorisedActionAssistantsAllowed extends AuthorisedAction
+
+class AuthorisedActionUnrestrictedImpl @Inject() (
+  override val authConnector: AuthConnector,
+  enrolmentStoreProxyService: EnrolmentStoreProxyService,
+  config: AppConfig,
+  override val parser: BodyParsers.Default
+)(override implicit val executionContext: ExecutionContext)
+    extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
+    with AuthorisedActionUnrestricted {
+  override val checkForEclEnrolment: Boolean = false
+  override val agentsAllowed: Boolean        = true
+  override val assistantsAllowed: Boolean    = true
+}
 
 class AuthorisedActionWithoutEnrolmentCheckImpl @Inject() (
   override val authConnector: AuthConnector,
