@@ -83,4 +83,17 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
+  s"GET ${routes.NotableErrorController.assistantCannotRegister().url}" should {
+    behave like authorisedActionAssistantsAllowedRoute(routes.NotableErrorController.assistantCannotRegister())
+
+    "respond with 200 status and the assistant cannot register HTML view" in {
+      stubAuthorisedWithAssistantCredentialRole()
+
+      val result = callRoute(FakeRequest(routes.NotableErrorController.assistantCannotRegister()))
+
+      status(result) shouldBe OK
+      html(result) should include("You must be an administrator to register for this service")
+    }
+  }
+
 }

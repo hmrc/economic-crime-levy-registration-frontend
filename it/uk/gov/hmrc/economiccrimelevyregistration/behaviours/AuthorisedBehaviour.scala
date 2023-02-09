@@ -54,8 +54,8 @@ trait AuthorisedBehaviour {
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
-        status(result)          shouldBe OK
-        contentAsString(result) shouldBe "User is not an Admin - request an admin to perform registration"
+        status(result)          shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.NotableErrorController.assistantCannotRegister().url
       }
     }
 
@@ -84,13 +84,13 @@ trait AuthorisedBehaviour {
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
-        status(result)          shouldBe OK
-        contentAsString(result) shouldBe "User is not an Admin - request an admin to perform registration"
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.NotableErrorController.assistantCannotRegister().url
       }
     }
 
   def authorisedActionAgentsAllowedRoute(call: Call): Unit =
-    "authorisedActionWithoutEnrolmentCheckRoute" should {
+    "authorisedActionAgentsAllowedRoute" should {
       "redirect to sign in when there is no auth session" in {
         stubUnauthorised()
 
@@ -105,8 +105,29 @@ trait AuthorisedBehaviour {
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
-        status(result)          shouldBe OK
-        contentAsString(result) shouldBe "User is not an Admin - request an admin to perform registration"
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.NotableErrorController.assistantCannotRegister().url
+      }
+    }
+
+  def authorisedActionAssistantsAllowedRoute(call: Call): Unit =
+    "authorisedActionAssistantsAllowedRoute" should {
+      "redirect to sign in when there is no auth session" in {
+        stubUnauthorised()
+
+        val result: Future[Result] = callRoute(FakeRequest(call))
+
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).value should startWith(appConfig.signInUrl)
+      }
+
+      "go to the agent not supported page if the user has an agent affinity group" in {
+        stubAuthorisedWithAgentAffinityGroup()
+
+        val result: Future[Result] = callRoute(FakeRequest(call))
+
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.NotableErrorController.agentCannotRegister().url
       }
     }
 

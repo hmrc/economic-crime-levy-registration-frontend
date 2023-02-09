@@ -28,7 +28,7 @@ import play.api.test.Helpers.{stubBodyParser, stubControllerComponents}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{FakeAuthorisedActionAgentsAllowed, FakeAuthorisedActionWithEnrolmentCheck, FakeAuthorisedActionWithoutEnrolmentCheck, FakeDataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{FakeAuthorisedActionAgentsAllowed, FakeAuthorisedActionAssistantsAllowed, FakeAuthorisedActionWithEnrolmentCheck, FakeAuthorisedActionWithoutEnrolmentCheck, FakeDataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.http.HeaderCarrier
@@ -66,7 +66,10 @@ trait SpecBase
     new FakeAuthorisedActionWithoutEnrolmentCheck(eclRegistrationReference, internalId, bodyParsers)
   def fakeAuthorisedActionAgentsAllowed                                                                              =
     new FakeAuthorisedActionAgentsAllowed(bodyParsers)
-  def fakeDataRetrievalAction(data: Registration)                                                                    = new FakeDataRetrievalAction(data)
+  def fakeAuthorisedActionAssistantsAllowed                                                                          =
+    new FakeAuthorisedActionAssistantsAllowed(bodyParsers)
+  def fakeDataRetrievalAction(data: Registration)                                                                    =
+    new FakeDataRetrievalAction(data)
 
   def onwardRoute: Call = Call(GET, "/foo")
 

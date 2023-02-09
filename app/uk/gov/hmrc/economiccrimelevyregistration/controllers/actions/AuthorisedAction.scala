@@ -46,6 +46,9 @@ trait AuthorisedActionWithEnrolmentCheck extends AuthorisedAction
 @ImplementedBy(classOf[AuthorisedActionAgentsAllowedImpl])
 trait AuthorisedActionAgentsAllowed extends AuthorisedAction
 
+@ImplementedBy(classOf[AuthorisedActionAssistantsAllowedImpl])
+trait AuthorisedActionAssistantsAllowed extends AuthorisedAction
+
 class AuthorisedActionWithoutEnrolmentCheckImpl @Inject() (
   override val authConnector: AuthConnector,
   enrolmentStoreProxyService: EnrolmentStoreProxyService,
@@ -56,6 +59,7 @@ class AuthorisedActionWithoutEnrolmentCheckImpl @Inject() (
     with AuthorisedActionWithoutEnrolmentCheck {
   override val checkForEclEnrolment: Boolean = false
   override val agentsAllowed: Boolean        = false
+  override val assistantsAllowed: Boolean    = false
 }
 
 class AuthorisedActionWithEnrolmentCheckImpl @Inject() (
@@ -68,6 +72,7 @@ class AuthorisedActionWithEnrolmentCheckImpl @Inject() (
     with AuthorisedActionWithEnrolmentCheck {
   override val checkForEclEnrolment: Boolean = true
   override val agentsAllowed: Boolean        = false
+  override val assistantsAllowed: Boolean    = false
 }
 
 class AuthorisedActionAgentsAllowedImpl @Inject() (
@@ -80,6 +85,20 @@ class AuthorisedActionAgentsAllowedImpl @Inject() (
     with AuthorisedActionAgentsAllowed {
   override val checkForEclEnrolment: Boolean = false
   override val agentsAllowed: Boolean        = true
+  override val assistantsAllowed: Boolean    = false
+}
+
+class AuthorisedActionAssistantsAllowedImpl @Inject() (
+  override val authConnector: AuthConnector,
+  enrolmentStoreProxyService: EnrolmentStoreProxyService,
+  config: AppConfig,
+  override val parser: BodyParsers.Default
+)(override implicit val executionContext: ExecutionContext)
+    extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
+    with AuthorisedActionAssistantsAllowed {
+  override val checkForEclEnrolment: Boolean = false
+  override val agentsAllowed: Boolean        = false
+  override val assistantsAllowed: Boolean    = true
 }
 
 abstract class BaseAuthorisedAction @Inject() (
@@ -94,6 +113,7 @@ abstract class BaseAuthorisedAction @Inject() (
 
   val checkForEclEnrolment: Boolean
   val agentsAllowed: Boolean
+  val assistantsAllowed: Boolean
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
     authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup and credentialRole) {
@@ -116,7 +136,12 @@ abstract class BaseAuthorisedAction @Inject() (
             }
           case _     =>
             credentialRole match {
-              case Assistant => Future.successful(Ok("User is not an Admin - request an admin to perform registration"))
+              case Assistant =>
+                if (assistantsAllowed) {
+                  block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
+                } else {
+                  Future.successful(Redirect(routes.NotableErrorController.assistantCannotRegister()))
+                }
               case _         =>
                 if (checkForEclEnrolment) {
                   eclEnrolment match {

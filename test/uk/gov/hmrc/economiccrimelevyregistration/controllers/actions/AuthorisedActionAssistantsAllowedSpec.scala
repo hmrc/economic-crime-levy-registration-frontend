@@ -25,22 +25,22 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
+import uk.gov.hmrc.economiccrimelevyregistration.EnrolmentsWithEcl
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.services.EnrolmentStoreProxyService
-import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, EnrolmentsWithoutEcl}
 
 import scala.concurrent.Future
 
-class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
+class AuthorisedActionAssistantsAllowedSpec extends SpecBase {
 
   val defaultBodyParser: BodyParsers.Default                     = app.injector.instanceOf[BodyParsers.Default]
   val mockAuthConnector: AuthConnector                           = mock[AuthConnector]
   val mockEnrolmentStoreProxyService: EnrolmentStoreProxyService = mock[EnrolmentStoreProxyService]
 
   val authorisedAction =
-    new AuthorisedActionWithEnrolmentCheckImpl(
+    new AuthorisedActionAssistantsAllowedImpl(
       mockAuthConnector,
       mockEnrolmentStoreProxyService,
       appConfig,
@@ -59,12 +59,12 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
 
   "invokeBlock" should {
     "execute the block and return the result if authorised" in forAll {
-      (internalId: String, enrolmentsWithoutEcl: EnrolmentsWithoutEcl, groupId: String) =>
+      (internalId: String, enrolmentsWithEcl: EnrolmentsWithEcl, groupId: String) =>
         when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
           .thenReturn(
             Future(
-              Some(internalId) and enrolmentsWithoutEcl.enrolments and Some(groupId) and Some(Organisation) and Some(
-                User
+              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Organisation) and Some(
+                Assistant
               )
             )
           )
@@ -90,7 +90,7 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
       }
     }
 
-    "redirect the user to the already registered page if they have the ECL enrolment" in forAll {
+    "redirect the user to the agent not supported page if they have an agent affinity group" in forAll {
       (internalId: String, enrolmentsWithEcl: EnrolmentsWithEcl, groupId: String) =>
         when(
           mockAuthConnector
@@ -98,83 +98,16 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
         )
           .thenReturn(
             Future(
-              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Organisation) and Some(User)
-            )
-          )
-
-        val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
-
-        status(result)                 shouldBe SEE_OTHER
-        redirectLocation(result).value shouldBe routes.NotableErrorController.userAlreadyEnrolled().url
-    }
-
-    "redirect the user to the group already registered page if they do not have the ECL enrolment but the group does" in forAll {
-      (
-        internalId: String,
-        enrolmentsWithoutEcl: EnrolmentsWithoutEcl,
-        groupId: String,
-        eclReferenceNumber: String
-      ) =>
-        when(
-          mockAuthConnector
-            .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
-        )
-          .thenReturn(
-            Future(
-              Some(internalId) and enrolmentsWithoutEcl.enrolments and Some(groupId) and Some(Organisation) and Some(
+              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Agent) and Some(
                 User
               )
             )
           )
 
-        when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
-          .thenReturn(Future.successful(Some(eclReferenceNumber)))
-
-        val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
-
-        status(result)                 shouldBe SEE_OTHER
-        redirectLocation(result).value shouldBe routes.NotableErrorController.groupAlreadyEnrolled().url
-    }
-
-    "redirect the user to the agent not supported page if they have an agent affinity group" in forAll {
-      (internalId: String, enrolmentsWithoutEcl: EnrolmentsWithoutEcl, groupId: String) =>
-        when(
-          mockAuthConnector
-            .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
-        )
-          .thenReturn(
-            Future(
-              Some(internalId) and enrolmentsWithoutEcl.enrolments and Some(groupId) and Some(Agent) and Some(User)
-            )
-          )
-
-        when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
-          .thenReturn(Future.successful(None))
-
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
         status(result)                 shouldBe SEE_OTHER
         redirectLocation(result).value shouldBe routes.NotableErrorController.agentCannotRegister().url
-    }
-
-    "redirect the user to the assistant not supported page if they have an assistant credential role" in forAll {
-      (internalId: String, enrolmentsWithEcl: EnrolmentsWithEcl, groupId: String) =>
-        when(
-          mockAuthConnector
-            .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
-        )
-          .thenReturn(
-            Future(
-              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Organisation) and Some(
-                Assistant
-              )
-            )
-          )
-
-        val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
-
-        status(result)                 shouldBe SEE_OTHER
-        redirectLocation(result).value shouldBe routes.NotableErrorController.assistantCannotRegister().url
     }
 
     "throw an IllegalStateException if there is no internal id" in {

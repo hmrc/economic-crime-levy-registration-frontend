@@ -22,16 +22,17 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AgentCannotRegisterView, AnswersAreInvalidView, GroupAlreadyEnrolledView, UserAlreadyEnrolledView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AgentCannotRegisterView, AnswersAreInvalidView, AssistantCannotRegisterView, GroupAlreadyEnrolledView, UserAlreadyEnrolledView}
 
 import scala.concurrent.Future
 
 class NotableErrorControllerSpec extends SpecBase {
 
-  val answersAreInvalidView: AnswersAreInvalidView       = app.injector.instanceOf[AnswersAreInvalidView]
-  val userAlreadyEnrolledView: UserAlreadyEnrolledView   = app.injector.instanceOf[UserAlreadyEnrolledView]
-  val groupAlreadyEnrolledView: GroupAlreadyEnrolledView = app.injector.instanceOf[GroupAlreadyEnrolledView]
-  val agentCannotRegisterView: AgentCannotRegisterView   = app.injector.instanceOf[AgentCannotRegisterView]
+  val answersAreInvalidView: AnswersAreInvalidView             = app.injector.instanceOf[AnswersAreInvalidView]
+  val userAlreadyEnrolledView: UserAlreadyEnrolledView         = app.injector.instanceOf[UserAlreadyEnrolledView]
+  val groupAlreadyEnrolledView: GroupAlreadyEnrolledView       = app.injector.instanceOf[GroupAlreadyEnrolledView]
+  val agentCannotRegisterView: AgentCannotRegisterView         = app.injector.instanceOf[AgentCannotRegisterView]
+  val assistantCannotRegisterView: AssistantCannotRegisterView = app.injector.instanceOf[AssistantCannotRegisterView]
 
   class TestContext(registrationData: Registration, eclRegistrationReference: Option[String] = None) {
     val controller = new NotableErrorController(
@@ -39,12 +40,14 @@ class NotableErrorControllerSpec extends SpecBase {
       fakeAuthorisedActionWithoutEnrolmentCheck(registrationData.internalId, eclRegistrationReference),
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeAuthorisedActionAgentsAllowed,
+      fakeAuthorisedActionAssistantsAllowed,
       fakeDataRetrievalAction(registrationData),
       appConfig,
       userAlreadyEnrolledView,
       groupAlreadyEnrolledView,
       answersAreInvalidView,
-      agentCannotRegisterView
+      agentCannotRegisterView,
+      assistantCannotRegisterView
     )
   }
 
@@ -100,6 +103,18 @@ class NotableErrorControllerSpec extends SpecBase {
         status(result) shouldBe OK
 
         contentAsString(result) shouldBe agentCannotRegisterView()(fakeRequest, messages).toString
+      }
+    }
+  }
+
+  "assistantCannotRegister" should {
+    "return OK and the correct view" in forAll { registration: Registration =>
+      new TestContext(registration) {
+        val result: Future[Result] = controller.assistantCannotRegister()(fakeRequest)
+
+        status(result) shouldBe OK
+
+        contentAsString(result) shouldBe assistantCannotRegisterView()(fakeRequest, messages).toString
       }
     }
   }

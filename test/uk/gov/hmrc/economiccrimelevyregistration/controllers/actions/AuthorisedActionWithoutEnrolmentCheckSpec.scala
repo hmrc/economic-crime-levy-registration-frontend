@@ -127,8 +127,8 @@ class AuthorisedActionWithoutEnrolmentCheckSpec extends SpecBase {
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
-        status(result)          shouldBe OK
-        contentAsString(result) shouldBe "User is not an Admin - request an admin to perform registration"
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.NotableErrorController.assistantCannotRegister().url
     }
 
     "throw an IllegalStateException if there is no internal id" in {
