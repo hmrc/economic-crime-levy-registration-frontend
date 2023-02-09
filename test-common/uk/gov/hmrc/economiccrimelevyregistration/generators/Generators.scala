@@ -80,16 +80,12 @@ trait Generators {
   def longsOutsideRange(min: Long, max: Long): Gen[Long] =
     arbitrary[Long] suchThat (x => x < min || x > max)
 
+  def nonBlankString: Gen[String] = arbitrary[String] suchThat (!_.isBlank)
+
   def nonBooleans: Gen[String] =
-    arbitrary[String]
-      .suchThat(_.nonEmpty)
+    nonBlankString
       .suchThat(_ != "true")
       .suchThat(_ != "false")
-
-  def nonEmptyString: Gen[String] =
-    arbitrary[String] suchThat (_.nonEmpty)
-
-  def nonBlankString: Gen[String] = arbitrary[String] suchThat (!_.isBlank)
 
   def stringsWithMaxLength(maxLength: Int): Gen[String] =
     for {
