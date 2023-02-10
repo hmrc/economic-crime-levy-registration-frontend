@@ -102,11 +102,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
-      status(result) shouldBe OK
+      status(result) shouldBe SEE_OTHER
 
-      contentAsString(
-        result
-      ) shouldBe s"Business is already subscribed to ECL with registration reference $testEclRegistrationReference"
+      redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered().url)
     }
 
     "retrieve the sole trader entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
@@ -186,11 +184,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
-      status(result) shouldBe OK
+      status(result) shouldBe SEE_OTHER
 
-      contentAsString(
-        result
-      ) shouldBe s"Business is already subscribed to ECL with registration reference $testEclRegistrationReference"
+      redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered().url)
     }
 
     "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
@@ -272,11 +268,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
-      status(result) shouldBe OK
+      status(result) shouldBe SEE_OTHER
 
-      contentAsString(
-        result
-      ) shouldBe s"Business is already subscribed to ECL with registration reference $testEclRegistrationReference"
+      redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered().url)
     }
   }
 

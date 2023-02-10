@@ -319,6 +319,15 @@ assistantCannotRegister.heading = You must be an administrator to register for t
 assistantCannotRegister.p1 = You are not an administrator for your organisation. You cannot use this service to register for the Economic Crime Levy (ECL).
 assistantCannotRegister.p2 = You will need to ask an administrator in your organisation to add you to the account.
 
+organisationAlreadyRegistered.title = Your organisation is already registered for the Economic Crime Levy
+organisationAlreadyRegistered.heading = Your organisation is already registered for the Economic Crime Levy
+organisationAlreadyRegistered.body.p1 = Your ECL reference number is {0}.
+organisationAlreadyRegistered.body.p2 = You can {0}.
+organisationAlreadyRegistered.body.p2.link = <a href="{0}" class="govuk-link">add this levy to your business tax account</a>
+organisationAlreadyRegistered.provide = You will need to provide:
+organisationAlreadyRegistered.provide.b1 = the date your organisation registered for the Economic Crime Levy (ECL)
+organisationAlreadyRegistered.provide.b2 = your ECL reference number
+
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.
 feedback.link = <a href="{0}" class="govuk-link">Send us your feedback</a>

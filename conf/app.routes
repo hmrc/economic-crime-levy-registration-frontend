@@ -122,6 +122,8 @@ GET         /agent-cannot-register                                            uk
 
 GET         /assistant-cannot-register                                        uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.assistantCannotRegister()
 
+GET         /organisation-already-registered                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.organisationAlreadyRegistered()
+
 GET         /account/sign-out-survey                                          uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
 GET         /account/sign-out                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
 GET         /account/signed-out                                               uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()

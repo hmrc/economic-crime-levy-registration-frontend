@@ -95,13 +95,13 @@ class GrsContinueController @Inject() (
         Future.successful(Ok("Failed business verification"))
       case (_, _, _, Some(businessPartnerId))                =>
         eclRegistrationConnector.getSubscriptionStatus(businessPartnerId).map {
-          case EclSubscriptionStatus(NotSubscribed)                        =>
+          case EclSubscriptionStatus(NotSubscribed) =>
             mode match {
               case NormalMode => Redirect(routes.BusinessSectorController.onPageLoad(NormalMode))
               case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad())
             }
-          case EclSubscriptionStatus(Subscribed(eclRegistrationReference)) =>
-            Ok(s"Business is already subscribed to ECL with registration reference $eclRegistrationReference")
+          case EclSubscriptionStatus(Subscribed(_)) =>
+            Redirect(routes.NotableErrorController.organisationAlreadyRegistered())
         }
       case (_, _, RegistrationFailed, _)                     => Future.successful(Ok("Registration failed"))
       case _                                                 =>
