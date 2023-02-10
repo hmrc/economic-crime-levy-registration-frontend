@@ -101,7 +101,7 @@ class GrsContinueController @Inject() (
               case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad())
             }
           case EclSubscriptionStatus(Subscribed(eclRegistrationReference)) =>
-            Ok(s"Business is already subscribed to ECL with registration reference $eclRegistrationReference")
+            Redirect(routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference))
         }
       case (_, _, RegistrationFailed, _)                     => Future.successful(Ok("Registration failed"))
       case _                                                 =>

@@ -22,17 +22,19 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AgentCannotRegisterView, AnswersAreInvalidView, AssistantCannotRegisterView, GroupAlreadyEnrolledView, UserAlreadyEnrolledView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html._
 
 import scala.concurrent.Future
 
 class NotableErrorControllerSpec extends SpecBase {
 
-  val answersAreInvalidView: AnswersAreInvalidView             = app.injector.instanceOf[AnswersAreInvalidView]
-  val userAlreadyEnrolledView: UserAlreadyEnrolledView         = app.injector.instanceOf[UserAlreadyEnrolledView]
-  val groupAlreadyEnrolledView: GroupAlreadyEnrolledView       = app.injector.instanceOf[GroupAlreadyEnrolledView]
-  val agentCannotRegisterView: AgentCannotRegisterView         = app.injector.instanceOf[AgentCannotRegisterView]
-  val assistantCannotRegisterView: AssistantCannotRegisterView = app.injector.instanceOf[AssistantCannotRegisterView]
+  val answersAreInvalidView: AnswersAreInvalidView                         = app.injector.instanceOf[AnswersAreInvalidView]
+  val userAlreadyEnrolledView: UserAlreadyEnrolledView                     = app.injector.instanceOf[UserAlreadyEnrolledView]
+  val groupAlreadyEnrolledView: GroupAlreadyEnrolledView                   = app.injector.instanceOf[GroupAlreadyEnrolledView]
+  val agentCannotRegisterView: AgentCannotRegisterView                     = app.injector.instanceOf[AgentCannotRegisterView]
+  val assistantCannotRegisterView: AssistantCannotRegisterView             = app.injector.instanceOf[AssistantCannotRegisterView]
+  val organisationAlreadyRegisteredView: OrganisationAlreadyRegisteredView =
+    app.injector.instanceOf[OrganisationAlreadyRegisteredView]
 
   class TestContext(registrationData: Registration, eclRegistrationReference: Option[String] = None) {
     val controller = new NotableErrorController(
@@ -47,7 +49,8 @@ class NotableErrorControllerSpec extends SpecBase {
       groupAlreadyEnrolledView,
       answersAreInvalidView,
       agentCannotRegisterView,
-      assistantCannotRegisterView
+      assistantCannotRegisterView,
+      organisationAlreadyRegisteredView
     )
   }
 
@@ -115,6 +118,21 @@ class NotableErrorControllerSpec extends SpecBase {
         status(result) shouldBe OK
 
         contentAsString(result) shouldBe assistantCannotRegisterView()(fakeRequest, messages).toString
+      }
+    }
+  }
+
+  "organisationAlreadyRegistered" should {
+    "return OK and the correct view" in forAll { (registration: Registration, eclRegistrationReference: String) =>
+      new TestContext(registration, Some(eclRegistrationReference)) {
+        val result: Future[Result] = controller.organisationAlreadyRegistered(eclRegistrationReference)(fakeRequest)
+
+        status(result) shouldBe OK
+
+        contentAsString(result) shouldBe organisationAlreadyRegisteredView(eclRegistrationReference)(
+          fakeRequest,
+          messages
+        ).toString
       }
     }
   }

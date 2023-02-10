@@ -21,7 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AgentCannotRegisterView, AnswersAreInvalidView, AssistantCannotRegisterView, GroupAlreadyEnrolledView, UserAlreadyEnrolledView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -39,7 +39,8 @@ class NotableErrorController @Inject() (
   groupAlreadyEnrolledView: GroupAlreadyEnrolledView,
   answersAreInvalidView: AnswersAreInvalidView,
   agentCannotRegisterView: AgentCannotRegisterView,
-  assistantCannotRegisterView: AssistantCannotRegisterView
+  assistantCannotRegisterView: AssistantCannotRegisterView,
+  organisationAlreadyRegisteredView: OrganisationAlreadyRegisteredView
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -75,4 +76,10 @@ class NotableErrorController @Inject() (
   def assistantCannotRegister: Action[AnyContent] = authoriseAssistantsAllowed { implicit request =>
     Ok(assistantCannotRegisterView())
   }
+
+  def organisationAlreadyRegistered(eclReferenceNumber: String): Action[AnyContent] =
+    authoriseWithoutEnrolmentCheck { implicit request =>
+      Ok(organisationAlreadyRegisteredView(eclReferenceNumber))
+    }
+
 }

@@ -243,7 +243,7 @@ class GrsContinueControllerSpec extends SpecBase {
         }
     }
 
-    "retrieve the incorporated entity GRS journey data and display the already subscribed result if the business partner is already subscribed to ECL" in forAll {
+    "retrieve the incorporated entity GRS journey data and display the already registered page if the business partner is already subscribed to ECL" in forAll {
       (
         journeyId: String,
         registration: Registration,
@@ -280,11 +280,11 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(
-            result
-          ) shouldBe s"Business is already subscribed to ECL with registration reference $eclRegistrationReference"
+          redirectLocation(result) shouldBe Some(
+            routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference).url
+          )
         }
     }
 
@@ -475,7 +475,7 @@ class GrsContinueControllerSpec extends SpecBase {
         }
     }
 
-    "retrieve the sole trader entity GRS journey data and display the already subscribed result if the business partner is already subscribed to ECL" in forAll {
+    "retrieve the sole trader entity GRS journey data and display the already registered page if the business partner is already subscribed to ECL" in forAll {
       (
         journeyId: String,
         registration: Registration,
@@ -512,11 +512,11 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(
-            result
-          ) shouldBe s"Business is already subscribed to ECL with registration reference $eclRegistrationReference"
+          redirectLocation(result) shouldBe Some(
+            routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference).url
+          )
         }
     }
 
@@ -717,7 +717,7 @@ class GrsContinueControllerSpec extends SpecBase {
         }
     }
 
-    "retrieve the partnership entity GRS journey data and display the already subscribed result if the business partner is already subscribed to ECL" in forAll {
+    "retrieve the partnership entity GRS journey data and display the already registered page if the business partner is already subscribed to ECL" in forAll {
       (
         journeyId: String,
         registration: Registration,
@@ -756,11 +756,11 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(
-            result
-          ) shouldBe s"Business is already subscribed to ECL with registration reference $eclRegistrationReference"
+          redirectLocation(result) shouldBe Some(
+            routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference).url
+          )
         }
     }
 
