@@ -282,7 +282,9 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered().url)
+          redirectLocation(result) shouldBe Some(
+            routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference).url
+          )
         }
     }
 
@@ -512,7 +514,9 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered().url)
+          redirectLocation(result) shouldBe Some(
+            routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference).url
+          )
         }
     }
 
@@ -754,7 +758,9 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered().url)
+          redirectLocation(result) shouldBe Some(
+            routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference).url
+          )
         }
     }
 

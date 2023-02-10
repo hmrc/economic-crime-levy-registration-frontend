@@ -104,7 +104,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered().url)
+      redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered(testEclRegistrationReference).url)
     }
 
     "retrieve the sole trader entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
@@ -186,7 +186,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered().url)
+      redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered(testEclRegistrationReference).url)
     }
 
     "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
@@ -270,7 +270,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered().url)
+      redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered(testEclRegistrationReference).url)
     }
   }
 

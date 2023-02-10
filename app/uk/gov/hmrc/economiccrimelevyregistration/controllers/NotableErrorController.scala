@@ -77,12 +77,9 @@ class NotableErrorController @Inject() (
     Ok(assistantCannotRegisterView())
   }
 
-  def organisationAlreadyRegistered: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
-    val eclRegistrationReference = request.eclRegistrationReference.getOrElse(
-      throw new IllegalStateException("ECL registration reference not found in request")
-    )
-
-    Ok(organisationAlreadyRegisteredView(eclRegistrationReference))
-  }
+  def organisationAlreadyRegistered(eclRegistrationReference: String): Action[AnyContent] =
+    authoriseWithoutEnrolmentCheck { implicit request =>
+      Ok(organisationAlreadyRegisteredView(eclRegistrationReference))
+    }
 
 }

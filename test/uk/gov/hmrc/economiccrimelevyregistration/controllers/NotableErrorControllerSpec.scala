@@ -125,7 +125,7 @@ class NotableErrorControllerSpec extends SpecBase {
   "organisationAlreadyRegistered" should {
     "return OK and the correct view" in forAll { (registration: Registration, eclRegistrationReference: String) =>
       new TestContext(registration, Some(eclRegistrationReference)) {
-        val result: Future[Result] = controller.organisationAlreadyRegistered()(fakeRequest)
+        val result: Future[Result] = controller.organisationAlreadyRegistered(eclRegistrationReference)(fakeRequest)
 
         status(result) shouldBe OK
 
