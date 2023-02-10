@@ -77,9 +77,9 @@ class NotableErrorController @Inject() (
     Ok(assistantCannotRegisterView())
   }
 
-  def organisationAlreadyRegistered(eclRegistrationReference: String): Action[AnyContent] =
+  def organisationAlreadyRegistered(eclReferenceNumber: String): Action[AnyContent] =
     authoriseWithoutEnrolmentCheck { implicit request =>
-      Ok(organisationAlreadyRegisteredView(eclRegistrationReference))
+      Ok(organisationAlreadyRegisteredView(eclReferenceNumber))
     }
 
 }
