@@ -103,7 +103,8 @@ class GrsContinueController @Inject() (
           case EclSubscriptionStatus(Subscribed(eclRegistrationReference)) =>
             Redirect(routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference))
         }
-      case (_, _, RegistrationFailed, _)                     => Future.successful(Ok("Registration failed"))
+      case (_, _, RegistrationFailed, _)                     =>
+        Future.successful(Redirect(routes.NotableErrorController.registrationFailed()))
       case _                                                 =>
         throw new IllegalStateException(
           s"Invalid result received from GRS: identifiersMatch: $identifiersMatch, registration: $grsResult, businessVerification: $bvResult"

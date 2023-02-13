@@ -40,7 +40,8 @@ class NotableErrorController @Inject() (
   answersAreInvalidView: AnswersAreInvalidView,
   agentCannotRegisterView: AgentCannotRegisterView,
   assistantCannotRegisterView: AssistantCannotRegisterView,
-  organisationAlreadyRegisteredView: OrganisationAlreadyRegisteredView
+  organisationAlreadyRegisteredView: OrganisationAlreadyRegisteredView,
+  registrationFailedView: RegistrationFailedView
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -81,5 +82,9 @@ class NotableErrorController @Inject() (
     authoriseWithoutEnrolmentCheck { implicit request =>
       Ok(organisationAlreadyRegisteredView(eclReferenceNumber))
     }
+
+  def registrationFailed: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
+    Ok(registrationFailedView())
+  }
 
 }

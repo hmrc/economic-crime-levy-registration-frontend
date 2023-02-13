@@ -113,4 +113,17 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
+  s"GET ${routes.NotableErrorController.registrationFailed().url}" should {
+    behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.registrationFailed())
+
+    "respond with 200 status and the registration failed HTML view" in {
+      stubAuthorised()
+
+      val result = callRoute(FakeRequest(routes.NotableErrorController.registrationFailed()))
+
+      status(result) shouldBe OK
+      html(result) should include("Registration failed")
+    }
+  }
+
 }

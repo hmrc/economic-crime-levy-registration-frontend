@@ -35,6 +35,7 @@ class NotableErrorControllerSpec extends SpecBase {
   val assistantCannotRegisterView: AssistantCannotRegisterView             = app.injector.instanceOf[AssistantCannotRegisterView]
   val organisationAlreadyRegisteredView: OrganisationAlreadyRegisteredView =
     app.injector.instanceOf[OrganisationAlreadyRegisteredView]
+  val registrationFailedView: RegistrationFailedView                       = app.injector.instanceOf[RegistrationFailedView]
 
   class TestContext(registrationData: Registration, eclRegistrationReference: Option[String] = None) {
     val controller = new NotableErrorController(
@@ -50,7 +51,8 @@ class NotableErrorControllerSpec extends SpecBase {
       answersAreInvalidView,
       agentCannotRegisterView,
       assistantCannotRegisterView,
-      organisationAlreadyRegisteredView
+      organisationAlreadyRegisteredView,
+      registrationFailedView
     )
   }
 
@@ -133,6 +135,18 @@ class NotableErrorControllerSpec extends SpecBase {
           fakeRequest,
           messages
         ).toString
+      }
+    }
+  }
+
+  "registrationFailed" should {
+    "return OK and the correct view" in forAll { registration: Registration =>
+      new TestContext(registration) {
+        val result: Future[Result] = controller.registrationFailed()(fakeRequest)
+
+        status(result) shouldBe OK
+
+        contentAsString(result) shouldBe registrationFailedView()(fakeRequest, messages).toString
       }
     }
   }

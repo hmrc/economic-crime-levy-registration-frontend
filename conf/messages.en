@@ -328,6 +328,12 @@ organisationAlreadyRegistered.provide = You will need to provide:
 organisationAlreadyRegistered.provide.b1 = the date your organisation registered for the Economic Crime Levy (ECL)
 organisationAlreadyRegistered.provide.b2 = your ECL reference number
 
+registrationFailed.title = Registration failed
+registrationFailed.heading = Registration failed
+registrationFailed.body.p1 = We''re unable to complete your registration.
+registrationFailed.body.p2 = {0} so that we can help you with your registration.
+registrationFailed.body.p2.link = <a href="{0}" class="govuk-link">Contact us</a>
+
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.
 feedback.link = <a href="{0}" class="govuk-link">Send us your feedback</a>
