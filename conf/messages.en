@@ -153,6 +153,11 @@ entityType.LimitedLiabilityPartnership = Limited liability partnership
 entityType.Other = Other
 entityType.error.required = Please select your entity type
 
+partnershipName.title = What is the partnership name?
+partnershipName.heading = What is the partnership name?
+partnershipName.error.required = Enter a partnership name
+partnershipName.error.length = Partnership name must be {0} characters or less
+
 businessSector.title = What is your business sector?
 businessSector.CreditInstitution = Credit institution
 businessSector.FinancialInstitution = Financial institution

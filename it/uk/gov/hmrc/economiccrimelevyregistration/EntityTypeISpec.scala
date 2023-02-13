@@ -44,7 +44,8 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
         entityType = Some(UkLimitedCompany),
         incorporatedEntityJourneyData = None,
         soleTraderEntityJourneyData = None,
-        partnershipEntityJourneyData = None
+        partnershipEntityJourneyData = None,
+        partnershipName = None
       )
 
       stubUpsertRegistration(updatedRegistration)
@@ -71,7 +72,8 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
         entityType = Some(SoleTrader),
         incorporatedEntityJourneyData = None,
         soleTraderEntityJourneyData = None,
-        partnershipEntityJourneyData = None
+        partnershipEntityJourneyData = None,
+        partnershipName = None
       )
 
       stubUpsertRegistration(updatedRegistration)
@@ -108,7 +110,8 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       entityType = Some(entityType),
       incorporatedEntityJourneyData = None,
       soleTraderEntityJourneyData = None,
-      partnershipEntityJourneyData = None
+      partnershipEntityJourneyData = None,
+      partnershipName = None
     )
 
     stubUpsertRegistration(updatedRegistration)

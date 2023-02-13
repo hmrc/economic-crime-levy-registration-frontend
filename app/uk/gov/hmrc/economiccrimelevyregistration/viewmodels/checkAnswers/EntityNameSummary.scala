@@ -18,11 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{GeneralPartnership, ScottishPartnership}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Key, SummaryListRow}
 
 object EntityNameSummary {
 
@@ -30,9 +33,21 @@ object EntityNameSummary {
     request.registration.entityName.map { answer =>
       val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(answer))))
 
+      val changeAction: Seq[ActionItem] = request.registration.entityType match {
+        case Some(GeneralPartnership | ScottishPartnership) =>
+          Seq(
+            ActionItemViewModel("site.change", routes.PartnershipNameController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(
+                messages("checkYourAnswers.entityName.label")
+              )
+          )
+        case _                                              => Seq.empty
+      }
+
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.entityName.label"),
-        value = value
+        value = value,
+        actions = changeAction
       )
     }
 

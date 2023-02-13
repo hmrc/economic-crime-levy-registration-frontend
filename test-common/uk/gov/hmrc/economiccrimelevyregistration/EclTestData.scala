@@ -32,6 +32,10 @@ import java.time.{Instant, LocalDate}
 
 final case class PartnershipType(entityType: EntityType)
 
+final case class ScottishOrGeneralPartnershipType(entityType: EntityType)
+
+final case class LimitedPartnershipType(entityType: EntityType)
+
 final case class EnrolmentsWithEcl(enrolments: Enrolments, eclReferenceNumber: String)
 
 final case class EnrolmentsWithoutEcl(enrolments: Enrolments)
@@ -77,6 +81,29 @@ trait EclTestData {
                            )
                          )
     } yield PartnershipType(partnershipType)
+  }
+
+  implicit val arbScottishOrGeneralPartnershipType: Arbitrary[ScottishOrGeneralPartnershipType] = Arbitrary {
+    for {
+      scottishOrGeneralPartnershipType <- Gen.oneOf(
+                                            Seq(
+                                              GeneralPartnership,
+                                              ScottishPartnership
+                                            )
+                                          )
+    } yield ScottishOrGeneralPartnershipType(scottishOrGeneralPartnershipType)
+  }
+
+  implicit val arbLimitedPartnershipType: Arbitrary[LimitedPartnershipType] = Arbitrary {
+    for {
+      limitedPartnershipType <- Gen.oneOf(
+                                  Seq(
+                                    LimitedPartnership,
+                                    LimitedLiabilityPartnership,
+                                    ScottishLimitedPartnership
+                                  )
+                                )
+    } yield LimitedPartnershipType(limitedPartnershipType)
   }
 
   implicit val arbEnrolmentsWithEcl: Arbitrary[EnrolmentsWithEcl] = Arbitrary {

@@ -47,23 +47,31 @@ class GrsContinueController @Inject() (
   def continue(mode: Mode, journeyId: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
     implicit request =>
       request.registration.entityType match {
-        case Some(UkLimitedCompany) =>
+        case Some(e @ UkLimitedCompany) =>
           incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(incorporatedEntityJourneyData = Some(jd))
-              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, mode))
+              .flatMap(_ =>
+                handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, e, mode)
+              )
           }
 
-        case Some(SoleTrader) =>
+        case Some(e @ SoleTrader) =>
           soleTraderIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(soleTraderEntityJourneyData = Some(jd))
-              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, mode))
+              .flatMap(_ =>
+                handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, e, mode)
+              )
           }
 
-        case Some(GeneralPartnership) | Some(ScottishPartnership) | Some(LimitedPartnership) |
-            Some(ScottishLimitedPartnership) | Some(LimitedLiabilityPartnership) =>
+        case Some(
+              e @ (GeneralPartnership | ScottishPartnership | LimitedPartnership | ScottishLimitedPartnership |
+              LimitedLiabilityPartnership)
+            ) =>
           partnershipIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(partnershipEntityJourneyData = Some(jd))
-              .flatMap(_ => handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, mode))
+              .flatMap(_ =>
+                handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, e, mode)
+              )
           }
 
         case _ => throw new IllegalStateException("No valid entity type found in registration data")
@@ -87,6 +95,7 @@ class GrsContinueController @Inject() (
     identifiersMatch: Boolean,
     bvResult: Option[BusinessVerificationResult],
     grsResult: GrsRegistrationResult,
+    entityType: EntityType,
     mode: Mode
   )(implicit hc: HeaderCarrier): Future[Result] =
     (identifiersMatch, bvResult, grsResult.registrationStatus, grsResult.registeredBusinessPartnerId) match {
@@ -97,7 +106,12 @@ class GrsContinueController @Inject() (
         eclRegistrationConnector.getSubscriptionStatus(businessPartnerId).map {
           case EclSubscriptionStatus(NotSubscribed)                        =>
             mode match {
-              case NormalMode => Redirect(routes.BusinessSectorController.onPageLoad(NormalMode))
+              case NormalMode =>
+                entityType match {
+                  case GeneralPartnership | ScottishPartnership =>
+                    Redirect(routes.PartnershipNameController.onPageLoad(NormalMode))
+                  case _                                        => Redirect(routes.BusinessSectorController.onPageLoad(NormalMode))
+                }
               case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad())
             }
           case EclSubscriptionStatus(Subscribed(eclRegistrationReference)) =>

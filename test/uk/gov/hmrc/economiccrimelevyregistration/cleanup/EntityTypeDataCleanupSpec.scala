@@ -29,7 +29,8 @@ class EntityTypeDataCleanupSpec extends SpecBase {
       dataCleanup.cleanup(registration) shouldBe registration.copy(
         incorporatedEntityJourneyData = None,
         partnershipEntityJourneyData = None,
-        soleTraderEntityJourneyData = None
+        soleTraderEntityJourneyData = None,
+        partnershipName = None
       )
     }
   }
