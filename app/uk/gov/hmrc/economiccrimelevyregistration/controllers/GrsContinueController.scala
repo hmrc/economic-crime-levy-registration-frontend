@@ -105,9 +105,9 @@ class GrsContinueController @Inject() (
         }
       case (_, _, RegistrationFailed, _)                     =>
         grsResult.failures match {
-          case Some(failures) if failures.exists(failure => failure.code == GrsErrorCodes.PartyTypeMismatch) =>
+          case Some(failures) if failures.exists(_.code == GrsErrorCodes.PartyTypeMismatch) =>
             Future.successful(Redirect(routes.NotableErrorController.partyTypeMismatch()))
-          case _                                                                                             =>
+          case _                                                                            =>
             Future.successful(Redirect(routes.NotableErrorController.registrationFailed()))
         }
       case _                                                 =>
