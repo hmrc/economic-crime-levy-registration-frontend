@@ -126,4 +126,17 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
+  s"GET ${routes.NotableErrorController.partyTypeMismatch().url}" should {
+    behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.partyTypeMismatch())
+
+    "respond with 200 status and the party type mismatch HTML view" in {
+      stubAuthorised()
+
+      val result = callRoute(FakeRequest(routes.NotableErrorController.partyTypeMismatch()))
+
+      status(result) shouldBe OK
+      html(result) should include("Your details do not match our records")
+    }
+  }
+
 }

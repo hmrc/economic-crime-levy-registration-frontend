@@ -48,7 +48,7 @@ object RegistrationStatus {
 final case class GrsRegistrationResult(
   registrationStatus: RegistrationStatus,
   registeredBusinessPartnerId: Option[String],
-  failures: Option[Seq[GrsRegistrationResultFailures]]
+  failures: Option[Seq[GrsRegistrationResultFailure]]
 )
 
 object GrsRegistrationResult {
@@ -56,12 +56,12 @@ object GrsRegistrationResult {
     Json.format[GrsRegistrationResult]
 }
 
-final case class GrsRegistrationResultFailures(
+final case class GrsRegistrationResultFailure(
   code: String,
   reason: String
 )
 
-object GrsRegistrationResultFailures {
-  implicit val format: OFormat[GrsRegistrationResultFailures] =
-    Json.format[GrsRegistrationResultFailures]
+object GrsRegistrationResultFailure {
+  implicit val format: OFormat[GrsRegistrationResultFailure] =
+    Json.format[GrsRegistrationResultFailure]
 }

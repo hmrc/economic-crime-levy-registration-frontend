@@ -126,6 +126,8 @@ GET         /organisation-already-registered/:eclReferenceNumber              uk
 
 GET         /registration-failed                                              uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.registrationFailed()
 
+GET         /entity-type-does-not-match                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.partyTypeMismatch()
+
 GET         /account/sign-out-survey                                          uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
 GET         /account/sign-out                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
 GET         /account/signed-out                                               uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()

@@ -334,6 +334,11 @@ registrationFailed.body.p1 = We''re unable to complete your registration.
 registrationFailed.body.p2 = {0} so that we can help you with your registration.
 registrationFailed.body.p2.link = <a href="{0}" class="govuk-link">Contact us</a>
 
+partyTypeMismatch.title = Your details do not match our records
+partyTypeMismatch.heading = Your details do not match our records
+partyTypeMismatch.body.p1 = Your registration failed because your details do not match our records.
+partyTypeMismatch.body.p2 = Check that you have chosen the right entity type and submit your answers again.
+
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.
 feedback.link = <a href="{0}" class="govuk-link">Send us your feedback</a>

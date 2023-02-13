@@ -173,6 +173,43 @@ class GrsContinueControllerSpec extends SpecBase {
         }
     }
 
+    "retrieve the incorporated entity GRS journey data and display the party type mismatch result if the registration status is REGISTRATION_FAILED and the failures contains the PARTY_TYPE_MISMATCH failure" in forAll {
+      (
+        journeyId: String,
+        registration: Registration,
+        incorporatedEntityJourneyData: IncorporatedEntityJourneyData
+      ) =>
+        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+          val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
+            incorporatedEntityJourneyData.copy(
+              identifiersMatch = true,
+              registration = partyTypeMismatchResult,
+              businessVerification = None
+            )
+
+          when(
+            mockIncorporatedEntityIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
+
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(UkLimitedCompany),
+            incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = None
+          )
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.partyTypeMismatch().url)
+        }
+    }
+
     "retrieve the incorporated entity GRS journey data and display the registration failed result if the registration status is REGISTRATION_FAILED" in forAll {
       (
         journeyId: String,
@@ -402,6 +439,43 @@ class GrsContinueControllerSpec extends SpecBase {
           status(result) shouldBe OK
 
           contentAsString(result) shouldBe "Failed business verification"
+        }
+    }
+
+    "retrieve the sole trader entity GRS journey data and display the party type mismatch result if the registration status is REGISTRATION_FAILED and the failures contains the PARTY_TYPE_MISMATCH failure" in forAll {
+      (
+        journeyId: String,
+        registration: Registration,
+        soleTraderEntityJourneyData: SoleTraderEntityJourneyData
+      ) =>
+        new TestContext(registration.copy(entityType = Some(SoleTrader))) {
+          val updatedSoleTraderEntityJourneyData: SoleTraderEntityJourneyData =
+            soleTraderEntityJourneyData.copy(
+              identifiersMatch = true,
+              registration = partyTypeMismatchResult,
+              businessVerification = None
+            )
+
+          when(
+            mockSoleTraderIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(updatedSoleTraderEntityJourneyData))
+
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(SoleTrader),
+            incorporatedEntityJourneyData = None,
+            soleTraderEntityJourneyData = Some(updatedSoleTraderEntityJourneyData),
+            partnershipEntityJourneyData = None
+          )
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.partyTypeMismatch().url)
         }
     }
 
@@ -640,6 +714,45 @@ class GrsContinueControllerSpec extends SpecBase {
           status(result) shouldBe OK
 
           contentAsString(result) shouldBe "Failed business verification"
+        }
+    }
+
+    "retrieve the partnership entity GRS journey data and display the party type mismatch result if the registration status is REGISTRATION_FAILED and the failures contains the PARTY_TYPE_MISMATCH failure" in forAll {
+      (
+        journeyId: String,
+        registration: Registration,
+        partnershipEntityJourneyData: PartnershipEntityJourneyData,
+        partnershipType: PartnershipType
+      ) =>
+        val entityType = partnershipType.entityType
+        new TestContext(registration.copy(entityType = Some(entityType))) {
+          val updatedPartnershipEntityJourneyData: PartnershipEntityJourneyData =
+            partnershipEntityJourneyData.copy(
+              identifiersMatch = true,
+              registration = partyTypeMismatchResult,
+              businessVerification = None
+            )
+
+          when(
+            mockPartnershipIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(updatedPartnershipEntityJourneyData))
+
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(entityType),
+            incorporatedEntityJourneyData = None,
+            soleTraderEntityJourneyData = None,
+            partnershipEntityJourneyData = Some(updatedPartnershipEntityJourneyData)
+          )
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.partyTypeMismatch().url)
         }
     }
 
