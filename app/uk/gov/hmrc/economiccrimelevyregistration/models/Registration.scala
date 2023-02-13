@@ -70,11 +70,7 @@ final case class Registration(
   def entityName: Option[String] =
     (incorporatedEntityJourneyData, partnershipEntityJourneyData, soleTraderEntityJourneyData) match {
       case (Some(i), _, _) => Some(i.companyProfile.companyName)
-      case (_, Some(p), _) =>
-        p.companyProfile.map(_.companyName) match {
-          case None => partnershipName
-          case e    => e
-        }
+      case (_, Some(p), _) => p.companyProfile.map(_.companyName).fold(partnershipName)(Some(_))
       case (_, _, Some(s)) => Some(s"${s.fullName.firstName} ${s.fullName.lastName}")
       case _               => None
     }
