@@ -41,7 +41,8 @@ class NotableErrorController @Inject() (
   agentCannotRegisterView: AgentCannotRegisterView,
   assistantCannotRegisterView: AssistantCannotRegisterView,
   organisationAlreadyRegisteredView: OrganisationAlreadyRegisteredView,
-  registrationFailedView: RegistrationFailedView
+  registrationFailedView: RegistrationFailedView,
+  partyTypeMismatchView: PartyTypeMismatchView
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -85,6 +86,10 @@ class NotableErrorController @Inject() (
 
   def registrationFailed: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
     Ok(registrationFailedView())
+  }
+
+  def partyTypeMismatch: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
+    Ok(partyTypeMismatchView())
   }
 
 }

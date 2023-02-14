@@ -185,6 +185,20 @@ trait EclTestData {
   val failedRegistrationResult: GrsRegistrationResult =
     GrsRegistrationResult(RegistrationFailed, None, None)
 
+  val partyTypeMismatchResult: GrsRegistrationResult =
+    GrsRegistrationResult(
+      RegistrationFailed,
+      None,
+      Some(
+        Seq(
+          GrsRegistrationResultFailure(
+            GrsErrorCodes.PartyTypeMismatch,
+            "The remote endpoint has indicated there is Party Type mismatch"
+          )
+        )
+      )
+    )
+
   val registrationNotCalled: GrsRegistrationResult =
     GrsRegistrationResult(RegistrationNotCalled, None, None)
 

@@ -104,7 +104,12 @@ class GrsContinueController @Inject() (
             Redirect(routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference))
         }
       case (_, _, RegistrationFailed, _)                     =>
-        Future.successful(Redirect(routes.NotableErrorController.registrationFailed()))
+        grsResult.failures match {
+          case Some(failures) if failures.exists(_.code == GrsErrorCodes.PartyTypeMismatch) =>
+            Future.successful(Redirect(routes.NotableErrorController.partyTypeMismatch()))
+          case _                                                                            =>
+            Future.successful(Redirect(routes.NotableErrorController.registrationFailed()))
+        }
       case _                                                 =>
         throw new IllegalStateException(
           s"Invalid result received from GRS: identifiersMatch: $identifiersMatch, registration: $grsResult, businessVerification: $bvResult"

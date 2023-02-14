@@ -109,8 +109,8 @@ trait GrsStubData {
     registeredBusinessPartnerId = None,
     failures = Some(
       Seq(
-        GrsRegistrationResultFailures(
-          code = "PARTY_TYPE_MISMATCH",
+        GrsRegistrationResultFailure(
+          code = GrsErrorCodes.PartyTypeMismatch,
           reason = "The remote endpoint has indicated there is Party Type mismatch"
         )
       )
