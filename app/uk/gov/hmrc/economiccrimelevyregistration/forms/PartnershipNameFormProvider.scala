@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.cleanup
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
 import javax.inject.Inject
 
-class EntityTypeDataCleanup @Inject() () extends DataCleanup {
-  def cleanup(registration: Registration): Registration =
-    registration.copy(
-      incorporatedEntityJourneyData = None,
-      soleTraderEntityJourneyData = None,
-      partnershipEntityJourneyData = None,
-      partnershipName = None
-    )
+class PartnershipNameFormProvider @Inject() extends Mappings {
 
+  private val maxLength = 160
+
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("partnershipName.error.required")
+        .verifying(maxLength(maxLength, "partnershipName.error.length"))
+    )
 }

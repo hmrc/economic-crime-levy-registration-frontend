@@ -104,7 +104,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered(testEclRegistrationReference).url)
+      redirectLocation(result) shouldBe Some(
+        routes.NotableErrorController.organisationAlreadyRegistered(testEclRegistrationReference).url
+      )
     }
 
     "retrieve the sole trader entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
@@ -186,50 +188,102 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered(testEclRegistrationReference).url)
+      redirectLocation(result) shouldBe Some(
+        routes.NotableErrorController.organisationAlreadyRegistered(testEclRegistrationReference).url
+      )
     }
 
-    "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
-      stubAuthorisedWithNoGroupEnrolment()
+    "retrieve the partnership entity GRS journey data for a limited liability, limited or scottish limited partnership, update the registration" +
+      "with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
+        stubAuthorisedWithNoGroupEnrolment()
 
-      val entityType   = random[PartnershipType].entityType
-      val registration =
-        random[Registration]
-          .copy(
-            entityType = Some(entityType),
-            incorporatedEntityJourneyData = None,
-            soleTraderEntityJourneyData = None,
-            partnershipEntityJourneyData = None
-          )
+        val entityType   = random[LimitedPartnershipType].entityType
+        val registration =
+          random[Registration]
+            .copy(
+              entityType = Some(entityType),
+              incorporatedEntityJourneyData = None,
+              soleTraderEntityJourneyData = None,
+              partnershipEntityJourneyData = None
+            )
 
-      stubGetRegistration(registration)
+        stubGetRegistration(registration)
 
-      val partnershipEntityJourneyData = random[PartnershipEntityJourneyData]
+        val partnershipEntityJourneyData = random[PartnershipEntityJourneyData]
 
-      val updatedPartnershipEntityJourneyData = partnershipEntityJourneyData.copy(
-        identifiersMatch = true,
-        registration = successfulGrsRegistrationResult(businessPartnerId),
-        businessVerification = None
-      )
+        val updatedPartnershipEntityJourneyData = partnershipEntityJourneyData.copy(
+          identifiersMatch = true,
+          registration = successfulGrsRegistrationResult(businessPartnerId),
+          businessVerification = None
+        )
 
-      val updatedRegistration = registration.copy(
-        partnershipEntityJourneyData = Some(updatedPartnershipEntityJourneyData)
-      )
+        val updatedRegistration = registration.copy(
+          partnershipEntityJourneyData = Some(updatedPartnershipEntityJourneyData)
+        )
 
-      stubGetGrsJourneyData(s"/partnership-identification/api/journey/$journeyId", updatedPartnershipEntityJourneyData)
+        stubGetGrsJourneyData(
+          s"/partnership-identification/api/journey/$journeyId",
+          updatedPartnershipEntityJourneyData
+        )
 
-      stubUpsertRegistration(updatedRegistration)
-      stubGetSubscriptionStatus(
-        updatedPartnershipEntityJourneyData.registration.registeredBusinessPartnerId.get,
-        EclSubscriptionStatus(NotSubscribed)
-      )
+        stubUpsertRegistration(updatedRegistration)
+        stubGetSubscriptionStatus(
+          updatedPartnershipEntityJourneyData.registration.registeredBusinessPartnerId.get,
+          EclSubscriptionStatus(NotSubscribed)
+        )
 
-      val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
+        val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
-      status(result) shouldBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
-    }
+        redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
+      }
+
+    "retrieve the partnership entity GRS journey data for a scottish or general partnership, update the registration" +
+      "with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
+        stubAuthorisedWithNoGroupEnrolment()
+
+        val entityType   = random[ScottishOrGeneralPartnershipType].entityType
+        val registration =
+          random[Registration]
+            .copy(
+              entityType = Some(entityType),
+              incorporatedEntityJourneyData = None,
+              soleTraderEntityJourneyData = None,
+              partnershipEntityJourneyData = None
+            )
+
+        stubGetRegistration(registration)
+
+        val partnershipEntityJourneyData = random[PartnershipEntityJourneyData]
+
+        val updatedPartnershipEntityJourneyData = partnershipEntityJourneyData.copy(
+          identifiersMatch = true,
+          registration = successfulGrsRegistrationResult(businessPartnerId),
+          businessVerification = None
+        )
+
+        val updatedRegistration = registration.copy(
+          partnershipEntityJourneyData = Some(updatedPartnershipEntityJourneyData)
+        )
+
+        stubGetGrsJourneyData(
+          s"/partnership-identification/api/journey/$journeyId",
+          updatedPartnershipEntityJourneyData
+        )
+
+        stubUpsertRegistration(updatedRegistration)
+        stubGetSubscriptionStatus(
+          updatedPartnershipEntityJourneyData.registration.registeredBusinessPartnerId.get,
+          EclSubscriptionStatus(NotSubscribed)
+        )
+
+        val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
+
+        status(result) shouldBe SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.PartnershipNameController.onPageLoad(NormalMode).url)
+      }
 
     "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -270,7 +324,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NotableErrorController.organisationAlreadyRegistered(testEclRegistrationReference).url)
+      redirectLocation(result) shouldBe Some(
+        routes.NotableErrorController.organisationAlreadyRegistered(testEclRegistrationReference).url
+      )
     }
   }
 

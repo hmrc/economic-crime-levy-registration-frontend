@@ -46,6 +46,11 @@ POST        /what-is-your-business-sector                                     uk
 GET         /change-answer/what-is-your-business-sector                       uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/what-is-your-business-sector                       uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessSectorController.onSubmit(mode: Mode = CheckMode)
 
+GET         /partnership-name                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.PartnershipNameController.onPageLoad(mode: Mode = NormalMode)
+POST        /partnership-name                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.PartnershipNameController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/partnership-name                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.PartnershipNameController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/partnership-name                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.PartnershipNameController.onSubmit(mode: Mode = CheckMode)
+
 GET         /contact-name                                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNameController.onPageLoad(mode: Mode = NormalMode)
 POST        /contact-name                                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNameController.onSubmit(mode: Mode = NormalMode)
 GET         /change-answer/contact-name                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.FirstContactNameController.onPageLoad(mode: Mode = CheckMode)

@@ -23,18 +23,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDat
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Key, SummaryListRow}
 
 object ContactAddressSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    for {
-      useRegisteredOfficeAddressAsContactAddress <- request.registration.useRegisteredOfficeAddressAsContactAddress
-      answer                                     <- request.registration.contactAddress
-    } yield SummaryListRowViewModel(
-      key = Key("checkYourAnswers.address.label"),
-      value = ValueViewModel(AddressViewModel.htmlContent(answer)),
-      actions = if (useRegisteredOfficeAddressAsContactAddress) {
+  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] = {
+    val changeAction: Seq[ActionItem] =
+      if (request.registration.useRegisteredOfficeAddressAsContactAddress.contains(true)) {
         Seq.empty
       } else {
         Seq(
@@ -44,6 +39,14 @@ object ContactAddressSummary {
             )
         )
       }
-    )
+
+    request.registration.contactAddress.map { answer =>
+      SummaryListRowViewModel(
+        key = Key("checkYourAnswers.address.label"),
+        value = ValueViewModel(AddressViewModel.htmlContent(answer)),
+        actions = changeAction
+      )
+    }
+  }
 
 }

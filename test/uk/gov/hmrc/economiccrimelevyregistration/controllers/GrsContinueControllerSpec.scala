@@ -16,18 +16,18 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
+import uk.gov.hmrc.economiccrimelevyregistration.{LimitedPartnershipType, PartnershipType, ScottishOrGeneralPartnershipType}
 
 import scala.concurrent.Future
 
@@ -594,49 +594,95 @@ class GrsContinueControllerSpec extends SpecBase {
         }
     }
 
-    "retrieve the partnership entity GRS journey data and continue to the next page in normal mode if registration was successful and the business partner is not already subscribed to ECL" in forAll {
-      (
-        journeyId: String,
-        registration: Registration,
-        partnershipEntityJourneyData: PartnershipEntityJourneyData,
-        partnershipType: PartnershipType,
-        businessPartnerId: String
-      ) =>
-        val entityType = partnershipType.entityType
-        new TestContext(registration.copy(entityType = Some(entityType))) {
-          val updatedPartnershipEntityJourneyData: PartnershipEntityJourneyData =
-            partnershipEntityJourneyData.copy(
-              identifiersMatch = true,
-              registration = successfulGrsRegistrationResult(businessPartnerId),
-              businessVerification = None
+    "retrieve the partnership entity GRS journey data for a limited liability, limited and scottish limited partnership and " +
+      "continue to the business sector page in normal mode if registration was successful and the business partner is not already subscribed to ECL" in forAll {
+        (
+          journeyId: String,
+          registration: Registration,
+          partnershipEntityJourneyData: PartnershipEntityJourneyData,
+          partnershipType: LimitedPartnershipType,
+          businessPartnerId: String
+        ) =>
+          val entityType = partnershipType.entityType
+          new TestContext(registration.copy(entityType = Some(entityType))) {
+            val updatedPartnershipEntityJourneyData: PartnershipEntityJourneyData =
+              partnershipEntityJourneyData.copy(
+                identifiersMatch = true,
+                registration = successfulGrsRegistrationResult(businessPartnerId),
+                businessVerification = None
+              )
+
+            when(
+              mockPartnershipIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+            )
+              .thenReturn(Future.successful(updatedPartnershipEntityJourneyData))
+
+            val updatedRegistration: Registration = registration.copy(
+              entityType = Some(entityType),
+              partnershipEntityJourneyData = Some(updatedPartnershipEntityJourneyData),
+              incorporatedEntityJourneyData = None,
+              soleTraderEntityJourneyData = None
             )
 
-          when(
-            mockPartnershipIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
-          )
-            .thenReturn(Future.successful(updatedPartnershipEntityJourneyData))
+            when(
+              mockEclRegistrationConnector.getSubscriptionStatus(ArgumentMatchers.eq(businessPartnerId))(any())
+            ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
 
-          val updatedRegistration: Registration = registration.copy(
-            entityType = Some(entityType),
-            partnershipEntityJourneyData = Some(updatedPartnershipEntityJourneyData),
-            incorporatedEntityJourneyData = None,
-            soleTraderEntityJourneyData = None
-          )
+            when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+              .thenReturn(Future.successful(updatedRegistration))
 
-          when(
-            mockEclRegistrationConnector.getSubscriptionStatus(ArgumentMatchers.eq(businessPartnerId))(any())
-          ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
+            val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+            status(result) shouldBe SEE_OTHER
 
-          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
+            redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
+          }
+      }
 
-          status(result) shouldBe SEE_OTHER
+    "retrieve the partnership entity GRS journey data for a general and scottish partnership and " +
+      "continue to the partnership name page in normal mode if registration was successful and the business partner is not already subscribed to ECL" in forAll {
+        (
+          journeyId: String,
+          registration: Registration,
+          partnershipEntityJourneyData: PartnershipEntityJourneyData,
+          partnershipType: ScottishOrGeneralPartnershipType,
+          businessPartnerId: String
+        ) =>
+          val entityType = partnershipType.entityType
+          new TestContext(registration.copy(entityType = Some(entityType))) {
+            val updatedPartnershipEntityJourneyData: PartnershipEntityJourneyData =
+              partnershipEntityJourneyData.copy(
+                identifiersMatch = true,
+                registration = successfulGrsRegistrationResult(businessPartnerId),
+                businessVerification = None
+              )
 
-          redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
-        }
-    }
+            when(
+              mockPartnershipIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+            )
+              .thenReturn(Future.successful(updatedPartnershipEntityJourneyData))
+
+            val updatedRegistration: Registration = registration.copy(
+              entityType = Some(entityType),
+              partnershipEntityJourneyData = Some(updatedPartnershipEntityJourneyData),
+              incorporatedEntityJourneyData = None,
+              soleTraderEntityJourneyData = None
+            )
+
+            when(
+              mockEclRegistrationConnector.getSubscriptionStatus(ArgumentMatchers.eq(businessPartnerId))(any())
+            ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
+
+            when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+              .thenReturn(Future.successful(updatedRegistration))
+
+            val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
+
+            status(result) shouldBe SEE_OTHER
+
+            redirectLocation(result) shouldBe Some(routes.PartnershipNameController.onPageLoad(NormalMode).url)
+          }
+      }
 
     "retrieve the partnership entity GRS journey data and go to the check your answers page in check mode if registration was successful and the business partner is not already subscribed to ECL" in forAll {
       (
