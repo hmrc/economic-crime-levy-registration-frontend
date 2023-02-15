@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 class FirstContactRoleFormProvider @Inject() extends Mappings {
 
-  private val maxLength = 60
+  private val maxLength = 160
 
   def apply(): Form[String] =
     Form(
