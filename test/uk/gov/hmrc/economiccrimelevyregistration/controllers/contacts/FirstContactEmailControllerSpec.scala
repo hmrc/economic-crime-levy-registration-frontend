@@ -122,7 +122,7 @@ class FirstContactEmailControllerSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(contacts =
             registration.contacts.copy(firstContactDetails =
-              registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
+              registration.contacts.firstContactDetails.copy(emailAddress = Some(email.toLowerCase))
             )
           )
 

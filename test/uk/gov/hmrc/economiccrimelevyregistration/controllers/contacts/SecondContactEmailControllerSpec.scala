@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
@@ -27,6 +26,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactEmailFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactEmailPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.SecondContactEmailView
@@ -122,7 +122,7 @@ class SecondContactEmailControllerSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(contacts =
             registration.contacts.copy(secondContactDetails =
-              registration.contacts.secondContactDetails.copy(emailAddress = Some(email))
+              registration.contacts.secondContactDetails.copy(emailAddress = Some(email.toLowerCase))
             )
           )
 

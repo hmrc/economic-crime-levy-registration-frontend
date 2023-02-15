@@ -28,6 +28,7 @@ class SecondContactEmailFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("secondContactEmail.error.required")
+        .transform[String](_.toLowerCase, identity)
         .verifying(emailAddress(maxLength, "secondContactEmail.error.length", "secondContactEmail.error.invalid"))
     )
 }
