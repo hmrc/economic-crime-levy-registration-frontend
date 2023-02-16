@@ -53,7 +53,7 @@ class SecondContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
 
       val updatedRegistration = registration.copy(contacts =
         registration.contacts.copy(secondContactDetails =
-          registration.contacts.secondContactDetails.copy(name = Some(name), emailAddress = Some(email))
+          registration.contacts.secondContactDetails.copy(name = Some(name), emailAddress = Some(email.toLowerCase))
         )
       )
 

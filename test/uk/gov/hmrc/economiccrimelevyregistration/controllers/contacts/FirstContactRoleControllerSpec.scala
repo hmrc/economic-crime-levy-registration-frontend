@@ -45,7 +45,7 @@ class FirstContactRoleControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val roleMaxLength: Int = 60
+  val roleMaxLength: Int = 160
 
   class TestContext(registrationData: Registration) {
     val controller = new FirstContactRoleController(

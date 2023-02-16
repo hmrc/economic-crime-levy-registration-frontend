@@ -28,6 +28,7 @@ class FirstContactEmailFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("firstContactEmail.error.required")
+        .transform[String](_.toLowerCase, identity)
         .verifying(emailAddress(maxLength, "firstContactEmail.error.length", "firstContactEmail.error.invalid"))
     )
 }

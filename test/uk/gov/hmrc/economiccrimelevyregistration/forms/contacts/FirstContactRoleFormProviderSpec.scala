@@ -23,7 +23,7 @@ class FirstContactRoleFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey = "firstContactRole.error.required"
   val lengthKey   = "firstContactRole.error.length"
-  val maxLength   = 60
+  val maxLength   = 160
 
   val form = new FirstContactRoleFormProvider()()
 

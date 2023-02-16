@@ -94,7 +94,7 @@ trait GrsStubData {
 
   val registered: GrsRegistrationResult = GrsRegistrationResult(
     registrationStatus = Registered,
-    registeredBusinessPartnerId = Some("X00000000000001"),
+    registeredBusinessPartnerId = Some("XA0000000000001"),
     failures = None
   )
 

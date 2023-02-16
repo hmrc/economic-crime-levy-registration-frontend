@@ -53,7 +53,7 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
 
       val updatedRegistration = registration.copy(contacts =
         registration.contacts.copy(firstContactDetails =
-          registration.contacts.firstContactDetails.copy(name = Some(name), emailAddress = Some(email))
+          registration.contacts.firstContactDetails.copy(name = Some(name), emailAddress = Some(email.toLowerCase))
         )
       )
 

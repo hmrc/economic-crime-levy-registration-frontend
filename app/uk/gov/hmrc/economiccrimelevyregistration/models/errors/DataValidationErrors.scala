@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.errors
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class DataValidationError(message: String)
+final case class DataValidationError(code: String, message: String)
 
 object DataValidationError {
   implicit val format: OFormat[DataValidationError] = Json.format[DataValidationError]

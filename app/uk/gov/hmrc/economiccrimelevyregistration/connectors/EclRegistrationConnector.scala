@@ -16,7 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import play.api.Logging
 import play.api.http.Status._
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, Registration}
@@ -27,7 +29,8 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit ec: ExecutionContext) {
+class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit ec: ExecutionContext)
+    extends Logging {
 
   private val eclRegistrationUrl: String =
     s"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
@@ -69,7 +72,9 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
         case Right(httpResponse) =>
           httpResponse.status match {
             case NO_CONTENT => None
-            case OK         => Some(httpResponse.json.as[DataValidationErrors])
+            case OK         =>
+              logger.warn(s"Data validation errors:\n${Json.prettyPrint(httpResponse.json)}")
+              Some(httpResponse.json.as[DataValidationErrors])
             case s          => throw new HttpException(s"Unexpected response with HTTP status $s", s)
           }
         case Left(e)             => throw e
