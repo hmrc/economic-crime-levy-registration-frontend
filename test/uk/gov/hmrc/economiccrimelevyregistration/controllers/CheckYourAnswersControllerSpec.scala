@@ -32,6 +32,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 
 import scala.concurrent.Future
 
@@ -40,6 +42,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val view: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
   val mockEmailService: EmailService                         = mock[EmailService]
 
   class TestContext(registrationData: Registration) {
@@ -48,6 +51,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
+      mockAuditConnector,
       mcc,
       view,
       new FakeValidatedRegistrationAction(registrationData),
@@ -111,6 +115,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "redirect to the registration submitted page after submitting the registration and sending email successfully" in forAll {
       (createEclSubscriptionResponse: CreateEclSubscriptionResponse, registration: Registration) =>
         new TestContext(registration) {
+          when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
+
           when(mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq(registration.internalId))(any()))
             .thenReturn(Future.successful(createEclSubscriptionResponse))
 
