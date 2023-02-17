@@ -63,8 +63,8 @@ class UkRevenueController @Inject() (
           eclReturnsService.checkIfRevenueMeetsThreshold(updatedRegistration).flatMap { revenueMeetsThreshold =>
             eclRegistrationConnector
               .upsertRegistration(updatedRegistration.copy(revenueMeetsThreshold = revenueMeetsThreshold))
-              .map { updatedRegistration =>
-                Redirect(pageNavigator.nextPage(mode, updatedRegistration))
+              .flatMap { updatedRegistration =>
+                pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
               }
           }
         }

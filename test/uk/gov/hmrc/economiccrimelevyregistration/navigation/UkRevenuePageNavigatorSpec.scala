@@ -16,14 +16,21 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
+
+import scala.concurrent.Future
 
 class UkRevenuePageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new UkRevenuePageNavigator
+  val mockAuditConnector: AuditConnector = mock[AuditConnector]
+
+  val pageNavigator = new UkRevenuePageNavigator(mockAuditConnector)
 
   "nextPage" should {
     "return a Call to the entity type page in NormalMode when the revenue meets threshold flag is true" in forAll {
@@ -31,7 +38,7 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(true))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.EntityTypeController
+        await(pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)) shouldBe routes.EntityTypeController
           .onPageLoad(NormalMode)
     }
 
@@ -40,7 +47,9 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(true))
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        await(
+          pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
 
     "return a Call to the not liable page in either mode when the revenue meets threshold flag is false" in forAll {
@@ -48,7 +57,9 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(false))
 
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe routes.NotLiableController
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
+
+        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe routes.NotLiableController
           .onPageLoad()
     }
   }
