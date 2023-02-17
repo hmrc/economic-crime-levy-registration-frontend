@@ -16,23 +16,34 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Gen
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{FinancialConductAuthority, GamblingCommission, Hmrc, Other}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
+
+import scala.concurrent.Future
 
 class AmlSupervisorPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new AmlSupervisorPageNavigator
+  val mockAuditConnector: AuditConnector = mock[AuditConnector]
+
+  val pageNavigator = new AmlSupervisorPageNavigator(mockAuditConnector)
 
   "nextPage" should {
     "return a Call to the register with GC page in NormalMode when the Gambling Commission option is selected" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(amlSupervisor = Some(AmlSupervisor(GamblingCommission, None)))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.RegisterWithGcController
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
+
+        await(
+          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.RegisterWithGcController
           .onPageLoad()
     }
 
@@ -40,7 +51,11 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration = registration.copy(amlSupervisor = Some(AmlSupervisor(GamblingCommission, None)))
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.RegisterWithGcController
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
+
+        await(
+          pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.RegisterWithGcController
           .onPageLoad()
     }
 
@@ -49,7 +64,11 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None)))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.RegisterWithFcaController
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
+
+        await(
+          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.RegisterWithFcaController
           .onPageLoad()
     }
 
@@ -58,7 +77,11 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None)))
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.RegisterWithFcaController
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
+
+        await(
+          pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.RegisterWithFcaController
           .onPageLoad()
     }
 
@@ -70,7 +93,9 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = otherProfessionalBody)
         val updatedRegistration   = registration.copy(amlSupervisor = Some(amlSupervisor))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.RelevantAp12MonthsController
+        await(
+          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.RelevantAp12MonthsController
           .onPageLoad(NormalMode)
     }
 
@@ -82,7 +107,9 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = otherProfessionalBody)
         val updatedRegistration   = registration.copy(amlSupervisor = Some(amlSupervisor))
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController
+        await(
+          pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.CheckYourAnswersController
           .onPageLoad()
     }
   }
