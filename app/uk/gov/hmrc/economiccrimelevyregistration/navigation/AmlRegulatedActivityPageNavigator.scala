@@ -33,10 +33,7 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
   )(implicit request: RequestHeader): Future[Call] =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  => Future.successful(routes.AmlSupervisorController.onPageLoad(NormalMode))
-      case Some(false) =>
-        auditConnector
-          .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
-          .map(_ => routes.NotLiableController.onPageLoad())
+      case Some(false) => sendNotLiableAuditEvent(registration)
       case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
@@ -45,11 +42,13 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
   )(implicit request: RequestHeader): Future[Call] =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
-      case Some(false) =>
-        auditConnector
-          .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
-          .map(_ => routes.NotLiableController.onPageLoad())
+      case Some(false) => sendNotLiableAuditEvent(registration)
       case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
+
+  private def sendNotLiableAuditEvent(registration: Registration): Future[Call] =
+    auditConnector
+      .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
+      .map(_ => routes.NotLiableController.onPageLoad())
 
 }

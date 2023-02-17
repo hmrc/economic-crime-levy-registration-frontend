@@ -56,14 +56,15 @@ class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(impl
   private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType, registration: Registration): Future[Call] =
     amlSupervisorType match {
       case GamblingCommission        =>
-        auditConnector
-          .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
-          .map(_ => routes.RegisterWithGcController.onPageLoad())
+        sendNotLiableAuditEvent(registration).map(_ => routes.RegisterWithGcController.onPageLoad())
       case FinancialConductAuthority =>
-        auditConnector
-          .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
-          .map(_ => routes.RegisterWithFcaController.onPageLoad())
+        sendNotLiableAuditEvent(registration).map(_ => routes.RegisterWithFcaController.onPageLoad())
       case _                         => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
+
+  private def sendNotLiableAuditEvent(registration: Registration): Future[Unit] =
+    auditConnector
+      .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
+      .map(_ => ())
 
 }
