@@ -16,21 +16,30 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
+
+import scala.concurrent.Future
 
 class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new AmlRegulatedActivityPageNavigator
+  val mockAuditConnector: AuditConnector = mock[AuditConnector]
+
+  val pageNavigator = new AmlRegulatedActivityPageNavigator(mockAuditConnector)
 
   "nextPage" should {
     "return a Call to the AML supervisor page from the AML regulated activity page in NormalMode when the 'Yes' option is selected" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.AmlSupervisorController
+        await(
+          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.AmlSupervisorController
           .onPageLoad(NormalMode)
     }
 
@@ -38,14 +47,19 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        await(
+          pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
 
     "return a Call to the not liable page from the AML regulated activity page in either mode when the 'No' option is selected" in forAll {
       (registration: Registration, mode: Mode) =>
         val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
 
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe routes.NotLiableController.onPageLoad()
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
+
+        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe routes.NotLiableController
+          .onPageLoad()
     }
   }
 

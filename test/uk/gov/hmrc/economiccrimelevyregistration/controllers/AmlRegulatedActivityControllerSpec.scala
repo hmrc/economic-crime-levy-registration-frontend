@@ -20,7 +20,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, Result}
+import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
@@ -29,6 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
 
@@ -39,9 +40,13 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   val form: Form[Boolean]                            = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
 
-  val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+  val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator(mockAuditConnector) {
+    override protected def navigateInNormalMode(registration: Registration)(implicit
+      request: RequestHeader
+    ): Future[Call] =
+      Future.successful(onwardRoute)
   }
 
   class TestContext(registrationData: Registration) {
