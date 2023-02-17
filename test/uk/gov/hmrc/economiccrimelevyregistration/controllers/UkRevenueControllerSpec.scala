@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import org.scalacheck.{Arbitrary, Gen}
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, Result}
+import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
@@ -31,6 +31,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registratio
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclReturnsService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 
 import scala.concurrent.Future
 
@@ -42,10 +44,13 @@ class UkRevenueControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   val mockEclReturnsService: EclReturnsService               = mock[EclReturnsService]
+  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
 
   val pageNavigator: UkRevenuePageNavigator =
-    new UkRevenuePageNavigator {
-      override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+    new UkRevenuePageNavigator(mockAuditConnector) {
+      override protected def navigateInNormalMode(registration: Registration)(implicit
+        request: RequestHeader
+      ): Future[Call] = Future.successful(onwardRoute)
     }
 
   val minRevenue = 0L
@@ -111,6 +116,8 @@ class UkRevenueControllerSpec extends SpecBase {
           )(any())
         )
           .thenReturn(Future.successful(updatedRegistration))
+
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", ukRevenue.toString)))

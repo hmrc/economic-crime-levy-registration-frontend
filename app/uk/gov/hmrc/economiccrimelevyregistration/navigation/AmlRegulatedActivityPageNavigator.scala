@@ -16,30 +16,39 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.Call
+import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationNotLiableAuditEvent
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-class AmlRegulatedActivityPageNavigator @Inject() () extends PageNavigator {
+class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnector)(implicit ec: ExecutionContext)
+    extends AsyncPageNavigator {
 
   override protected def navigateInNormalMode(
     registration: Registration
-  ): Call =
+  )(implicit request: RequestHeader): Future[Call] =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
-      case Some(true)  => routes.AmlSupervisorController.onPageLoad(NormalMode)
-      case Some(false) => routes.NotLiableController.onPageLoad()
-      case _           => routes.NotableErrorController.answersAreInvalid()
+      case Some(true)  => Future.successful(routes.AmlSupervisorController.onPageLoad(NormalMode))
+      case Some(false) => sendNotLiableAuditEvent(registration)
+      case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
   override protected def navigateInCheckMode(
     registration: Registration
-  ): Call =
+  )(implicit request: RequestHeader): Future[Call] =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
-      case Some(true)  => routes.CheckYourAnswersController.onPageLoad()
-      case Some(false) => routes.NotLiableController.onPageLoad()
-      case _           => routes.NotableErrorController.answersAreInvalid()
+      case Some(true)  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
+      case Some(false) => sendNotLiableAuditEvent(registration)
+      case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
+
+  private def sendNotLiableAuditEvent(registration: Registration): Future[Call] =
+    auditConnector
+      .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
+      .map(_ => routes.NotLiableController.onPageLoad())
 
 }

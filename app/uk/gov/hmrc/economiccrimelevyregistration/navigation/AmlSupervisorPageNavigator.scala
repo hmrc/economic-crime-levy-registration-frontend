@@ -16,44 +16,55 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.Call
+import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
+import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationNotLiableAuditEvent
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisorType, NormalMode, Registration}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-class AmlSupervisorPageNavigator @Inject() () extends PageNavigator {
+class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(implicit ec: ExecutionContext)
+    extends AsyncPageNavigator {
 
   override protected def navigateInNormalMode(
     registration: Registration
-  ): Call =
+  )(implicit request: RequestHeader): Future[Call] =
     registration.amlSupervisor match {
       case Some(amlSupervisor) =>
         amlSupervisor.supervisorType match {
-          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t)
-          case Hmrc | Other                                         => routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
+          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, registration)
+          case Hmrc | Other                                         => Future.successful(routes.RelevantAp12MonthsController.onPageLoad(NormalMode))
         }
-      case _                   => routes.NotableErrorController.answersAreInvalid()
+      case _                   => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
   override protected def navigateInCheckMode(
     registration: Registration
-  ): Call =
+  )(implicit request: RequestHeader): Future[Call] =
     registration.amlSupervisor match {
       case Some(amlSupervisor) =>
         amlSupervisor.supervisorType match {
-          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t)
-          case Hmrc | Other                                         => routes.CheckYourAnswersController.onPageLoad()
+          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, registration)
+          case Hmrc | Other                                         => Future.successful(routes.CheckYourAnswersController.onPageLoad())
         }
-      case _                   => routes.NotableErrorController.answersAreInvalid()
+      case _                   => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
-  private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType): Call =
+  private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType, registration: Registration): Future[Call] =
     amlSupervisorType match {
-      case GamblingCommission        => routes.RegisterWithGcController.onPageLoad()
-      case FinancialConductAuthority => routes.RegisterWithFcaController.onPageLoad()
-      case _                         => routes.NotableErrorController.answersAreInvalid()
+      case GamblingCommission        =>
+        sendNotLiableAuditEvent(registration).map(_ => routes.RegisterWithGcController.onPageLoad())
+      case FinancialConductAuthority =>
+        sendNotLiableAuditEvent(registration).map(_ => routes.RegisterWithFcaController.onPageLoad())
+      case _                         => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
+
+  private def sendNotLiableAuditEvent(registration: Registration): Future[Unit] =
+    auditConnector
+      .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
+      .map(_ => ())
 
 }

@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, Result}
+import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
@@ -31,6 +31,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
 
@@ -41,9 +42,13 @@ class AmlSupervisorControllerSpec extends SpecBase {
   val form: Form[AmlSupervisor]               = formProvider(appConfig)
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
 
-  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator(mockAuditConnector) {
+    override protected def navigateInNormalMode(registration: Registration)(implicit
+      request: RequestHeader
+    ): Future[Call] =
+      Future.successful(onwardRoute)
   }
 
   implicit val arbAmlSupervisor: Arbitrary[AmlSupervisor] = arbAmlSupervisor(appConfig)
