@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 
 @this(
         layout: templates.Layout,
@@ -47,7 +48,9 @@
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(Text(messages("amlSupervisor.legend"))),
+                legend = LegendViewModel(Text(messages("amlSupervisor.heading")))
+                        .asPageHeading(LegendSize.Large)
+                        .withCssClass("govuk-visually-hidden"),
                 items = AmlSupervisorType.options(appConfig, select, form)
             )
         )
