@@ -27,12 +27,10 @@
 
 @(form: Form[String], name: String, mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@labelHtml = {
+@layout(pageTitle = titleWithForm(form, messages("firstContactNumber.title", name))) {
     <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("firstContactNumber.heading", name))</h1>
     <p class="govuk-body">@messages("firstContactNumber.legend")</p>
-}
 
-@layout(pageTitle = titleWithForm(form, messages("firstContactNumber.title", name))) {
     @formHelper(action = FirstContactNumberController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -41,7 +39,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(HtmlContent(labelHtml))
+                label = LabelViewModel(Text(messages("firstContactNumber.heading"))).asHiddenPageHeading()
             ).withWidth(Fixed20)
         )
 

@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 
 @this(
         layout: templates.Layout,
@@ -29,15 +30,16 @@
 @(form: Form[AmlSupervisor], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @legendHtml = {
-    <h1 class="govuk-heading-l">@messages("amlSupervisor.heading")</h1>
-    <p class="govuk-body">@messages("amlSupervisor.p1")</p>
-    <p class="govuk-body">@messages("amlSupervisor.p2")</p>
 }
 
 @layout(
     pageTitle = titleWithForm(form, messages("amlSupervisor.title")),
     autoCompleteEnabled = true
 ) {
+    <h1 class="govuk-heading-l">@messages("amlSupervisor.heading")</h1>
+    <p class="govuk-body">@messages("amlSupervisor.p1")</p>
+    <p class="govuk-body">@messages("amlSupervisor.p2")</p>
+
     @formHelper(action = AmlSupervisorController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0", "otherProfessionalBody" -> "otherProfessionalBody")))
@@ -46,7 +48,7 @@
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(HtmlContent(legendHtml)),
+                legend = LegendViewModel(Text(messages("amlSupervisor.heading"))).asHiddenPageHeading(),
                 items = AmlSupervisorType.options(appConfig, select, form)
             )
         )

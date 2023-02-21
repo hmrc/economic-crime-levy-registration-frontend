@@ -26,13 +26,11 @@
 
 @(form: Form[Int], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@labelHtml = {
+@layout(pageTitle = titleWithForm(form, messages("relevantApLength.title"))) {
     <h1 class="govuk-heading-l">@messages("relevantApLength.heading")</h1>
     <p class="govuk-body">@messages("relevantApLength.p1")</p>
     <p class="govuk-body">@messages("relevantApLength.p2")</p>
-}
 
-@layout(pageTitle = titleWithForm(form, messages("relevantApLength.title"))) {
     @formHelper(action = RelevantApLengthController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -41,7 +39,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(HtmlContent(labelHtml)).asPageHeading()
+                label = LabelViewModel(Text(messages("relevantApLength.heading"))).asHiddenPageHeading()
             )
                     .asNumeric()
                     .withWidth(Fixed5)
