@@ -82,7 +82,7 @@
 @hmrcLayout(
     pageTitle = Some(pageTitle),
     nonce = CSPNonce.get,
-    signOutUrl = Some(SignOutController.signOut.url),
+    signOutUrl = if(showSignOut) Some(SignOutController.signOut.url) else None,
     serviceUrl = Some(StartController.onPageLoad.url),
     isWelshTranslationAvailable = isWelshTranslationAvailable.getOrElse(appConfig.languageTranslationEnabled),
     additionalScriptsBlock = Some(additionalScripts),
