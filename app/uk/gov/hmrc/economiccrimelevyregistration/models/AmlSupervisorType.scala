@@ -53,7 +53,7 @@ object AmlSupervisorType {
   ): Seq[RadioItem] = {
     val amlProfessionalBodySupervisorOptions: Seq[SelectItem] =
       SelectItem(
-        text = ""
+        text = "&nbsp;"
       ) +: appConfig.amlProfessionalBodySupervisors.map { opb =>
         SelectItem(
           value = Some(opb),
