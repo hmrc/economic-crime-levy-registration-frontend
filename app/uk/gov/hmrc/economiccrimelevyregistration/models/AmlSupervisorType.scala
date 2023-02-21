@@ -52,7 +52,9 @@ object AmlSupervisorType {
     messages: Messages
   ): Seq[RadioItem] = {
     val amlProfessionalBodySupervisorOptions: Seq[SelectItem] =
-      appConfig.amlProfessionalBodySupervisors.map { opb =>
+      SelectItem(
+        text = ""
+      ) +: appConfig.amlProfessionalBodySupervisors.map { opb =>
         SelectItem(
           value = Some(opb),
           text = messages(s"amlSupervisor.$opb"),

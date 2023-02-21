@@ -39,7 +39,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text(messages("relevantApLength.label")))
+                label = LabelViewModel(Text(messages("relevantApLength.heading"))).asHiddenPageHeading()
             )
                     .asNumeric()
                     .withWidth(Fixed5)

@@ -38,7 +38,7 @@
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(Text("relevantAp12Months.legend")),
+                legend = LegendViewModel(Text("relevantAp12Months.heading")).asHiddenPageHeading(),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),

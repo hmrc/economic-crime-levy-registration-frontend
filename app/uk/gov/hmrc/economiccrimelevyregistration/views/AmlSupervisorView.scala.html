@@ -48,9 +48,7 @@
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(Text(messages("amlSupervisor.heading")))
-                        .asPageHeading(LegendSize.Large)
-                        .withCssClass("govuk-visually-hidden"),
+                legend = LegendViewModel(Text(messages("amlSupervisor.heading"))).asHiddenPageHeading(),
                 items = AmlSupervisorType.options(appConfig, select, form)
             )
         )
