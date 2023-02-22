@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNameFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNamePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.SecondContactNameView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNameView
 
 import scala.concurrent.Future
 

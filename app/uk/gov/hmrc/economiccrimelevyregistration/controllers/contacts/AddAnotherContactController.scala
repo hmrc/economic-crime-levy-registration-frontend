@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContactFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AddAnotherContactView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.AddAnotherContactView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}

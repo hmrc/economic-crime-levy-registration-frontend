@@ -15,34 +15,32 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
-@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LabelSize
 
 @this(
-        layout: templates.Layout,
+        layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukInput: GovukInput,
         govukButton: GovukButton
 )
 
-@(form: Form[String], name: String, mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[String], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@labelHtml = {
-    <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("secondContactEmail.heading", name))</h1>
-    <p class="govuk-body">@messages("secondContactEmail.legend")</p>
-}
+@layout(pageTitle = titleWithForm(form, messages("firstContactName.title"))) {
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
 
-@layout(pageTitle = titleWithForm(form, messages("secondContactEmail.title", name))) {
-    @formHelper(action = SecondContactEmailController.onSubmit(mode)) {
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
+    <h1 class="govuk-heading-l">@messages("firstContactName.heading")</h1>
+    <p class="govuk-body">@messages("firstContactName.legend.p1")</p>
+    <p class="govuk-body">@messages("firstContactName.legend.p2")</p>
 
+    @formHelper(action = FirstContactNameController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("secondContactEmail.heading", name)).asPageHeading(LabelSize.Large)
-            ).withWidth(Fixed20)
+                label = LabelViewModel(Text(messages("firstContactName.heading"))).asHiddenPageHeading()
+            ).withWidth(Fixed20).withHint(Hint(content = Text(messages("firstContactName.hint"))))
         )
 
         @govukButton(

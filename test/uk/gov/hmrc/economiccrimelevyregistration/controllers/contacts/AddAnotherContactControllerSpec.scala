@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContac
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AddAnotherContactView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.AddAnotherContactView
 
 import scala.concurrent.Future
 
