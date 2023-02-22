@@ -36,15 +36,15 @@
     pageTitle = titleWithForm(form, messages("amlSupervisor.title")),
     autoCompleteEnabled = true
 ) {
+    @if(form.errors.nonEmpty) {
+        @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0", "otherProfessionalBody" -> "otherProfessionalBody")))
+    }
+
     <h1 class="govuk-heading-l">@messages("amlSupervisor.heading")</h1>
     <p class="govuk-body">@messages("amlSupervisor.p1")</p>
     <p class="govuk-body">@messages("amlSupervisor.p2")</p>
 
     @formHelper(action = AmlSupervisorController.onSubmit(mode)) {
-        @if(form.errors.nonEmpty) {
-            @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0", "otherProfessionalBody" -> "otherProfessionalBody")))
-        }
-
         @radios(
             RadiosViewModel(
                 field = form("value"),
