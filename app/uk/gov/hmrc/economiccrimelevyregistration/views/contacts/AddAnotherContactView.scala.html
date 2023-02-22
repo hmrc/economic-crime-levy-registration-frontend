@@ -14,8 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
-
 @this(
         layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
         formHelper: FormWithCSRF,
@@ -26,21 +24,19 @@
 
 @(form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@legendHtml = {
+@layout(pageTitle = titleWithForm(form, messages("addAnotherContact.title"))) {
+    @if(form.errors.nonEmpty) {
+        @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
+    }
+
     <h1 class="govuk-heading-l">@messages("addAnotherContact.heading")</h1>
     <p class="govuk-body">@messages("addAnotherContact.legend")</p>
-}
 
-@layout(pageTitle = titleWithForm(form, messages("addAnotherContact.title"))) {
     @formHelper(action = AddAnotherContactController.onSubmit(mode)) {
-        @if(form.errors.nonEmpty) {
-            @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
-        }
-
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(HtmlContent(legendHtml)),
+                legend = LegendViewModel(Text(messages("addAnotherContact.heading"))).asHiddenPageHeading(),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),

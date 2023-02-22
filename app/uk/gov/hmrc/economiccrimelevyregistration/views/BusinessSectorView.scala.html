@@ -31,6 +31,7 @@
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
         }
+
         @radios(
             RadiosViewModel(
                 field = form("value"),
