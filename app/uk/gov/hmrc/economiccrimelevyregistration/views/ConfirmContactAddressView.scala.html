@@ -25,23 +25,20 @@
 
 @(form: Form[Boolean], addressViewModel: InsetText, mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@legendHtml = {
-    <h1 class="govuk-heading-l">@messages("confirmContactAddress.heading")</h1>
-@insetText(
-    addressViewModel
-)
-}
-
 @layout(pageTitle = titleWithForm(form, messages("confirmContactAddress.title"))) {
-    @formHelper(action = ConfirmContactAddressController.onSubmit(mode)) {
-        @if(form.errors.nonEmpty) {
-            @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
-        }
+    @if(form.errors.nonEmpty) {
+        @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
+    }
 
+    <h1 class="govuk-heading-l">@messages("confirmContactAddress.heading")</h1>
+
+    @insetText(addressViewModel)
+
+    @formHelper(action = ConfirmContactAddressController.onSubmit(mode)) {
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(HtmlContent(legendHtml)),
+                legend = LegendViewModel(Text(messages("confirmContactAddress.heading"))).asHiddenPageHeading(),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),

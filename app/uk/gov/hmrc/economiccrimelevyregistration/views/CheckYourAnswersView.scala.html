@@ -21,27 +21,26 @@
         govukButton: GovukButton
 )
 
-
 @(organisationDetails: SummaryList, contactDetails: SummaryList)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(messages("checkYourAnswers.title"))) {
-@formHelper(action = CheckYourAnswersController.onSubmit()) {
-    <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
+    @formHelper(action = CheckYourAnswersController.onSubmit()) {
+        <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
-    <h1 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h1>
+        <h1 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h1>
 
-    @govukSummaryList(organisationDetails)
+        @govukSummaryList(organisationDetails)
 
-    <h1 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h1>
+        <h1 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h1>
 
-    @govukSummaryList(contactDetails)
+        @govukSummaryList(contactDetails)
 
-    <h1 class="govuk-heading-m">@messages("checkYourAnswers.nowSend")</h1>
+        <h1 class="govuk-heading-m">@messages("checkYourAnswers.nowSend")</h1>
 
-    <div class="govuk-body">@messages("checkYourAnswers.bySubmitting")</div>
+        <div class="govuk-body">@messages("checkYourAnswers.bySubmitting")</div>
 
-    @govukButton(
-        ButtonViewModel(messages("checkYourAnswers.confirmAndSend"))
-    )
-}
+        @govukButton(
+            ButtonViewModel(messages("checkYourAnswers.confirmAndSend"))
+        )
+    }
 }

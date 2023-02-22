@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactEmailFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactEmailPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.FirstContactEmailView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactEmailView
 
 import scala.concurrent.Future
 

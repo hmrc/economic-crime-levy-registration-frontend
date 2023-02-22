@@ -17,31 +17,29 @@
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
 
 @this(
-        layout: templates.Layout,
+        layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukInput: GovukInput,
         govukButton: GovukButton
 )
 
-@(form: Form[String], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[String], name: String, mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@labelHtml = {
-    <h1 class="govuk-heading-l">@messages("secondContactName.heading")</h1>
-    <p class="govuk-body">@messages("secondContactName.legend")</p>
-}
+@layout(pageTitle = titleWithForm(form, messages("secondContactRole.title", name))) {
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
 
-@layout(pageTitle = titleWithForm(form, messages("secondContactName.title"))) {
-    @formHelper(action = SecondContactNameController.onSubmit(mode)) {
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
+    <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("secondContactRole.heading", name))</h1>
+    <p class="govuk-body">@messages("secondContactRole.legend")</p>
 
+    @formHelper(action = SecondContactRoleController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(HtmlContent(labelHtml))
-            ).withWidth(Fixed20).withHint(Hint(content = Text(messages("secondContactName.hint"))))
+                label = LabelViewModel(Text(messages("secondContactRole.heading"))).asHiddenPageHeading()
+            ).withWidth(Fixed20).withHint(Hint(content = Text(messages("secondContactRole.hint"))))
         )
 
         @govukButton(
