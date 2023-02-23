@@ -113,7 +113,7 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"GET ${routes.NotableErrorController.registrationFailed().url}" should {
+  s"GET ${routes.NotableErrorController.registrationFailed().url}"                                        should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.registrationFailed())
 
     "respond with 200 status and the registration failed HTML view" in {
@@ -122,11 +122,11 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
       val result = callRoute(FakeRequest(routes.NotableErrorController.registrationFailed()))
 
       status(result) shouldBe OK
-      html(result) should include("Registration failed")
+      html(result)     should include("Registration failed")
     }
   }
 
-  s"GET ${routes.NotableErrorController.partyTypeMismatch().url}" should {
+  s"GET ${routes.NotableErrorController.partyTypeMismatch().url}"                                         should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.partyTypeMismatch())
 
     "respond with 200 status and the party type mismatch HTML view" in {
@@ -135,7 +135,20 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
       val result = callRoute(FakeRequest(routes.NotableErrorController.partyTypeMismatch()))
 
       status(result) shouldBe OK
-      html(result) should include("Your details do not match our records")
+      html(result)     should include("Your details do not match our records")
+    }
+  }
+
+  s"GET ${routes.NotableErrorController.failedBusinessVerification().url}"                                should {
+    behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.failedBusinessVerification())
+
+    "respond with 200 status and the failed business verification HTML view" in {
+      stubAuthorised()
+
+      val result = callRoute(FakeRequest(routes.NotableErrorController.failedBusinessVerification()))
+
+      status(result) shouldBe OK
+      html(result)     should include("The details you have entered do not match our records")
     }
   }
 

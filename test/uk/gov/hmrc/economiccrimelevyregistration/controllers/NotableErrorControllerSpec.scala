@@ -37,6 +37,8 @@ class NotableErrorControllerSpec extends SpecBase {
     app.injector.instanceOf[OrganisationAlreadyRegisteredView]
   val registrationFailedView: RegistrationFailedView                       = app.injector.instanceOf[RegistrationFailedView]
   val partyTypeMismatchView: PartyTypeMismatchView                         = app.injector.instanceOf[PartyTypeMismatchView]
+  val failedBusinessVerificationView: FailedBusinessVerificationView       =
+    app.injector.instanceOf[FailedBusinessVerificationView]
 
   class TestContext(registrationData: Registration, eclRegistrationReference: Option[String] = None) {
     val controller = new NotableErrorController(
@@ -54,7 +56,8 @@ class NotableErrorControllerSpec extends SpecBase {
       assistantCannotRegisterView,
       organisationAlreadyRegisteredView,
       registrationFailedView,
-      partyTypeMismatchView
+      partyTypeMismatchView,
+      failedBusinessVerificationView
     )
   }
 
@@ -161,6 +164,18 @@ class NotableErrorControllerSpec extends SpecBase {
         status(result) shouldBe OK
 
         contentAsString(result) shouldBe partyTypeMismatchView()(fakeRequest, messages).toString
+      }
+    }
+  }
+
+  "failedBusinessVerification" should {
+    "return OK and the correct view" in forAll { (registration: Registration, regime: String) =>
+      new TestContext(registration) {
+        val result: Future[Result] = controller.failedBusinessVerification()(fakeRequest)
+
+        status(result) shouldBe OK
+
+        contentAsString(result) shouldBe failedBusinessVerificationView(regime)(fakeRequest, messages).toString
       }
     }
   }

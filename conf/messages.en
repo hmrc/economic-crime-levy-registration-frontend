@@ -344,6 +344,11 @@ partyTypeMismatch.heading = Your details do not match our records
 partyTypeMismatch.body.p1 = Your registration failed because your details do not match our records.
 partyTypeMismatch.body.p2 = Check that you have chosen the right entity type and submit your answers again.
 
+failedBusinessVerification.title = The details you have entered do not match our records
+failedBusinessVerification.heading = The details you have entered do not match our records
+failedBusinessVerification.body.p1 =
+failedBusinessVerification.body.p2 =
+
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.
 feedback.link = <a href="{0}" class="govuk-link">Send us your feedback</a>

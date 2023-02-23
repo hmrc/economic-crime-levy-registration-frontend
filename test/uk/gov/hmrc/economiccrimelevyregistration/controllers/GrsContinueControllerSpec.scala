@@ -167,9 +167,9 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(result) shouldBe "Failed business verification"
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.failedBusinessVerification().url)
         }
     }
 
@@ -436,9 +436,9 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(result) shouldBe "Failed business verification"
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.failedBusinessVerification().url)
         }
     }
 
@@ -757,9 +757,9 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(result) shouldBe "Failed business verification"
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.failedBusinessVerification().url)
         }
     }
 

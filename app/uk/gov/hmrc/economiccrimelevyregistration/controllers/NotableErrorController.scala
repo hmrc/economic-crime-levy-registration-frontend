@@ -20,6 +20,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{GeneralPartnership, SoleTrader}
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.views.html._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -42,7 +43,8 @@ class NotableErrorController @Inject() (
   assistantCannotRegisterView: AssistantCannotRegisterView,
   organisationAlreadyRegisteredView: OrganisationAlreadyRegisteredView,
   registrationFailedView: RegistrationFailedView,
-  partyTypeMismatchView: PartyTypeMismatchView
+  partyTypeMismatchView: PartyTypeMismatchView,
+  failedBusinessVerificationView: FailedBusinessVerificationView
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -90,6 +92,18 @@ class NotableErrorController @Inject() (
 
   def partyTypeMismatch: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
     Ok(partyTypeMismatchView())
+  }
+
+  def failedBusinessVerification: Action[AnyContent] = (authoriseWithoutEnrolmentCheck andThen getRegistrationData) {
+    implicit request =>
+      request.registration.entityType match {
+        case Some(entityType) =>
+          entityType match {
+            case SoleTrader | GeneralPartnership => Ok(failedBusinessVerificationView("Self Assessment"))
+            case _                               => Ok(failedBusinessVerificationView("Corporation Tax"))
+          }
+        case _                => throw new IllegalStateException("Entity type not found in registration data")
+      }
   }
 
 }

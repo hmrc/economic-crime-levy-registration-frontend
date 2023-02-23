@@ -101,7 +101,7 @@ class GrsContinueController @Inject() (
     (identifiersMatch, bvResult, grsResult.registrationStatus, grsResult.registeredBusinessPartnerId) match {
       case (false, _, _, _)                                  => Future.successful(Ok("Identifiers do not match"))
       case (_, Some(BusinessVerificationResult(Fail)), _, _) =>
-        Future.successful(Ok("Failed business verification"))
+        Future.successful(Redirect(routes.NotableErrorController.failedBusinessVerification()))
       case (_, _, _, Some(businessPartnerId))                =>
         eclRegistrationConnector.getSubscriptionStatus(businessPartnerId).map {
           case EclSubscriptionStatus(NotSubscribed)                        =>
