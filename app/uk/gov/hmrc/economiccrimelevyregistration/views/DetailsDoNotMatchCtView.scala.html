@@ -15,10 +15,26 @@
  *@
 
 @this(
-        layout: templates.Layout
+        layout: templates.Layout,
+        insetText: GovukInsetText
 )
 
-@(taxSchemeIdentifier: String)(implicit request: Request[_], messages: Messages)
+@()(implicit request: Request[_], messages: Messages)
+
+@insetTextHtml = {
+    <p class="govuk-body">@messages("detailsDoNotMatch.telephone.uk.label")
+        <br/>
+        <b>@messages("detailsDoNotMatch.ct.telephone.uk.number")</b>
+    </p>
+    <p class="govuk-body">@messages("detailsDoNotMatch.telephone.intl.label")
+        <br/>
+        <b>@messages("detailsDoNotMatch.ct.telephone.intl.number")</b>
+    </p>
+    <p class="govuk-body">@messages("detailsDoNotMatch.open.label")
+        <br/>
+        <b>@messages("detailsDoNotMatch.open")</b>
+    </p>
+}
 
 @layout(
     pageTitle = title(messages("detailsDoNotMatch.title")),
@@ -27,14 +43,13 @@
 
     <h1 class="govuk-heading-l">@messages("detailsDoNotMatch.heading")</h1>
 
-    <p class="govuk-body">@messages(s"detailsDoNotMatch.body.p1.$taxSchemeIdentifier")</p>
-    <p class="govuk-body">@messages(s"detailsDoNotMatch.body.p2.$taxSchemeIdentifier")</p>
-    <p class="govuk-body">@messages("detailsDoNotMatch.telephone.uk.label")</p>
-    <p class="govuk-body"><b>@messages("detailsDoNotMatch.telephone.uk.number")</b></p>
-    <p class="govuk-body">@messages("detailsDoNotMatch.telephone.intl.label")</p>
-    <p class="govuk-body"><b>@messages("detailsDoNotMatch.telephone.intl.number")</b></p>
-    <p class="govuk-body">@messages("detailsDoNotMatch.open.label")</p>
-    <p class="govuk-body"><b>@messages("detailsDoNotMatch.open")</b></p>
+    <p class="govuk-body">@messages("detailsDoNotMatch.ct.body.p1")</p>
+    <p class="govuk-body">@messages("detailsDoNotMatch.ct.body.p2")</p>
+
+    @insetText(InsetText(
+        content = HtmlContent(insetTextHtml)
+    ))
+
     <p class="govuk-body">@messages("detailsDoNotMatch.closed")</p>
 
 }

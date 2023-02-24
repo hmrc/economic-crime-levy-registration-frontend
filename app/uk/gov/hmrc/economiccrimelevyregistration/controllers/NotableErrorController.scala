@@ -44,7 +44,8 @@ class NotableErrorController @Inject() (
   organisationAlreadyRegisteredView: OrganisationAlreadyRegisteredView,
   registrationFailedView: RegistrationFailedView,
   partyTypeMismatchView: PartyTypeMismatchView,
-  detailsDoNotMatchView: DetailsDoNotMatchView
+  detailsDoNotMatchCtView: DetailsDoNotMatchCtView,
+  detailsDoNotMatchSaView: DetailsDoNotMatchSaView
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -101,8 +102,8 @@ class NotableErrorController @Inject() (
       request.registration.entityType match {
         case Some(entityType) =>
           entityType match {
-            case UkLimitedCompany => Ok(detailsDoNotMatchView("ct"))
-            case _                => Ok(detailsDoNotMatchView("sa"))
+            case UkLimitedCompany => Ok(detailsDoNotMatchCtView())
+            case _                => Ok(detailsDoNotMatchSaView())
           }
         case _                => throw new IllegalStateException("Entity type not found in registration data")
       }

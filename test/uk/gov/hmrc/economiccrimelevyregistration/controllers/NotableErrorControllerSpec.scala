@@ -18,9 +18,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import uk.gov.hmrc.economiccrimelevyregistration.EntityTaxSchemeType
+import uk.gov.hmrc.economiccrimelevyregistration.SelfAssessmentEntityType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UkLimitedCompany
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.views.html._
@@ -38,7 +39,8 @@ class NotableErrorControllerSpec extends SpecBase {
     app.injector.instanceOf[OrganisationAlreadyRegisteredView]
   val registrationFailedView: RegistrationFailedView                       = app.injector.instanceOf[RegistrationFailedView]
   val partyTypeMismatchView: PartyTypeMismatchView                         = app.injector.instanceOf[PartyTypeMismatchView]
-  val detailsDoNotMatchView: DetailsDoNotMatchView                         = app.injector.instanceOf[DetailsDoNotMatchView]
+  val detailsDoNotMatchCtView: DetailsDoNotMatchCtView                     = app.injector.instanceOf[DetailsDoNotMatchCtView]
+  val detailsDoNotMatchSaView: DetailsDoNotMatchSaView                     = app.injector.instanceOf[DetailsDoNotMatchSaView]
 
   class TestContext(registrationData: Registration, eclRegistrationReference: Option[String] = None) {
     val controller = new NotableErrorController(
@@ -57,7 +59,8 @@ class NotableErrorControllerSpec extends SpecBase {
       organisationAlreadyRegisteredView,
       registrationFailedView,
       partyTypeMismatchView,
-      detailsDoNotMatchView
+      detailsDoNotMatchCtView,
+      detailsDoNotMatchSaView
     )
   }
 
@@ -169,14 +172,27 @@ class NotableErrorControllerSpec extends SpecBase {
   }
 
   "verificationFailed" should {
-    "return OK and the correct view" in forAll {
-      (registration: Registration, entityTaxSchemeType: EntityTaxSchemeType) =>
-        new TestContext(registration.copy(entityType = Some(entityTaxSchemeType.entityType))) {
+    "return OK and the correct view for a UK limited company" in forAll { registration: Registration =>
+      new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+        val result: Future[Result] = controller.verificationFailed()(fakeRequest)
+
+        status(result) shouldBe OK
+
+        contentAsString(result) shouldBe detailsDoNotMatchCtView()(
+          fakeRequest,
+          messages
+        ).toString
+      }
+    }
+
+    "return OK and the correct view for a partnership or sole trader" in forAll {
+      (registration: Registration, selfAssessmentEntityType: SelfAssessmentEntityType) =>
+        new TestContext(registration.copy(entityType = Some(selfAssessmentEntityType.entityType))) {
           val result: Future[Result] = controller.verificationFailed()(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe detailsDoNotMatchView(entityTaxSchemeType.taxSchemeType)(
+          contentAsString(result) shouldBe detailsDoNotMatchSaView()(
             fakeRequest,
             messages
           ).toString
@@ -185,14 +201,27 @@ class NotableErrorControllerSpec extends SpecBase {
   }
 
   "detailsDoNotMatch" should {
-    "return OK and the correct view" in forAll {
-      (registration: Registration, entityTaxSchemeType: EntityTaxSchemeType) =>
-        new TestContext(registration.copy(entityType = Some(entityTaxSchemeType.entityType))) {
+    "return OK and the correct view for a UK limited company" in forAll { registration: Registration =>
+      new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+        val result: Future[Result] = controller.detailsDoNotMatch()(fakeRequest)
+
+        status(result) shouldBe OK
+
+        contentAsString(result) shouldBe detailsDoNotMatchCtView()(
+          fakeRequest,
+          messages
+        ).toString
+      }
+    }
+
+    "return OK and the correct view for a partnership or sole trader" in forAll {
+      (registration: Registration, selfAssessmentEntityType: SelfAssessmentEntityType) =>
+        new TestContext(registration.copy(entityType = Some(selfAssessmentEntityType.entityType))) {
           val result: Future[Result] = controller.detailsDoNotMatch()(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe detailsDoNotMatchView(entityTaxSchemeType.taxSchemeType)(
+          contentAsString(result) shouldBe detailsDoNotMatchSaView()(
             fakeRequest,
             messages
           ).toString

@@ -36,6 +36,8 @@ final case class ScottishOrGeneralPartnershipType(entityType: EntityType)
 
 final case class LimitedPartnershipType(entityType: EntityType)
 
+final case class SelfAssessmentEntityType(entityType: EntityType)
+
 final case class EnrolmentsWithEcl(enrolments: Enrolments, eclReferenceNumber: String)
 
 final case class EnrolmentsWithoutEcl(enrolments: Enrolments)
@@ -58,8 +60,6 @@ final case class IneligibleAmlSupervisor(amlSupervisor: AmlSupervisor)
 final case class IncorporatedEntityJourneyDataWithValidCompanyProfile(
   incorporatedEntityJourneyData: IncorporatedEntityJourneyData
 )
-
-final case class EntityTaxSchemeType(entityType: EntityType, taxSchemeType: String)
 
 trait EclTestData {
 
@@ -106,6 +106,21 @@ trait EclTestData {
                                   )
                                 )
     } yield LimitedPartnershipType(limitedPartnershipType)
+  }
+
+  implicit val arbSelfAssessmentEntityType: Arbitrary[SelfAssessmentEntityType] = Arbitrary {
+    for {
+      selfAssessmentEntityType <- Gen.oneOf(
+                                    Seq(
+                                      LimitedPartnership,
+                                      LimitedLiabilityPartnership,
+                                      GeneralPartnership,
+                                      ScottishPartnership,
+                                      ScottishLimitedPartnership,
+                                      SoleTrader
+                                    )
+                                  )
+    } yield SelfAssessmentEntityType(selfAssessmentEntityType)
   }
 
   implicit val arbEnrolmentsWithEcl: Arbitrary[EnrolmentsWithEcl] = Arbitrary {
@@ -249,14 +264,5 @@ trait EclTestData {
     emailAddress = Some(alphaNumericString),
     telephoneNumber = Some(alphaNumericString)
   )
-
-  implicit val arbEntityTaxSchemeType: Arbitrary[EntityTaxSchemeType] = Arbitrary {
-    for {
-      entityType <- Arbitrary.arbitrary[EntityType]
-    } yield entityType match {
-      case UkLimitedCompany => EntityTaxSchemeType(entityType, "ct")
-      case _                => EntityTaxSchemeType(entityType, "sa")
-    }
-  }
 
 }
