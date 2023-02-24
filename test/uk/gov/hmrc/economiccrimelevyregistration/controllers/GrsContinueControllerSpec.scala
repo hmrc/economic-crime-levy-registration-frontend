@@ -169,7 +169,7 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.NotableErrorController.failedBusinessVerification().url)
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.verificationFailed().url)
         }
     }
 
@@ -274,9 +274,9 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(result) shouldBe "Identifiers do not match"
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.detailsDoNotMatch().url)
         }
     }
 
@@ -438,7 +438,7 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.NotableErrorController.failedBusinessVerification().url)
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.verificationFailed().url)
         }
     }
 
@@ -543,9 +543,9 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(result) shouldBe "Identifiers do not match"
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.detailsDoNotMatch().url)
         }
     }
 
@@ -759,7 +759,7 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.NotableErrorController.failedBusinessVerification().url)
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.verificationFailed().url)
         }
     }
 
@@ -870,9 +870,9 @@ class GrsContinueControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
-          status(result) shouldBe OK
+          status(result) shouldBe SEE_OTHER
 
-          contentAsString(result) shouldBe "Identifiers do not match"
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.detailsDoNotMatch().url)
         }
     }
 

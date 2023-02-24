@@ -344,10 +344,19 @@ partyTypeMismatch.heading = Your details do not match our records
 partyTypeMismatch.body.p1 = Your registration failed because your details do not match our records.
 partyTypeMismatch.body.p2 = Check that you have chosen the right entity type and submit your answers again.
 
-failedBusinessVerification.title = The details you have entered do not match our records
-failedBusinessVerification.heading = The details you have entered do not match our records
-failedBusinessVerification.body.p1 =
-failedBusinessVerification.body.p2 =
+detailsDoNotMatch.title = The details you have entered do not match our records
+detailsDoNotMatch.heading = The details you have entered do not match our records
+detailsDoNotMatch.body.p1.sa = Check your Self Assessment records and try again.
+detailsDoNotMatch.body.p1.ct = Check your company''s Corporation Tax records and try again after 24 hours.
+detailsDoNotMatch.body.p2.sa = If you are still having problems, contact the Self Assessment helpline.
+detailsDoNotMatch.body.p2.ct = If you are still having problems, contact the Corporation Tax helpline.
+detailsDoNotMatch.telephone.uk.label = Telephone:
+detailsDoNotMatch.telephone.uk.number = 0300 200 3410
+detailsDoNotMatch.telephone.intl.label = Outside UK:
+detailsDoNotMatch.telephone.intl.number = +44 161 931 9070
+detailsDoNotMatch.open.label = Opening times:
+detailsDoNotMatch.open = Monday to Friday, 8am to 6pm
+detailsDoNotMatch.closed = Closed on weekends and bank holidays.
 
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.

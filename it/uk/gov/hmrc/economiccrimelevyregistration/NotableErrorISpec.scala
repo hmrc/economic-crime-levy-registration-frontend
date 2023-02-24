@@ -22,7 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration}
 
 class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -139,13 +139,36 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"GET ${routes.NotableErrorController.failedBusinessVerification().url}"                                should {
-    behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.failedBusinessVerification())
+  s"GET ${routes.NotableErrorController.verificationFailed().url}"                                        should {
+    behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.verificationFailed())
 
-    "respond with 200 status and the failed business verification HTML view" in {
+    "respond with 200 status and the details do not match HTML view" in {
       stubAuthorised()
 
-      val result = callRoute(FakeRequest(routes.NotableErrorController.failedBusinessVerification()))
+      val registration = random[Registration]
+      val entityType   = random[EntityType]
+
+      stubGetRegistration(registration.copy(entityType = Some(entityType)))
+
+      val result = callRoute(FakeRequest(routes.NotableErrorController.verificationFailed()))
+
+      status(result) shouldBe OK
+      html(result)     should include("The details you have entered do not match our records")
+    }
+  }
+
+  s"GET ${routes.NotableErrorController.detailsDoNotMatch().url}"                                         should {
+    behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.detailsDoNotMatch())
+
+    "respond with 200 status and the details do not match HTML view" in {
+      stubAuthorised()
+
+      val registration = random[Registration]
+      val entityType   = random[EntityType]
+
+      stubGetRegistration(registration.copy(entityType = Some(entityType)))
+
+      val result = callRoute(FakeRequest(routes.NotableErrorController.detailsDoNotMatch()))
 
       status(result) shouldBe OK
       html(result)     should include("The details you have entered do not match our records")

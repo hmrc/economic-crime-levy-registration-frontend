@@ -99,9 +99,9 @@ class GrsContinueController @Inject() (
     mode: Mode
   )(implicit hc: HeaderCarrier): Future[Result] =
     (identifiersMatch, bvResult, grsResult.registrationStatus, grsResult.registeredBusinessPartnerId) match {
-      case (false, _, _, _)                                  => Future.successful(Ok("Identifiers do not match"))
+      case (false, _, _, _)                                  => Future.successful(Redirect(routes.NotableErrorController.detailsDoNotMatch()))
       case (_, Some(BusinessVerificationResult(Fail)), _, _) =>
-        Future.successful(Redirect(routes.NotableErrorController.failedBusinessVerification()))
+        Future.successful(Redirect(routes.NotableErrorController.verificationFailed()))
       case (_, _, _, Some(businessPartnerId))                =>
         eclRegistrationConnector.getSubscriptionStatus(businessPartnerId).map {
           case EclSubscriptionStatus(NotSubscribed)                        =>

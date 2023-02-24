@@ -59,6 +59,8 @@ final case class IncorporatedEntityJourneyDataWithValidCompanyProfile(
   incorporatedEntityJourneyData: IncorporatedEntityJourneyData
 )
 
+final case class EntityTaxSchemeType(entityType: EntityType, taxSchemeType: String)
+
 trait EclTestData {
 
   implicit val arbInstant: Arbitrary[Instant] = Arbitrary {
@@ -247,5 +249,14 @@ trait EclTestData {
     emailAddress = Some(alphaNumericString),
     telephoneNumber = Some(alphaNumericString)
   )
+
+  implicit val arbEntityTaxSchemeType: Arbitrary[EntityTaxSchemeType] = Arbitrary {
+    for {
+      entityType <- Arbitrary.arbitrary[EntityType]
+    } yield entityType match {
+      case UkLimitedCompany => EntityTaxSchemeType(entityType, "ct")
+      case _                => EntityTaxSchemeType(entityType, "sa")
+    }
+  }
 
 }
