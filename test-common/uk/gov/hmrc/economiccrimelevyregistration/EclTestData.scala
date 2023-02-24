@@ -36,6 +36,8 @@ final case class ScottishOrGeneralPartnershipType(entityType: EntityType)
 
 final case class LimitedPartnershipType(entityType: EntityType)
 
+final case class SelfAssessmentEntityType(entityType: EntityType)
+
 final case class EnrolmentsWithEcl(enrolments: Enrolments, eclReferenceNumber: String)
 
 final case class EnrolmentsWithoutEcl(enrolments: Enrolments)
@@ -104,6 +106,21 @@ trait EclTestData {
                                   )
                                 )
     } yield LimitedPartnershipType(limitedPartnershipType)
+  }
+
+  implicit val arbSelfAssessmentEntityType: Arbitrary[SelfAssessmentEntityType] = Arbitrary {
+    for {
+      selfAssessmentEntityType <- Gen.oneOf(
+                                    Seq(
+                                      LimitedPartnership,
+                                      LimitedLiabilityPartnership,
+                                      GeneralPartnership,
+                                      ScottishPartnership,
+                                      ScottishLimitedPartnership,
+                                      SoleTrader
+                                    )
+                                  )
+    } yield SelfAssessmentEntityType(selfAssessmentEntityType)
   }
 
   implicit val arbEnrolmentsWithEcl: Arbitrary[EnrolmentsWithEcl] = Arbitrary {

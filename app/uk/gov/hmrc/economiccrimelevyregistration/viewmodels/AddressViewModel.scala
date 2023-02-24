@@ -37,7 +37,7 @@ object AddressViewModel {
   private def html(eclAddress: EclAddress): String = eclAddressToSeq(eclAddress)
     .filter(_.isDefined)
     .map(value => HtmlFormat.escape(value.get))
-    .mkString("<br>")
+    .mkString("<br/>")
 
   def htmlContent(eclAddress: EclAddress): HtmlContent = HtmlContent(html(eclAddress))
 
