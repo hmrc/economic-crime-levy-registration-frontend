@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.views
 
-import com.ibm.icu.text.SimpleDateFormat
 import play.api.data.Form
 import play.api.i18n.Messages
 
 import java.text.NumberFormat
+import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneId}
 import java.util.Date
 
@@ -58,8 +58,8 @@ object ViewUtils {
 
       s"$day $month $year"
     } else {
-      val formatter = new SimpleDateFormat("d MMMM yyyy")
-      formatter.format(Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant))
+      val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+      localDate.format(formatter)
     }
 
   def formatMoney(amount: Number): String = {
