@@ -60,7 +60,6 @@ trait SpecBase
   val messages: Messages                               = messagesApi.preferred(fakeRequest)
   val bodyParsers: PlayBodyParsers                     = app.injector.instanceOf[PlayBodyParsers]
 
-  def fakeAuthorisedActionUnrestricted                                                                               = new FakeAuthorisedActionUnrestricted(bodyParsers)
   def fakeAuthorisedActionWithEnrolmentCheck(internalId: String)                                                     =
     new FakeAuthorisedActionWithEnrolmentCheck(internalId, bodyParsers)
   def fakeAuthorisedActionWithoutEnrolmentCheck(internalId: String, eclRegistrationReference: Option[String] = None) =
