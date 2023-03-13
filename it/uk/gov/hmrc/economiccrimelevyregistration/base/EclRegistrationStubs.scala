@@ -60,4 +60,11 @@ trait EclRegistrationStubs { self: WireMockStubs =>
         .withBody(Json.toJson(CreateEclSubscriptionResponse(Instant.now, eclReference)).toString())
     )
 
+  def stubDeleteRegistration(): StubMapping =
+    stub(
+      delete(urlEqualTo(s"/economic-crime-levy-registration/registrations/$testInternalId")),
+      aResponse()
+        .withStatus(OK)
+    )
+
 }
