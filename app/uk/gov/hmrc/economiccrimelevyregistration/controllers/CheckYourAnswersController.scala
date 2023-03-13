@@ -93,6 +93,7 @@ class CheckYourAnswersController @Inject() (
       _        <- auditConnector.sendExtendedEvent(RegistrationSubmittedAuditEvent(request.registration).extendedDataEvent)
       response <- eclRegistrationConnector.submitRegistration(request.internalId)
       _        <- emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference)
+      _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield Redirect(routes.RegistrationSubmittedController.onPageLoad()).withSession(
       request.session + (SessionKeys.EclReference -> response.eclReference)
     )
