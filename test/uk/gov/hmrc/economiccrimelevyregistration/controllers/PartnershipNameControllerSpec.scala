@@ -26,6 +26,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.PartnershipNameFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.PartnershipNamePageNavigator
@@ -44,8 +45,6 @@ class PartnershipNameControllerSpec extends SpecBase {
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-
-  val nameMaxLength: Int = 160
 
   class TestContext(registrationData: Registration) {
     val controller = new PartnershipNameController(
@@ -92,7 +91,7 @@ class PartnershipNameControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the provided partnership name then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(160)
+      stringsWithMaxLength(OrganisationNameMaxLength)
     ) { (registration: Registration, partnershipName: String) =>
       new TestContext(registration) {
         val updatedRegistration: Registration =

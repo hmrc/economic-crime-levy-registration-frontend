@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
@@ -27,6 +26,8 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNameFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.NameMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNamePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNameView
@@ -44,8 +45,6 @@ class SecondContactNameControllerSpec extends SpecBase {
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-
-  val nameMaxLength: Int = 160
 
   class TestContext(registrationData: Registration) {
     val controller = new SecondContactNameController(
@@ -95,7 +94,7 @@ class SecondContactNameControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the provided contact name then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(160)
+      stringsWithMaxLength(NameMaxLength)
     ) { (registration: Registration, name: String) =>
       new TestContext(registration) {
         val updatedRegistration: Registration =

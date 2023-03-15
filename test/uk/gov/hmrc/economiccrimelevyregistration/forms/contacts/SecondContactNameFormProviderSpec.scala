@@ -18,12 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.NameMaxLength
 
 class SecondContactNameFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey = "secondContactName.error.required"
   val lengthKey   = "secondContactName.error.length"
-  val maxLength   = 160
 
   val form = new SecondContactNameFormProvider()()
 
@@ -34,14 +34,14 @@ class SecondContactNameFormProviderSpec extends StringFieldBehaviours {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(maxLength)
+      stringsWithMaxLength(NameMaxLength)
     )
 
     behave like fieldWithMaxLength(
       form,
       fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
+      maxLength = NameMaxLength,
+      lengthError = FormError(fieldName, lengthKey, Seq(NameMaxLength))
     )
 
     behave like mandatoryField(

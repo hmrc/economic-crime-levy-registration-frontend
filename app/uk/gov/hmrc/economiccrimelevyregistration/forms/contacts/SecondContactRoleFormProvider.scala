@@ -18,16 +18,16 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
 
 import javax.inject.Inject
 
 class SecondContactRoleFormProvider @Inject() extends Mappings {
 
-  private val maxLength = 160
-
   def apply(): Form[String] =
     Form(
       "value" -> text("secondContactRole.error.required")
-        .verifying(maxLength(maxLength, "secondContactRole.error.length"))
+        .verifying(maxLength(RoleMaxLength, "secondContactRole.error.length"))
     )
+
 }
