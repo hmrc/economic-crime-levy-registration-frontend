@@ -42,11 +42,10 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
     val expectedJourneyConfig: AlfJourneyConfig =
       AlfJourneyConfig(
         options = AlfOptions(
-          continueUrl =
-            "http://localhost:14000/register-for-the-economic-crime-levy/address-lookup-continue/normalmode",
-          homeNavHref = "/register-for-the-economic-crime-levy",
-          signOutHref = "http://localhost:14000/register-for-the-economic-crime-levy/account/sign-out-survey",
-          accessibilityFooterUrl = "/accessibility-statement/register-for-the-economic-crime-levy",
+          continueUrl = "http://localhost:14000/register-for-economic-crime-levy/address-lookup-continue/normalmode",
+          homeNavHref = "/register-for-economic-crime-levy",
+          signOutHref = "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
+          accessibilityFooterUrl = "/accessibility-statement/register-for-economic-crime-levy",
           deskProServiceName = "economic-crime-levy-registration-frontend",
           ukMode = ukMode
         ),

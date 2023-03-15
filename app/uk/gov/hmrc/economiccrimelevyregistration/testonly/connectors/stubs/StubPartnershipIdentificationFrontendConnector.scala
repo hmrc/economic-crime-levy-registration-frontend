@@ -34,7 +34,7 @@ class StubPartnershipIdentificationFrontendConnector @Inject() () extends Partne
     Future.successful(
       GrsCreateJourneyResponse(
         journeyStartUrl =
-          s"/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}&entityType=${partnershipType.toString}"
+          s"/register-for-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}&entityType=${partnershipType.toString}"
       )
     )
 

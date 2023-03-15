@@ -68,7 +68,7 @@ abstract class ISpecBase
     "email"
   )
 
-  val contextPath: String = "register-for-the-economic-crime-levy"
+  val contextPath: String = "register-for-economic-crime-levy"
 
   override def fakeApplication(): Application =
     GuiceApplicationBuilder()
