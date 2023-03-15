@@ -5,12 +5,11 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class PartnershipNameISpec extends ISpecBase with AuthorisedBehaviour {
-
-  val partnershipNameMaxLength: Int = 160
 
   s"GET ${routes.PartnershipNameController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.PartnershipNameController.onPageLoad(NormalMode))
@@ -37,7 +36,7 @@ class PartnershipNameISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration    = random[Registration]
-      val partnershipName = stringsWithMaxLength(partnershipNameMaxLength).sample.get
+      val partnershipName = stringsWithMaxLength(OrganisationNameMaxLength).sample.get
 
       stubGetRegistration(registration)
 

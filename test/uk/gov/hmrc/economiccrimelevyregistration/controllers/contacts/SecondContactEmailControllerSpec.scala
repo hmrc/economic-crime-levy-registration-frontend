@@ -26,6 +26,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactEmailFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactEmailPageNavigator
@@ -44,8 +45,6 @@ class SecondContactEmailControllerSpec extends SpecBase {
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-
-  val emailMaxLength: Int = 160
 
   class TestContext(registrationData: Registration) {
     val controller = new SecondContactEmailController(
@@ -116,7 +115,7 @@ class SecondContactEmailControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the provided contact email then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      emailAddress(emailMaxLength)
+      emailAddress(EmailMaxLength)
     ) { (registration: Registration, email: String) =>
       new TestContext(registration) {
         val updatedRegistration: Registration =

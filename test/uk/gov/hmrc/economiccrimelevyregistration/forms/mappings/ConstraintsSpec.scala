@@ -21,6 +21,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.data.validation.{Invalid, Valid}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{EmailMaxLength, TelephoneNumberMaxLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
 
 import java.time.LocalDate
@@ -181,34 +182,31 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
   }
 
   "telephoneNumber" should {
-    val maxLength = 24
-
-    "return invalid when the telephone number is too long" in forAll(stringsLongerThan(maxLength)) { s: String =>
-      val result = telephoneNumber(maxLength, "error.length", "error.invalid")(s)
-      result shouldEqual Invalid("error.length", maxLength)
+    "return invalid when the telephone number is too long" in forAll(stringsLongerThan(TelephoneNumberMaxLength)) {
+      s: String =>
+        val result = telephoneNumber(TelephoneNumberMaxLength, "error.length", "error.invalid")(s)
+        result shouldEqual Invalid("error.length", TelephoneNumberMaxLength)
     }
 
     "return invalid when the telephone number is not valid" in forAll(
-      stringsWithMaxLength(maxLength).retryUntil(s => !s.matches(Regex.telephoneNumberRegex))
+      stringsWithMaxLength(TelephoneNumberMaxLength).retryUntil(s => !s.matches(Regex.TelephoneNumberRegex))
     ) { s: String =>
-      val result = telephoneNumber(maxLength, "error.length", "error.invalid")(s)
-      result shouldEqual Invalid("error.invalid", Regex.telephoneNumberRegex)
+      val result = telephoneNumber(TelephoneNumberMaxLength, "error.length", "error.invalid")(s)
+      result shouldEqual Invalid("error.invalid", Regex.TelephoneNumberRegex)
     }
   }
 
   "emailAddress" should {
-    val maxLength = 160
-
-    "return invalid when the email address is too long" in forAll(stringsLongerThan(maxLength)) { s: String =>
-      val result = emailAddress(maxLength, "error.length", "error.invalid")(s)
-      result shouldEqual Invalid("error.length", maxLength)
+    "return invalid when the email address is too long" in forAll(stringsLongerThan(EmailMaxLength)) { s: String =>
+      val result = emailAddress(EmailMaxLength, "error.length", "error.invalid")(s)
+      result shouldEqual Invalid("error.length", EmailMaxLength)
     }
 
     "return invalid when the email address is not valid" in forAll(
-      stringsWithMaxLength(maxLength).retryUntil(s => !s.matches(Regex.emailRegex))
+      stringsWithMaxLength(EmailMaxLength).retryUntil(s => !s.matches(Regex.EmailRegex))
     ) { s: String =>
-      val result = emailAddress(maxLength, "error.length", "error.invalid")(s)
-      result shouldEqual Invalid("error.invalid", Regex.emailRegex)
+      val result = emailAddress(EmailMaxLength, "error.length", "error.invalid")(s)
+      result shouldEqual Invalid("error.invalid", Regex.EmailRegex)
     }
   }
 }

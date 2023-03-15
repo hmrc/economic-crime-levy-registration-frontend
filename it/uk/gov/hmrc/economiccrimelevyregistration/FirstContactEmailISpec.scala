@@ -10,7 +10,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
 
-  val emailMaxLength: Int = 160
+  val emailMaxLength: Int = 132
 
   s"GET ${contacts.routes.FirstContactEmailController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(

@@ -45,7 +45,7 @@ class FirstContactEmailControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
 
-  val emailMaxLength: Int = 160
+  val emailMaxLength: Int = 132
 
   class TestContext(registrationData: Registration) {
     val controller = new FirstContactEmailController(

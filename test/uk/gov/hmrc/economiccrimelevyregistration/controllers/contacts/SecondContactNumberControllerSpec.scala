@@ -27,6 +27,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNumberFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.TelephoneNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNumberView
@@ -44,8 +45,6 @@ class SecondContactNumberControllerSpec extends SpecBase {
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-
-  val numberMaxLength: Int = 24
 
   class TestContext(registrationData: Registration) {
     val controller = new SecondContactNumberController(
@@ -116,7 +115,7 @@ class SecondContactNumberControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the provided contact number then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      telephoneNumber(numberMaxLength)
+      telephoneNumber(TelephoneNumberMaxLength)
     ) { (registration: Registration, number: String) =>
       new TestContext(registration) {
         val updatedRegistration: Registration =

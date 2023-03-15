@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 class SecondContactEmailFormProvider @Inject() extends Mappings {
 
-  private val maxLength = 160
+  private val maxLength = 132
 
   def apply(): Form[String] =
     Form(

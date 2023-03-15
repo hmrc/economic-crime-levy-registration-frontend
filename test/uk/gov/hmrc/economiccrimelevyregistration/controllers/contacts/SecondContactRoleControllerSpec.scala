@@ -27,6 +27,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactRoleFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactRolePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactRoleView
@@ -44,8 +45,6 @@ class SecondContactRoleControllerSpec extends SpecBase {
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-
-  val roleMaxLength: Int = 160
 
   class TestContext(registrationData: Registration) {
     val controller = new SecondContactRoleController(
@@ -116,7 +115,7 @@ class SecondContactRoleControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the provided contact role then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(roleMaxLength)
+      stringsWithMaxLength(RoleMaxLength)
     ) { (registration: Registration, role: String) =>
       new TestContext(registration) {
         val updatedRegistration: Registration =
