@@ -34,7 +34,7 @@ class StubIncorporatedEntityIdentificationFrontendConnector @Inject() ()
     Future.successful(
       GrsCreateJourneyResponse(
         journeyStartUrl =
-          s"/register-for-the-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}&entityType=${UkLimitedCompany.toString}"
+          s"/register-for-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}&entityType=${UkLimitedCompany.toString}"
       )
     )
 

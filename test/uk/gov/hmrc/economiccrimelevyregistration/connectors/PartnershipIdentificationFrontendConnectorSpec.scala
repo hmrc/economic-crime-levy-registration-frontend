@@ -55,12 +55,12 @@ class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
 
           PartnershipEntityCreateJourneyRequest(
             continueUrl =
-              s"http://localhost:14000/register-for-the-economic-crime-levy/grs-continue/${mode.toString.toLowerCase}",
+              s"http://localhost:14000/register-for-economic-crime-levy/grs-continue/${mode.toString.toLowerCase}",
             businessVerificationCheck = false,
             optServiceName = Some(serviceNameLabels.en.optServiceName),
             deskProServiceId = "economic-crime-levy-registration-frontend",
-            signOutUrl = "http://localhost:14000/register-for-the-economic-crime-levy/account/sign-out-survey",
-            accessibilityUrl = "/accessibility-statement/register-for-the-economic-crime-levy",
+            signOutUrl = "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
+            accessibilityUrl = "/accessibility-statement/register-for-economic-crime-levy",
             labels = serviceNameLabels
           )
         }
