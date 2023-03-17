@@ -26,16 +26,16 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EclReturnsConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit ec: ExecutionContext) {
+class EclCalculatorConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit ec: ExecutionContext) {
 
-  private val eclReturnsUrl: String =
-    s"${appConfig.eclReturnsBaseUrl}/economic-crime-levy-returns"
+  private val eclCalculatorUrl: String =
+    s"${appConfig.eclCalculatorBaseUrl}/economic-crime-levy-calculator"
 
   def calculateLiability(relevantApLength: Int, relevantApRevenue: Long)(implicit
     hc: HeaderCarrier
   ): Future[CalculatedLiability] =
     httpClient.POST[CalculateLiabilityRequest, CalculatedLiability](
-      s"$eclReturnsUrl/calculate-liability",
+      s"$eclCalculatorUrl/calculate-liability",
       CalculateLiabilityRequest(
         amlRegulatedActivityLength = EclTaxYear.YearInDays,
         relevantApLength = relevantApLength,

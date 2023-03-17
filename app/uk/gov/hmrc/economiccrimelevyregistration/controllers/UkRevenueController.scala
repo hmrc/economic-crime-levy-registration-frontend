@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclReturnsService
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclCalculatorService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -38,7 +38,7 @@ class UkRevenueController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
-  eclReturnsService: EclReturnsService,
+  eclCalculatorService: EclCalculatorService,
   formProvider: UkRevenueFormProvider,
   pageNavigator: UkRevenuePageNavigator,
   view: UkRevenueView
@@ -60,7 +60,7 @@ class UkRevenueController @Inject() (
         revenue => {
           val updatedRegistration = request.registration.copy(relevantApRevenue = Some(revenue))
 
-          eclReturnsService.checkIfRevenueMeetsThreshold(updatedRegistration).flatMap { revenueMeetsThreshold =>
+          eclCalculatorService.checkIfRevenueMeetsThreshold(updatedRegistration).flatMap { revenueMeetsThreshold =>
             eclRegistrationConnector
               .upsertRegistration(updatedRegistration.copy(revenueMeetsThreshold = revenueMeetsThreshold))
               .flatMap { updatedRegistration =>

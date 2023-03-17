@@ -26,10 +26,10 @@ import uk.gov.hmrc.http.HttpClient
 
 import scala.concurrent.Future
 
-class EclReturnsConnectorSpec extends SpecBase {
+class EclCalculatorConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new EclReturnsConnector(appConfig, mockHttpClient)
-  val eclReturnsUrl              = "http://localhost:14003/economic-crime-levy-returns"
+  val connector                  = new EclCalculatorConnector(appConfig, mockHttpClient)
+  val eclCalculatorUrl           = "http://localhost:14010/economic-crime-levy-calculator"
 
   "calculateLiability" should {
     "return the calculated liability when the http client returns the calculated liability" in forAll {
@@ -37,7 +37,7 @@ class EclReturnsConnectorSpec extends SpecBase {
         calculateLiabilityRequest: CalculateLiabilityRequest,
         calculatedLiability: CalculatedLiability
       ) =>
-        val expectedUrl = s"$eclReturnsUrl/calculate-liability"
+        val expectedUrl = s"$eclCalculatorUrl/calculate-liability"
 
         when(
           mockHttpClient.POST[CalculateLiabilityRequest, CalculatedLiability](

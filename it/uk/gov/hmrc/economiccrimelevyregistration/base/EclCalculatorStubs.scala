@@ -9,13 +9,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculateLiabilityRequest, CalculatedLiability}
 
-trait EclReturnStubs { self: WireMockStubs =>
+trait EclCalculatorStubs { self: WireMockStubs =>
 
   def stubCalculateLiability(calculateLiabilityRequest: CalculateLiabilityRequest, liable: Boolean): StubMapping = {
     val calculatedLiability = random[CalculatedLiability]
 
     stub(
-      post(urlEqualTo("/economic-crime-levy-returns/calculate-liability"))
+      post(urlEqualTo("/economic-crime-levy-calculator/calculate-liability"))
         .withRequestBody(
           equalToJson(Json.toJson(calculateLiabilityRequest).toString(), true, true)
         ),
