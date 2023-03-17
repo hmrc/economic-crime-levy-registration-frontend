@@ -19,16 +19,16 @@ package uk.gov.hmrc.economiccrimelevyregistration.services
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclReturnsConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclCalculatorConnector
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculatedLiability, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import scala.concurrent.Future
 
-class EclReturnsServiceSpec extends SpecBase {
-  val mockEclReturnsConnector: EclReturnsConnector = mock[EclReturnsConnector]
-  val service                                      = new EclReturnsService(mockEclReturnsConnector)
+class EclCalculatorServiceSpec extends SpecBase {
+  val mockEclCalculatorConnector: EclCalculatorConnector = mock[EclCalculatorConnector]
+  val service                                            = new EclCalculatorService(mockEclCalculatorConnector)
 
   "checkIfRevenueMeetsThreshold" should {
     "return true if the amount due is greater than 0 and the relevant AP is 12 months" in forAll {
@@ -41,7 +41,7 @@ class EclReturnsServiceSpec extends SpecBase {
           registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(relevantApRevenue))
 
         when(
-          mockEclReturnsConnector
+          mockEclCalculatorConnector
             .calculateLiability(ArgumentMatchers.eq(EclTaxYear.YearInDays), ArgumentMatchers.eq(relevantApRevenue))(
               any()
             )
@@ -68,7 +68,7 @@ class EclReturnsServiceSpec extends SpecBase {
           )
 
         when(
-          mockEclReturnsConnector
+          mockEclCalculatorConnector
             .calculateLiability(ArgumentMatchers.eq(relevantApLength), ArgumentMatchers.eq(relevantApRevenue))(
               any()
             )
@@ -90,7 +90,7 @@ class EclReturnsServiceSpec extends SpecBase {
           registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(relevantApRevenue))
 
         when(
-          mockEclReturnsConnector
+          mockEclCalculatorConnector
             .calculateLiability(ArgumentMatchers.eq(EclTaxYear.YearInDays), ArgumentMatchers.eq(relevantApRevenue))(
               any()
             )
@@ -117,7 +117,7 @@ class EclReturnsServiceSpec extends SpecBase {
           )
 
         when(
-          mockEclReturnsConnector
+          mockEclCalculatorConnector
             .calculateLiability(ArgumentMatchers.eq(relevantApLength), ArgumentMatchers.eq(relevantApRevenue))(
               any()
             )

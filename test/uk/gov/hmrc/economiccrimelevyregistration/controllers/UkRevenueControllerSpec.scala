@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclReturnsService
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclCalculatorService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
@@ -43,7 +43,7 @@ class UkRevenueControllerSpec extends SpecBase {
   val form: Form[Long]                    = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val mockEclReturnsService: EclReturnsService               = mock[EclReturnsService]
+  val mockEclCalculatorService: EclCalculatorService         = mock[EclCalculatorService]
   val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
 
   val pageNavigator: UkRevenuePageNavigator =
@@ -62,7 +62,7 @@ class UkRevenueControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
-      mockEclReturnsService,
+      mockEclCalculatorService,
       formProvider,
       pageNavigator,
       view
@@ -107,7 +107,7 @@ class UkRevenueControllerSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue))
 
-        when(mockEclReturnsService.checkIfRevenueMeetsThreshold(ArgumentMatchers.eq(updatedRegistration))(any()))
+        when(mockEclCalculatorService.checkIfRevenueMeetsThreshold(ArgumentMatchers.eq(updatedRegistration))(any()))
           .thenReturn(Future.successful(revenueMeetsThreshold))
 
         when(

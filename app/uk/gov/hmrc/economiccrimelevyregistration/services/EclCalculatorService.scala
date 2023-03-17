@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclReturnsConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclCalculatorConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.http.HeaderCarrier
@@ -25,13 +25,15 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EclReturnsService @Inject() (eclReturnsConnector: EclReturnsConnector)(implicit
+class EclCalculatorService @Inject() (
+  eclCalculatorConnector: EclCalculatorConnector
+)(implicit
   ec: ExecutionContext
 ) {
   def checkIfRevenueMeetsThreshold(registration: Registration)(implicit hc: HeaderCarrier): Future[Option[Boolean]] =
     registration.relevantApRevenue match {
       case Some(revenue) =>
-        val f: Int => Future[Option[Boolean]] = eclReturnsConnector
+        val f: Int => Future[Option[Boolean]] = eclCalculatorConnector
           .calculateLiability(_, revenue)
           .map(liability =>
             if (liability.amountDue > 0) {
