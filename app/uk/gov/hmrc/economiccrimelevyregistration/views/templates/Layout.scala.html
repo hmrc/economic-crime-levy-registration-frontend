@@ -16,11 +16,12 @@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcAccessibleAutocompleteCss, HmrcAccessibleAutocompleteJavascript}
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.{Banners, HmrcStandardPageParams, ServiceURLs, TemplateOverrides}
 @import views.html.helper.CSPNonce
 
 @this(
         appConfig: AppConfig,
-        hmrcLayout: HmrcLayout,
+        hmrcStandardPage: HmrcStandardPage,
         govukBackLink: GovukBackLink,
         hmrcHead: HmrcHead,
         hmrcTimeoutDialog: HmrcTimeoutDialog,
@@ -79,14 +80,20 @@
     </div>
 }
 
-@hmrcLayout(
+@hmrcStandardPage(HmrcStandardPageParams(
     pageTitle = Some(pageTitle),
-    nonce = CSPNonce.get,
-    signOutUrl = if(showSignOut) Some(SignOutController.signOut.url) else None,
-    serviceUrl = Some(StartController.onPageLoad.url),
+    serviceURLs = ServiceURLs(
+        serviceUrl = Some(StartController.onPageLoad.url),
+        signOutUrl = if(showSignOut) Some(SignOutController.signOut.url) else None,
+    ),
+    banners = Banners(
+        phaseBanner = Some(betaBanner(appConfig.feedbackUrl))
+    ),
     isWelshTranslationAvailable = isWelshTranslationAvailable.getOrElse(appConfig.languageTranslationEnabled),
-    additionalScriptsBlock = Some(additionalScripts),
-    additionalHeadBlock = Some(head),
+    templateOverrides = TemplateOverrides(
+        additionalScriptsBlock = Some(additionalScripts),
+        additionalHeadBlock = Some(head)
+    ),
     backLink = if(showBackLink) Some(BackLink.mimicsBrowserBackButtonViaJavaScript) else None,
-    phaseBanner = Some(betaBanner(appConfig.feedbackUrl))
-)(content)
+    cspNonce = CSPNonce.get
+))(content)
