@@ -94,6 +94,5 @@
         additionalScriptsBlock = Some(additionalScripts),
         additionalHeadBlock = Some(head)
     ),
-    backLink = if(showBackLink) Some(BackLink.mimicsBrowserBackButtonViaJavaScript) else None,
-    cspNonce = CSPNonce.get
+    backLink = if(showBackLink) Some(BackLink.mimicsBrowserBackButtonViaJavaScript) else None
 ))(content)
