@@ -16,7 +16,10 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
-import play.api.mvc.ActionTransformer
+import play.api.mvc.Results.Redirect
+import play.api.mvc.{ActionRefiner, Result}
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
@@ -25,15 +28,25 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegistrationDataRetrievalAction @Inject() (
-  val eclRegistrationService: EclRegistrationService
+  val eclRegistrationService: EclRegistrationService,
+  appConfig: AppConfig
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction
     with FrontendHeaderCarrierProvider {
 
-  override protected def transform[A](request: AuthorisedRequest[A]): Future[RegistrationDataRequest[A]] =
-    eclRegistrationService.getOrCreateRegistration(request.internalId)(hc(request)).map {
-      RegistrationDataRequest(request.request, request.internalId, _)
+  override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
+    eclRegistrationService.getOrCreateRegistration(request.internalId)(hc(request)).map { registration =>
+      if (appConfig.privateBetaEnabled) {
+        if (registration.privateBetaAccessCode.contains(appConfig.privateBetaAccessCode)) {
+          Right(RegistrationDataRequest(request.request, request.internalId, registration))
+        } else {
+          Left(Redirect(routes.PrivateBetaAccessController.onPageLoad(s"${appConfig.host}${request.uri}")))
+        }
+      } else {
+        Right(RegistrationDataRequest(request.request, request.internalId, registration))
+      }
     }
+
 }
 
-trait DataRetrievalAction extends ActionTransformer[AuthorisedRequest, RegistrationDataRequest]
+trait DataRetrievalAction extends ActionRefiner[AuthorisedRequest, RegistrationDataRequest]

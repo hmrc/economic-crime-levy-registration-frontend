@@ -6,6 +6,9 @@ GET         /assets/*file                                                     co
 
 GET         /                                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.StartController.onPageLoad()
 
+GET         /ecl-beta-access                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.PrivateBetaAccessController.onPageLoad(continueUrl: String)
+POST        /ecl-beta-access                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.PrivateBetaAccessController.onSubmit(continueUrl: String)
+
 GET         /did-you-carry-out-aml-regulated-activity                         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onPageLoad(mode: Mode = NormalMode)
 POST        /did-you-carry-out-aml-regulated-activity                         uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onSubmit(mode: Mode = NormalMode)
 GET         /change-answer/did-you-carry-out-aml-regulated-activity           uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onPageLoad(mode: Mode = CheckMode)

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
+import play.api.mvc.Result
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 
@@ -23,10 +24,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class FakeDataRetrievalAction(data: Registration) extends DataRetrievalAction {
 
-  override protected def transform[A](request: AuthorisedRequest[A]): Future[RegistrationDataRequest[A]] =
-    Future(RegistrationDataRequest(request.request, request.internalId, data))
-
   override protected implicit val executionContext: ExecutionContext =
     scala.concurrent.ExecutionContext.Implicits.global
 
+  override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
+    Future(Right(RegistrationDataRequest(request.request, request.internalId, data)))
 }

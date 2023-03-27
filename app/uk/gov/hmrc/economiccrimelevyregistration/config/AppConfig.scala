@@ -63,7 +63,6 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val countdown: Int = configuration.get[Int]("timeout-dialog.countdown")
 
   val eclRegistrationBaseUrl: String = servicesConfig.baseUrl("economic-crime-levy-registration")
-  val eclReturnsBaseUrl: String      = servicesConfig.baseUrl("economic-crime-levy-returns")
   val eclCalculatorBaseUrl: String   = servicesConfig.baseUrl("economic-crime-levy-calculator")
 
   val incorporatedEntityIdentificationFrontendBaseUrl: String =
@@ -86,5 +85,9 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val emailBaseUrl: String = servicesConfig.baseUrl("email")
 
   val amlProfessionalBodySupervisors: Seq[String] = configuration.get[Seq[String]]("amlProfessionalBodySupervisors")
+
+  val privateBetaAccessCode: String   = configuration.get[String]("features.privateBeta.accessCode")
+  val privateBetaContactEmail: String = configuration.get[String]("features.privateBeta.contactEmail")
+  val privateBetaEnabled: Boolean     = configuration.get[Boolean]("features.privateBeta.enabled")
 
 }
