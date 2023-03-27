@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 import org.mockito.MockitoSugar
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{BeforeAndAfterEach, OptionValues, TryValues}
+import org.scalatest.{BeforeAndAfterEach, EitherValues, OptionValues, TryValues}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.i18n.{Messages, MessagesApi}
@@ -41,6 +41,7 @@ trait SpecBase
     with Matchers
     with TryValues
     with OptionValues
+    with EitherValues
     with DefaultAwaitTimeout
     with FutureAwaits
     with Results
