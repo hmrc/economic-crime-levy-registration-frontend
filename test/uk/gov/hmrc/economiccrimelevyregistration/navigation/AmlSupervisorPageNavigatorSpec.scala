@@ -39,24 +39,28 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration = registration.copy(amlSupervisor = Some(AmlSupervisor(GamblingCommission, None)))
 
-        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
-
         await(
           pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.RegisterWithGcController
           .onPageLoad()
+
+        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
+
+        reset(mockAuditConnector)
     }
 
     "return a Call to the register with GC page in CheckMode when the Gambling Commission option is selected" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(amlSupervisor = Some(AmlSupervisor(GamblingCommission, None)))
 
-        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
-
         await(
           pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.RegisterWithGcController
           .onPageLoad()
+
+        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
+
+        reset(mockAuditConnector)
     }
 
     "return a Call to the register with FCA page in NormalMode when the Financial Conduct Authority option is selected" in forAll {
@@ -64,12 +68,14 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None)))
 
-        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
-
         await(
           pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.RegisterWithFcaController
           .onPageLoad()
+
+        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
+
+        reset(mockAuditConnector)
     }
 
     "return a Call to the register with FCA page in CheckMode when the Financial Conduct Authority option is selected" in forAll {

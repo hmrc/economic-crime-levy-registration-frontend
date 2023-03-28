@@ -56,10 +56,12 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
       (registration: Registration, mode: Mode) =>
         val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
 
-        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
-
         await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe routes.NotLiableController
           .onPageLoad()
+
+        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
+
+        reset(mockAuditConnector)
     }
   }
 

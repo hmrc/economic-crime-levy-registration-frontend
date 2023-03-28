@@ -57,10 +57,12 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(false))
 
-        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
-
         await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe routes.NotLiableController
           .onPageLoad()
+
+        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
+
+        reset(mockAuditConnector)
     }
   }
 
