@@ -46,7 +46,7 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
       case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
-  private def sendNotLiableAuditEvent(internalId: String): Future[Call] =
+  private def sendNotLiableAuditEvent(internalId: String): Future[Call] = {
     auditConnector
       .sendExtendedEvent(
         RegistrationNotLiableAuditEvent(
@@ -54,6 +54,8 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
           NotLiableReason.DidNotCarryOutAmlRegulatedActivity.toString
         ).extendedDataEvent
       )
-      .map(_ => routes.NotLiableController.onPageLoad())
+
+    Future.successful(routes.NotLiableController.onPageLoad())
+  }
 
 }

@@ -52,7 +52,8 @@ class UkRevenuePageNavigator @Inject() (auditConnector: AuditConnector)(implicit
                   NotLiableReason.RevenueDoesNotMeetThreshold.toString
                 ).extendedDataEvent
               )
-              .map(_ => routes.NotLiableController.onPageLoad())
+
+            Future.successful(routes.NotLiableController.onPageLoad())
           case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
         }
       case _       => Future.successful(routes.NotableErrorController.answersAreInvalid())

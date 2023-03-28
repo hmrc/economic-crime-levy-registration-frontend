@@ -66,9 +66,11 @@ class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(impl
       case _                         => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
-  private def sendNotLiableAuditEvent(internalId: String, notLiableReason: NotLiableReason): Future[Unit] =
+  private def sendNotLiableAuditEvent(internalId: String, notLiableReason: NotLiableReason): Future[Unit] = {
     auditConnector
       .sendExtendedEvent(RegistrationNotLiableAuditEvent(internalId, notLiableReason.toString).extendedDataEvent)
-      .map(_ => ())
+
+    Future.unit
+  }
 
 }
