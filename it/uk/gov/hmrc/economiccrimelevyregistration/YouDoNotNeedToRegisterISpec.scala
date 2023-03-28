@@ -24,10 +24,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-class NotLiableISpec extends ISpecBase with AuthorisedBehaviour {
+class YouDoNotNeedToRegisterISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.NotLiableController.notLiable().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.NotLiableController.notLiable())
+  s"GET ${routes.NotLiableController.youDoNotNeedToRegister().url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.NotLiableController.youDoNotNeedToRegister())
 
     "respond with 200 status and the you do not need to register HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -36,7 +36,7 @@ class NotLiableISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.NotLiableController.notLiable()))
+      val result = callRoute(FakeRequest(routes.NotLiableController.youDoNotNeedToRegister()))
 
       status(result) shouldBe OK
       html(result)     should include("You do not need to register for the Economic Crime Levy")

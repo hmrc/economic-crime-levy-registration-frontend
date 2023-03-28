@@ -32,7 +32,11 @@ class NotLiableController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
+  def youDoNotNeedToRegister: Action[AnyContent] = onPageLoad
+
+  def notLiable: Action[AnyContent] = onPageLoad
+
+  private def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     Ok(view())
   }
 }

@@ -60,7 +60,7 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
         when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
 
         await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe routes.NotLiableController
-          .onPageLoad()
+          .notLiable()
     }
   }
 

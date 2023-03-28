@@ -49,6 +49,6 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
   private def sendNotLiableAuditEvent(registration: Registration): Future[Call] =
     auditConnector
       .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
-      .map(_ => routes.NotLiableController.onPageLoad())
+      .map(_ => routes.NotLiableController.youDoNotNeedToRegister())
 
 }

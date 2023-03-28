@@ -40,7 +40,7 @@
             InputViewModel(
                 field = form("value"),
                 label = LabelViewModel(Text(messages("firstContactNumber.heading"))).asHiddenPageHeading()
-            ).withWidth(Fixed20)
+            ).withWidth(Fixed20).withHint(Hint(content = Text(messages("firstContactNumber.hint"))))
         )
 
         @govukButton(

@@ -31,7 +31,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe OK
 
-      html(result) should include("What was your UK revenue for the relevant accounting period?")
+      html(result) should include("What was your total UK revenue in your accounting period?")
     }
   }
 
@@ -96,7 +96,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NotLiableController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.NotLiableController.notLiable().url)
     }
   }
 }

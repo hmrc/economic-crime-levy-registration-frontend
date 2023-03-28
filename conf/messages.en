@@ -46,35 +46,43 @@ answersAreInvalid.button = Register for the Economic Crime Levy
 
 start.title = Register for the Economic Crime Levy
 start.heading = Register for the Economic Crime Levy
-start.p1 = Use this service if you are an organisation or entity registered with HMRC for Anti-Money Laundering (AML) supervision and you need to register for the Economic Crime Levy (ECL).
+start.p1 = Use this service to register for the Economic Crime Levy (ECL) if you are an organisation or entity:
+start.b1 = regulated by HMRC for anti-money laundering (AML) supervision
+start.b2 = regulated by one of the Professional Body Supervisors (PBS) for AML supervision
 start.p2 = Check if you {0}.
 start.p2.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">need to pay the levy</a>
 start.p3 = You will be able to submit a return and pay the levy after you have registered. You must pay the levy by 30 September {0}. You will be charged interest if you make a late payment.
 start.beforeYouStart = Before you start
-start.provide = You will need to provide:
-start.provide.b1 = information about your UK revenue for the last financial year
-start.provide.b2 = the date when your organisation started AML-regulated activities, if you started in the past financial year
-start.provide.b3 = details about your organisation so we can confirm your identity
-start.provide.b4 = the details of up to 2 people in your organisation who can act as a point of contact for any activities related to the ECL
+start.provide = You will need to tell us:
+start.provide.b1 = about your accounting period for your organisation - you may have more than one accounting period ending in the financial year
+start.provide.b2 = about your organisation''s UK revenue during this accounting period
+start.provide.b3 = if your company carried out AML-regulated activity for the full financial year
+start.provide.b4 = the details of someone in your organisation who can act as a point of contact for any activities related to the ECL
 start.provide.b5 = the business sector your organisation operates in
 start.doNotUse = Do not use this service if:
 start.doNotUse.b1 = the Financial Conduct Authority (FCA) or the Gambling Commission (GC) supervises your AML activities
-start.doNotUse.b2 = your UK revenue is less than £10.2 million per year
+start.doNotUse.b2 = your UK revenue is less than £10.2 million in a financial year
 
 amlRegulatedActivity.title = Did you carry out AML-regulated activity between 1 April {0} and 31 March {1}?
-amlRegulatedActivity.heading = Did you carry out AML-regulated activity between 1 April {0} and 31 March {1}?
+amlRegulatedActivity.heading = Did you carry out anti-money laundering (AML) regulated activity between 1 April {0} and 31 March {1}?
 amlRegulatedActivity.error.required = Select an answer
 
-notLiable.title = You do not need to register for the Economic Crime Levy
+notLiable.title = You do not need to register
 notLiable.heading = You do not need to register for the Economic Crime Levy
-notLiable.inset.p1 = You do not need to register for the Economic Crime Levy (ECL) at this time. You may need to register in the future if you carry out AML-regulated activity and your UK revenue meets the threshold.
-notLiable.inset.p2 = The {0} has more information on who needs to pay the levy.
+notLiable.inset.p1 = You do not need to register for the Economic Crime Levy (ECL).
+notLiable.inset.p2 = This is because either:
+notLiable.inset.b1 = your UK revenue for your relevant accounting period does not meet the threshold to pay the levy
+notLiable.inset.divider = or:
+notLiable.inset.b2 = you have not carried out anti-money laundering (AML) regulated activity during this financial year
+notLiable.inset.p3 = You may need to register in the future if your circumstances change.
+notLiable.inset.p4 = The {0} has more information on who needs to pay the levy.
 notLiable.inset.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">Economic Crime Levy guidance</a>
 
-amlSupervisor.title = Who is your AML supervisor?
-amlSupervisor.heading = Who is your Anti-Money Laundering (AML) supervisor?
-amlSupervisor.p1 = This is the regulatory body who supervises your AML activity.
-amlSupervisor.p2 = If HMRC and another professional body supervise your AML activities, you must register with that professional body. You do not need to register with HMRC.
+amlSupervisor.title = Your anti-money laundering (AML) supervisor
+amlSupervisor.heading = Your anti-money laundering (AML) supervisor
+amlSupervisor.p1 = This is the regulatory body who supervises your anti-money laundering (AML) activity.
+amlSupervisor.p2 = If you are supervised by a professional body, you must register for the Economic Crime Levy with HMRC.
+amlSupervisor.p3 = If both HMRC and another professional body supervise your anti-money laundering activities, you must register with that professional body. You do not need to register with HMRC.
 amlSupervisor.Hmrc = HMRC
 amlSupervisor.GamblingCommission = Gambling Commission (GC)
 amlSupervisor.FinancialConductAuthority = Financial Conduct Authority (FCA)
@@ -105,15 +113,17 @@ amlSupervisor.LawSocietyForNorthernIreland = Law Society for Northern Ireland
 
 relevantAp12Months.title = Is your relevant accounting period 12 months?
 relevantAp12Months.heading = Is your relevant accounting period 12 months?
-relevantAp12Months.p1 = Your relevant accounting period is the one that ends in the financial year. It is based on the accounting period you use for your Company Tax return.
-relevantAp12Months.p2 = For the purposes of the Economic Crime Levy (ECL), the financial year starts on 1 April and ends on 31 March of the following year.
+relevantAp12Months.p1 = Your relevant accounting period is any that ends in the financial year. It is based on the accounting period you use for your Company Tax return.
+relevantAp12Months.p2 = You may have more than one relevant accounting period ending in the financial year.
+relevantAp12Months.p3 = For the purposes of the Economic Crime Levy (ECL), the financial year starts on 1 April and ends on 31 March of the following year.
 relevantAp12Months.error.required = Select an answer
 
-ukRevenue.title = What was your UK revenue for the relevant accounting period?
-ukRevenue.heading = What was your UK revenue for the relevant accounting period?
+ukRevenue.title = What was your total UK revenue in your accounting period?
+ukRevenue.heading = What was your total UK revenue in your accounting period?
 ukRevenue.p1 = For the purposes of the Economic Crime Levy (ECL), your UK revenue is defined as:
 ukRevenue.b1 = your turnover during the accounting period
-ukRevenue.b2 = any other amounts not included within your turnover that are recognised as revenue
+ukRevenue.b2 = any other amounts not included within your turnover that are recognised as revenue according to Generally Accepted Accounting Principles (GAAP)
+ukRevenue.p2 = If you have more than one relevant accounting period ending in the financial year, you need to combine all of the amounts.
 ukRevenue.hint = Enter the amount in pounds
 ukRevenue.error.required = Enter the UK revenue
 ukRevenue.error.wholeNumber = UK revenue must be a number rounded down to the nearest pound
@@ -122,8 +132,9 @@ ukRevenue.error.outOfRange = UK revenue must be between {0} and {1}
 
 relevantApLength.title = How long is your relevant accounting period?
 relevantApLength.heading = How long is your relevant accounting period?
-relevantApLength.p1 = Your relevant accounting period is any accounting period that ends in the financial year.
-relevantApLength.p2 = For the purposes of the ECL, the financial year starts on 1 April and ends on 31 March of the following year.
+relevantApLength.p1 = Your relevant accounting period is any accounting period that ends in the financial year. It is based on the accounting period you use for your Company Tax return.
+relevantApLength.p2 = You may have more than one relevant accounting period ending in the financial year.
+relevantApLength.p3 = For the purposes of the ECL, the financial year starts on 1 April and ends on 31 March of the following year.
 relevantApLength.hint = Enter the length of your accounting period in days
 relevantApLength.error.required = Enter the length
 relevantApLength.error.wholeNumber = Length must be a whole number
@@ -144,13 +155,13 @@ registerWith.body.p3.fcaLink = <a href="https://www.fca.org.uk/" class="govuk-li
 registerWith.body.p3.gcLink = <a href="https://www.gamblingcommission.gov.uk/" class="govuk-link">Go to the Gambling Commission website</a>
 
 entityType.title = What is your entity type?
-entityType.UkLimitedCompany = Limited company
-entityType.SoleTrader = Sole trader
 entityType.GeneralPartnership = General partnership
-entityType.ScottishPartnership = Scottish partnership
+entityType.UkLimitedCompany = Limited company
+entityType.LimitedLiabilityPartnership = Limited liability partnership
 entityType.LimitedPartnership = Limited partnership
 entityType.ScottishLimitedPartnership = Scottish limited partnership
-entityType.LimitedLiabilityPartnership = Limited liability partnership
+entityType.ScottishPartnership = Scottish partnership
+entityType.SoleTrader = Sole trader
 entityType.Other = Other
 entityType.error.required = Please select your entity type
 
@@ -160,17 +171,17 @@ partnershipName.error.required = Enter a partnership name
 partnershipName.error.length = Partnership name must be {0} characters or less
 
 businessSector.title = What is your business sector?
-businessSector.CreditInstitution = Credit institution
-businessSector.FinancialInstitution = Financial institution
 businessSector.Auditor = Auditor
-businessSector.InsolvencyPractitioner = Insolvency practitioner
-businessSector.ExternalAccountant = External accountant
-businessSector.TaxAdviser = Tax adviser
-businessSector.IndependentLegalProfessional = Independent legal professional
-businessSector.TrustOrCompanyServiceProvider = Trust or company service provider
-businessSector.EstateAgentOrLettingAgent = Estate agent or letting agent
-businessSector.HighValueDealer = High value dealer, casino, auction platform or art market participant
+businessSector.CreditInstitution = Credit institution
 businessSector.CryptoAssetExchangeProvider = Cryptoasset exchange provider or custodian wallet provider
+businessSector.EstateAgentOrLettingAgent = Estate agent or letting agent
+businessSector.ExternalAccountant = External accountant
+businessSector.FinancialInstitution = Financial institution
+businessSector.HighValueDealer = High value dealer, casino, auction platform or art market participant
+businessSector.IndependentLegalProfessional = Independent legal professional
+businessSector.InsolvencyPractitioner = Insolvency practitioner
+businessSector.TaxAdviser = Tax adviser
+businessSector.TrustOrCompanyServiceProvider = Trust or company service provider
 businessSector.error.required = Select a business sector
 
 firstContactName.title = Provide a contact name
@@ -198,6 +209,7 @@ firstContactEmail.error.invalid = Enter an email address in the correct format, 
 firstContactNumber.title = What is {0}''s telephone number?
 firstContactNumber.heading = What is {0}''s telephone number?
 firstContactNumber.legend = This is the telephone number of your named contact.
+firstContactNumber.hint = For international numbers include the country code.
 firstContactNumber.error.required = Enter a telephone number
 firstContactNumber.error.length = Telephone number must be {0} characters or less
 firstContactNumber.error.invalid = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
@@ -231,6 +243,7 @@ secondContactEmail.error.invalid = Enter an email address in the correct format,
 secondContactNumber.title = What is {0}''s telephone number?
 secondContactNumber.heading = What is {0}''s telephone number?
 secondContactNumber.legend = This is the telephone number of your named contact.
+secondContactNumber.hint = For international numbers include the country code.
 secondContactNumber.error.required = Enter a telephone number
 secondContactNumber.error.length = Telephone number must be {0} characters or less
 secondContactNumber.error.invalid = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
@@ -291,13 +304,14 @@ submitted.title = Registration submitted
 submitted.heading = Registration submitted
 submitted.reference = ECL reference number: {0}
 submitted.subHeading = What happens next
-submitted.p1 = You have successfully registered your eligibility for the Economic Crime Levy (ECL). You will receive an email confirmation. Please save this for your records.
-submitted.p2 = You will need to complete a return and pay the levy on a yearly basis. The next deadline for submitting a return and making a payment is {0}.
+submitted.p1 = You have registered your eligibility for the Economic Crime Levy (ECL). You have received a reference number and an email confirmation. Please save these for your records.
+submitted.p2 = You will need to submit a return and pay the levy on a yearly basis.
+submitted.p3 = The next deadline for submitting a return and making a payment is {0}. You will be charged interest if you make a late payment.
 submitted.provide = When you complete your yearly return, you will need to tell us about:
-submitted.provide.b1 = your organisation's accounting period for the last financial year
-submitted.provide.b2 = if you stopped Anti-Money Laundering (AML) regulated activities in the last financial year
-submitted.provide.b3 = if you started AML-regulated activities in the last financial year
-submitted.provide.b4 = the details of the person in your organisation who is completing the return
+submitted.provide.b1 = the relevant accounting periods for your organisation
+submitted.provide.b2 = your UK revenue for the relevant accounting periods
+submitted.provide.b3 = how long you carried out anti-money laundering (AML) regulated activities for during the financial year
+submitted.provide.b4 = the name, role, and contact details of the person in your organisation who is completing the return
 submitted.return = You can {0} now or come back to do it later.
 submitted.return.link = <a href="{0}" class="govuk-link">submit a return</a>
 

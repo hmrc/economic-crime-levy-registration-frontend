@@ -47,7 +47,7 @@ class UkRevenuePageNavigator @Inject() (auditConnector: AuditConnector)(implicit
           case Some(false) =>
             auditConnector
               .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
-              .map(_ => routes.NotLiableController.onPageLoad())
+              .map(_ => routes.NotLiableController.notLiable())
           case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
         }
       case _       => Future.successful(routes.NotableErrorController.answersAreInvalid())

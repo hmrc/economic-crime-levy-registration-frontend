@@ -34,11 +34,11 @@ object EntityType {
   case object Other extends EntityType
 
   val values: Seq[EntityType] = Seq(
+    GeneralPartnership,
     UkLimitedCompany,
     LimitedLiabilityPartnership,
     LimitedPartnership,
     ScottishLimitedPartnership,
-    GeneralPartnership,
     ScottishPartnership,
     SoleTrader,
     Other
