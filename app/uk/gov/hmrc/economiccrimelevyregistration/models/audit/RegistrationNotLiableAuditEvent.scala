@@ -17,9 +17,17 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models.audit
 
 import play.api.libs.json.{JsValue, Json, OFormat}
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-case class RegistrationNotLiableAuditEvent(registrationData: Registration) extends AuditEvent {
+sealed trait NotLiableReason
+
+object NotLiableReason {
+  case object DidNotCarryOutAmlRegulatedActivity extends NotLiableReason
+  case object SupervisedByGamblingCommission extends NotLiableReason
+  case object SupervisedByFinancialConductAuthority extends NotLiableReason
+  case object RevenueDoesNotMeetThreshold extends NotLiableReason
+}
+
+case class RegistrationNotLiableAuditEvent(internalId: String, notLiableReason: String) extends AuditEvent {
   override val auditType: String   = "RegistrationNotLiable"
   override val detailJson: JsValue = Json.toJson(this)
 }

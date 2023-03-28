@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationNotLiableAuditEvent
+import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -46,7 +46,12 @@ class UkRevenuePageNavigator @Inject() (auditConnector: AuditConnector)(implicit
             }
           case Some(false) =>
             auditConnector
-              .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
+              .sendExtendedEvent(
+                RegistrationNotLiableAuditEvent(
+                  registration.internalId,
+                  NotLiableReason.RevenueDoesNotMeetThreshold.toString
+                ).extendedDataEvent
+              )
               .map(_ => routes.NotLiableController.onPageLoad())
           case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
         }

@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
-import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationNotLiableAuditEvent
+import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisorType, NormalMode, Registration}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -56,15 +56,19 @@ class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(impl
   private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType, registration: Registration): Future[Call] =
     amlSupervisorType match {
       case GamblingCommission        =>
-        sendNotLiableAuditEvent(registration).map(_ => routes.RegisterWithGcController.onPageLoad())
+        sendNotLiableAuditEvent(registration.internalId, NotLiableReason.SupervisedByGamblingCommission).map(_ =>
+          routes.RegisterWithGcController.onPageLoad()
+        )
       case FinancialConductAuthority =>
-        sendNotLiableAuditEvent(registration).map(_ => routes.RegisterWithFcaController.onPageLoad())
+        sendNotLiableAuditEvent(registration.internalId, NotLiableReason.SupervisedByFinancialConductAuthority).map(_ =>
+          routes.RegisterWithFcaController.onPageLoad()
+        )
       case _                         => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
-  private def sendNotLiableAuditEvent(registration: Registration): Future[Unit] =
+  private def sendNotLiableAuditEvent(internalId: String, notLiableReason: NotLiableReason): Future[Unit] =
     auditConnector
-      .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
+      .sendExtendedEvent(RegistrationNotLiableAuditEvent(internalId, notLiableReason.toString).extendedDataEvent)
       .map(_ => ())
 
 }
