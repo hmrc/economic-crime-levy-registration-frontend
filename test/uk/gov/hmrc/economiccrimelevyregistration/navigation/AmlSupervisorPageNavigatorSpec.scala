@@ -24,9 +24,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{FinancialConductAuthority, GamblingCommission, Hmrc, Other}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
-
-import scala.concurrent.Future
 
 class AmlSupervisorPageNavigatorSpec extends SpecBase {
 
@@ -83,12 +80,14 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None)))
 
-        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
-
         await(
           pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.RegisterWithFcaController
           .onPageLoad()
+
+        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
+
+        reset(mockAuditConnector)
     }
 
     "return a Call to the relevant AP 12 months page in NormalMode when either the HMRC or Other AML Supervisor option is selected" in forAll {
