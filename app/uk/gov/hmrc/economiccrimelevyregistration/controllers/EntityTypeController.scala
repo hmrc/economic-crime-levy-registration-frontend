@@ -25,8 +25,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.audit.EntityTypeSelectedEvent
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -41,6 +43,7 @@ class EntityTypeController @Inject() (
   formProvider: EntityTypeFormProvider,
   pageNavigator: EntityTypePageNavigator,
   dataCleanup: EntityTypeDataCleanup,
+  auditConnector: AuditConnector,
   view: EntityTypeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -57,7 +60,15 @@ class EntityTypeController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-        entityType =>
+        entityType => {
+          auditConnector
+            .sendExtendedEvent(
+              EntityTypeSelectedEvent(
+                request.internalId,
+                entityType
+              ).extendedDataEvent
+            )
+
           eclRegistrationConnector
             .upsertRegistration(
               dataCleanup.cleanup(
@@ -69,6 +80,7 @@ class EntityTypeController @Inject() (
             .flatMap { updatedRegistration =>
               pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
             }
+        }
       )
   }
 }

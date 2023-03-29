@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmit
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.models.audit.NotLiableReason.RevenueDoesNotMeetThreshold
 
 object CachedArbitraries extends EclTestData {
 
@@ -53,5 +54,6 @@ object CachedArbitraries extends EclTestData {
   implicit lazy val arbContacts: Arbitrary[Contacts]                                                    = mkArb
   implicit lazy val arbContactDetails: Arbitrary[ContactDetails]                                        = mkArb
   implicit lazy val arbMode: Arbitrary[Mode]                                                            = mkArb
+  implicit lazy val arbRevenueDoesNotMeetThreshold: Arbitrary[RevenueDoesNotMeetThreshold]              = mkArb
 
 }

@@ -18,18 +18,31 @@ package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationStartedEvent
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EclRegistrationService @Inject() (eclRegistrationConnector: EclRegistrationConnector)(implicit
+class EclRegistrationService @Inject() (
+  eclRegistrationConnector: EclRegistrationConnector,
+  auditConnector: AuditConnector
+)(implicit
   ec: ExecutionContext
 ) {
   def getOrCreateRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] =
     eclRegistrationConnector.getRegistration(internalId).flatMap {
       case Some(registration) => Future.successful(registration)
-      case None               => eclRegistrationConnector.upsertRegistration(Registration.empty(internalId))
+      case None               =>
+        auditConnector
+          .sendExtendedEvent(
+            RegistrationStartedEvent(
+              internalId
+            ).extendedDataEvent
+          )
+
+        eclRegistrationConnector.upsertRegistration(Registration.empty(internalId))
     }
 }

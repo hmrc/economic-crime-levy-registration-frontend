@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationNotLiableAuditEvent
+import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -33,7 +33,7 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
   )(implicit request: RequestHeader): Future[Call] =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  => Future.successful(routes.AmlSupervisorController.onPageLoad(NormalMode))
-      case Some(false) => sendNotLiableAuditEvent(registration)
+      case Some(false) => sendNotLiableAuditEvent(registration.internalId)
       case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
@@ -42,13 +42,20 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
   )(implicit request: RequestHeader): Future[Call] =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
-      case Some(false) => sendNotLiableAuditEvent(registration)
+      case Some(false) => sendNotLiableAuditEvent(registration.internalId)
       case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
-  private def sendNotLiableAuditEvent(registration: Registration): Future[Call] =
+  private def sendNotLiableAuditEvent(internalId: String): Future[Call] = {
     auditConnector
-      .sendExtendedEvent(RegistrationNotLiableAuditEvent(registration).extendedDataEvent)
-      .map(_ => routes.NotLiableController.onPageLoad())
+      .sendExtendedEvent(
+        RegistrationNotLiableAuditEvent(
+          internalId,
+          NotLiableReason.DidNotCarryOutAmlRegulatedActivity
+        ).extendedDataEvent
+      )
+
+    Future.successful(routes.NotLiableController.onPageLoad())
+  }
 
 }

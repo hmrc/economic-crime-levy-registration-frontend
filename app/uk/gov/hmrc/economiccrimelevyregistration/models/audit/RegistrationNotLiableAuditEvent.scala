@@ -16,14 +16,36 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models.audit
 
-import play.api.libs.json.{JsValue, Json, OFormat}
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import play.api.libs.json._
 
-case class RegistrationNotLiableAuditEvent(registrationData: Registration) extends AuditEvent {
+sealed trait NotLiableReason
+
+object NotLiableReason {
+  case object DidNotCarryOutAmlRegulatedActivity extends NotLiableReason
+  case object SupervisedByGamblingCommission extends NotLiableReason
+  case object SupervisedByFinancialConductAuthority extends NotLiableReason
+  case class RevenueDoesNotMeetThreshold(
+    relevantAp12Months: Option[Boolean],
+    relevantApLength: Option[Int],
+    relevantApRevenue: Long,
+    revenueMeetsThreshold: Boolean
+  ) extends NotLiableReason
+
+  object RevenueDoesNotMeetThreshold {
+    implicit val writes: OWrites[RevenueDoesNotMeetThreshold] = Json.writes[RevenueDoesNotMeetThreshold]
+  }
+
+  implicit val writes: Writes[NotLiableReason] = {
+    case r @ RevenueDoesNotMeetThreshold(_, _, _, _) => Json.toJson(r)
+    case o                                           => JsString(o.toString)
+  }
+}
+
+case class RegistrationNotLiableAuditEvent(internalId: String, notLiableReason: NotLiableReason) extends AuditEvent {
   override val auditType: String   = "RegistrationNotLiable"
   override val detailJson: JsValue = Json.toJson(this)
 }
 
 object RegistrationNotLiableAuditEvent {
-  implicit val format: OFormat[RegistrationNotLiableAuditEvent] = Json.format[RegistrationNotLiableAuditEvent]
+  implicit val writes: OWrites[RegistrationNotLiableAuditEvent] = Json.writes[RegistrationNotLiableAuditEvent]
 }
