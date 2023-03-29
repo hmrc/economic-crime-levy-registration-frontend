@@ -37,26 +37,31 @@ class UkRevenuePageNavigator @Inject() (auditConnector: AuditConnector)(implicit
 
   private def navigate(mode: Mode, registration: Registration): Future[Call] =
     registration.relevantApRevenue match {
-      case Some(_) =>
+      case Some(relevantApRevenue) =>
         registration.revenueMeetsThreshold match {
-          case Some(true)  =>
+          case Some(true)                          =>
             mode match {
               case NormalMode => Future.successful(routes.EntityTypeController.onPageLoad(NormalMode))
               case CheckMode  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
             }
-          case Some(false) =>
+          case Some(revenueMeetsThreshold @ false) =>
             auditConnector
               .sendExtendedEvent(
                 RegistrationNotLiableAuditEvent(
                   registration.internalId,
-                  NotLiableReason.RevenueDoesNotMeetThreshold.toString
+                  NotLiableReason.RevenueDoesNotMeetThreshold(
+                    registration.relevantAp12Months,
+                    registration.relevantApLength,
+                    relevantApRevenue,
+                    revenueMeetsThreshold
+                  )
                 ).extendedDataEvent
               )
 
             Future.successful(routes.NotLiableController.onPageLoad())
-          case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
+          case _                                   => Future.successful(routes.NotableErrorController.answersAreInvalid())
         }
-      case _       => Future.successful(routes.NotableErrorController.answersAreInvalid())
+      case _                       => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
 }

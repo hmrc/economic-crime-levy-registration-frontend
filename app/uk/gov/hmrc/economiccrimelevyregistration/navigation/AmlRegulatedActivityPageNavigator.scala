@@ -51,7 +51,7 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
       .sendExtendedEvent(
         RegistrationNotLiableAuditEvent(
           internalId,
-          NotLiableReason.DidNotCarryOutAmlRegulatedActivity.toString
+          NotLiableReason.DidNotCarryOutAmlRegulatedActivity
         ).extendedDataEvent
       )
 

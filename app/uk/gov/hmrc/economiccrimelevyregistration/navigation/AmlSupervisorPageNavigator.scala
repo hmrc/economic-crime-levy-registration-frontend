@@ -68,7 +68,7 @@ class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(impl
 
   private def sendNotLiableAuditEvent(internalId: String, notLiableReason: NotLiableReason): Future[Unit] = {
     auditConnector
-      .sendExtendedEvent(RegistrationNotLiableAuditEvent(internalId, notLiableReason.toString).extendedDataEvent)
+      .sendExtendedEvent(RegistrationNotLiableAuditEvent(internalId, notLiableReason).extendedDataEvent)
 
     Future.unit
   }
