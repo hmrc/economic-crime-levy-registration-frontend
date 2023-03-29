@@ -55,7 +55,7 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
           registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(false))
 
         await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe routes.NotLiableController
-          .onPageLoad()
+          .notLiable()
 
         verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
 

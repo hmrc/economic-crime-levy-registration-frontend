@@ -33,9 +33,19 @@ class NotLiableControllerSpec extends SpecBase {
     view
   )
 
-  "onPageLoad" should {
+  "youDoNotNeedToRegister" should {
     "return OK and the correct view" in {
-      val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+      val result: Future[Result] = controller.youDoNotNeedToRegister()(fakeRequest)
+
+      status(result) shouldBe OK
+
+      contentAsString(result) shouldBe view()(fakeRequest, messages).toString
+    }
+  }
+
+  "notLiable" should {
+    "return OK and the correct view" in {
+      val result: Future[Result] = controller.notLiable()(fakeRequest)
 
       status(result) shouldBe OK
 

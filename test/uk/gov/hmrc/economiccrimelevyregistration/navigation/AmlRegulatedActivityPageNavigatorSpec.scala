@@ -54,7 +54,7 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
         val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
 
         await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe routes.NotLiableController
-          .onPageLoad()
+          .youDoNotNeedToRegister()
 
         verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
 

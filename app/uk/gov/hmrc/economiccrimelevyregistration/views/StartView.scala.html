@@ -33,6 +33,12 @@
     <h1 class="govuk-heading-l">@messages("start.heading")</h1>
 
     <p class="govuk-body">@messages("start.p1")</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("start.b1")</li>
+        <li>@messages("start.b2")</li>
+    </ul>
+
     <p class="govuk-body">@Html(messages("start.p2", messages("start.p2.link")))</p>
     <p class="govuk-body">@messages("start.p3", EclTaxYear.yearDue)</p>
 

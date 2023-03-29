@@ -37,17 +37,17 @@ object BusinessSector {
   case object CryptoAssetExchangeProvider extends BusinessSector
 
   val values: Seq[BusinessSector] = Seq(
-    CreditInstitution,
-    FinancialInstitution,
     Auditor,
-    InsolvencyPractitioner,
-    ExternalAccountant,
-    TaxAdviser,
-    IndependentLegalProfessional,
-    TrustOrCompanyServiceProvider,
+    CreditInstitution,
+    CryptoAssetExchangeProvider,
     EstateAgentOrLettingAgent,
+    ExternalAccountant,
+    FinancialInstitution,
     HighValueDealer,
-    CryptoAssetExchangeProvider
+    IndependentLegalProfessional,
+    InsolvencyPractitioner,
+    TaxAdviser,
+    TrustOrCompanyServiceProvider
   )
 
   def options(implicit messages: Messages): Seq[RadioItem] =

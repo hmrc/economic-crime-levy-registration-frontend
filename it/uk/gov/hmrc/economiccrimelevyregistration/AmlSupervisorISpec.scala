@@ -26,7 +26,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe OK
 
-      html(result) should include(s"Who is your AML supervisor?")
+      html(result) should include("Your anti-money laundering (AML) supervisor")
     }
   }
 

@@ -55,7 +55,7 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
         ).extendedDataEvent
       )
 
-    Future.successful(routes.NotLiableController.onPageLoad())
+    Future.successful(routes.NotLiableController.youDoNotNeedToRegister())
   }
 
 }
