@@ -30,6 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
 
@@ -58,6 +59,7 @@ class EntityTypeControllerSpec extends SpecBase {
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
 
   class TestContext(registrationData: Registration) {
     val controller = new EntityTypeController(
@@ -68,6 +70,7 @@ class EntityTypeControllerSpec extends SpecBase {
       formProvider,
       pageNavigator,
       dataCleanup,
+      mockAuditConnector,
       view
     )
   }
@@ -113,6 +116,10 @@ class EntityTypeControllerSpec extends SpecBase {
           status(result) shouldBe SEE_OTHER
 
           redirectLocation(result) shouldBe Some(onwardRoute.url)
+
+          verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
+
+          reset(mockAuditConnector)
         }
     }
 

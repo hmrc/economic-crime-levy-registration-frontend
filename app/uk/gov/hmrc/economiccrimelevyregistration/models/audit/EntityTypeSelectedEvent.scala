@@ -17,13 +17,13 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models.audit
 
 import play.api.libs.json.{JsValue, Json, OFormat}
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 
-case class RegistrationSubmittedAuditEvent(registrationData: Registration) extends AuditEvent {
-  override val auditType: String   = "RegistrationSubmitted"
+case class EntityTypeSelectedEvent(internalId: String, entityType: EntityType) extends AuditEvent {
+  override val auditType: String   = "EntityTypeSelected"
   override val detailJson: JsValue = Json.toJson(this)
 }
 
-object RegistrationSubmittedAuditEvent {
-  implicit val format: OFormat[RegistrationSubmittedAuditEvent] = Json.format[RegistrationSubmittedAuditEvent]
+object EntityTypeSelectedEvent {
+  implicit val format: OFormat[EntityTypeSelectedEvent] = Json.format[EntityTypeSelectedEvent]
 }
