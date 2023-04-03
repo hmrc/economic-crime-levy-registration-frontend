@@ -73,6 +73,8 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registrationWithOneContact)
 
+      stubUpsertRegistrationWithoutRequestMatching(registrationWithOneContact)
+
       stubSubmitRegistration(eclReference)
 
       stubSendRegistrationSubmittedEmail(
@@ -81,7 +83,9 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
           parameters = RegistrationSubmittedEmailParameters(
             name = firstContactName,
             eclRegistrationReference = eclReference,
-            dateDue = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messagesApi.preferred(Seq(Languages.english)))
+            dateDue = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(
+              messagesApi.preferred(Seq(Languages.english))
+            )
           )
         )
       )

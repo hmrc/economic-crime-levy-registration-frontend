@@ -111,6 +111,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "redirect to the registration submitted page after submitting the registration and sending email successfully" in forAll {
       (createEclSubscriptionResponse: CreateEclSubscriptionResponse, registration: Registration) =>
         new TestContext(registration) {
+          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
+            .thenReturn(Future.successful(registration))
+
           when(mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq(registration.internalId))(any()))
             .thenReturn(Future.successful(createEclSubscriptionResponse))
 

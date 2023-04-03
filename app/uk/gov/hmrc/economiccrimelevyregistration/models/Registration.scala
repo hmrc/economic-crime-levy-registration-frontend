@@ -39,7 +39,8 @@ final case class Registration(
   contactAddress: Option[EclAddress],
   contactAddressIsUk: Option[Boolean],
   partnershipName: Option[String],
-  privateBetaAccessCode: Option[String]
+  privateBetaAccessCode: Option[String],
+  base64EncodedNrsSubmissionHtml: Option[String]
 ) {
 
   def grsAddressToEclAddress: Option[EclAddress] = {
@@ -118,6 +119,7 @@ object Registration {
     contactAddress = None,
     contactAddressIsUk = None,
     partnershipName = None,
-    privateBetaAccessCode = None
+    privateBetaAccessCode = None,
+    base64EncodedNrsSubmissionHtml = None
   )
 }

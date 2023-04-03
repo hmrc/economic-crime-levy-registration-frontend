@@ -31,6 +31,14 @@ trait EclRegistrationStubs { self: WireMockStubs =>
         .withBody(Json.toJson(registration).toString())
     )
 
+  def stubUpsertRegistrationWithoutRequestMatching(registration: Registration): StubMapping =
+    stub(
+      put(urlEqualTo("/economic-crime-levy-registration/registrations")),
+      aResponse()
+        .withStatus(OK)
+        .withBody(Json.toJson(registration).toString())
+    )
+
   def stubGetSubscriptionStatus(businessPartnerId: String, eclSubscriptionStatus: EclSubscriptionStatus): StubMapping =
     stub(
       get(urlEqualTo(s"/economic-crime-levy-registration/subscription-status/$businessPartnerId")),
