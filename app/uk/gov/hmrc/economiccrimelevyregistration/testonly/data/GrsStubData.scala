@@ -23,8 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus.{Fail, Pass}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 
-import java.time.{Instant, LocalDate}
-import java.util.Date
+import java.time.LocalDate
 
 trait GrsStubData {
 
@@ -49,7 +48,7 @@ trait GrsStubData {
       firstName = "John",
       lastName = "Doe"
     ),
-    dateOfBirth = Date.from(Instant.parse("1975-01-31T00:00:00.00Z")),
+    dateOfBirth = LocalDate.parse("1975-01-31"),
     nino = Some("BB111111B"),
     sautr = Some("1234567890"),
     identifiersMatch = identifiersMatch,
