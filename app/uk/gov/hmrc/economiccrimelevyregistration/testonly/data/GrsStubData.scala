@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus.{Fail, Pass}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 import java.util.Date
 
 trait GrsStubData {
@@ -79,7 +79,7 @@ trait GrsStubData {
   private def validCompanyProfile(partnership: Boolean): CompanyProfile = CompanyProfile(
     companyName = if (partnership) "Test Partnership Name" else "Test Company Name",
     companyNumber = "01234567",
-    dateOfIncorporation = Date.from(Instant.parse("2007-12-03T10:15:30.00Z")),
+    dateOfIncorporation = LocalDate.parse("2007-12-03"),
     unsanitisedCHROAddress = IncorporatedEntityAddress(
       address_line_1 = Some("Test Address Line 1"),
       address_line_2 = Some("Test Address Line 2"),
