@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.models
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityAddress, IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 
+import java.time.LocalDate
 import java.util.Date
 
 final case class Registration(
@@ -93,7 +94,7 @@ final case class Registration(
 
   def nino: Option[String] = soleTraderEntityJourneyData.flatMap(_.nino)
 
-  def dateOfBirth: Option[Date] = soleTraderEntityJourneyData.map(_.dateOfBirth)
+  def dateOfBirth: Option[LocalDate] = soleTraderEntityJourneyData.map(_.dateOfBirth)
 
 }
 

@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.grs
 
 import play.api.libs.json.{Json, OFormat}
 
-import java.util.Date
+import java.time.LocalDate
 
 final case class IncorporatedEntityJourneyData(
   companyProfile: CompanyProfile,
@@ -36,7 +36,7 @@ object IncorporatedEntityJourneyData {
 final case class CompanyProfile(
   companyName: String,
   companyNumber: String,
-  dateOfIncorporation: Date,
+  dateOfIncorporation: LocalDate,
   unsanitisedCHROAddress: IncorporatedEntityAddress
 )
 

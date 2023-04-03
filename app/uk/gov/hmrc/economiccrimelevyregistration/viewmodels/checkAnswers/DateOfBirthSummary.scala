@@ -29,7 +29,7 @@ object DateOfBirthSummary {
 
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
     request.registration.dateOfBirth.map { answer =>
-      val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(ViewUtils.formatDate(answer)))))
+      val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(ViewUtils.formatLocalDate(answer)))))
 
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.dob.label"),
