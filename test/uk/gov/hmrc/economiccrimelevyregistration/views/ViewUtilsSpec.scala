@@ -20,8 +20,7 @@ import play.api.data.Form
 import play.api.data.Forms.{single, text}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 
-import java.time.{Instant, LocalDate}
-import java.util.Date
+import java.time.LocalDate
 
 class ViewUtilsSpec extends SpecBase {
 
@@ -56,14 +55,6 @@ class ViewUtilsSpec extends SpecBase {
       ViewUtils.title(testTitle, Some("Test Section"))(
         messages
       ) shouldBe "Test Title - Test Section - Register for the Economic Crime Levy - GOV.UK"
-    }
-  }
-
-  "formatDate" should {
-    "correctly format a date" in {
-      val date = Date.from(Instant.parse("2007-12-03T10:15:30.00Z"))
-
-      ViewUtils.formatDate(date)(messages) shouldBe "3 December 2007"
     }
   }
 
