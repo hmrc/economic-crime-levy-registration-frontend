@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import play.api.Logging
 import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.Contacts
@@ -29,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EmailService @Inject() (emailConnector: EmailConnector)(implicit
   ec: ExecutionContext
-) {
+) extends Logging {
 
   def sendRegistrationSubmittedEmails(contacts: Contacts, eclRegistrationReference: String)(implicit
     hc: HeaderCarrier,
@@ -47,7 +48,7 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
         )
       )
 
-    (
+    ((
       contacts.firstContactDetails.name,
       contacts.firstContactDetails.emailAddress,
       contacts.secondContactDetails.name,
@@ -61,6 +62,9 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
       case (Some(firstContactName), Some(firstContactEmail), None, None)                                        =>
         sendEmail(firstContactName, firstContactEmail)
       case _                                                                                                    => throw new IllegalStateException("Invalid contact details")
+    }).recover { case e: Exception =>
+      logger.error(s"Failed to send email: ${e.getMessage}")
+      ()
     }
 
   }

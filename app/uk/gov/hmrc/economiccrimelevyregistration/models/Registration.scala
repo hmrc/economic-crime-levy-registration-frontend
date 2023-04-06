@@ -20,7 +20,6 @@ import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityAddress, IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 
 import java.time.LocalDate
-import java.util.Date
 
 final case class Registration(
   internalId: String,

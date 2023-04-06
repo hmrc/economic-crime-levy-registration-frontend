@@ -98,7 +98,7 @@ class CheckYourAnswersController @Inject() (
                     request.registration.copy(base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView))
                   )
       response <- eclRegistrationConnector.submitRegistration(request.internalId)
-      _        <- emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference)
+      _         = emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference)
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield Redirect(routes.RegistrationSubmittedController.onPageLoad()).withSession(
       request.session + (SessionKeys.EclReference -> response.eclReference)
