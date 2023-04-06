@@ -62,9 +62,9 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
       case (Some(firstContactName), Some(firstContactEmail), None, None)                                        =>
         sendEmail(firstContactName, firstContactEmail)
       case _                                                                                                    => throw new IllegalStateException("Invalid contact details")
-    }).recover { case e: Exception =>
+    }).recover { case e: Throwable =>
       logger.error(s"Failed to send email: ${e.getMessage}")
-      ()
+      throw e
     }
 
   }
