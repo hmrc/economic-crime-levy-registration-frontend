@@ -117,14 +117,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq(registration.internalId))(any()))
             .thenReturn(Future.successful(createEclSubscriptionResponse))
 
-          when(
-            mockEmailService.sendRegistrationSubmittedEmails(
-              ArgumentMatchers.eq(registration.contacts),
-              ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference)
-            )(any(), any())
-          )
-            .thenReturn(Future.successful(()))
-
           when(mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(registration.internalId))(any()))
             .thenReturn(Future.successful(()))
 
@@ -133,6 +125,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           status(result)                                shouldBe SEE_OTHER
           session(result).get(SessionKeys.EclReference) shouldBe Some(createEclSubscriptionResponse.eclReference)
           redirectLocation(result)                      shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
+
+          verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
+            ArgumentMatchers.eq(registration.contacts),
+            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference)
+          )(any(), any())
+
+          reset(mockEmailService)
         }
     }
   }
