@@ -15,13 +15,15 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
+@import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 
 @this(
         layout: templates.Layout,
         formHelper: FormWithCSRF,
         errorSummary: GovukErrorSummary,
         radios: GovukRadios,
-        button: GovukButton
+        button: GovukButton,
+        appConfig: AppConfig
 )
 
 @(form: Form[EntityType], mode: Mode)(implicit request: Request[_], messages: Messages)
@@ -35,7 +37,7 @@
             RadiosViewModel(
                 field = form("value"),
                 legend = LegendViewModel(messages("entityType.title")).asPageHeading(LegendSize.Large),
-                items = EntityType.options
+                items = EntityType.options(appConfig)
             )
         )
 

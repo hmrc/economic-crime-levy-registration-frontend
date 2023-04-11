@@ -37,13 +37,13 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   def feedbackUrl(backUrl: String): String =
     s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${SafeRedirectUrl(backUrl).encodedUrl}"
 
-  val signInUrl: String              = configuration.get[String]("urls.signIn")
-  val signOutUrl: String             = configuration.get[String]("urls.signOut")
-  val eclSignOutUrl: String          = configuration.get[String]("urls.eclSignOut")
-  val grsContinueUrl: String         = configuration.get[String]("urls.grsContinue")
-  val alfContinueUrl: String         = configuration.get[String]("urls.alfContinue")
-  val submitReturnUrl: String        = configuration.get[String]("urls.submitReturn")
-  val taxAndSchemeManagement: String = configuration.get[String]("urls.taxAndSchemeManagement")
+  val signInUrl: String                 = configuration.get[String]("urls.signIn")
+  val signOutUrl: String                = configuration.get[String]("urls.signOut")
+  val eclSignOutUrl: String             = configuration.get[String]("urls.eclSignOut")
+  val grsContinueUrl: String            = configuration.get[String]("urls.grsContinue")
+  val alfContinueUrl: String            = configuration.get[String]("urls.alfContinue")
+  val submitReturnUrl: String           = configuration.get[String]("urls.submitReturn")
+  val taxAndSchemeManagementUrl: String = configuration.get[String]("urls.taxAndSchemeManagement")
 
   val accessibilityStatementServicePath: String =
     configuration.get[String]("accessibility-statement.service-path")
