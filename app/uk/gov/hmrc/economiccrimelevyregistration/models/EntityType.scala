@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.i18n.Messages
 import play.api.libs.json._
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
@@ -44,14 +45,17 @@ object EntityType {
     Other
   )
 
-  def options(implicit messages: Messages): Seq[RadioItem] =
-    values.zipWithIndex.map { case (value, index) =>
+  def options(appConfig: AppConfig)(implicit messages: Messages): Seq[RadioItem] = {
+    val radioItems = values.zipWithIndex.map { case (value, index) =>
       RadioItem(
         content = Text(messages(s"entityType.${value.toString}")),
         value = Some(value.toString),
         id = Some(s"value_$index")
       )
     }
+
+    if (appConfig.privateBetaEnabled) radioItems.filterNot(_.value.contains(Other.toString)) else radioItems
+  }
 
   implicit val enumerable: Enumerable[EntityType] = Enumerable(values.map(v => (v.toString, v)): _*)
 

@@ -14,11 +14,13 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 @import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 @this(
         layout: templates.Layout,
-        button: GovukButton
+        button: GovukButton,
+        appConfig: AppConfig
 )
 
 @()(implicit request: Request[_], messages: Messages)
@@ -40,7 +42,13 @@
     </ul>
 
     <p class="govuk-body">@Html(messages("start.p2", messages("start.p2.link")))</p>
-    <p class="govuk-body">@messages("start.p3", EclTaxYear.yearDue)</p>
+    <p class="govuk-body">
+    @if(appConfig.privateBetaEnabled) {
+        @messages("start.p3.privateBeta")
+    } else {
+        @messages("start.p3", EclTaxYear.yearDue)
+    }
+    </p>
 
     @button(
         ButtonViewModel(messages("site.start"))
