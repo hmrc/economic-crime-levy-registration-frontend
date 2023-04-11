@@ -37,6 +37,9 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   def feedbackUrl(backUrl: String): String =
     s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${SafeRedirectUrl(backUrl).encodedUrl}"
 
+  def reportTechnicalIssueUrl(referrerUrl: String): String =
+    s"$contactHost/contact/report-technical-problem?service=$contactFormServiceIdentifier&referrerUrl=$referrerUrl"
+
   val signInUrl: String                 = configuration.get[String]("urls.signIn")
   val signOutUrl: String                = configuration.get[String]("urls.signOut")
   val eclSignOutUrl: String             = configuration.get[String]("urls.eclSignOut")

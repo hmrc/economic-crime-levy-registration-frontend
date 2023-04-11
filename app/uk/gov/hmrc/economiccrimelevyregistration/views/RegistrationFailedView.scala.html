@@ -14,8 +14,11 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+
 @this(
-        layout: templates.Layout
+        layout: templates.Layout,
+        appConfig: AppConfig
 )
 
 @()(implicit request: Request[_], messages: Messages)
@@ -28,6 +31,6 @@
     <h1 class="govuk-heading-l">@messages("registrationFailed.heading")</h1>
 
     <p class="govuk-body">@messages("registrationFailed.body.p1")</p>
-    <p class="govuk-body">@Html(messages("registrationFailed.body.p2", messages("registrationFailed.body.p2.link", "#TODO")))</p>
+    <p class="govuk-body">@Html(messages("registrationFailed.body.p2", messages("registrationFailed.body.p2.link", appConfig.reportTechnicalIssueUrl(request.uri))))</p>
 
 }
