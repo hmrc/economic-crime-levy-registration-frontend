@@ -69,7 +69,7 @@ class NotableErrorController @Inject() (
       throw new IllegalStateException("ECL registration reference not found in request")
     )
     val taxAndSchemeManagementUrl =
-      s"${appConfig.taxAndSchemeManagement}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
+      s"${appConfig.taxAndSchemeManagementUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
 
     Ok(groupAlreadyEnrolledView(eclRegistrationReference, taxAndSchemeManagementUrl))
   }
