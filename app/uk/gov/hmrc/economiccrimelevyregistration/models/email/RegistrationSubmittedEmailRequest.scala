@@ -34,5 +34,6 @@ final case class RegistrationSubmittedEmailRequest(
 
 object RegistrationSubmittedEmailRequest {
   val TemplateId: String                                          = "ecl_registration_submitted"
+  val PrivateBetaTemplateId: String                               = "ecl_registration_submitted_private_beta"
   implicit val format: OFormat[RegistrationSubmittedEmailRequest] = Json.format[RegistrationSubmittedEmailRequest]
 }
