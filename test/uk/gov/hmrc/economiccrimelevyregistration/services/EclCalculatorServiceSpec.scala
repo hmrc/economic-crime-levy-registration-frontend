@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclCalculatorConnector
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculatedLiability, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculatedLiability, EclAmount, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import scala.concurrent.Future
@@ -46,7 +46,7 @@ class EclCalculatorServiceSpec extends SpecBase {
               any()
             )
         )
-          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = 1)))
+          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = EclAmount(amount = 1))))
 
         val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration))
 
@@ -73,7 +73,7 @@ class EclCalculatorServiceSpec extends SpecBase {
               any()
             )
         )
-          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = 1)))
+          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = EclAmount(amount = 1))))
 
         val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration))
 
@@ -95,7 +95,7 @@ class EclCalculatorServiceSpec extends SpecBase {
               any()
             )
         )
-          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = 0)))
+          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = EclAmount(amount = 0))))
 
         val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration))
 
@@ -122,7 +122,7 @@ class EclCalculatorServiceSpec extends SpecBase {
               any()
             )
         )
-          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = 0)))
+          .thenReturn(Future.successful(calculatedLiability.copy(amountDue = EclAmount(amount = 0))))
 
         val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration))
 
