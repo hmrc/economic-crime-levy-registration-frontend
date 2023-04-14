@@ -44,7 +44,7 @@ class PrivateBetaAccessFormProviderSpec extends StringFieldBehaviours {
         }
       }
 
-      "fail to bind when the access code does not match what is held in config" in {
+      "fail to bind when the access code does not match one that is held in config" in {
         when(mockAppConfig.privateBetaAccessCodes).thenReturn(Seq("a-code"))
 
         val result = form.bind(Map(fieldName -> "a-different-code")).apply(fieldName)
