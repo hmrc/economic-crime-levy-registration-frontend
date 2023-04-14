@@ -58,13 +58,13 @@ class DataRetrievalActionSpec extends SpecBase {
         await(result) shouldBe Right(RegistrationDataRequest(fakeRequest, internalId, registration))
     }
 
-    "transform an AuthorisedRequest into a RegistrationDataRequest when private beta is enabled and the access code matches what is held in config" in forAll {
+    "transform an AuthorisedRequest into a RegistrationDataRequest when private beta is enabled and the access code matches one that is held in config" in forAll {
       (internalId: String, groupId: String, registration: Registration, privateBetaAccessCode: String) =>
         when(mockAppConfig.privateBetaEnabled).thenReturn(true)
         val updatedRegistration = registration.copy(privateBetaAccessCode = Some(privateBetaAccessCode))
         when(mockEclRegistrationService.getOrCreateRegistration(any())(any()))
           .thenReturn(Future(updatedRegistration))
-        when(mockAppConfig.privateBetaAccessCode).thenReturn(privateBetaAccessCode)
+        when(mockAppConfig.privateBetaAccessCodes).thenReturn(Seq(privateBetaAccessCode))
 
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, None))
@@ -72,12 +72,12 @@ class DataRetrievalActionSpec extends SpecBase {
         await(result) shouldBe Right(RegistrationDataRequest(fakeRequest, internalId, updatedRegistration))
     }
 
-    "redirect to the private beta access page when private beta is enabled and the access code does not match what is held in config" in forAll {
+    "redirect to the private beta access page when private beta is enabled and the access code does not match one that is held in config" in forAll {
       (internalId: String, groupId: String, registration: Registration, privateBetaAccessCode: String) =>
         when(mockAppConfig.privateBetaEnabled).thenReturn(true)
         when(mockEclRegistrationService.getOrCreateRegistration(any())(any()))
           .thenReturn(Future(registration.copy(privateBetaAccessCode = None)))
-        when(mockAppConfig.privateBetaAccessCode).thenReturn(privateBetaAccessCode)
+        when(mockAppConfig.privateBetaAccessCodes).thenReturn(Seq(privateBetaAccessCode))
 
         val result =
           Future.successful(

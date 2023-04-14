@@ -37,7 +37,7 @@ class RegistrationDataRetrievalAction @Inject() (
   override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
     eclRegistrationService.getOrCreateRegistration(request.internalId)(hc(request)).map { registration =>
       if (appConfig.privateBetaEnabled) {
-        if (registration.privateBetaAccessCode.contains(appConfig.privateBetaAccessCode)) {
+        if (registration.privateBetaAccessCode.fold(false)(appConfig.privateBetaAccessCodes.contains(_))) {
           Right(RegistrationDataRequest(request.request, request.internalId, registration))
         } else {
           Left(Redirect(routes.PrivateBetaAccessController.onPageLoad(s"${appConfig.host}${request.uri}")))

@@ -64,11 +64,11 @@ class PrivateBetaAccessControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the access code if it matches the one held in config and redirect to the continue URL" in forAll(
+    "save the access code if it matches one held in config and redirect to the continue URL" in forAll(
       Arbitrary.arbitrary[Registration],
       nonBlankString
     ) { (registration: Registration, accessCode: String) =>
-      when(mockAppConfig.privateBetaAccessCode).thenReturn(accessCode)
+      when(mockAppConfig.privateBetaAccessCodes).thenReturn(Seq(accessCode))
 
       when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future.successful(registration))
 

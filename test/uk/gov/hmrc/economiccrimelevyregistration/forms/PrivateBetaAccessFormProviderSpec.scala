@@ -36,7 +36,7 @@ class PrivateBetaAccessFormProviderSpec extends StringFieldBehaviours {
     "bind" should {
       "bind valid data" in {
         forAll(nonBlankString -> "validAccessCode") { accessCode: String =>
-          when(mockAppConfig.privateBetaAccessCode).thenReturn(accessCode)
+          when(mockAppConfig.privateBetaAccessCodes).thenReturn(Seq(accessCode))
 
           val result = form.bind(Map(fieldName -> accessCode)).apply(fieldName)
           result.value.value shouldBe accessCode
@@ -44,8 +44,8 @@ class PrivateBetaAccessFormProviderSpec extends StringFieldBehaviours {
         }
       }
 
-      "fail to bind when the access code does not match what is held in config" in {
-        when(mockAppConfig.privateBetaAccessCode).thenReturn("a-code")
+      "fail to bind when the access code does not match one that is held in config" in {
+        when(mockAppConfig.privateBetaAccessCodes).thenReturn(Seq("a-code"))
 
         val result = form.bind(Map(fieldName -> "a-different-code")).apply(fieldName)
 

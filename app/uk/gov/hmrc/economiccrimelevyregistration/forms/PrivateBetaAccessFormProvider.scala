@@ -30,7 +30,7 @@ class PrivateBetaAccessFormProvider @Inject() (appConfig: AppConfig) extends Map
       "value" -> text("privateBetaAccess.error.required")
         .verifying {
           Constraint[String] { value: String =>
-            if (value == appConfig.privateBetaAccessCode) {
+            if (appConfig.privateBetaAccessCodes.contains(value)) {
               Valid
             } else {
               Invalid("privateBetaAccess.error.invalid")
