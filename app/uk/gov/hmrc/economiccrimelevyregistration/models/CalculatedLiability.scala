@@ -43,7 +43,7 @@ object Band {
   }
 }
 
-final case class EclAmount(amount: BigDecimal, apportioned: Boolean = false)
+final case class EclAmount(amount: BigDecimal)
 
 object EclAmount {
   implicit val format: OFormat[EclAmount] = Json.format[EclAmount]
@@ -59,8 +59,7 @@ final case class Bands(
   small: BandRange,
   medium: BandRange,
   large: BandRange,
-  veryLarge: BandRange,
-  apportioned: Boolean = false
+  veryLarge: BandRange
 )
 
 object Bands {
