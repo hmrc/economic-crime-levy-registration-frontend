@@ -36,7 +36,7 @@ class EclCalculatorService @Inject() (
         val f: Int => Future[Option[Boolean]] = eclCalculatorConnector
           .calculateLiability(_, revenue)
           .map(liability =>
-            if (liability.amountDue > 0) {
+            if (liability.amountDue.amount > 0) {
               Some(true)
             } else {
               Some(false)
