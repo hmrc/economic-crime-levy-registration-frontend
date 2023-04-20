@@ -50,14 +50,6 @@
     }
     </p>
 
-    @button(
-        ButtonViewModel(messages("site.start"))
-                .asLink(AmlRegulatedActivityController.onPageLoad(NormalMode).url)
-                .asStartButton()
-                .withAttribute("id" -> "start")
-                .withCssClass("govuk-!-margin-top-2 govuk-!-margin-bottom-8")
-    )
-
     <h2 class="govuk-heading-m">@messages("start.beforeYouStart")</h2>
 
     <p class="govuk-body">@messages("start.provide")</p>
@@ -75,6 +67,15 @@
     <ul class="govuk-list govuk-list--bullet">
         <li>@messages("start.doNotUse.b1")</li>
         <li>@messages("start.doNotUse.b2")</li>
+        <li>@messages("start.doNotUse.b3")</li>
     </ul>
+
+    @button(
+        ButtonViewModel(messages("site.start"))
+                .asLink(AmlRegulatedActivityController.onPageLoad(NormalMode).url)
+                .asStartButton()
+                .withAttribute("id" -> "start")
+                .withCssClass("govuk-!-margin-top-2 govuk-!-margin-bottom-8")
+    )
 
 }
