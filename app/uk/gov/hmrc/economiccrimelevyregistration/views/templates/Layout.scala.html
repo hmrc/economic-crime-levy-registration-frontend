@@ -35,7 +35,7 @@
 
 @head = {
 @if(autoCompleteEnabled) {
-    @autocompleteCss(CSPNonce.get)
+    @autocompleteCss()
     <link rel="stylesheet" href="@{
         controllers.routes.Assets.versioned("stylesheets/accessible-autocomplete-fixes.css")
     }" @{
@@ -68,7 +68,7 @@
 @additionalScripts = {
     <script src='@controllers.routes.Assets.versioned("javascripts/application.min.js")'></script>
 @if(autoCompleteEnabled) {
-    @autocompleteJavascript(CSPNonce.get)
+    @autocompleteJavascript()
 }
 }
 
