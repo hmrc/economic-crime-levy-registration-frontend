@@ -87,7 +87,9 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
             eclRegistrationReference = eclReference,
             dateDue = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(
               messagesApi.preferred(Seq(Languages.english))
-            )
+            ),
+            "true",
+            None
           )
         )
       )

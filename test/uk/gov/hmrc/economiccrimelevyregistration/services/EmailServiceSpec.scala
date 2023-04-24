@@ -45,7 +45,9 @@ class EmailServiceSpec extends SpecBase {
         val expectedFirstContactParams = RegistrationSubmittedEmailParameters(
           firstContactName,
           eclRegistrationReference,
-          ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages)
+          ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages),
+          "true",
+          None
         )
 
         when(
@@ -89,13 +91,17 @@ class EmailServiceSpec extends SpecBase {
         val expectedFirstContactParams = RegistrationSubmittedEmailParameters(
           firstContactName,
           eclRegistrationReference,
-          eclDueDate
+          eclDueDate,
+          "true",
+          Some(secondContactEmail)
         )
 
         val expectedSecondContactParams = RegistrationSubmittedEmailParameters(
           secondContactName,
           eclRegistrationReference,
-          eclDueDate
+          eclDueDate,
+          "false",
+          Some(secondContactEmail)
         )
 
         when(

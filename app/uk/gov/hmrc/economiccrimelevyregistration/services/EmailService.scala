@@ -38,13 +38,20 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
   ): Future[Unit] = {
     val eclDueDate = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)
 
-    def sendEmail(name: String, email: String): Future[Unit] =
+    def sendEmail(
+      name: String,
+      email: String,
+      isPrimaryContact: Boolean,
+      secondContactEmail: Option[String]
+    ): Future[Unit] =
       emailConnector.sendRegistrationSubmittedEmail(
         email,
         RegistrationSubmittedEmailParameters(
           name = name,
           eclRegistrationReference = eclRegistrationReference,
-          eclDueDate
+          eclDueDate,
+          isPrimaryContact = isPrimaryContact.toString,
+          secondContactEmail = secondContactEmail
         )
       )
 
@@ -56,11 +63,26 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
     ) match {
       case (Some(firstContactName), Some(firstContactEmail), Some(secondContactName), Some(secondContactEmail)) =>
         for {
-          _ <- sendEmail(firstContactName, firstContactEmail)
-          _ <- sendEmail(secondContactName, secondContactEmail)
+          _ <- sendEmail(
+                 name = firstContactName,
+                 email = firstContactEmail,
+                 isPrimaryContact = true,
+                 secondContactEmail = Some(secondContactEmail)
+               )
+          _ <- sendEmail(
+                 name = secondContactName,
+                 email = secondContactEmail,
+                 isPrimaryContact = false,
+                 secondContactEmail = Some(secondContactEmail)
+               )
         } yield ()
       case (Some(firstContactName), Some(firstContactEmail), None, None)                                        =>
-        sendEmail(firstContactName, firstContactEmail)
+        sendEmail(
+          name = firstContactName,
+          email = firstContactEmail,
+          isPrimaryContact = true,
+          secondContactEmail = None
+        )
       case _                                                                                                    => throw new IllegalStateException("Invalid contact details")
     }).recover { case e: Throwable =>
       logger.error(s"Failed to send email: ${e.getMessage}")
