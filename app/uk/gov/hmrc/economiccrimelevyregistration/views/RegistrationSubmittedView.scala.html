@@ -23,7 +23,7 @@
         appConfig: AppConfig
 )
 
-@(eclReference: String)(implicit request: Request[_], messages: Messages)
+@(eclReference: String, firstContactEmailAddress: String, secondContact: Boolean, secondContactEmailAddress: String)(implicit request: Request[_], messages: Messages)
 
 @panelContentHtml = {
     <p class="govuk-label--m">@messages("submitted.reference", eclReference)</p>
@@ -60,6 +60,12 @@
         </ul>
 
         <p class="govuk-body">@Html(messages("submitted.return", messages("submitted.return.link", appConfig.submitReturnUrl)))</p>
+
+        <p class="govuk-body">@messages("submitted.first.email", firstContactEmailAddress)</p>
+
+        @if(secondContact) {
+            <p class="govuk-body">@messages("submitted.second.email", secondContactEmailAddress)</p>
+        }
     }
 
     <p class="govuk-body">@Html(messages("exit.survey", messages("exit.survey.link", appConfig.exitSurveyUrl)))</p>

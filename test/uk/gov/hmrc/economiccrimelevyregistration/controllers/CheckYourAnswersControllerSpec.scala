@@ -18,15 +18,17 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Arbitrary
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidatedRegistrationAction
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, Registration, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, CreateEclSubscriptionResponse, Registration, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -108,30 +110,138 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "redirect to the registration submitted page after submitting the registration and sending email successfully" in forAll {
-      (createEclSubscriptionResponse: CreateEclSubscriptionResponse, registration: Registration) =>
-        new TestContext(registration) {
-          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-            .thenReturn(Future.successful(registration))
+    "redirect to the registration submitted page after submitting the registration and sending email successfully" in forAll(
+      Arbitrary.arbitrary[CreateEclSubscriptionResponse],
+      Arbitrary.arbitrary[Registration],
+      emailAddress(EmailMaxLength),
+      Arbitrary.arbitrary[Boolean],
+      emailAddress(EmailMaxLength)
+    ) {
+      (
+        createEclSubscriptionResponse: CreateEclSubscriptionResponse,
+        registration: Registration,
+        firstContactEmailAddress: String,
+        secondContact: Boolean,
+        secondContactEmailAddress: String
+      ) =>
+        val updatedRegistration = registration.copy(
+          contacts = Contacts(
+            firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
+            secondContact = Some(secondContact),
+            secondContactDetails = if (secondContact) {
+              validContactDetails.copy(emailAddress = Some(secondContactEmailAddress))
+            } else { ContactDetails.empty }
+          )
+        )
 
-          when(mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq(registration.internalId))(any()))
+        new TestContext(updatedRegistration) {
+          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          when(
+            mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
+          )
             .thenReturn(Future.successful(createEclSubscriptionResponse))
 
-          when(mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(registration.internalId))(any()))
+          when(
+            mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
+          )
             .thenReturn(Future.successful(()))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
-          status(result)                                shouldBe SEE_OTHER
-          session(result).get(SessionKeys.EclReference) shouldBe Some(createEclSubscriptionResponse.eclReference)
-          redirectLocation(result)                      shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
+          status(result)                                             shouldBe SEE_OTHER
+          session(result).get(SessionKeys.EclReference)              shouldBe Some(createEclSubscriptionResponse.eclReference)
+          session(result).get(SessionKeys.FirstContactEmailAddress)  shouldBe Some(firstContactEmailAddress)
+          session(result).get(SessionKeys.SecondContact)             shouldBe Some(secondContact.toString)
+          session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe {
+            if (secondContact) Some(secondContactEmailAddress) else Some("")
+          }
+          redirectLocation(result)                                   shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
-            ArgumentMatchers.eq(registration.contacts),
+            ArgumentMatchers.eq(updatedRegistration.contacts),
             ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference)
           )(any(), any())
 
           reset(mockEmailService)
+        }
+    }
+
+    "throw an IllegalStateException when the first contact email address is not present in the registration" in forAll {
+      (createEclSubscriptionResponse: CreateEclSubscriptionResponse, registration: Registration) =>
+        val updatedRegistration = registration.copy(
+          contacts = Contacts(
+            firstContactDetails = validContactDetails.copy(emailAddress = None),
+            secondContact = Some(false),
+            secondContactDetails = ContactDetails.empty
+          )
+        )
+
+        new TestContext(updatedRegistration) {
+          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          when(
+            mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
+          )
+            .thenReturn(Future.successful(createEclSubscriptionResponse))
+
+          when(
+            mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
+          )
+            .thenReturn(Future.successful(()))
+
+          val result: IllegalStateException = intercept[IllegalStateException] {
+            controller.onSubmit()(fakeRequest)
+          }
+
+          result.getMessage shouldBe "First contact email address not found in registration data"
+
+          verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
+            ArgumentMatchers.eq(updatedRegistration.contacts),
+            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference)
+          )(any(), any())
+
+          reset(mockEmailService)
+        }
+    }
+
+    "throw an IllegalStateException when the second contact is not present in the registration" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(
+          contacts = Contacts(
+            firstContactDetails = validContactDetails,
+            secondContact = None,
+            secondContactDetails = ContactDetails.empty
+          )
+        )
+
+        new TestContext(updatedRegistration) {
+          val result: IllegalStateException = intercept[IllegalStateException] {
+            controller.onSubmit()(fakeRequest)
+          }
+
+          result.getMessage shouldBe "Second contact not found in registration data"
+        }
+    }
+
+    "throw an IllegalStateException when the second contact email address is not present in the registration" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(
+          contacts = Contacts(
+            firstContactDetails = validContactDetails,
+            secondContact = Some(true),
+            secondContactDetails = validContactDetails.copy(emailAddress = None)
+          )
+        )
+
+        new TestContext(updatedRegistration) {
+          val result: IllegalStateException = intercept[IllegalStateException] {
+            controller.onSubmit()(fakeRequest)
+          }
+
+          result.getMessage shouldBe "Second contact email address not found in registration data"
         }
     }
   }

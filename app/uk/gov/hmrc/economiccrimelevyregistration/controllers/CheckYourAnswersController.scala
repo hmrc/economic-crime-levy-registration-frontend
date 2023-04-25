@@ -93,6 +93,18 @@ class CheckYourAnswersController @Inject() (
 
     val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
 
+    val secondContact: Boolean = request.registration.contacts.secondContact
+      .getOrElse(throw new IllegalStateException("Second contact not found in registration data"))
+
+    val secondContactEmailAddress: String = {
+      if (secondContact) {
+        request.registration.contacts.secondContactDetails.emailAddress
+          .getOrElse(throw new IllegalStateException("Second contact email address not found in registration data"))
+      } else {
+        ""
+      }
+    }
+
     for {
       _        <- eclRegistrationConnector.upsertRegistration(registration =
                     request.registration.copy(base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView))
@@ -101,7 +113,13 @@ class CheckYourAnswersController @Inject() (
       _         = emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference)
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield Redirect(routes.RegistrationSubmittedController.onPageLoad()).withSession(
-      request.session + (SessionKeys.EclReference -> response.eclReference)
+      request.session ++ Seq(
+        SessionKeys.EclReference              -> response.eclReference,
+        SessionKeys.FirstContactEmailAddress  -> request.registration.contacts.firstContactDetails.emailAddress
+          .getOrElse(throw new IllegalStateException("First contact email address not found in registration data")),
+        SessionKeys.SecondContact             -> secondContact.toString,
+        SessionKeys.SecondContactEmailAddress -> secondContactEmailAddress
+      )
     )
   }
 
