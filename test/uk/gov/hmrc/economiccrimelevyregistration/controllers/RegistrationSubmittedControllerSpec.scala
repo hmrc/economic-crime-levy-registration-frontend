@@ -39,16 +39,14 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
       (
         eclReference: String,
         firstContactEmailAddress: String,
-        secondContact: Boolean,
-        secondContactEmailAddress: String
+        secondContactEmailAddress: Option[String]
       ) =>
         val result: Future[Result] =
           controller.onPageLoad()(
             fakeRequest.withSession(
               (SessionKeys.EclReference, eclReference),
               (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress),
-              (SessionKeys.SecondContact, secondContact.toString),
-              (SessionKeys.SecondContactEmailAddress, secondContactEmailAddress)
+              (SessionKeys.SecondContactEmailAddress, secondContactEmailAddress.getOrElse(""))
             )
           )
 
@@ -57,7 +55,6 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         contentAsString(result) shouldBe view(
           eclReference,
           firstContactEmailAddress,
-          secondContact,
           secondContactEmailAddress
         )(fakeRequest, messages).toString
     }
@@ -77,39 +74,6 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         }
 
         result.getMessage shouldBe "First contact email address not found in session"
-    }
-
-    "throw an IllegalStateException when the second contact is not found in the session" in forAll {
-      (eclReference: String, firstContactEmailAddress: String) =>
-        val result: IllegalStateException = intercept[IllegalStateException] {
-          await(
-            controller.onPageLoad()(
-              fakeRequest.withSession(
-                (SessionKeys.EclReference, eclReference),
-                (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
-              )
-            )
-          )
-        }
-
-        result.getMessage shouldBe "Second contact not found in session"
-    }
-
-    "throw an IllegalStateException when the second contact email address is not found in the session" in forAll {
-      (eclReference: String, firstContactEmailAddress: String, secondContact: Boolean) =>
-        val result: IllegalStateException = intercept[IllegalStateException] {
-          await(
-            controller.onPageLoad()(
-              fakeRequest.withSession(
-                (SessionKeys.EclReference, eclReference),
-                (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress),
-                (SessionKeys.SecondContact, secondContact.toString)
-              )
-            )
-          )
-        }
-
-        result.getMessage shouldBe "Second contact email address not found in session"
     }
   }
 

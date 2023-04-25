@@ -42,16 +42,10 @@ class RegistrationSubmittedController @Inject() (
       .get(SessionKeys.FirstContactEmailAddress)
       .getOrElse(throw new IllegalStateException("First contact email address not found in session"))
 
-    val secondContact: Boolean = request.session
-      .get(SessionKeys.SecondContact)
-      .getOrElse(throw new IllegalStateException("Second contact not found in session"))
-      .toBoolean
+    val secondContactEmailAddress: Option[String] =
+      request.session.get(SessionKeys.SecondContactEmailAddress).flatMap(Option(_).filter(_.trim.nonEmpty))
 
-    val secondContactEmailAddress: String = request.session
-      .get(SessionKeys.SecondContactEmailAddress)
-      .getOrElse(throw new IllegalStateException("Second contact email address not found in session"))
-
-    Ok(view(eclReference, firstContactEmailAddress, secondContact, secondContactEmailAddress))
+    Ok(view(eclReference, firstContactEmailAddress, secondContactEmailAddress))
   }
 
 }

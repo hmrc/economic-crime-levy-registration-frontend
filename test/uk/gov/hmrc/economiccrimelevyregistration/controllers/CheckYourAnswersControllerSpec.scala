@@ -153,7 +153,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           status(result)                                             shouldBe SEE_OTHER
           session(result).get(SessionKeys.EclReference)              shouldBe Some(createEclSubscriptionResponse.eclReference)
           session(result).get(SessionKeys.FirstContactEmailAddress)  shouldBe Some(firstContactEmailAddress)
-          session(result).get(SessionKeys.SecondContact)             shouldBe Some(secondContact.toString)
           session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe {
             if (secondContact) Some(secondContactEmailAddress) else Some("")
           }
@@ -204,44 +203,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )(any(), any())
 
           reset(mockEmailService)
-        }
-    }
-
-    "throw an IllegalStateException when the second contact is not present in the registration" in forAll {
-      registration: Registration =>
-        val updatedRegistration = registration.copy(
-          contacts = Contacts(
-            firstContactDetails = validContactDetails,
-            secondContact = None,
-            secondContactDetails = ContactDetails.empty
-          )
-        )
-
-        new TestContext(updatedRegistration) {
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onSubmit()(fakeRequest))
-          }
-
-          result.getMessage shouldBe "Second contact not found in registration data"
-        }
-    }
-
-    "throw an IllegalStateException when the second contact email address is not present in the registration" in forAll {
-      registration: Registration =>
-        val updatedRegistration = registration.copy(
-          contacts = Contacts(
-            firstContactDetails = validContactDetails,
-            secondContact = Some(true),
-            secondContactDetails = validContactDetails.copy(emailAddress = None)
-          )
-        )
-
-        new TestContext(updatedRegistration) {
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onSubmit()(fakeRequest))
-          }
-
-          result.getMessage shouldBe "Second contact email address not found in registration data"
         }
     }
   }
