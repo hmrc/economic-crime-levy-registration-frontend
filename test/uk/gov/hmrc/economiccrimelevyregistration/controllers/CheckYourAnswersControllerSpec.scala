@@ -193,7 +193,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(Future.successful(()))
 
           val result: IllegalStateException = intercept[IllegalStateException] {
-            controller.onSubmit()(fakeRequest)
+            await(controller.onSubmit()(fakeRequest))
           }
 
           result.getMessage shouldBe "First contact email address not found in registration data"
@@ -219,7 +219,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
         new TestContext(updatedRegistration) {
           val result: IllegalStateException = intercept[IllegalStateException] {
-            controller.onSubmit()(fakeRequest)
+            await(controller.onSubmit()(fakeRequest))
           }
 
           result.getMessage shouldBe "Second contact not found in registration data"
@@ -238,7 +238,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
         new TestContext(updatedRegistration) {
           val result: IllegalStateException = intercept[IllegalStateException] {
-            controller.onSubmit()(fakeRequest)
+            await(controller.onSubmit()(fakeRequest))
           }
 
           result.getMessage shouldBe "Second contact email address not found in registration data"
