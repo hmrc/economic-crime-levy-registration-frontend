@@ -318,6 +318,8 @@ submitted.provide.b3 = how long you carried out anti-money laundering (AML) regu
 submitted.provide.b4 = the name, role, and contact details of the person in your organisation who is completing the return
 submitted.return = You can {0} now or come back to do it later.
 submitted.return.link = <a href="{0}" class="govuk-link">submit a return</a>
+submitted.first.email = We have sent an email to {0}
+submitted.second.email = We have also sent an email to {0} because you added them as a second point of contact.
 
 userAlreadyEnrolled.title = You have already registered for the Economic Crime Levy
 userAlreadyEnrolled.heading = You have already registered for the Economic Crime Levy

@@ -21,6 +21,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 
 class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
@@ -31,11 +32,15 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the registration submitted HTML view" in {
       stubAuthorisedWithEclEnrolment()
 
-      val eclReference = random[String]
+      val eclReference              = random[String]
+      val firstContactEmailAddress  = emailAddress(EmailMaxLength).sample.get
 
       val result = callRoute(
         FakeRequest(routes.RegistrationSubmittedController.onPageLoad())
-          .withSession((SessionKeys.EclReference, eclReference))
+          .withSession(
+            (SessionKeys.EclReference, eclReference),
+            (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
+          )
       )
 
       status(result) shouldBe OK

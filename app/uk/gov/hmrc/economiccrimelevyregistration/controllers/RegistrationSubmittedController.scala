@@ -38,7 +38,13 @@ class RegistrationSubmittedController @Inject() (
       .get(SessionKeys.EclReference)
       .getOrElse(throw new IllegalStateException("ECL reference number not found in session"))
 
-    Ok(view(eclReference))
+    val firstContactEmailAddress: String = request.session
+      .get(SessionKeys.FirstContactEmailAddress)
+      .getOrElse(throw new IllegalStateException("First contact email address not found in session"))
+
+    val secondContactEmailAddress: Option[String] = request.session.get(SessionKeys.SecondContactEmailAddress)
+
+    Ok(view(eclReference, firstContactEmailAddress, secondContactEmailAddress))
   }
 
 }
