@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import play.api.Logging
 import play.api.i18n.Messages
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.Contacts
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailParameters
@@ -25,10 +26,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.http.HeaderCarrier
 
+import java.time.{LocalDate, ZoneOffset}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmailService @Inject() (emailConnector: EmailConnector)(implicit
+class EmailService @Inject() (emailConnector: EmailConnector, appConfig: AppConfig)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -36,7 +38,8 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
     hc: HeaderCarrier,
     messages: Messages
   ): Future[Unit] = {
-    val eclDueDate = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)
+    val eclDueDate       = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)
+    val registrationDate = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)
 
     def sendEmail(
       name: String,
@@ -49,9 +52,11 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
         RegistrationSubmittedEmailParameters(
           name = name,
           eclRegistrationReference = eclRegistrationReference,
+          eclRegistrationDate = registrationDate,
           eclDueDate,
           isPrimaryContact = isPrimaryContact.toString,
-          secondContactEmail = secondContactEmail
+          secondContactEmail = secondContactEmail,
+          privateBetaEnabled = appConfig.privateBetaEnabled.toString
         )
       )
 

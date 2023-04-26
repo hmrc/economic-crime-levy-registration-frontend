@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.{PrivateBetaTemplateId, TemplateId}
+import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.TemplateId
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.http.{HttpClient, HttpResponse, UpstreamErrorResponse}
 
@@ -32,7 +32,6 @@ class EmailConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClient = mock[HttpClient]
   val connector                  = new EmailConnector(appConfig, mockHttpClient)
   val sendEmailUrl: String       = s"${appConfig.emailBaseUrl}/hmrc/email"
-  val expectedTemplate: String   = if (appConfig.privateBetaEnabled) PrivateBetaTemplateId else TemplateId
 
   "sendRegistrationSubmittedEmail" should {
     val expectedUrl = sendEmailUrl
@@ -48,7 +47,7 @@ class EmailConnectorSpec extends SpecBase {
               ArgumentMatchers.eq(
                 RegistrationSubmittedEmailRequest(
                   Seq(to),
-                  templateId = expectedTemplate,
+                  templateId = TemplateId,
                   registrationSubmittedEmailParameters,
                   force = false,
                   None
@@ -84,7 +83,7 @@ class EmailConnectorSpec extends SpecBase {
               ArgumentMatchers.eq(
                 RegistrationSubmittedEmailRequest(
                   Seq(to),
-                  templateId = expectedTemplate,
+                  templateId = TemplateId,
                   registrationSubmittedEmailParameters,
                   force = false,
                   None
@@ -107,7 +106,7 @@ class EmailConnectorSpec extends SpecBase {
             ArgumentMatchers.eq(
               RegistrationSubmittedEmailRequest(
                 Seq(to),
-                templateId = expectedTemplate,
+                templateId = TemplateId,
                 registrationSubmittedEmailParameters,
                 force = false,
                 None

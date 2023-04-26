@@ -14,6 +14,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contact
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
+import java.time.{LocalDate, ZoneOffset}
+
 class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.CheckYourAnswersController.onPageLoad().url}" should {
@@ -85,11 +87,15 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
           parameters = RegistrationSubmittedEmailParameters(
             name = firstContactName,
             eclRegistrationReference = eclReference,
+            eclRegistrationDate = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(
+              messagesApi.preferred(Seq(Languages.english))
+            ),
             dateDue = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(
               messagesApi.preferred(Seq(Languages.english))
             ),
             "true",
-            None
+            None,
+            appConfig.privateBetaEnabled.toString
           )
         )
       )

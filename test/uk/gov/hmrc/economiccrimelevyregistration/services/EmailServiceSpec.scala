@@ -26,12 +26,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contact
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
+import java.time.{LocalDate, ZoneOffset}
 import scala.concurrent.Future
 
 class EmailServiceSpec extends SpecBase {
 
   val mockEmailConnector: EmailConnector = mock[EmailConnector]
-  val service                            = new EmailService(mockEmailConnector)
+  val service                            = new EmailService(mockEmailConnector, appConfig)
 
   "sendRegistrationSubmittedEmails" should {
     "send an email for the first contact and return unit" in forAll {
@@ -45,9 +46,11 @@ class EmailServiceSpec extends SpecBase {
         val expectedFirstContactParams = RegistrationSubmittedEmailParameters(
           firstContactName,
           eclRegistrationReference,
+          ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
           ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages),
           "true",
-          None
+          None,
+          appConfig.privateBetaEnabled.toString
         )
 
         when(
@@ -91,17 +94,21 @@ class EmailServiceSpec extends SpecBase {
         val expectedFirstContactParams = RegistrationSubmittedEmailParameters(
           firstContactName,
           eclRegistrationReference,
+          ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
           eclDueDate,
           "true",
-          Some(secondContactEmail)
+          Some(secondContactEmail),
+          appConfig.privateBetaEnabled.toString
         )
 
         val expectedSecondContactParams = RegistrationSubmittedEmailParameters(
           secondContactName,
           eclRegistrationReference,
+          ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
           eclDueDate,
           "false",
-          Some(secondContactEmail)
+          Some(secondContactEmail),
+          appConfig.privateBetaEnabled.toString
         )
 
         when(

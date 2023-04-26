@@ -21,9 +21,11 @@ import play.api.libs.json.{Json, OFormat}
 final case class RegistrationSubmittedEmailParameters(
   name: String,
   eclRegistrationReference: String,
+  eclRegistrationDate: String,
   dateDue: String,
   isPrimaryContact: String,
-  secondContactEmail: Option[String]
+  secondContactEmail: Option[String],
+  privateBetaEnabled: String
 )
 
 object RegistrationSubmittedEmailParameters {
@@ -40,6 +42,5 @@ final case class RegistrationSubmittedEmailRequest(
 
 object RegistrationSubmittedEmailRequest {
   val TemplateId: String                                          = "ecl_registration_submitted"
-  val PrivateBetaTemplateId: String                               = "ecl_registration_submitted_private_beta"
   implicit val format: OFormat[RegistrationSubmittedEmailRequest] = Json.format[RegistrationSubmittedEmailRequest]
 }

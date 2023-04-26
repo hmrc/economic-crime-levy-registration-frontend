@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.{PrivateBetaTemplateId, TemplateId}
+import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.TemplateId
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
@@ -43,7 +43,7 @@ class EmailConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(im
         sendEmailUrl,
         RegistrationSubmittedEmailRequest(
           to = Seq(to),
-          templateId = if (appConfig.privateBetaEnabled) PrivateBetaTemplateId else TemplateId,
+          templateId = TemplateId,
           parameters = registrationSubmittedEmailParameters
         )
       )
