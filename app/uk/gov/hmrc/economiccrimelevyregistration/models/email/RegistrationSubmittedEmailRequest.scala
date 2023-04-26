@@ -18,7 +18,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.email
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class RegistrationSubmittedEmailParameters(name: String, eclRegistrationReference: String, dateDue: String)
+final case class RegistrationSubmittedEmailParameters(
+  name: String,
+  eclRegistrationReference: String,
+  eclRegistrationDate: String,
+  dateDue: String,
+  isPrimaryContact: String,
+  secondContactEmail: Option[String],
+  privateBetaEnabled: String
+)
 
 object RegistrationSubmittedEmailParameters {
   implicit val format: OFormat[RegistrationSubmittedEmailParameters] = Json.format[RegistrationSubmittedEmailParameters]

@@ -21,6 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.TemplateId
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.http.{HttpClient, HttpResponse, UpstreamErrorResponse}
 
@@ -46,7 +47,7 @@ class EmailConnectorSpec extends SpecBase {
               ArgumentMatchers.eq(
                 RegistrationSubmittedEmailRequest(
                   Seq(to),
-                  templateId = RegistrationSubmittedEmailRequest.TemplateId,
+                  templateId = TemplateId,
                   registrationSubmittedEmailParameters,
                   force = false,
                   None
@@ -82,7 +83,7 @@ class EmailConnectorSpec extends SpecBase {
               ArgumentMatchers.eq(
                 RegistrationSubmittedEmailRequest(
                   Seq(to),
-                  templateId = RegistrationSubmittedEmailRequest.TemplateId,
+                  templateId = TemplateId,
                   registrationSubmittedEmailParameters,
                   force = false,
                   None
@@ -105,7 +106,7 @@ class EmailConnectorSpec extends SpecBase {
             ArgumentMatchers.eq(
               RegistrationSubmittedEmailRequest(
                 Seq(to),
-                templateId = RegistrationSubmittedEmailRequest.TemplateId,
+                templateId = TemplateId,
                 registrationSubmittedEmailParameters,
                 force = false,
                 None
