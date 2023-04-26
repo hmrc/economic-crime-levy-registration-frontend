@@ -110,27 +110,21 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "redirect to the registration submitted page after submitting the registration and sending email successfully" in forAll(
+    "redirect to the registration submitted page after submitting the registration with one contact and sending email successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
-      emailAddress(EmailMaxLength),
-      Arbitrary.arbitrary[Boolean],
       emailAddress(EmailMaxLength)
     ) {
       (
         createEclSubscriptionResponse: CreateEclSubscriptionResponse,
         registration: Registration,
-        firstContactEmailAddress: String,
-        secondContact: Boolean,
-        secondContactEmailAddress: String
+        firstContactEmailAddress: String
       ) =>
         val updatedRegistration = registration.copy(
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
-            secondContact = Some(secondContact),
-            secondContactDetails = if (secondContact) {
-              validContactDetails.copy(emailAddress = Some(secondContactEmailAddress))
-            } else { ContactDetails.empty }
+            secondContact = Some(false),
+            secondContactDetails = ContactDetails.empty
           )
         )
 
@@ -153,9 +147,58 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           status(result)                                             shouldBe SEE_OTHER
           session(result).get(SessionKeys.EclReference)              shouldBe Some(createEclSubscriptionResponse.eclReference)
           session(result).get(SessionKeys.FirstContactEmailAddress)  shouldBe Some(firstContactEmailAddress)
-          session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe {
-            if (secondContact) Some(secondContactEmailAddress) else Some("")
-          }
+          session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe None
+          redirectLocation(result)                                   shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
+
+          verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
+            ArgumentMatchers.eq(updatedRegistration.contacts),
+            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference)
+          )(any(), any())
+
+          reset(mockEmailService)
+        }
+    }
+
+    "redirect to the registration submitted page after submitting the registration with two contacts and sending emails successfully" in forAll(
+      Arbitrary.arbitrary[CreateEclSubscriptionResponse],
+      Arbitrary.arbitrary[Registration],
+      emailAddress(EmailMaxLength),
+      emailAddress(EmailMaxLength)
+    ) {
+      (
+        createEclSubscriptionResponse: CreateEclSubscriptionResponse,
+        registration: Registration,
+        firstContactEmailAddress: String,
+        secondContactEmailAddress: String
+      ) =>
+        val updatedRegistration = registration.copy(
+          contacts = Contacts(
+            firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
+            secondContact = Some(true),
+            secondContactDetails = validContactDetails.copy(emailAddress = Some(secondContactEmailAddress))
+          )
+        )
+
+        new TestContext(updatedRegistration) {
+          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          when(
+            mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
+          )
+            .thenReturn(Future.successful(createEclSubscriptionResponse))
+
+          when(
+            mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
+          )
+            .thenReturn(Future.successful(()))
+
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
+
+          status(result)                                             shouldBe SEE_OTHER
+          session(result).get(SessionKeys.EclReference)              shouldBe Some(createEclSubscriptionResponse.eclReference)
+          session(result).get(SessionKeys.FirstContactEmailAddress)  shouldBe Some(firstContactEmailAddress)
+          session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe Some(secondContactEmailAddress)
           redirectLocation(result)                                   shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(

@@ -34,14 +34,12 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val eclReference              = random[String]
       val firstContactEmailAddress  = emailAddress(EmailMaxLength).sample.get
-      val secondContactEmailAddress = emailAddress(EmailMaxLength).sample.getOrElse("")
 
       val result = callRoute(
         FakeRequest(routes.RegistrationSubmittedController.onPageLoad())
           .withSession(
             (SessionKeys.EclReference, eclReference),
-            (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress),
-            (SessionKeys.SecondContactEmailAddress, secondContactEmailAddress)
+            (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
           )
       )
 

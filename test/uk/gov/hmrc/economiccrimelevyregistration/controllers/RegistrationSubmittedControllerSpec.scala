@@ -35,27 +35,47 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
   )
 
   "onPageLoad" should {
-    "return OK and the correct view" in forAll {
+    "return OK and the correct view when there is one contact email address in the session" in forAll {
       (
         eclReference: String,
-        firstContactEmailAddress: String,
-        secondContactEmailAddress: Option[String]
+        firstContactEmailAddress: String
       ) =>
-        val result: Future[Result] =
-          controller.onPageLoad()(
-            fakeRequest.withSession(
-              (SessionKeys.EclReference, eclReference),
-              (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress),
-              (SessionKeys.SecondContactEmailAddress, secondContactEmailAddress.getOrElse(""))
-            )
+        val result: Future[Result] = controller.onPageLoad()(
+          fakeRequest.withSession(
+            (SessionKeys.EclReference, eclReference),
+            (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
           )
+        )
 
         status(result) shouldBe OK
 
         contentAsString(result) shouldBe view(
           eclReference,
           firstContactEmailAddress,
-          secondContactEmailAddress
+          None
+        )(fakeRequest, messages).toString
+    }
+
+    "return OK and the correct view when there are two contacts email address in the session" in forAll {
+      (
+        eclReference: String,
+        firstContactEmailAddress: String,
+        secondContactEmailAddress: String
+      ) =>
+        val result: Future[Result] = controller.onPageLoad()(
+          fakeRequest.withSession(
+            (SessionKeys.EclReference, eclReference),
+            (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress),
+            (SessionKeys.SecondContactEmailAddress, secondContactEmailAddress)
+          )
+        )
+
+        status(result) shouldBe OK
+
+        contentAsString(result) shouldBe view(
+          eclReference,
+          firstContactEmailAddress,
+          Some(secondContactEmailAddress)
         )(fakeRequest, messages).toString
     }
 
