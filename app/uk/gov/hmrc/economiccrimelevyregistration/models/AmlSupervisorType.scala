@@ -20,10 +20,12 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.libs.json._
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.all.FluentLabel
 import uk.gov.hmrc.govukfrontend.views.Implicits.RichSelect
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSelect
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.errormessage.ErrorMessage
+import uk.gov.hmrc.govukfrontend.views.viewmodels.hint.Hint
 import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import uk.gov.hmrc.govukfrontend.views.viewmodels.select.{Select, SelectItem}
@@ -71,10 +73,11 @@ object AmlSupervisorType {
         name = "otherProfessionalBody",
         items = amlProfessionalBodySupervisorOptions,
         label = Label(
-          content = Text(messages("amlSupervisor.selectFromList"))
-        ),
+          content = Text(messages("amlSupervisor.selectFromList.label"))
+        ).withCssClass("govuk-!-font-weight-bold"),
+        hint = Some(Hint(content = Text(messages("amlSupervisor.selectFromList.hint")))),
         errorMessage = if (form.errors.exists(_.key == "otherProfessionalBody")) {
-          Some(ErrorMessage(content = Text(messages("amlSupervisor.selectFromList"))))
+          Some(ErrorMessage(content = Text(messages("amlSupervisor.selectFromList.error"))))
         } else { None }
       ).asAccessibleAutocomplete(
         Some(AccessibleAutocomplete(defaultValue = Some(""), showAllValues = true, autoSelect = true))
