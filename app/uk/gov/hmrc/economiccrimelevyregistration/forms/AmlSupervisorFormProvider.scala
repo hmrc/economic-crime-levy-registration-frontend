@@ -32,7 +32,7 @@ class AmlSupervisorFormProvider extends Mappings {
       "otherProfessionalBody" -> mandatoryIfEqual(
         "value",
         Other.toString,
-        Forms.text.verifying("amlSupervisor.selectFromList", appConfig.amlProfessionalBodySupervisors.contains(_))
+        Forms.text.verifying("amlSupervisor.selectFromList.error", appConfig.amlProfessionalBodySupervisors.contains(_))
       )
     )(AmlSupervisor.apply)(AmlSupervisor.unapply)
   )
