@@ -46,7 +46,6 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val grsContinueUrl: String            = configuration.get[String]("urls.grsContinue")
   val alfContinueUrl: String            = configuration.get[String]("urls.alfContinue")
   val submitReturnUrl: String           = configuration.get[String]("urls.submitReturn")
-  val eclAccountUrl: String             = configuration.get[String]("urls.eclAccount")
   val yourEclAccountUrl: String         = configuration.get[String]("urls.yourEclAccount")
   val taxAndSchemeManagementUrl: String = configuration.get[String]("urls.taxAndSchemeManagement")
 
