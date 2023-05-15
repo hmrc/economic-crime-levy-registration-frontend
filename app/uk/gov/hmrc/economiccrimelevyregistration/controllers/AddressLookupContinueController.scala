@@ -27,14 +27,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class AddressLookupContinueController @Inject() (
-  val controllerComponents: MessagesControllerComponents,
-  authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
-  addressLookupFrontendConnector: AddressLookupFrontendConnector,
-  eclRegistrationConnector: EclRegistrationConnector
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController {
+class AddressLookupContinueController @Inject()(
+                                                 val controllerComponents: MessagesControllerComponents,
+                                                 authorise: AuthorisedActionWithEnrolmentCheck,
+                                                 getRegistrationData: DataRetrievalAction,
+                                                 addressLookupFrontendConnector: AddressLookupFrontendConnector,
+                                                 eclRegistrationConnector: EclRegistrationConnector
+                                               )(implicit ec: ExecutionContext)
+  extends FrontendBaseController {
 
   def continue(mode: Mode, id: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
     implicit request =>
@@ -46,7 +46,7 @@ class AddressLookupContinueController @Inject() (
           .map(_ =>
             mode match {
               case NormalMode => Redirect(routes.CheckYourAnswersController.onPageLoad())
-              case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad())
+              case CheckMode => Redirect(routes.CheckYourAnswersController.onPageLoad())
             }
           )
       }
@@ -66,4 +66,9 @@ class AddressLookupContinueController @Inject() (
         countryCode = alfAddressData.address.country.code
       )
     )
+
+  def exception(): Action[AnyContent] = Action {
+    throw new RuntimeException("Pretend that we have an application error.")
+    Ok
+  }
 }
