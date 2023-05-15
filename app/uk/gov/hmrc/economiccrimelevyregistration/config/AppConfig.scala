@@ -47,7 +47,7 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val alfContinueUrl: String            = configuration.get[String]("urls.alfContinue")
   val submitReturnUrl: String           = configuration.get[String]("urls.submitReturn")
   val eclAccountUrl: String             = configuration.get[String]("urls.eclAccount")
-  val yourECLAccountUrl: String         = configuration.get[String]("urls.yourECLAccount")
+  val yourEclAccountUrl: String         = configuration.get[String]("urls.yourEclAccount")
   val taxAndSchemeManagementUrl: String = configuration.get[String]("urls.taxAndSchemeManagement")
 
   val accessibilityStatementServicePath: String =
@@ -93,6 +93,6 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
 
   val privateBetaAccessCodes: Seq[String] = configuration.get[Seq[String]]("features.privateBeta.accessCodes")
   val privateBetaContactEmail: String     = configuration.get[String]("features.privateBeta.contactEmail")
-  val privateBetaEnabled: Boolean         = false // configuration.get[Boolean]("features.privateBeta.enabled")
+  val privateBetaEnabled: Boolean         = configuration.get[Boolean]("features.privateBeta.enabled")
 
 }

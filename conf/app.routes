@@ -146,4 +146,3 @@ GET         /account/sign-out-survey                                          uk
 GET         /account/sign-out                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
 GET         /account/signed-out                                               uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()
 
-GET         /economic-crime-levy-account                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.ECLAccountController.submit(ref)
