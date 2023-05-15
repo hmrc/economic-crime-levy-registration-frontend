@@ -59,7 +59,7 @@
             <li>@messages("submitted.provide.b4")</li>
         </ul>
 
-        <p class="govuk-body">@Html(messages("submitted.return", messages("submitted.return.link", appConfig.yourECLAccountUrl)))</p>
+        <p class="govuk-body">@Html(messages("submitted.return", messages("submitted.return.link", appConfig.eclAccountUrl + "?ref=" + eclReference)))</p>
     }
 
     <p class="govuk-body">@messages("submitted.first.email", firstContactEmailAddress)</p>
