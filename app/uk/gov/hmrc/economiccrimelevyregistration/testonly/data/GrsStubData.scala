@@ -131,11 +131,11 @@ trait GrsStubData {
     registrationResult: GrsRegistrationResult,
     identifiersMatch: Boolean
   ): String = entityType match {
-    case UkLimitedCompany =>
+    case UkLimitedCompany | UnlimitedCompany =>
       Json.prettyPrint(
         Json.toJson(defaultIncorporatedEntityJourneyData(businessVerification, registrationResult, identifiersMatch))
       )
-    case SoleTrader       =>
+    case SoleTrader                          =>
       Json.prettyPrint(
         Json.toJson(defaultSoleTraderJourneyData(businessVerification, registrationResult, identifiersMatch))
       )
@@ -146,7 +146,7 @@ trait GrsStubData {
           defaultPartnershipJourneyData(entityType, businessVerification, registrationResult, identifiersMatch)
         )
       )
-    case o                => throw new IllegalStateException(s"$o is not a valid GRS entity type")
+    case o                                   => throw new IllegalStateException(s"$o is not a valid GRS entity type")
   }
 
 }

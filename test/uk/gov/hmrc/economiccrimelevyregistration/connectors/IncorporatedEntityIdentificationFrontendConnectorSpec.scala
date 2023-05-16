@@ -31,7 +31,7 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
   val connector                  = new IncorporatedEntityIdentificationFrontendConnectorImpl(appConfig, mockHttpClient)
   val apiUrl                     = s"${appConfig.incorporatedEntityIdentificationFrontendBaseUrl}/incorporated-entity-identification/api"
 
-  "createLimitedCompanyJourney" should {
+  "createUkCompanyJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {
       (grsCreateJourneyResponse: GrsCreateJourneyResponse, mode: Mode) =>
         val expectedUrl = s"$apiUrl/limited-company-journey"
@@ -63,7 +63,7 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
         )
           .thenReturn(Future.successful(grsCreateJourneyResponse))
 
-        val result = await(connector.createLimitedCompanyJourney(mode))
+        val result = await(connector.createUkCompanyJourney(mode))
 
         result shouldBe grsCreateJourneyResponse
 

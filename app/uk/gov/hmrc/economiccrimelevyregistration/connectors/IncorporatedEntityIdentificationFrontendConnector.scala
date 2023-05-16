@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, IncorporatedEntityCreateJourneyRequest, IncorporatedEntityJourneyData, ServiceNameLabels}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
@@ -27,7 +27,9 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 trait IncorporatedEntityIdentificationFrontendConnector {
-  def createLimitedCompanyJourney(mode: Mode)(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse]
+  def createUkCompanyJourney(companyType: EntityType, mode: Mode)(implicit
+    hc: HeaderCarrier
+  ): Future[GrsCreateJourneyResponse]
   def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData]
 }
 
@@ -41,7 +43,7 @@ class IncorporatedEntityIdentificationFrontendConnectorImpl @Inject() (
   private val apiUrl =
     s"${appConfig.incorporatedEntityIdentificationFrontendBaseUrl}/incorporated-entity-identification/api"
 
-  def createLimitedCompanyJourney(mode: Mode)(implicit
+  def createUkCompanyJourney(companyType: EntityType, mode: Mode)(implicit
     hc: HeaderCarrier
   ): Future[GrsCreateJourneyResponse] = {
     val serviceNameLabels = ServiceNameLabels()

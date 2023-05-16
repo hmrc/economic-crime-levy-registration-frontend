@@ -51,7 +51,7 @@ class EntityTypePageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration = registration.copy(entityType = Some(UkLimitedCompany))
 
         when(
-          mockIncorporatedEntityIdentificationFrontendConnector.createLimitedCompanyJourney(ArgumentMatchers.eq(mode))(
+          mockIncorporatedEntityIdentificationFrontendConnector.createUkCompanyJourney(ArgumentMatchers.eq(mode))(
             any()
           )
         )
