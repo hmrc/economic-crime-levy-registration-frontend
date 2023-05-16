@@ -18,8 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.IncorporatedEntityIdentificationFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UkLimitedCompany
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, IncorporatedEntityJourneyData}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.utils.Base64Utils
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,11 +29,13 @@ import scala.concurrent.Future
 class StubIncorporatedEntityIdentificationFrontendConnector @Inject() ()
     extends IncorporatedEntityIdentificationFrontendConnector {
 
-  override def createLimitedCompanyJourney(mode: Mode)(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] =
+  override def createUkCompanyJourney(companyType: EntityType, mode: Mode)(implicit
+    hc: HeaderCarrier
+  ): Future[GrsCreateJourneyResponse] =
     Future.successful(
       GrsCreateJourneyResponse(
         journeyStartUrl =
-          s"/register-for-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}&entityType=${UkLimitedCompany.toString}"
+          s"/register-for-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}&entityType=${companyType.toString}"
       )
     )
 
