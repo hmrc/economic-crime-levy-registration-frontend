@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import uk.gov.hmrc.economiccrimelevyregistration.UkCompanyType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.HttpClient
@@ -33,7 +34,8 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
 
   "createUkCompanyJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {
-      (grsCreateJourneyResponse: GrsCreateJourneyResponse, mode: Mode) =>
+      (grsCreateJourneyResponse: GrsCreateJourneyResponse, companyType: UkCompanyType, mode: Mode) =>
+        val entityType  = companyType.entityType
         val expectedUrl = s"$apiUrl/limited-company-journey"
 
         val expectedIncorporatedEntityCreateJourneyRequest: IncorporatedEntityCreateJourneyRequest = {
@@ -63,7 +65,7 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
         )
           .thenReturn(Future.successful(grsCreateJourneyResponse))
 
-        val result = await(connector.createUkCompanyJourney(mode))
+        val result = await(connector.createUkCompanyJourney(entityType, mode))
 
         result shouldBe grsCreateJourneyResponse
 

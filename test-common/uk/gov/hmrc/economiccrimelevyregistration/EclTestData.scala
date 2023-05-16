@@ -30,6 +30,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 
 import java.time.{Instant, LocalDate}
 
+final case class UkCompanyType(entityType: EntityType)
+
 final case class PartnershipType(entityType: EntityType)
 
 final case class ScottishOrGeneralPartnershipType(entityType: EntityType)
@@ -69,6 +71,12 @@ trait EclTestData {
 
   implicit val arbLocalDate: Arbitrary[LocalDate] = Arbitrary {
     LocalDate.now()
+  }
+
+  implicit val arbUkCompanyType: Arbitrary[UkCompanyType] = Arbitrary {
+    for {
+      companyType <- Gen.oneOf(Seq(UkLimitedCompany, UnlimitedCompany))
+    } yield UkCompanyType(companyType)
   }
 
   implicit val arbPartnershipType: Arbitrary[PartnershipType] = Arbitrary {
