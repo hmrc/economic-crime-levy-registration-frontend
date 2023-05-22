@@ -20,18 +20,22 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RegistrationSubmittedView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.BookmarkedRegistrationSubmittedView
 
 import scala.concurrent.Future
 
 class RegistrationSubmittedControllerSpec extends SpecBase {
 
-  val view: RegistrationSubmittedView = app.injector.instanceOf[RegistrationSubmittedView]
+  val view: RegistrationSubmittedView                     = app.injector.instanceOf[RegistrationSubmittedView]
+  val bookmarkedView: BookmarkedRegistrationSubmittedView = app.injector.instanceOf[BookmarkedRegistrationSubmittedView]
 
   val controller = new RegistrationSubmittedController(
     mcc,
     fakeAuthorisedActionWithoutEnrolmentCheck("test-internal-id"),
-    view
+    view,
+    bookmarkedView
   )
 
   "onPageLoad" should {
@@ -79,21 +83,21 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         )(fakeRequest, messages).toString
     }
 
+    "return OK and the correct view when information is not gathered from session" in { (eclReference: String) =>
+      val result =
+        controller.onPageLoad()(AuthorisedRequest(fakeRequest, "internal-id", "group-id", Some(eclReference)))
+
+      status(result) shouldBe OK
+
+      contentAsString(result) shouldBe bookmarkedView("eclReference")(fakeRequest, messages).toString()
+    }
+
     "throw an IllegalStateException when the ECL reference is not found in the session" in {
       val result: IllegalStateException = intercept[IllegalStateException] {
         await(controller.onPageLoad()(fakeRequest))
       }
 
-      result.getMessage shouldBe "ECL reference number not found in session"
-    }
-
-    "throw an IllegalStateException when the first contact email address is not found in the session" in forAll {
-      eclReference: String =>
-        val result: IllegalStateException = intercept[IllegalStateException] {
-          await(controller.onPageLoad()(fakeRequest.withSession((SessionKeys.EclReference, eclReference))))
-        }
-
-        result.getMessage shouldBe "First contact email address not found in session"
+      result.getMessage shouldBe "ECL reference number not found in session or in enrolment"
     }
   }
 
