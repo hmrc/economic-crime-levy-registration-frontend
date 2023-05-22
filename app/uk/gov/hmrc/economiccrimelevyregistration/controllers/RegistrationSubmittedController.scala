@@ -21,6 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RegistrationSubmittedView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.BookmarkedRegistrationSubmittedView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -29,22 +30,46 @@ import javax.inject.{Inject, Singleton}
 class RegistrationSubmittedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithoutEnrolmentCheck,
-  view: RegistrationSubmittedView
+  view: RegistrationSubmittedView,
+  bookmarkedView: BookmarkedRegistrationSubmittedView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    val eclReference: String = request.session
-      .get(SessionKeys.EclReference)
-      .getOrElse(throw new IllegalStateException("ECL reference number not found in session"))
+  private val SESSION: String   = "Session"
+  private val ENROLMENT: String = "Enrolment"
+  private val NONE: String      = "None"
 
-    val firstContactEmailAddress: String = request.session
-      .get(SessionKeys.FirstContactEmailAddress)
-      .getOrElse(throw new IllegalStateException("First contact email address not found in session"))
+  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
+    val sourceOfEclReference =
+      checkSourceOfEclReference(request.session.get(SessionKeys.EclReference), request.eclRegistrationReference)
+
+    val eclReference: String = sourceOfEclReference match {
+      case SESSION   => request.session.get(SessionKeys.EclReference).get
+      case ENROLMENT => request.eclRegistrationReference.get
+      case _         => throw new IllegalStateException("ECL reference number not found in session or in enrolment")
+    }
+
+    val firstContactEmailAddress: String = sourceOfEclReference match {
+      case SESSION   => request.session.get(SessionKeys.FirstContactEmailAddress).get
+      case ENROLMENT => ""
+      case _         => throw new IllegalStateException("First contact email address not found in session")
+    }
 
     val secondContactEmailAddress: Option[String] = request.session.get(SessionKeys.SecondContactEmailAddress)
 
-    Ok(view(eclReference, firstContactEmailAddress, secondContactEmailAddress))
+    sourceOfEclReference match {
+      case SESSION   => Ok(view(eclReference, firstContactEmailAddress, secondContactEmailAddress))
+      case ENROLMENT => Ok(bookmarkedView(eclReference))
+    }
   }
 
+  private def checkSourceOfEclReference(sessionSource: Option[String], enrolmentSource: Option[String]): String =
+    sessionSource match {
+      case Some(_) => SESSION
+      case None    =>
+        enrolmentSource match {
+          case Some(_) => ENROLMENT
+          case None    => NONE
+        }
+    }
 }
