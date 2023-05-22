@@ -35,37 +35,41 @@ class RegistrationSubmittedController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
+  private val SESSION: String   = "Session"
+  private val ENROLMENT: String = "Enrolment"
+  private val NONE: String      = "None"
+
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     val sourceOfEclReference =
       checkSourceOfEclReference(request.session.get(SessionKeys.EclReference), request.eclRegistrationReference)
 
     val eclReference: String = sourceOfEclReference match {
-      case "SESSION"   => request.session.get(SessionKeys.EclReference).get
-      case "ENROLMENT" => request.eclRegistrationReference.get
-      case _           => throw new IllegalStateException("ECL reference number not found in session or in enrolment")
+      case SESSION   => request.session.get(SessionKeys.EclReference).get
+      case ENROLMENT => request.eclRegistrationReference.get
+      case _         => throw new IllegalStateException("ECL reference number not found in session or in enrolment")
     }
 
     val firstContactEmailAddress: String = sourceOfEclReference match {
-      case "SESSION"   => request.session.get(SessionKeys.FirstContactEmailAddress).get
-      case "ENROLMENT" => ""
-      case _           => throw new IllegalStateException("First contact email address not found in session")
+      case SESSION   => request.session.get(SessionKeys.FirstContactEmailAddress).get
+      case ENROLMENT => ""
+      case _         => throw new IllegalStateException("First contact email address not found in session")
     }
 
     val secondContactEmailAddress: Option[String] = request.session.get(SessionKeys.SecondContactEmailAddress)
 
     sourceOfEclReference match {
-      case "SESSION"   => Ok(view(eclReference, firstContactEmailAddress, secondContactEmailAddress))
-      case "ENROLMENT" => Ok(bookmarkedView(eclReference))
+      case SESSION   => Ok(view(eclReference, firstContactEmailAddress, secondContactEmailAddress))
+      case ENROLMENT => Ok(bookmarkedView(eclReference))
     }
   }
 
   private def checkSourceOfEclReference(sessionSource: Option[String], enrolmentSource: Option[String]): String =
     sessionSource match {
-      case Some(_) => "SESSION"
+      case Some(_) => SESSION
       case None    =>
         enrolmentSource match {
-          case Some(_) => "ENROLMENT"
-          case None    => "NONE"
+          case Some(_) => ENROLMENT
+          case None    => NONE
         }
     }
 }
