@@ -407,7 +407,6 @@ privateBetaAccess.title = Register for the Economic Crime Levy
 privateBetaAccess.heading = Register for the Economic Crime Levy
 privateBetaAccess.p1 = You can now use this service to register for the Economic Crime Levy (ECL).
 privateBetaAccess.p2 = To register for the ECL, you need a 6-digit access code.
-privateBetaAccess.p3 = Access codes to register for the ECL are currently available by invitation only.
 privateBetaAccess.getAccessCode = Get an access code
 privateBetaAccess.registerInterest = You can register your interest in using the service by contacting HMRC: <a href="mailto:{0}" class="govuk-link">{0}</a>
 privateBetaAccess.emailSubject = In the subject of the email, put [Request for access code].
