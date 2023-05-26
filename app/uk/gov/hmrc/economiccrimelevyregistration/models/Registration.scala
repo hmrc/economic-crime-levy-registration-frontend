@@ -40,6 +40,7 @@ final case class Registration(
   contactAddressIsUk: Option[Boolean],
   partnershipName: Option[String],
   privateBetaAccessCode: Option[String],
+  otherEntityJourneyData: OtherEntityJourneyData,
   base64EncodedNrsSubmissionHtml: Option[String]
 ) {
 
@@ -120,6 +121,7 @@ object Registration {
     contactAddressIsUk = None,
     partnershipName = None,
     privateBetaAccessCode = None,
+    otherEntityJourneyData = OtherEntityJourneyData(),
     base64EncodedNrsSubmissionHtml = None
   )
 }
