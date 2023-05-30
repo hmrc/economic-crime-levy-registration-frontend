@@ -16,7 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import play.api.libs.json.{Format, JsError, JsResult, JsString, JsSuccess, JsValue}
+import play.api.i18n.Messages
+import play.api.libs.json._
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 sealed trait EntitySubType
 
@@ -27,6 +31,28 @@ object EntitySubType {
   case object NonUKEstablishment extends EntitySubType
   case object UnincorporatedAssociation extends EntitySubType
 
+  val values: Seq[EntitySubType] = Seq(
+    Charity,
+    Trust,
+    RegisteredSociety,
+    NonUKEstablishment,
+    UnincorporatedAssociation
+  )
+
+  def options(appConfig: AppConfig)(implicit messages: Messages): Seq[RadioItem] = {
+    val radioItems = values.zipWithIndex.map { case (value, index) =>
+      RadioItem(
+        content = Text(messages(s"entitySubType.${value.toString}")),
+        value = Some(value.toString),
+        id = Some(s"value_$index")
+      )
+    }
+
+    radioItems
+  }
+
+  implicit val enumerable: Enumerable[EntitySubType] = Enumerable(values.map(v => (v.toString, v)): _*)
+
   implicit val format: Format[EntitySubType] = new Format[EntitySubType] {
     override def reads(json: JsValue): JsResult[EntitySubType] = json.validate[String] match {
       case JsSuccess(value, _) =>
@@ -36,9 +62,9 @@ object EntitySubType {
           case "RegisteredSociety"         => JsSuccess(RegisteredSociety)
           case "NonUKEstablishment"        => JsSuccess(NonUKEstablishment)
           case "UnincorporatedAssociation" => JsSuccess(UnincorporatedAssociation)
-          case s                           => JsError(s"$s is not a valid EntityType")
+          case s                           => JsError(s"$s is not a valid EntitySubType")
         }
-      case e: JsError                      => e
+      case e: JsError          => e
     }
 
     override def writes(o: EntitySubType): JsValue = JsString(o.toString)
