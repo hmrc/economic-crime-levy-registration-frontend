@@ -21,21 +21,21 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.RegistrationSubmittedView
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.BookmarkedRegistrationSubmittedView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 
 import scala.concurrent.Future
 
 class RegistrationSubmittedControllerSpec extends SpecBase {
 
-  val view: RegistrationSubmittedView                     = app.injector.instanceOf[RegistrationSubmittedView]
-  val bookmarkedView: BookmarkedRegistrationSubmittedView = app.injector.instanceOf[BookmarkedRegistrationSubmittedView]
+  val view: RegistrationSubmittedView                                              = app.injector.instanceOf[RegistrationSubmittedView]
+  val outOfSessionRegistrationSubmittedView: OutOfSessionRegistrationSubmittedView =
+    app.injector.instanceOf[OutOfSessionRegistrationSubmittedView]
 
   val controller = new RegistrationSubmittedController(
     mcc,
     fakeAuthorisedActionWithoutEnrolmentCheck("test-internal-id"),
     view,
-    bookmarkedView
+    outOfSessionRegistrationSubmittedView
   )
 
   "onPageLoad" should {
@@ -83,16 +83,18 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         )(fakeRequest, messages).toString
     }
 
-    "return OK and the correct view when information is not gathered from session" in { (eclReference: String) =>
-      val result =
-        controller.onPageLoad()(AuthorisedRequest(fakeRequest, "internal-id", "group-id", Some(eclReference)))
+    "return OK and the correct view when information is not gathered from session" in {
+      (internalId: String, groupId: String, eclReference: String) =>
+        val result =
+          controller.onPageLoad()(AuthorisedRequest(fakeRequest, internalId, groupId, Some(eclReference)))
 
-      status(result) shouldBe OK
+        status(result) shouldBe OK
 
-      contentAsString(result) shouldBe bookmarkedView("eclReference")(fakeRequest, messages).toString()
+        contentAsString(result) shouldBe outOfSessionRegistrationSubmittedView("eclReference")(fakeRequest, messages)
+          .toString()
     }
 
-    "throw an IllegalStateException when the ECL reference is not found in the session" in {
+    "throw an IllegalStateException when the ECL reference is not found in the session or enrolment" in {
       val result: IllegalStateException = intercept[IllegalStateException] {
         await(controller.onPageLoad()(fakeRequest))
       }
