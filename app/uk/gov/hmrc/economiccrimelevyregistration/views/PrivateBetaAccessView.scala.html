@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LabelSize._
 
 @this(
         layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
@@ -32,16 +33,16 @@
 @(form: Form[String], continueUrl: String)(implicit request: Request[_], messages: Messages)
 
 @formLabel = {
-    <h2 class="govuk-heading-s"> <svg class="svg-icon" width="15px" viewBox="0 0 10 13" xmlns="http://www.w3.org/2000/svg" focusable="false">
+    <svg class="svg-icon" width="15px" viewBox="0 0 10 13" xmlns="http://www.w3.org/2000/svg" focusable="false">
         <path d="M12.25,6h-.72V4.49a3.5,3.5,0,0,0-7,0V6H3.75A.77.77,0,0,0,3,6.75v6.5a.77.77,0,0,0,.75.75h8.5a.77.77,0,0,0,.75-.75V6.75A.77.77,0,0,0,12.25,6ZM5.54,4.49a2.5,2.5,0,1,1,5,0V6h-5ZM9,11.66a.3.3,0,0,1-.26.34H7.29A.29.29,0,0,1,7,11.69v0l.39-1.82a1,1,0,1,1,1.4-.18.77.77,0,0,1-.18.18Z" transform="translate(-3 -0.99)"></path>
-    </svg> &nbsp; @messages("privateBetaAccess.enterYourCode")</h2>
+    </svg> &nbsp; @messages("privateBetaAccess.enterYourCode")
 }
 
 @formInput = {
 @govukInput(
     InputViewModel(
         field = form("value"),
-        label = LabelViewModel(HtmlContent(formLabel))
+        label = LabelViewModel(HtmlContent(formLabel)).withCssClass(Small.toString)
     ).withWidth(Fixed10).withHint(Hint(content = Text(messages("privateBetaAccess.keepSafe"))))
 )
 }
