@@ -92,6 +92,6 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
 
   val privateBetaAccessCodes: Seq[String] = configuration.get[Seq[String]]("features.privateBeta.accessCodes")
   val privateBetaContactEmail: String     = configuration.get[String]("features.privateBeta.contactEmail")
-  val privateBetaEnabled: Boolean         = false // configuration.get[Boolean]("features.privateBeta.enabled")
+  val privateBetaEnabled: Boolean         = configuration.get[Boolean]("features.privateBeta.enabled")
 
 }

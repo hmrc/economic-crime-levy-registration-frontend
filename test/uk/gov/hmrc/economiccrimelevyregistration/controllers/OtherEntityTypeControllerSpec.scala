@@ -24,15 +24,18 @@ import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.OtherEntityTypeDataCleanup
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.OtherEntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.OtherEntityTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.OtherEntityTypeView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
+import scala.util.{Failure, Success}
 
 class OtherEntityTypeControllerSpec extends SpecBase {
 
@@ -55,8 +58,11 @@ class OtherEntityTypeControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
+  val errorHandler: ErrorHandler                             = mock[ErrorHandler]
+  override val appConfig                                     = mock[AppConfig]
 
   class TestContext(registrationData: Registration) {
+
     val controller = new OtherEntityTypeController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
@@ -66,6 +72,8 @@ class OtherEntityTypeControllerSpec extends SpecBase {
       pageNavigator,
       dataCleanup,
       mockAuditConnector,
+      appConfig,
+      errorHandler,
       view
     )
   }
@@ -74,6 +82,8 @@ class OtherEntityTypeControllerSpec extends SpecBase {
     "return OK and the correct view when no answer has already been provided" in forAll {
       (registration: Registration, mode: Mode) =>
         new TestContext(registration.copy(otherEntityJourneyData = OtherEntityJourneyData.empty())) {
+          when(appConfig.privateBetaEnabled).thenReturn(false)
+
           val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
           status(result) shouldBe OK
@@ -82,10 +92,28 @@ class OtherEntityTypeControllerSpec extends SpecBase {
         }
     }
 
+    "onPageLoad" should {
+      "return not found if private beta enabled" in forAll {
+        (registration: Registration, mode: Mode) =>
+          new TestContext(registration.copy(otherEntityJourneyData = OtherEntityJourneyData.empty())) {
+            when(appConfig.privateBetaEnabled).thenReturn(true)
+
+            val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
+
+            result.onComplete {
+              case Success(result) => status(Future.successful(result)) shouldBe NotFound
+              case Failure(_)      => true shouldBe false
+            }
+          }
+        }
+    }
+
     "populate the view correctly when the question has previously been answered" in forAll {
       (registration: Registration, entityType: OtherEntityType, mode: Mode) =>
         val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(entityType = Some(entityType))
         new TestContext(registration.copy(otherEntityJourneyData = otherEntityJourneyData)) {
+          when(appConfig.privateBetaEnabled).thenReturn(false)
+
           val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
           status(result) shouldBe OK

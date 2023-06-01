@@ -20,10 +20,12 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.OtherEntityTypeDataCleanup
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.OtherEntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
+import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.OtherEntityTypeSelectedEvent
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.OtherEntityTypePageNavigator
@@ -44,6 +46,8 @@ class OtherEntityTypeController @Inject() (
   pageNavigator: OtherEntityTypePageNavigator,
   dataCleanup: OtherEntityTypeDataCleanup,
   auditConnector: AuditConnector,
+  appConfig: AppConfig,
+  errorHandler: ErrorHandler,
   view: OtherEntityTypeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -52,7 +56,10 @@ class OtherEntityTypeController @Inject() (
   val form: Form[OtherEntityType] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.otherEntityJourneyData.entityType), mode))
+    appConfig.privateBetaEnabled match {
+      case true => NotFound(errorHandler.notFoundTemplate(request))
+      case _    => Ok(view(form.prepare(request.registration.otherEntityJourneyData.entityType), mode))
+    }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
