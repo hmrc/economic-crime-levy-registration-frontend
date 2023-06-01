@@ -35,7 +35,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.views.html.OtherEntityTypeView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
 
 class OtherEntityTypeControllerSpec extends SpecBase {
 
@@ -58,8 +57,8 @@ class OtherEntityTypeControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
-  val errorHandler: ErrorHandler                             = mock[ErrorHandler]
-  override val appConfig                                     = mock[AppConfig]
+  val errorHandler: ErrorHandler                             = app.injector.instanceOf[ErrorHandler]
+  override val appConfig: AppConfig                          = mock[AppConfig]
 
   class TestContext(registrationData: Registration) {
 
@@ -92,20 +91,14 @@ class OtherEntityTypeControllerSpec extends SpecBase {
         }
     }
 
-    "onPageLoad" should {
-      "return not found if private beta enabled" in forAll {
-        (registration: Registration, mode: Mode) =>
-          new TestContext(registration.copy(otherEntityJourneyData = OtherEntityJourneyData.empty())) {
-            when(appConfig.privateBetaEnabled).thenReturn(true)
+    "return not found if private beta enabled" in forAll { (registration: Registration, mode: Mode) =>
+      new TestContext(registration.copy(otherEntityJourneyData = OtherEntityJourneyData.empty())) {
+        when(appConfig.privateBetaEnabled).thenReturn(true)
 
-            val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
-            result.onComplete {
-              case Success(result) => status(Future.successful(result)) shouldBe NotFound
-              case Failure(_)      => true shouldBe false
-            }
-          }
-        }
+        status(result) shouldBe NOT_FOUND
+      }
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
