@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.models
 import play.api.libs.json.{Json, OFormat}
 
 final case class OtherEntityJourneyData(
-  entityType: Option[EntitySubType],
+  entityType: Option[OtherEntityType],
   charityRegistrationNumber: Option[String],
   companyRegistrationNumber: Option[String],
   utrType: Option[UtrType],
@@ -32,7 +32,7 @@ final case class OtherEntityJourneyData(
 object OtherEntityJourneyData {
   implicit val format: OFormat[OtherEntityJourneyData] = Json.format[OtherEntityJourneyData]
 
-  def apply(): OtherEntityJourneyData = OtherEntityJourneyData(
+  def empty(): OtherEntityJourneyData = OtherEntityJourneyData(
     entityType = None,
     charityRegistrationNumber = None,
     companyRegistrationNumber = None,

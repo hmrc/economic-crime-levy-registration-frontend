@@ -22,16 +22,16 @@ import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
-sealed trait EntitySubType
+sealed trait OtherEntityType
 
-object EntitySubType {
-  case object Charity extends EntitySubType
-  case object Trust extends EntitySubType
-  case object RegisteredSociety extends EntitySubType
-  case object NonUKEstablishment extends EntitySubType
-  case object UnincorporatedAssociation extends EntitySubType
+object OtherEntityType {
+  case object Charity extends OtherEntityType
+  case object Trust extends OtherEntityType
+  case object RegisteredSociety extends OtherEntityType
+  case object NonUKEstablishment extends OtherEntityType
+  case object UnincorporatedAssociation extends OtherEntityType
 
-  val values: Seq[EntitySubType] = Seq(
+  val values: Seq[OtherEntityType] = Seq(
     Charity,
     Trust,
     RegisteredSociety,
@@ -42,7 +42,7 @@ object EntitySubType {
   def options(appConfig: AppConfig)(implicit messages: Messages): Seq[RadioItem] = {
     val radioItems = values.zipWithIndex.map { case (value, index) =>
       RadioItem(
-        content = Text(messages(s"entitySubType.${value.toString}")),
+        content = Text(messages(s"otherEntityType.${value.toString}")),
         value = Some(value.toString),
         id = Some(s"value_$index")
       )
@@ -51,10 +51,10 @@ object EntitySubType {
     radioItems
   }
 
-  implicit val enumerable: Enumerable[EntitySubType] = Enumerable(values.map(v => (v.toString, v)): _*)
+  implicit val enumerable: Enumerable[OtherEntityType] = Enumerable(values.map(v => (v.toString, v)): _*)
 
-  implicit val format: Format[EntitySubType] = new Format[EntitySubType] {
-    override def reads(json: JsValue): JsResult[EntitySubType] = json.validate[String] match {
+  implicit val format: Format[OtherEntityType] = new Format[OtherEntityType] {
+    override def reads(json: JsValue): JsResult[OtherEntityType] = json.validate[String] match {
       case JsSuccess(value, _) =>
         value match {
           case "Charity"                   => JsSuccess(Charity)
@@ -62,11 +62,11 @@ object EntitySubType {
           case "RegisteredSociety"         => JsSuccess(RegisteredSociety)
           case "NonUKEstablishment"        => JsSuccess(NonUKEstablishment)
           case "UnincorporatedAssociation" => JsSuccess(UnincorporatedAssociation)
-          case s                           => JsError(s"$s is not a valid EntitySubType")
+          case s                           => JsError(s"$s is not a valid OtherEntityType")
         }
       case e: JsError          => e
     }
 
-    override def writes(o: EntitySubType): JsValue = JsString(o.toString)
+    override def writes(o: OtherEntityType): JsValue = JsString(o.toString)
   }
 }

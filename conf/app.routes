@@ -145,3 +145,8 @@ GET         /details-do-not-match                                            uk.
 GET         /account/sign-out-survey                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
 GET         /account/sign-out                                                uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
 GET         /account/signed-out                                              uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()
+
+GET         /what-is-your-entity-sub-type                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityTypeController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-entity-sub-type                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityTypeController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-entity-sub-type                      uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityTypeController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-entity-sub-type                      uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityTypeController.onSubmit(mode: Mode = CheckMode)

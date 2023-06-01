@@ -121,7 +121,7 @@ object Registration {
     contactAddressIsUk = None,
     partnershipName = None,
     privateBetaAccessCode = None,
-    otherEntityJourneyData = OtherEntityJourneyData(),
+    otherEntityJourneyData = OtherEntityJourneyData.empty(),
     base64EncodedNrsSubmissionHtml = None
   )
 }

@@ -20,9 +20,9 @@ import play.api.libs.json.{JsBoolean, JsError, JsString, Json}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 
-class EntitySubTypeSpec extends SpecBase {
+class OtherEntityTypeSpec extends SpecBase {
   "writes" should {
-    "return the entity sub type serialized to its JSON representation" in forAll { (entitySubType: EntitySubType) =>
+    "return the entity sub type serialized to its JSON representation" in forAll { (entitySubType: OtherEntityType) =>
       val result = Json.toJson(entitySubType)
 
       result shouldBe JsString(entitySubType.toString)
@@ -30,20 +30,21 @@ class EntitySubTypeSpec extends SpecBase {
   }
 
   "reads" should {
-    "return the entity sub type deserialized from its JSON representation" in forAll { (entitySubType: EntitySubType) =>
-      val json = Json.toJson(entitySubType)
+    "return the entity sub type deserialized from its JSON representation" in forAll {
+      (entitySubType: OtherEntityType) =>
+        val json = Json.toJson(entitySubType)
 
-      json.as[EntitySubType] shouldBe entitySubType
+        json.as[OtherEntityType] shouldBe entitySubType
     }
 
     "return a JsError when passed an invalid string value" in {
-      val result = Json.fromJson[EntitySubType](JsString("Test"))
+      val result = Json.fromJson[OtherEntityType](JsString("Test"))
 
-      result shouldBe JsError("Test is not a valid EntitySubType")
+      result shouldBe JsError("Test is not a valid OtherEntityType")
     }
 
     "return a JsError when passed a type that is not a string" in {
-      val result = Json.fromJson[EntitySubType](JsBoolean(true))
+      val result = Json.fromJson[OtherEntityType](JsBoolean(true))
 
       result shouldBe a[JsError]
     }
