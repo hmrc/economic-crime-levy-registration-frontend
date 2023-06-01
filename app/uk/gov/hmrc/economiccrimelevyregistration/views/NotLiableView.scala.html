@@ -27,17 +27,7 @@
 @insetTextHtml = {
     <p>@messages("notLiable.inset.p1")</p>
     <p>@messages("notLiable.inset.p2")</p>
-
-    <ul class="govuk-list govuk-list--bullet">
-        <li>@messages("notLiable.inset.b1")</li>
-
-        <p>@messages("notLiable.inset.divider")</p>
-
-        <li>@messages("notLiable.inset.b2")</li>
-    </ul>
-
-    <p>@messages("notLiable.inset.p3")</p>
-    <p>@Html(messages("notLiable.inset.p4", messages("notLiable.inset.link")))</p>
+    <p>@Html(messages("notLiable.inset.p3", messages("notLiable.inset.link")))</p>
 }
 
 @layout(pageTitle = title(messages("notLiable.title"))) {

@@ -74,13 +74,9 @@ amlRegulatedActivity.error.required = Select an answer
 
 notLiable.title = You do not need to register
 notLiable.heading = You do not need to register for the Economic Crime Levy
-notLiable.inset.p1 = You do not need to register for the Economic Crime Levy (ECL).
-notLiable.inset.p2 = This is because either:
-notLiable.inset.b1 = your UK revenue for your relevant accounting period does not meet the threshold to pay the levy
-notLiable.inset.divider = or:
-notLiable.inset.b2 = you have not carried out anti-money laundering (AML) regulated activity during this financial year
-notLiable.inset.p3 = You may need to register in the future if your circumstances change.
-notLiable.inset.p4 = The {0} has more information on who needs to pay the levy.
+notLiable.inset.p1 = This is because either your UK revenue does not meet the threshold to pay the levy, or because you have not carried out anti-money laundering (AML) regulated activity during this financial year.
+notLiable.inset.p2 = You may need to register if your circumstances change.
+notLiable.inset.p3 = The {0} has more information on who needs to pay the levy.
 notLiable.inset.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">Economic Crime Levy guidance</a>
 
 amlSupervisor.title = Your anti-money laundering (AML) supervisor
