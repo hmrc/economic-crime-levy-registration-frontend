@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LabelSize._
 
 @this(
         layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
@@ -41,7 +42,7 @@
 @govukInput(
     InputViewModel(
         field = form("value"),
-        label = LabelViewModel(HtmlContent(formLabel)).withCssClass("govuk-label--s")
+        label = LabelViewModel(HtmlContent(formLabel)).withCssClass(Small.toString)
     ).withWidth(Fixed10).withHint(Hint(content = Text(messages("privateBetaAccess.keepSafe"))))
 )
 }
