@@ -16,20 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Other, SoleTrader}
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.GrsCreateJourneyResponse
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, OtherEntityJourneyData, OtherEntityType, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.{PartnershipType, UkCompanyType}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, OtherEntityJourneyData, OtherEntityType, Registration}
 import uk.gov.hmrc.http.HttpVerbs.GET
-
-import scala.concurrent.Future
 
 class OtherEntityTypePageNavigatorSpec extends SpecBase {
 
@@ -42,7 +34,10 @@ class OtherEntityTypePageNavigatorSpec extends SpecBase {
 
         val updatedRegistration: Registration = registration.copy(otherEntityJourneyData = otherEntityJourneyData)
 
-        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, routes.BusinessSectorController.onPageLoad(mode).url)
+        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(
+          GET,
+          routes.BusinessSectorController.onPageLoad(mode).url
+        )
     }
   }
 

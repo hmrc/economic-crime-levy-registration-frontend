@@ -97,7 +97,10 @@ class EntityTypePageNavigatorSpec extends SpecBase {
 
         val updatedRegistration: Registration = registration.copy(entityType = Some(entityType))
 
-        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, routes.OtherEntityTypeController.onPageLoad(mode).url)
+        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(
+          GET,
+          routes.OtherEntityTypeController.onPageLoad(mode).url
+        )
     }
   }
 
