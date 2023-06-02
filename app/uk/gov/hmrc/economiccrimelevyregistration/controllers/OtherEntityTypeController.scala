@@ -53,9 +53,10 @@ class OtherEntityTypeController @Inject() (
   val form: Form[OtherEntityType] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    appConfig.privateBetaEnabled match {
-      case true => NotFound(errorHandler.notFoundTemplate(request))
-      case _    => Ok(view(form.prepare(request.registration.otherEntityJourneyData.entityType), mode))
+    if (appConfig.privateBetaEnabled) {
+      NotFound(errorHandler.notFoundTemplate(request))
+    } else {
+      Ok(view(form.prepare(request.registration.otherEntityJourneyData.entityType), mode))
     }
   }
 
@@ -73,7 +74,7 @@ class OtherEntityTypeController @Inject() (
             .upsertRegistration(
               dataCleanup.cleanup(
                 request.registration.copy(
-                  otherEntityJourneyData = otherEntityJourneyData
+                  optOtherEntityJourneyData = Some(otherEntityJourneyData)
                 )
               )
             )

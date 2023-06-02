@@ -41,7 +41,7 @@ class OtherEntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
       val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(entityType = Some(Charity))
       val updatedRegistration = registration.copy(
-        otherEntityJourneyData = otherEntityJourneyData
+        optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
 
       stubUpsertRegistration(updatedRegistration)

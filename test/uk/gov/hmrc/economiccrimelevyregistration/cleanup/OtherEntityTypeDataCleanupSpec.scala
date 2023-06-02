@@ -28,7 +28,9 @@ class OtherEntityTypeDataCleanupSpec extends SpecBase {
     "return clean other entity data" in forAll { registration: Registration =>
       val otherEntityJourneyData =
         OtherEntityJourneyData.empty().copy(entityType = registration.otherEntityJourneyData.entityType)
-      dataCleanup.cleanup(registration) shouldBe registration.copy(otherEntityJourneyData = otherEntityJourneyData)
+      dataCleanup.cleanup(registration) shouldBe registration.copy(optOtherEntityJourneyData =
+        Some(otherEntityJourneyData)
+      )
     }
   }
 

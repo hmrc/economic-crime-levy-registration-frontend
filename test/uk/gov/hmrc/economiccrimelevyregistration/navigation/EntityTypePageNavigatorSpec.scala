@@ -16,18 +16,17 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.{PartnershipType, UkCompanyType}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.SoleTrader
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Other, SoleTrader}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.GrsCreateJourneyResponse
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, OtherEntityType, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.{PartnershipType, UkCompanyType}
 import uk.gov.hmrc.http.HttpVerbs.GET
 
 import scala.concurrent.Future

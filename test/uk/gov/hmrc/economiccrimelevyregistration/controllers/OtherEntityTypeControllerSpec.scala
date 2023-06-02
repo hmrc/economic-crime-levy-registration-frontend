@@ -77,7 +77,7 @@ class OtherEntityTypeControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll {
       (registration: Registration, mode: Mode) =>
-        new TestContext(registration.copy(otherEntityJourneyData = OtherEntityJourneyData.empty())) {
+        new TestContext(registration.copy(optOtherEntityJourneyData = Some(OtherEntityJourneyData.empty()))) {
           when(appConfig.privateBetaEnabled).thenReturn(false)
 
           val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
@@ -89,7 +89,7 @@ class OtherEntityTypeControllerSpec extends SpecBase {
     }
 
     "return not found if private beta enabled" in forAll { (registration: Registration, mode: Mode) =>
-      new TestContext(registration.copy(otherEntityJourneyData = OtherEntityJourneyData.empty())) {
+      new TestContext(registration.copy(optOtherEntityJourneyData = Some(OtherEntityJourneyData.empty()))) {
         when(appConfig.privateBetaEnabled).thenReturn(true)
 
         val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
@@ -101,7 +101,7 @@ class OtherEntityTypeControllerSpec extends SpecBase {
     "populate the view correctly when the question has previously been answered" in forAll {
       (registration: Registration, entityType: OtherEntityType, mode: Mode) =>
         val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(entityType = Some(entityType))
-        new TestContext(registration.copy(otherEntityJourneyData = otherEntityJourneyData)) {
+        new TestContext(registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))) {
           when(appConfig.privateBetaEnabled).thenReturn(false)
 
           val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
@@ -119,7 +119,7 @@ class OtherEntityTypeControllerSpec extends SpecBase {
         val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(entityType = Some(entityType))
         new TestContext(registration) {
           val updatedRegistration: Registration = registration.copy(
-            otherEntityJourneyData = otherEntityJourneyData
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))

@@ -32,7 +32,7 @@ class OtherEntityTypeDataCleanup @Inject() () extends DataCleanup {
       postcode = None
     )
     registration.copy(
-      otherEntityJourneyData = otherEntityJourneyData
+      optOtherEntityJourneyData = Some(otherEntityJourneyData)
     )
   }
 }

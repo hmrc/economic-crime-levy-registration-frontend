@@ -29,10 +29,11 @@ class OtherEntityTypePageNavigatorSpec extends SpecBase {
 
   "nextPage" should {
     "return a Call to the business sector page for all other entities" in forAll {
-      (registration: Registration, journeyUrl: String, entityType: OtherEntityType, mode: Mode) =>
+      (registration: Registration, entityType: OtherEntityType, mode: Mode) =>
         val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(entityType = Some(entityType))
 
-        val updatedRegistration: Registration = registration.copy(otherEntityJourneyData = otherEntityJourneyData)
+        val updatedRegistration: Registration =
+          registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
         await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(
           GET,
