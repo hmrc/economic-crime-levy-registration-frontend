@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -23,9 +24,10 @@ import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.{PartnershipType, UkCompanyType}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.SoleTrader
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.GrsCreateJourneyResponse
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, OtherEntityType, Registration}
 import uk.gov.hmrc.http.HttpVerbs.GET
 
 import scala.concurrent.Future
@@ -87,6 +89,15 @@ class EntityTypePageNavigatorSpec extends SpecBase {
           .thenReturn(Future.successful(GrsCreateJourneyResponse(journeyUrl)))
 
         await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
+    }
+
+    "return a Call to the other entity journey when an other entity option is selected" in forAll {
+      (registration: Registration, mode: Mode) =>
+        val entityType: EntityType = Other
+
+        val updatedRegistration: Registration = registration.copy(entityType = Some(entityType))
+
+        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, routes.OtherEntityTypeController.onPageLoad(mode).url)
     }
   }
 
