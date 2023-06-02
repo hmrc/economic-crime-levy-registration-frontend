@@ -32,7 +32,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.OtherEntityTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.OtherEntityTypeView
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
 
@@ -56,7 +55,6 @@ class OtherEntityTypeControllerSpec extends SpecBase {
   val dataCleanup: OtherEntityTypeDataCleanup = new OtherEntityTypeDataCleanup()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
   val errorHandler: ErrorHandler                             = app.injector.instanceOf[ErrorHandler]
   override val appConfig: AppConfig                          = mock[AppConfig]
 
@@ -70,7 +68,6 @@ class OtherEntityTypeControllerSpec extends SpecBase {
       formProvider,
       pageNavigator,
       dataCleanup,
-      mockAuditConnector,
       appConfig,
       errorHandler,
       view
@@ -134,10 +131,6 @@ class OtherEntityTypeControllerSpec extends SpecBase {
           status(result) shouldBe SEE_OTHER
 
           redirectLocation(result) shouldBe Some(onwardRoute.url)
-
-          // verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
-
-          reset(mockAuditConnector)
         }
     }
 

@@ -23,14 +23,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.cleanup.OtherEntityTypeDataClea
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.OtherEntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
+import uk.gov.hmrc.economiccrimelevyregistration.forms.OtherEntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.models.audit.OtherEntityTypeSelectedEvent
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.OtherEntityTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.OtherEntityTypeView
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -45,7 +43,6 @@ class OtherEntityTypeController @Inject() (
   formProvider: OtherEntityTypeFormProvider,
   pageNavigator: OtherEntityTypePageNavigator,
   dataCleanup: OtherEntityTypeDataCleanup,
-  auditConnector: AuditConnector,
   appConfig: AppConfig,
   errorHandler: ErrorHandler,
   view: OtherEntityTypeView
@@ -71,14 +68,6 @@ class OtherEntityTypeController @Inject() (
           val otherEntityJourneyData = request.registration.otherEntityJourneyData.copy(
             entityType = Some(entityType)
           )
-
-//          auditConnector
-//            .sendExtendedEvent(
-//              OtherEntityTypeSelectedEvent(
-//                request.internalId,
-//                entityType
-//              ).extendedDataEvent
-//            )
 
           eclRegistrationConnector
             .upsertRegistration(
