@@ -21,5 +21,5 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType
 
 class OtherEntityTypeFormProvider extends Mappings {
-  def apply(): Form[OtherEntityType] = Form(("value", enumerable[OtherEntityType]("entitySubType.error.required")))
+  def apply(): Form[OtherEntityType] = Form(("value", enumerable[OtherEntityType]("otherEntityType.error.required")))
 }
