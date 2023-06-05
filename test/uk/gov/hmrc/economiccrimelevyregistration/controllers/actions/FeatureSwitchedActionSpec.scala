@@ -58,7 +58,8 @@ class FeatureSwitchedActionSpec extends SpecBase {
 
       val result = enabled.invokeBlock(fakeRequest, testAction)
 
-      status(result) shouldBe NOT_FOUND
+      status(result)          shouldBe NOT_FOUND
+      contentAsString(result) shouldBe errorHandler.notFoundTemplate(fakeRequest).toString()
     }
   }
 
