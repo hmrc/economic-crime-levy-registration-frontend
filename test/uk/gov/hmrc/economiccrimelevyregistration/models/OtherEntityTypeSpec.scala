@@ -22,19 +22,20 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 
 class OtherEntityTypeSpec extends SpecBase {
   "writes" should {
-    "return the entity sub type serialized to its JSON representation" in forAll { (entitySubType: OtherEntityType) =>
-      val result = Json.toJson(entitySubType)
+    "return the other entity type serialized to its JSON representation" in forAll {
+      (OtherEntityType: OtherEntityType) =>
+        val result = Json.toJson(OtherEntityType)
 
-      result shouldBe JsString(entitySubType.toString)
+        result shouldBe JsString(OtherEntityType.toString)
     }
   }
 
   "reads" should {
-    "return the entity sub type deserialized from its JSON representation" in forAll {
-      (entitySubType: OtherEntityType) =>
-        val json = Json.toJson(entitySubType)
+    "return the other entity type deserialized from its JSON representation" in forAll {
+      (OtherEntityType: OtherEntityType) =>
+        val json = Json.toJson(OtherEntityType)
 
-        json.as[OtherEntityType] shouldBe entitySubType
+        json.as[OtherEntityType] shouldBe OtherEntityType
     }
 
     "return a JsError when passed an invalid string value" in {

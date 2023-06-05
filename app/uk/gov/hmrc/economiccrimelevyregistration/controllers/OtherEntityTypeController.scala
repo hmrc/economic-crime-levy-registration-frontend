@@ -41,7 +41,7 @@ class OtherEntityTypeController @Inject() (
   formProvider: OtherEntityTypeFormProvider,
   pageNavigator: OtherEntityTypePageNavigator,
   dataCleanup: OtherEntityTypeDataCleanup,
-  enabled: PublicBetaAction,
+  checkIfPublicBetaIsEnabled: PublicBetaAction,
   view: OtherEntityTypeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -49,13 +49,13 @@ class OtherEntityTypeController @Inject() (
 
   val form: Form[OtherEntityType] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (enabled andThen authorise andThen getRegistrationData) {
-    implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.entityType), mode))
-  }
+    }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (enabled andThen authorise andThen getRegistrationData).async {
-    implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -78,5 +78,5 @@ class OtherEntityTypeController @Inject() (
               }
           }
         )
-  }
+    }
 }
