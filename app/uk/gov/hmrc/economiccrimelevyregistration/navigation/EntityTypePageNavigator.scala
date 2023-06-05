@@ -65,7 +65,8 @@ class EntityTypePageNavigator @Inject() (
               .createPartnershipJourney(entityType, mode)
               .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
 
-          case Other => ???
+          case Other =>
+            Future.successful(routes.OtherEntityTypeController.onPageLoad(mode))
         }
       case _                => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }

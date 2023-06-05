@@ -170,6 +170,15 @@ entityType.UnlimitedCompany = Unlimited company
 entityType.Other = Other
 entityType.error.required = Please select your entity type
 
+otherEntityType.title = Tell us your entity type
+otherEntityType.heading = Tell us your entity type
+otherEntityType.Charity = Charity
+otherEntityType.Trust = Trust
+otherEntityType.RegisteredSociety = Registered Society
+otherEntityType.NonUKEstablishment = Non-UK Establishment
+otherEntityType.UnincorporatedAssociation = Unincorporated Association
+otherEntityType.error.required = Please select your entity type
+
 partnershipName.title = What is the partnership name?
 partnershipName.heading = What is the partnership name?
 partnershipName.error.required = Enter a partnership name

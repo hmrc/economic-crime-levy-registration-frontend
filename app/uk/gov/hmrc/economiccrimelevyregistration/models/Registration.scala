@@ -40,6 +40,7 @@ final case class Registration(
   contactAddressIsUk: Option[Boolean],
   partnershipName: Option[String],
   privateBetaAccessCode: Option[String],
+  optOtherEntityJourneyData: Option[OtherEntityJourneyData],
   base64EncodedNrsSubmissionHtml: Option[String]
 ) {
 
@@ -96,6 +97,8 @@ final case class Registration(
 
   def dateOfBirth: Option[LocalDate] = soleTraderEntityJourneyData.map(_.dateOfBirth)
 
+  def otherEntityJourneyData: OtherEntityJourneyData =
+    optOtherEntityJourneyData.getOrElse(OtherEntityJourneyData.empty())
 }
 
 object Registration {
@@ -120,6 +123,7 @@ object Registration {
     contactAddressIsUk = None,
     partnershipName = None,
     privateBetaAccessCode = None,
+    optOtherEntityJourneyData = None,
     base64EncodedNrsSubmissionHtml = None
   )
 }
