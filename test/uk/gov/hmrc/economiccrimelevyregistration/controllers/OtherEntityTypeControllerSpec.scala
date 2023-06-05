@@ -20,12 +20,13 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{BodyParsers, Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.OtherEntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.OtherEntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
@@ -57,6 +58,11 @@ class OtherEntityTypeControllerSpec extends SpecBase {
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   val errorHandler: ErrorHandler                             = app.injector.instanceOf[ErrorHandler]
   override val appConfig: AppConfig                          = mock[AppConfig]
+  val enabled: PublicBetaAction                              = new PublicBetaAction(
+    errorHandler = errorHandler,
+    appConfig = appConfig,
+    parser = app.injector.instanceOf[BodyParsers.Default]
+  )
 
   class TestContext(registrationData: Registration) {
 
@@ -68,8 +74,7 @@ class OtherEntityTypeControllerSpec extends SpecBase {
       formProvider,
       pageNavigator,
       dataCleanup,
-      appConfig,
-      errorHandler,
+      enabled,
       view
     )
   }
@@ -86,16 +91,6 @@ class OtherEntityTypeControllerSpec extends SpecBase {
 
           contentAsString(result) shouldBe view(form, mode)(fakeRequest, messages).toString
         }
-    }
-
-    "return not found if private beta enabled" in forAll { (registration: Registration, mode: Mode) =>
-      new TestContext(registration.copy(optOtherEntityJourneyData = Some(OtherEntityJourneyData.empty()))) {
-        when(appConfig.privateBetaEnabled).thenReturn(true)
-
-        val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
-
-        status(result) shouldBe NOT_FOUND
-      }
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
