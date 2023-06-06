@@ -47,7 +47,7 @@ class GrsContinueController @Inject() (
   def continue(mode: Mode, journeyId: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
     implicit request =>
       request.registration.entityType match {
-        case Some(e @ (UkLimitedCompany | UnlimitedCompany)) =>
+        case Some(e @ (UkLimitedCompany | UnlimitedCompany | RegisteredSociety)) =>
           incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(incorporatedEntityJourneyData = Some(jd))
               .flatMap(_ =>

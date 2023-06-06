@@ -49,9 +49,9 @@ class EntityTypePageNavigator @Inject() (
     registration.entityType match {
       case Some(entityType) =>
         entityType match {
-          case UkLimitedCompany | UnlimitedCompany =>
+          case UkLimitedCompany | UnlimitedCompany | RegisteredSociety =>
             incorporatedEntityIdentificationFrontendConnector
-              .createUkCompanyJourney(entityType, mode)
+              .createIncorporatedEntityJourney(entityType, mode)
               .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
 
           case SoleTrader =>

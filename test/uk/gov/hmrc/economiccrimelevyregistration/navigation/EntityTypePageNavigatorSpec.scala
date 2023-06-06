@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Other, SoleTrader}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.GrsCreateJourneyResponse
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.{PartnershipType, UkCompanyType}
+import uk.gov.hmrc.economiccrimelevyregistration.{IncorporatedEntityType, PartnershipType}
 import uk.gov.hmrc.http.HttpVerbs.GET
 
 import scala.concurrent.Future
@@ -47,14 +47,14 @@ class EntityTypePageNavigatorSpec extends SpecBase {
   )
 
   "nextPage" should {
-    "return a Call to the UK company GRS journey irrespective of mode when the limited company or unlimited company option is selected" in forAll {
-      (registration: Registration, journeyUrl: String, companyType: UkCompanyType, mode: Mode) =>
-        val entityType                        = companyType.entityType
+    "return a Call to the incorporated entity GRS journey irrespective of mode when an incorporated entity option is selected" in forAll {
+      (registration: Registration, journeyUrl: String, incorporatedEntityType: IncorporatedEntityType, mode: Mode) =>
+        val entityType                        = incorporatedEntityType.entityType
         val updatedRegistration: Registration = registration.copy(entityType = Some(entityType))
 
         when(
           mockIncorporatedEntityIdentificationFrontendConnector
-            .createUkCompanyJourney(ArgumentMatchers.eq(entityType), ArgumentMatchers.eq(mode))(
+            .createIncorporatedEntityJourney(ArgumentMatchers.eq(entityType), ArgumentMatchers.eq(mode))(
               any()
             )
         )

@@ -29,13 +29,13 @@ import scala.concurrent.Future
 class StubIncorporatedEntityIdentificationFrontendConnector @Inject() ()
     extends IncorporatedEntityIdentificationFrontendConnector {
 
-  override def createUkCompanyJourney(companyType: EntityType, mode: Mode)(implicit
+  override def createIncorporatedEntityJourney(incorporatedEntityType: EntityType, mode: Mode)(implicit
     hc: HeaderCarrier
   ): Future[GrsCreateJourneyResponse] =
     Future.successful(
       GrsCreateJourneyResponse(
         journeyStartUrl =
-          s"/register-for-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}&entityType=${companyType.toString}"
+          s"/register-for-economic-crime-levy/test-only/stub-grs-journey-data?continueUrl=${mode.toString.toLowerCase}&entityType=${incorporatedEntityType.toString}"
       )
     )
 
