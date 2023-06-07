@@ -444,16 +444,17 @@ date.month.10 = October
 date.month.11 = November
 date.month.12 = December
 
-charity.title = What is your charity registration number (CHRN)?
-charity.heading = What is your charity registration number (CHRN)?
-charity.p1 = Your charity registration number is on any mail that the charity regulator has sent you.
-charity.p2 = In Scotland, your registration number will start with SC.
-charity.hint = For example, 01234567 or SC012345.
-charity.error.required = CHRN is required
-charity.error.length = CHRN must be 8 characters or less
+charityRegistrationNumber.title = What is your charity registration number (CHRN)?
+charityRegistrationNumber.heading = What is your charity registration number (CHRN)?
+charityRegistrationNumber.p1 = Your charity registration number is on any mail that the charity regulator has sent you.
+charityRegistrationNumber.p2 = In Scotland, your registration number will start with SC.
+charityRegistrationNumber.hint = For example, 01234567 or SC012345.
+charityRegistrationNumber.error.required = Enter a charity registration number
+charityRegistrationNumber.error.length = Charity registration number must not be more than {0} characters
 
 businessName.title = What is the name of your business?
 businessName.heading = What is the name of your business?
 businessName.hint = This is the registered name of your business.
-businessName.error.required = Business Name is required
-BusinessName.error.length = Business name is too long
+businessName.error.required = Enter a business name
+BusinessName.error.length = Business name must not be more than {0} characters
+

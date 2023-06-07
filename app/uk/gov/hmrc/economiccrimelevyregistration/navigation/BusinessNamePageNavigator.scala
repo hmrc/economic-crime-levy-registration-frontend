@@ -31,7 +31,7 @@ class BusinessNamePageNavigator extends AsyncPageNavigator with FrontendHeaderCa
   ): Future[Call] = Future.successful(registration.otherEntityJourneyData.entityType match {
     case Some(value) =>
       value match {
-        case Charity => routes.CharityController.onPageLoad(NormalMode)
+        case Charity => routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
         case _       => ???
       }
   })

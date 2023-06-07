@@ -27,22 +27,22 @@
 
 @(form: Form[String], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleWithForm(form, messages("charity.title"))) {
+@layout(pageTitle = titleWithForm(form, messages("charityRegistrationNumber.title"))) {
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-    <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("charity.heading"))</h1>
+    <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("charityRegistrationNumber.heading"))</h1>
 
-    <p class="govuk-body">@messages("charity.p1")</p>
-    <p class="govuk-body">@messages("charity.p2")</p>
+    <p class="govuk-body">@messages("charityRegistrationNumber.p1")</p>
+    <p class="govuk-body">@messages("charityRegistrationNumber.p2")</p>
 
-    @formHelper(action = CharityController.onSubmit(mode)) {
+    @formHelper(action = CharityRegistrationNumberController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text("charity.heading")).asHiddenPageHeading()
-            ).withWidth(Fixed8).withHint(Hint(content = Text(messages("charity.hint"))))
+                label = LabelViewModel(Text("charityRegistrationNumber.heading")).asHiddenPageHeading()
+            ).withHint(Hint(content = Text(messages("charityRegistrationNumber.hint"))))
         )
 
         @govukButton(

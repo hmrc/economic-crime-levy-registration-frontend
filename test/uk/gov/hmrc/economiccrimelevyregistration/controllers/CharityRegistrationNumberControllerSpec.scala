@@ -27,23 +27,23 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
-import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.CharityFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityMaxLength, NameMaxLength}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.CharityRegistrationNumberFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CharityRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.CharityPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.CharityView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.CharityRegistrationNumberPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.CharityRegistrationNumberView
 
 import scala.concurrent.Future
 
-class CharityControllerSpec extends SpecBase {
+class CharityRegistrationNumberControllerSpec extends SpecBase {
 
-  val view: CharityView                 = app.injector.instanceOf[CharityView]
-  val formProvider: CharityFormProvider = new CharityFormProvider()
-  val form: Form[String]                = formProvider()
+  val view: CharityRegistrationNumberView                 = app.injector.instanceOf[CharityRegistrationNumberView]
+  val formProvider: CharityRegistrationNumberFormProvider = new CharityRegistrationNumberFormProvider()
+  val form: Form[String]                                  = formProvider()
 
-  val pageNavigator: CharityPageNavigator = new CharityPageNavigator(
+  val pageNavigator: CharityRegistrationNumberPageNavigator = new CharityRegistrationNumberPageNavigator(
   ) {
     override protected def navigateInNormalMode(
       registration: Registration
@@ -65,7 +65,7 @@ class CharityControllerSpec extends SpecBase {
 
   class TestContext(registrationData: Registration) {
 
-    val controller = new CharityController(
+    val controller = new CharityRegistrationNumberController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
@@ -110,7 +110,7 @@ class CharityControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the charity number then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(CharityMaxLength),
+      stringsWithMaxLength(CharityRegistrationNumberMaxLength),
       Arbitrary.arbitrary[Mode]
     ) { (registration: Registration, charityNumber: String, mode: Mode) =>
       val otherEntityJourneyData =

@@ -156,7 +156,7 @@ POST        /business-name                                                   uk.
 GET         /change-answer/business-name                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessNameController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/business-name                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessNameController.onSubmit(mode: Mode = CheckMode)
 
-GET         /what-is-your-charity-registration-number                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityController.onPageLoad(mode: Mode = NormalMode)
-POST        /what-is-your-charity-registration-number                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityController.onSubmit(mode: Mode = NormalMode)
-GET         /change-answer/what-is-your-charity-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityController.onPageLoad(mode: Mode = CheckMode)
-POST        /change-answer/what-is-your-charity-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityController.onSubmit(mode: Mode = CheckMode)
+GET         /what-is-your-charity-registration-number                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityRegistrationNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-charity-registration-number                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityRegistrationNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-charity-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityRegistrationNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-charity-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityRegistrationNumberController.onSubmit(mode: Mode = CheckMode)

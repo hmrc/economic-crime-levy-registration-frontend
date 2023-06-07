@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityMaxLength, NameMaxLength}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
 
 import javax.inject.Inject
 
@@ -27,7 +27,7 @@ class BusinessNameFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("businessName.error.required")
-        .verifying(maxLength(NameMaxLength, "businessName.error.length"))
+        .verifying(maxLength(OrganisationNameMaxLength, "businessName.error.length"))
     )
 
 }

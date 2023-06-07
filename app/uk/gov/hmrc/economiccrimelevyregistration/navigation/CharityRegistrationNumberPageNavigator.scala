@@ -18,12 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import scala.concurrent.Future
 
-class CharityPageNavigator extends AsyncPageNavigator with FrontendHeaderCarrierProvider {
+class CharityRegistrationNumberPageNavigator extends AsyncPageNavigator with FrontendHeaderCarrierProvider {
 
   override protected def navigateInNormalMode(registration: Registration)(implicit
     request: RequestHeader

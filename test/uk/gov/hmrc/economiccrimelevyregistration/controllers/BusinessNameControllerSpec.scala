@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.BusinessNameFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.NameMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -109,7 +109,7 @@ class BusinessNameControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the business name then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(NameMaxLength),
+      stringsWithMaxLength(OrganisationNameMaxLength),
       Arbitrary.arbitrary[Mode]
     ) { (registration: Registration, businessName: String, mode: Mode) =>
       val otherEntityJourneyData = registration.otherEntityJourneyData.copy(businessName = Some(businessName))

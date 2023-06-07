@@ -24,9 +24,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.http.HttpVerbs.GET
 
-class CharityPageNavigatorSpec extends SpecBase {
+class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new CharityPageNavigator()
+  val pageNavigator = new CharityRegistrationNumberPageNavigator()
 
   "nextPage" should {
     "return a Call to the business sector page" in forAll { (registration: Registration, mode: Mode) =>

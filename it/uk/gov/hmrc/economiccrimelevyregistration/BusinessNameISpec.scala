@@ -14,7 +14,7 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
   s"GET ${routes.BusinessNameController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.BusinessNameController.onPageLoad(NormalMode))
 
-    "respond with 200 status and the select entity type HTML view" in {
+    "respond with 200 status and the business name HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
@@ -55,7 +55,7 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.CharityController.onPageLoad(mode = NormalMode).url)
+      redirectLocation(result) shouldBe Some(routes.CharityRegistrationNumberController.onPageLoad(mode = NormalMode).url)
     }
   }
 

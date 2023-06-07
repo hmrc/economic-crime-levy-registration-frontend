@@ -21,7 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, OtherEntityJourneyData, OtherEntityType, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.http.HttpVerbs.GET
 
 class BusinessNamePageNavigatorSpec extends SpecBase {
@@ -43,7 +43,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
       await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(
         GET,
         mode match {
-          case NormalMode => routes.CharityController.onPageLoad(mode).url
+          case NormalMode => routes.CharityRegistrationNumberController.onPageLoad(mode).url
           case CheckMode  => routes.CheckYourAnswersController.onPageLoad().url
         }
       )

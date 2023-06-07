@@ -22,25 +22,25 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, PublicBetaAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.CharityFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.CharityRegistrationNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.CharityPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.CharityView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.CharityRegistrationNumberPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.CharityRegistrationNumberView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CharityController @Inject() (
+class CharityRegistrationNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
-  formProvider: CharityFormProvider,
-  pageNavigator: CharityPageNavigator,
+  formProvider: CharityRegistrationNumberFormProvider,
+  pageNavigator: CharityRegistrationNumberPageNavigator,
   checkIfPublicBetaIsEnabled: PublicBetaAction,
-  view: CharityView
+  view: CharityRegistrationNumberView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {

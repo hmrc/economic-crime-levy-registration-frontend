@@ -18,11 +18,11 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
 
 object MaxLengths {
 
-  val EmailMaxLength            = 132
-  val NameMaxLength             = 160
-  val TelephoneNumberMaxLength  = 24
-  val RoleMaxLength             = 160
-  val OrganisationNameMaxLength = 160
-  val CharityMaxLength          = 8
+  val EmailMaxLength                     = 132
+  val NameMaxLength                      = 160
+  val TelephoneNumberMaxLength           = 24
+  val RoleMaxLength                      = 160
+  val OrganisationNameMaxLength          = 160
+  val CharityRegistrationNumberMaxLength = 8
 
 }
