@@ -9,10 +9,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class OtherEntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
+class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.OtherEntityTypeController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.OtherEntityTypeController.onPageLoad(NormalMode))
+  s"GET ${routes.BusinessNameController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.BusinessNameController.onPageLoad(NormalMode))
 
     "respond with 200 status and the select entity type HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -21,25 +21,27 @@ class OtherEntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.OtherEntityTypeController.onPageLoad(NormalMode)))
+      val result = callRoute(FakeRequest(routes.BusinessNameController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
-      html(result) should include("Tell us your entity type")
+      html(result) should include("What is the name of your business?")
     }
   }
 
-  s"POST ${routes.OtherEntityTypeController.onSubmit(NormalMode).url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.OtherEntityTypeController.onSubmit(NormalMode))
+  s"POST ${routes.BusinessNameController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.BusinessNameController.onSubmit(NormalMode))
 
-    "save the selected entity type then redirect to the dummy page" in {
+    "save the business name then redirect to the dummy page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration: Registration = random[Registration].copy(
+        optOtherEntityJourneyData = Some(OtherEntityJourneyData.empty().copy(entityType = Some(Charity)))
+      )
 
       stubGetRegistration(registration)
 
-      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(entityType = Some(Charity))
+      val otherEntityJourneyData = registration.otherEntityJourneyData.copy(businessName = Some("Test"))
       val updatedRegistration = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
@@ -47,13 +49,13 @@ class OtherEntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.OtherEntityTypeController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", "Charity"))
+        FakeRequest(routes.BusinessNameController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", "Test"))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.BusinessNameController.onPageLoad(mode = NormalMode).url)
+      redirectLocation(result) shouldBe Some(routes.CharityController.onPageLoad(mode = NormalMode).url)
     }
   }
 

@@ -443,3 +443,17 @@ date.month.9 = September
 date.month.10 = October
 date.month.11 = November
 date.month.12 = December
+
+charity.title = What is your charity registration number (CHRN)?
+charity.heading = What is your charity registration number (CHRN)?
+charity.p1 = Your charity registration number is on any mail that the charity regulator has sent you.
+charity.p2 = In Scotland, your registration number will start with SC.
+charity.hint = For example, 01234567 or SC012345.
+charity.error.required = CHRN is required
+charity.error.length = CHRN must be 8 characters or less
+
+businessName.title = What is the name of your business?
+businessName.heading = What is the name of your business?
+businessName.hint = This is the registered name of your business.
+businessName.error.required = Business Name is required
+BusinessName.error.length = Business name is too long

@@ -20,25 +20,33 @@ import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, OtherEntityJourneyData, OtherEntityType, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.http.HttpVerbs.GET
 
-class OtherEntityTypePageNavigatorSpec extends SpecBase {
+class CharityPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new OtherEntityTypePageNavigator()
+  val pageNavigator = new CharityPageNavigator()
 
   "nextPage" should {
-    "return a Call to the business name page for all other entities" in forAll {
-      (registration: Registration, entityType: OtherEntityType, mode: Mode) =>
-        val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(entityType = Some(entityType))
-
-        val updatedRegistration: Registration =
-          registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
-
-        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(
-          GET,
-          routes.BusinessNameController.onPageLoad(mode).url
+    "return a Call to the business sector page" in forAll { (registration: Registration, mode: Mode) =>
+      val otherEntityJourneyData = OtherEntityJourneyData
+        .empty()
+        .copy(
+          entityType = Some(Charity),
+          charityRegistrationNumber = Some("test")
         )
+
+      val updatedRegistration: Registration =
+        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+
+      await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(
+        GET,
+        mode match {
+          case NormalMode => routes.BusinessSectorController.onPageLoad(mode).url
+          case CheckMode  => routes.CheckYourAnswersController.onPageLoad().url
+        }
+      )
     }
   }
 
