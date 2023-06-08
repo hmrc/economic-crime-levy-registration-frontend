@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
+package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
-object MaxLengths {
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 
-  val EmailMaxLength                     = 132
-  val NameMaxLength                      = 160
-  val TelephoneNumberMaxLength           = 24
-  val RoleMaxLength                      = 160
-  val OrganisationNameMaxLength          = 160
-  val CharityRegistrationNumberMaxLength = 8
-  val CompanyRegistrationNumberMaxLength = 8
+import javax.inject.Inject
+
+class CompanyRegistrationNumberFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("companyRegistrationNumber.error.required")
+        .verifying(maxLength(CompanyRegistrationNumberMaxLength, "companyRegistrationNumber.error.length"))
+    )
 
 }

@@ -458,3 +458,9 @@ businessName.hint = This is the registered name of your business.
 businessName.error.required = Enter a business name
 BusinessName.error.length = Business name must not be more than {0} characters
 
+companyRegistrationNumber.title = What is your company registration number?
+companyRegistrationNumber.heading = What is your company registration number?
+companyRegistrationNumber.p1 = Your company registration number (CRN) is 8 characters long.
+companyRegistrationNumber.hint = For example, 01234567 or SC123456
+companyRegistrationNumber.error.required = Enter a company registration number
+companyRegistrationNumber.error.length = Charity registration number must not be more than {0} characters

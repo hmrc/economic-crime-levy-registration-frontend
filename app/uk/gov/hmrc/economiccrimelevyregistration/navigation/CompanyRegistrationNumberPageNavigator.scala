@@ -23,13 +23,17 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvi
 
 import scala.concurrent.Future
 
-class CharityRegistrationNumberPageNavigator extends AsyncPageNavigator with FrontendHeaderCarrierProvider {
+class CompanyRegistrationNumberPageNavigator extends AsyncPageNavigator with FrontendHeaderCarrierProvider {
 
   override protected def navigateInNormalMode(registration: Registration)(implicit
     request: RequestHeader
-  ): Future[Call] = Future.successful(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode))
+  ): Future[Call] = navigateInEitherMode()
 
   override protected def navigateInCheckMode(registration: Registration)(implicit
+    request: RequestHeader
+  ): Future[Call] = navigateInEitherMode()
+
+  private def navigateInEitherMode()(implicit
     request: RequestHeader
   ): Future[Call] = Future.successful(routes.CheckYourAnswersController.onPageLoad())
 }

@@ -8,10 +8,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour {
+class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.CharityRegistrationNumberController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.CharityRegistrationNumberController.onPageLoad(NormalMode))
+  s"GET ${routes.CompanyRegistrationNumberController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode))
 
     "respond with 200 status and the select charity registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -20,16 +20,16 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.CharityRegistrationNumberController.onPageLoad(NormalMode)))
+      val result = callRoute(FakeRequest(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
-      html(result) should include("What is your charity registration number (CHRN)?")
+      html(result) should include("What is your company registration number?")
     }
   }
 
-  s"POST ${routes.CharityRegistrationNumberController.onSubmit(NormalMode).url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.CharityRegistrationNumberController.onSubmit(NormalMode))
+  s"POST ${routes.CompanyRegistrationNumberController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.CompanyRegistrationNumberController.onSubmit(NormalMode))
 
     "save the charity number then redirect to the business sector page" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -38,7 +38,7 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       stubGetRegistration(registration)
 
-      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(charityRegistrationNumber = Some("01234567"))
+      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some("01234567"))
       val updatedRegistration = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
@@ -46,13 +46,13 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.CharityRegistrationNumberController.onSubmit(NormalMode))
+        FakeRequest(routes.CompanyRegistrationNumberController.onSubmit(NormalMode))
           .withFormUrlEncodedBody(("value", "01234567"))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.CompanyRegistrationNumberController.onPageLoad(mode = NormalMode).url)
+      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
     }
   }
 

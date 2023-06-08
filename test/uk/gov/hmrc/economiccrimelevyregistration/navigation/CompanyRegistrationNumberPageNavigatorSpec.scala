@@ -24,9 +24,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.http.HttpVerbs.GET
 
-class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
+class CompanyRegistrationNumberPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new CharityRegistrationNumberPageNavigator()
+  val pageNavigator = new CompanyRegistrationNumberPageNavigator()
 
   "nextPage" should {
     "return a Call to the business sector page" in forAll { (registration: Registration, mode: Mode) =>
@@ -34,7 +34,8 @@ class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
         .empty()
         .copy(
           entityType = Some(Charity),
-          charityRegistrationNumber = Some("test")
+          charityRegistrationNumber = Some("test"),
+          companyRegistrationNumber = Some("12345678")
         )
 
       val updatedRegistration: Registration =
@@ -42,10 +43,7 @@ class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
 
       await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(
         GET,
-        mode match {
-          case NormalMode => routes.CompanyRegistrationNumberController.onPageLoad(mode).url
-          case CheckMode  => routes.CheckYourAnswersController.onPageLoad().url
-        }
+        routes.CheckYourAnswersController.onPageLoad().url
       )
     }
   }

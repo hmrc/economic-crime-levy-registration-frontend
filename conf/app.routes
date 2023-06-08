@@ -160,3 +160,8 @@ GET         /what-is-your-charity-registration-number                        uk.
 POST        /what-is-your-charity-registration-number                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityRegistrationNumberController.onSubmit(mode: Mode = NormalMode)
 GET         /change-answer/what-is-your-charity-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityRegistrationNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/what-is-your-charity-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityRegistrationNumberController.onSubmit(mode: Mode = CheckMode)
+
+GET         /what-is-your-company-registration-number                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CompanyRegistrationNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-company-registration-number                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CompanyRegistrationNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-company-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CompanyRegistrationNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-company-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CompanyRegistrationNumberController.onSubmit(mode: Mode = CheckMode)
