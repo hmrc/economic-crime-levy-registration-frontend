@@ -181,6 +181,11 @@ otherEntityType.RegisteredSociety = Registered Society
 otherEntityType.NonUKEstablishment = Non-UK Establishment
 otherEntityType.UnincorporatedAssociation = Unincorporated Association
 otherEntityType.error.required = Please select your entity type
+otherEntityType.ctutr.question.title = Do you have a Corporation Tax Unique Taxpayer Reference? - register for the Economic Crime Levy - GOV.UK
+otherEntityType.ctutr.question.h1 = Do you have a Corporation Tax Unique Taxpayer Reference?
+otherEntityType.ctutr.question.body = Your Corporation Tax (CT) Unique Taxpayer Reference (UTR) is 10 numbers long.
+otherEntityType.ctutr.question.hint = For example, 0123456789
+otherEntityType.error.required = Select an answer
 
 partnershipName.title = What is the partnership name?
 partnershipName.heading = What is the partnership name?
