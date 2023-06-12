@@ -63,7 +63,11 @@ class CheckYourAnswersController @Inject() (
         RelevantApLengthSummary.row(),
         UkRevenueSummary.row(),
         AmlSupervisorSummary.row(),
-        BusinessSectorSummary.row()
+        BusinessSectorSummary.row(),
+        OtherEntityTypeSummary.row(),
+        BusinessNameSummary.row(),
+        CharityRegistrationNumberSummary.row(),
+        CompanyRegistrationNumberSummary.row()
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 

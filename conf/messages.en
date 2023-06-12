@@ -316,6 +316,10 @@ checkYourAnswers.address.label = Address
 checkYourAnswers.nowSend = Now send your registration
 checkYourAnswers.bySubmitting = By submitting this registration you are confirming that, to the best of your knowledge, the details you are providing are correct.
 checkYourAnswers.confirmAndSend = Confirm and send
+checkYourAnswers.otherEntityType.label = Other entity type
+checkYourAnswers.businessName.label = Business name
+checkYourAnswers.charityRegistrationNumber.label = Charity registration number (CHRN)
+checkYourAnswers.companyRegistrationNumber.label = Company registration number
 
 submitted.title = Registration submitted
 submitted.heading = Registration submitted

@@ -31,9 +31,13 @@
 
         @govukSummaryList(organisationDetails)
 
-        <h1 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h1>
+        @if(contactDetails.rows.nonEmpty) {
 
-        @govukSummaryList(contactDetails)
+            <h1 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h1>
+
+            @govukSummaryList(contactDetails)
+
+        }
 
         <h1 class="govuk-heading-m">@messages("checkYourAnswers.nowSend")</h1>
 
