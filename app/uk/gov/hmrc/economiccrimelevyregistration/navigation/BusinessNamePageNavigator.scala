@@ -16,27 +16,23 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.{Call, RequestHeader}
+import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
-import scala.concurrent.Future
+class BusinessNamePageNavigator extends PageNavigator with FrontendHeaderCarrierProvider {
 
-class BusinessNamePageNavigator extends AsyncPageNavigator with FrontendHeaderCarrierProvider {
+  override protected def navigateInNormalMode(registration: Registration): Call =
+    registration.otherEntityJourneyData.entityType match {
+      case Some(value) =>
+        value match {
+          case Charity => routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
+          case _       => ???
+        }
+    }
 
-  override protected def navigateInNormalMode(registration: Registration)(implicit
-    request: RequestHeader
-  ): Future[Call] = Future.successful(registration.otherEntityJourneyData.entityType match {
-    case Some(value) =>
-      value match {
-        case Charity => routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
-        case _       => ???
-      }
-  })
-
-  override protected def navigateInCheckMode(registration: Registration)(implicit
-    request: RequestHeader
-  ): Future[Call] = Future.successful(routes.CheckYourAnswersController.onPageLoad())
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    routes.OtherEntityCheckYourAnswersController.onPageLoad()
 }

@@ -47,11 +47,11 @@ class CompanyRegistrationNumberControllerSpec extends SpecBase {
   ) {
     override protected def navigateInNormalMode(
       registration: Registration
-    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
+    ): Call = onwardRoute
 
     override protected def navigateInCheckMode(
       registration: Registration
-    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
+    ): Call = onwardRoute
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]

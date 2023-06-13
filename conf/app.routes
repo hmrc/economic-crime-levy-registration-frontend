@@ -120,6 +120,9 @@ GET         /address-lookup-continue/checkmode                               uk.
 GET         /check-your-answers                                              uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
 POST        /check-your-answers                                              uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onSubmit()
 
+GET         /other-entity-check-your-answers                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityCheckYourAnswersController.onPageLoad()
+POST        /other-entity-check-your-answers                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityCheckYourAnswersController.onSubmit()
+
 GET         /registration-submitted                                          uk.gov.hmrc.economiccrimelevyregistration.controllers.RegistrationSubmittedController.onPageLoad()
 
 GET         /answers-are-not-valid                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.answersAreInvalid()

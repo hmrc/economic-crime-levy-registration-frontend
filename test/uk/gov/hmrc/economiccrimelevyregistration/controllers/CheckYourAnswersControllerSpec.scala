@@ -80,11 +80,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             RelevantApLengthSummary.row(),
             UkRevenueSummary.row(),
             AmlSupervisorSummary.row(),
-            BusinessSectorSummary.row(),
-            OtherEntityTypeSummary.row(),
-            BusinessNameSummary.row(),
-            CharityRegistrationNumberSummary.row(),
-            CompanyRegistrationNumberSummary.row()
+            BusinessSectorSummary.row()
           ).flatten
         ).withCssClass("govuk-!-margin-bottom-9")
 

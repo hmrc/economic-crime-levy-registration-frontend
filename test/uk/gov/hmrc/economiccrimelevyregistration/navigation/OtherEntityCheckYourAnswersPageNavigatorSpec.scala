@@ -17,18 +17,24 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
+import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode, Registration}
+import uk.gov.hmrc.http.HttpVerbs.GET
 
-class CompanyRegistrationNumberPageNavigator extends PageNavigator with FrontendHeaderCarrierProvider {
+class OtherEntityCheckYourAnswersPageNavigatorSpec extends SpecBase {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    navigateInEitherMode()
+  val pageNavigator = new OtherEntityCheckYourAnswersPageNavigator()
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    navigateInEitherMode()
+  "nextPage" should {
+    "return a Call to the business name page for all other entities" in forAll {
+      (registration: Registration, mode: Mode) =>
+        pageNavigator.nextPage(mode, registration) shouldBe Call(
+          GET,
+          routes.BusinessSectorController.onPageLoad(NormalMode).url
+        )
+    }
+  }
 
-  private def navigateInEitherMode(): Call =
-    routes.OtherEntityCheckYourAnswersController.onPageLoad()
 }

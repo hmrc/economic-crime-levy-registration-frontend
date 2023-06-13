@@ -20,7 +20,7 @@ import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, OtherEntityJourneyData, OtherEntityType, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode, OtherEntityJourneyData, OtherEntityType, Registration}
 import uk.gov.hmrc.http.HttpVerbs.GET
 
 class OtherEntityTypePageNavigatorSpec extends SpecBase {
@@ -29,15 +29,10 @@ class OtherEntityTypePageNavigatorSpec extends SpecBase {
 
   "nextPage" should {
     "return a Call to the business name page for all other entities" in forAll {
-      (registration: Registration, entityType: OtherEntityType, mode: Mode) =>
-        val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(entityType = Some(entityType))
-
-        val updatedRegistration: Registration =
-          registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
-
-        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(
+      (registration: Registration, mode: Mode) =>
+        pageNavigator.nextPage(mode, registration) shouldBe Call(
           GET,
-          routes.BusinessNameController.onPageLoad(mode).url
+          routes.BusinessNameController.onPageLoad(NormalMode).url
         )
     }
   }

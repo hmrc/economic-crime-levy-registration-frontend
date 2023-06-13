@@ -320,6 +320,7 @@ checkYourAnswers.otherEntityType.label = Other entity type
 checkYourAnswers.businessName.label = Business name
 checkYourAnswers.charityRegistrationNumber.label = Charity registration number (CHRN)
 checkYourAnswers.companyRegistrationNumber.label = Company registration number
+checkYourAnswers.otherEntityDetails = Other entity details
 
 submitted.title = Registration submitted
 submitted.heading = Registration submitted

@@ -69,8 +69,8 @@ class CharityRegistrationNumberController @Inject() (
                   optOtherEntityJourneyData = Some(otherEntityJourneyData)
                 )
               )
-              .flatMap { updatedRegistration =>
-                pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
+              .map { updatedRegistration =>
+                Redirect(pageNavigator.nextPage(mode, updatedRegistration))
               }
           }
         )

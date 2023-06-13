@@ -40,11 +40,11 @@ class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
       val updatedRegistration: Registration =
         registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
-      await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(
+      pageNavigator.nextPage(mode, updatedRegistration) shouldBe Call(
         GET,
         mode match {
           case NormalMode => routes.CompanyRegistrationNumberController.onPageLoad(mode).url
-          case CheckMode  => routes.CheckYourAnswersController.onPageLoad().url
+          case CheckMode  => routes.OtherEntityCheckYourAnswersController.onPageLoad().url
         }
       )
     }

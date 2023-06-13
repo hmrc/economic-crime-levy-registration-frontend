@@ -41,9 +41,9 @@ class CompanyRegistrationNumberPageNavigatorSpec extends SpecBase {
       val updatedRegistration: Registration =
         registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
-      await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(
+      pageNavigator.nextPage(mode, updatedRegistration) shouldBe Call(
         GET,
-        routes.CheckYourAnswersController.onPageLoad().url
+        routes.OtherEntityCheckYourAnswersController.onPageLoad().url
       )
     }
   }

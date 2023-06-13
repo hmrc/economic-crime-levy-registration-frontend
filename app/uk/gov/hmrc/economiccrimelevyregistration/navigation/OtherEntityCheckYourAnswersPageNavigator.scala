@@ -18,10 +18,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
-class CompanyRegistrationNumberPageNavigator extends PageNavigator with FrontendHeaderCarrierProvider {
+class OtherEntityCheckYourAnswersPageNavigator extends PageNavigator with FrontendHeaderCarrierProvider {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
     navigateInEitherMode()
@@ -30,5 +30,5 @@ class CompanyRegistrationNumberPageNavigator extends PageNavigator with Frontend
     navigateInEitherMode()
 
   private def navigateInEitherMode(): Call =
-    routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    routes.BusinessSectorController.onPageLoad(NormalMode)
 }
