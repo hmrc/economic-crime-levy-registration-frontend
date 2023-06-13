@@ -56,7 +56,7 @@ class EmailService @Inject() (emailConnector: EmailConnector, appConfig: AppConf
           eclDueDate,
           isPrimaryContact = isPrimaryContact.toString,
           secondContactEmail = secondContactEmail,
-          privateBetaEnabled = appConfig.privateBetaEnabled.toString
+          privateBetaEnabled = (!appConfig.returnsJourneyEnabled).toString
         )
       )
 
