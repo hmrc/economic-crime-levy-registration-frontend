@@ -21,14 +21,13 @@ import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{BodyParsers, Call, RequestHeader, Result}
+import play.api.mvc.{BodyParsers, Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.CharityRegistrationNumberFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CharityRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -110,7 +109,7 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the charity number then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(CharityRegistrationNumberMaxLength),
+      stringsLongerThan(1),
       Arbitrary.arbitrary[Mode]
     ) { (registration: Registration, charityNumber: String, mode: Mode) =>
       val otherEntityJourneyData =

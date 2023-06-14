@@ -138,4 +138,9 @@ trait Generators {
       Instant.ofEpochMilli(millis).atOffset(ZoneOffset.UTC).toLocalDate
     }
   }
+
+  def stringsWithLength(length: Int): Gen[String] =
+    for {
+      chars <- listOfN(length, arbitrary[Char])
+    } yield chars.mkString
 }
