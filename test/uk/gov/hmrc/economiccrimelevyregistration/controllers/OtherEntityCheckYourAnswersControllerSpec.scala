@@ -18,10 +18,13 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import play.api.mvc.{AnyContentAsEmpty, Call, Result}
+import play.api.mvc.{AnyContentAsEmpty, BodyParsers, Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.OtherEntityCheckYourAnswersPageNavigator
@@ -35,6 +38,13 @@ import scala.concurrent.Future
 class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
 
   val view: OtherEntityCheckYourAnswersView = app.injector.instanceOf[OtherEntityCheckYourAnswersView]
+  val errorHandler: ErrorHandler            = app.injector.instanceOf[ErrorHandler]
+  override val appConfig: AppConfig         = mock[AppConfig]
+  val enabled: PublicBetaAction             = new PublicBetaAction(
+    errorHandler = errorHandler,
+    appConfig = appConfig,
+    parser = app.injector.instanceOf[BodyParsers.Default]
+  )
 
   val pageNavigator: OtherEntityCheckYourAnswersPageNavigator = new OtherEntityCheckYourAnswersPageNavigator(
   ) {
@@ -54,6 +64,7 @@ class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       pageNavigator,
       mcc,
+      enabled,
       view
     )
   }
@@ -64,6 +75,8 @@ class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
         implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
           RegistrationDataRequest(fakeRequest, registration.internalId, registration)
         implicit val messages: Messages                                                       = messagesApi.preferred(registrationDataRequest)
+
+        when(appConfig.privateBetaEnabled).thenReturn(false)
 
         val result: Future[Result] = controller.onPageLoad()(registrationDataRequest)
 
@@ -89,6 +102,7 @@ class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
     "save the selected entity type then redirect to the next page" in forAll {
       (registration: Registration, entityType: OtherEntityType, mode: Mode) =>
         new TestContext(registration) {
+          when(appConfig.privateBetaEnabled).thenReturn(false)
           val result: Future[Result] =
             controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
 

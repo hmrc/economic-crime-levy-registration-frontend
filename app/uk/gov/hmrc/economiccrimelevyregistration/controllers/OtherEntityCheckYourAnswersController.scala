@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, PublicBetaAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.OtherEntityCheckYourAnswersPageNavigator
@@ -39,6 +39,7 @@ class OtherEntityCheckYourAnswersController @Inject() (
   getRegistrationData: DataRetrievalAction,
   pageNavigator: OtherEntityCheckYourAnswersPageNavigator,
   val controllerComponents: MessagesControllerComponents,
+  checkIfPublicBetaIsEnabled: PublicBetaAction,
   view: OtherEntityCheckYourAnswersView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -55,11 +56,12 @@ class OtherEntityCheckYourAnswersController @Inject() (
     ).withCssClass("govuk-!-margin-bottom-9")
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen getRegistrationData) { implicit request =>
+    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData) { implicit request =>
       Ok(view(otherEntityDetails()))
     }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
-    Future.successful(Redirect(pageNavigator.nextPage(NormalMode, request.registration)))
-  }
+  def onSubmit(): Action[AnyContent] =
+    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
+      Future.successful(Redirect(pageNavigator.nextPage(NormalMode, request.registration)))
+    }
 }
