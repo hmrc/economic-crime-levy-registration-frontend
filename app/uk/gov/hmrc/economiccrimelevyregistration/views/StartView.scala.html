@@ -43,7 +43,7 @@
 
     <p class="govuk-body">@Html(messages("start.p2", messages("start.p2.link")))</p>
     <p class="govuk-body">
-    @if(appConfig.privateBetaEnabled) {
+    @if(!appConfig.returnsJourneyEnabled) {
         @messages("start.p3.privateBeta")
     } else {
         @messages("start.p3", EclTaxYear.yearDue)

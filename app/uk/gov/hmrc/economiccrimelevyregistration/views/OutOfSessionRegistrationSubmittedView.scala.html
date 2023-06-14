@@ -35,7 +35,7 @@
 
     <p class="govuk-body">@messages("submitted.p1")</p>
 
-    @if(appConfig.privateBetaEnabled) {
+    @if(!appConfig.returnsJourneyEnabled) {
         <p class="govuk-body">@messages("submitted.p2.privateBeta")</p>
     } else {
         <p class="govuk-body">@messages("submitted.p2")</p>
