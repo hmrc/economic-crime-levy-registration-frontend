@@ -16,24 +16,24 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.{Call, RequestHeader}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
+import play.api.mvc.Call
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-import scala.concurrent.Future
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
-class DoYouHaveCTUTRPageNavigator extends AsyncPageNavigator with FrontendHeaderCarrierProvider {
-  override protected def navigateInNormalMode(registration: Registration)(implicit
-    request: RequestHeader
-  ): Future[Call] = navigateInEitherMode(registration, NormalMode)
+class DoYouHaveCTUTRPageNavigator @Inject() (implicit
+  ex: ExecutionContext
+) extends PageNavigator {
+  override protected def navigateInNormalMode(registration: Registration): Call = navigateInEitherMode(registration)
 
-  override protected def navigateInCheckMode(registration: Registration)(implicit
-    request: RequestHeader
-  ): Future[Call] = navigateInEitherMode(registration, CheckMode)
+  override protected def navigateInCheckMode(registration: Registration): Call = navigateInEitherMode(registration)
 
-  private def navigateInEitherMode(registration: Registration, mode: Mode): Future[Call] =
-    registration.otherEntityJourneyData.ctUtr.get match {
-      case true  => ??? // GOTO: View to add CT UTR
-      case false => ??? // GOTO: Check your answers
+  private def navigateInEitherMode(registration: Registration): Call =
+    if (registration.otherEntityJourneyData.ctUtr.get.toBoolean) {
+      routes.AddCTUTRController.onPageLoad()
+    } else {
+      routes.CheckYourAnswersController.onPageLoad()
     }
 }

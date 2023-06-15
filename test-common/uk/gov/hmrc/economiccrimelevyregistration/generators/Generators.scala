@@ -99,6 +99,12 @@ trait Generators {
       chars  <- listOfN(length, Gen.alphaNumChar)
     } yield chars.mkString
 
+  def numStringsWithConcreteLength(length: Int): Gen[String] =
+    for {
+      length <- choose(length, length)
+      chars  <- listOfN(length, Gen.numChar)
+    } yield chars.mkString
+
   def telephoneNumber(maxLength: Int): Gen[String] =
     RegexpGen.from(s"${Regex.TelephoneNumberRegex}").retryUntil(s => s.length <= maxLength && s.trim.nonEmpty)
 

@@ -94,14 +94,13 @@ trait Constraints {
         Valid
     }
 
-  protected def nonEmptySet(errorKey: String): Constraint[Set[_]] =
+  protected def nonEmptySet(errorKey: String): Constraint[Set[_]]                                       =
     Constraint {
       case set if set.nonEmpty =>
         Valid
       case _                   =>
         Invalid(errorKey)
     }
-
   protected def telephoneNumber(max: Int, maxLengthKey: String, invalidKey: String): Constraint[String] = Constraint {
     s =>
       maxLength(max, maxLengthKey)(s) match {
@@ -115,5 +114,10 @@ trait Constraints {
       case Valid   => regexp(Regex.EmailRegex, invalidKey)(s)
       case invalid => invalid
     }
+  }
+  protected def checkCorrectLength(length: Int, invalidKey: String): Constraint[String]              = Constraint {
+    case input if input.length != length =>
+      Invalid(invalidKey)
+    case _                               => Valid
   }
 }

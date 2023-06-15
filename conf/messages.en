@@ -185,6 +185,12 @@ otherEntityType.ctutr.question.title = Do you have a Corporation Tax Unique Taxp
 otherEntityType.ctutr.question.h1 = Do you have a Corporation Tax Unique Taxpayer Reference?
 otherEntityType.ctutr.question.body = Your Corporation Tax (CT) Unique Taxpayer Reference (UTR) is 10 numbers long.
 otherEntityType.ctutr.question.hint = For example, 0123456789
+otherEntityType.ctutr.title = What is your Corporation Tax Unique Taxpayer Reference?
+otherEntityType.ctutr.h1 = What is your Corporation Tax Unique Taxpayer Reference?
+otherEntityType.ctutr.body = Your Corporation Tax (CT) Unique Taxpayer Reference (UTR) number is 10 digits long.
+otherEntityType.ctutr.hint = For example, 0123456789
+otherEntityType.ctutr.error.required = Enter a Corporation Tax (CT) Unique Taxpayer Reference (UTR)
+otherEntityType.ctutr.error.length = Corporation Tax (CT) Unique Taxpayer Reference (UTR) must be 10 digits
 otherEntityType.error.required = Select an answer
 
 partnershipName.title = What is the partnership name?

@@ -153,3 +153,6 @@ POST        /change-answer/other-entity-type                                 uk.
 
 GET         /do-you-have-a-corporation-tax-utr                               uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCTUTRController.onPageLoad(mode: Mode = NormalMode)
 POST        /do-you-have-a-corporation-tax-utr                               uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCTUTRController.onSubmit(mode: Mode = NormalMode)
+
+GET         /what-is-your-corporation-tax-utr                                uk.gov.hmrc.economiccrimelevyregistration.controllers.AddCTUTRController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-corporation-tax-utr                                uk.gov.hmrc.economiccrimelevyregistration.controllers.AddCTUTRController.onSubmit(mode: Mode = NormalMode)
