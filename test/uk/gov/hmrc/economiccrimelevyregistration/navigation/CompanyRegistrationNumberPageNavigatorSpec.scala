@@ -31,12 +31,7 @@ class CompanyRegistrationNumberPageNavigatorSpec extends SpecBase {
   val pageNavigator = new CompanyRegistrationNumberPageNavigator()
 
   "nextPage" should {
-    "return a call to the other entity check your answers page" in forAll(
-      Arbitrary.arbitrary[Registration],
-      stringsLongerThan(1),
-      stringsWithExactLength(CompanyRegistrationNumberLength),
-      Arbitrary.arbitrary[Mode]
-    ) {
+    "return a call to the other entity check your answers page" in forAll {
       (registration: Registration, charityRegistrationNumber: String, companyRegistrationNumber: String, mode: Mode) =>
         val otherEntityJourneyData = OtherEntityJourneyData
           .empty()

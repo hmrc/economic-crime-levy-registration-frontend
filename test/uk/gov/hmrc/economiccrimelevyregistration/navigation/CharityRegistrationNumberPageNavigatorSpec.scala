@@ -48,22 +48,20 @@ class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
         routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
     }
 
-    "(Check Mode) return a call to the other entity check your answers page" in forAll(
-      Arbitrary.arbitrary[Registration],
-      stringsLongerThan(1)
-    ) { (registration: Registration, charityRegistrationNumber: String) =>
-      val otherEntityJourneyData = OtherEntityJourneyData
-        .empty()
-        .copy(
-          entityType = Some(Charity),
-          charityRegistrationNumber = Some(charityRegistrationNumber)
-        )
+    "(Check Mode) return a call to the other entity check your answers page" in forAll {
+      (registration: Registration, charityRegistrationNumber: String) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            entityType = Some(Charity),
+            charityRegistrationNumber = Some(charityRegistrationNumber)
+          )
 
-      val updatedRegistration: Registration =
-        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+        val updatedRegistration: Registration =
+          registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
-      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
-        routes.OtherEntityCheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+          routes.OtherEntityCheckYourAnswersController.onPageLoad()
     }
   }
 
