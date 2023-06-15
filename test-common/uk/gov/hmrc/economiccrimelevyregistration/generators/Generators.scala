@@ -139,7 +139,7 @@ trait Generators {
     }
   }
 
-  def stringsWithLength(length: Int): Gen[String] =
+  def stringsWithExactLength(length: Int): Gen[String] =
     for {
       chars <- listOfN(length, arbitrary[Char])
     } yield chars.mkString

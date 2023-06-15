@@ -28,12 +28,9 @@ class OtherEntityCheckYourAnswersPageNavigatorSpec extends SpecBase {
   val pageNavigator = new OtherEntityCheckYourAnswersPageNavigator()
 
   "nextPage" should {
-    "return a Call to the business name page for all other entities" in forAll {
-      (registration: Registration, mode: Mode) =>
-        pageNavigator.nextPage(mode, registration) shouldBe Call(
-          GET,
-          routes.BusinessSectorController.onPageLoad(NormalMode).url
-        )
+    "return a call to the business sector page" in forAll { (registration: Registration, mode: Mode) =>
+      pageNavigator.nextPage(mode, registration) shouldBe
+        routes.BusinessSectorController.onPageLoad(NormalMode)
     }
   }
 

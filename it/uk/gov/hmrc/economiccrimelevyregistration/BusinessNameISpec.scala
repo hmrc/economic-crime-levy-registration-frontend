@@ -32,7 +32,7 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
   s"POST ${routes.BusinessNameController.onSubmit(NormalMode).url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.BusinessNameController.onSubmit(NormalMode))
 
-    "save the business name then redirect to the dummy page" in {
+    "save the business name then redirect to the charity registration number page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration: Registration = random[Registration].copy(

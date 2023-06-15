@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import org.scalacheck.Arbitrary
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -29,22 +31,26 @@ class CompanyRegistrationNumberPageNavigatorSpec extends SpecBase {
   val pageNavigator = new CompanyRegistrationNumberPageNavigator()
 
   "nextPage" should {
-    "return a Call to the business sector page" in forAll { (registration: Registration, mode: Mode) =>
-      val otherEntityJourneyData = OtherEntityJourneyData
-        .empty()
-        .copy(
-          entityType = Some(Charity),
-          charityRegistrationNumber = Some("test"),
-          companyRegistrationNumber = Some("12345678")
-        )
+    "return a call to the other entity check your answers page" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsLongerThan(1),
+      stringsWithExactLength(CompanyRegistrationNumberLength),
+      Arbitrary.arbitrary[Mode]
+    ) {
+      (registration: Registration, charityRegistrationNumber: String, companyRegistrationNumber: String, mode: Mode) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            entityType = Some(Charity),
+            charityRegistrationNumber = Some(charityRegistrationNumber),
+            companyRegistrationNumber = Some(companyRegistrationNumber)
+          )
 
-      val updatedRegistration: Registration =
-        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+        val updatedRegistration: Registration =
+          registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
-      pageNavigator.nextPage(mode, updatedRegistration) shouldBe Call(
-        GET,
-        routes.OtherEntityCheckYourAnswersController.onPageLoad().url
-      )
+        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
+          routes.OtherEntityCheckYourAnswersController.onPageLoad()
     }
   }
 

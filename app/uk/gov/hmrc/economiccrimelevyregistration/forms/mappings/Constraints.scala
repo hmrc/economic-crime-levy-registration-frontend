@@ -117,9 +117,9 @@ trait Constraints {
     }
   }
 
-  protected def checkCorrectLength(length: Int, invalidKey: String): Constraint[String] = Constraint {
+  protected def exactLength(length: Int, invalidKey: String): Constraint[String] = Constraint {
     case input if input.length != length =>
-      Invalid(invalidKey)
+      Invalid(invalidKey, length)
     case _                               => Valid
   }
 }

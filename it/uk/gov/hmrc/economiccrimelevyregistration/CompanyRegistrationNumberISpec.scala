@@ -13,7 +13,7 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
   s"GET ${routes.CompanyRegistrationNumberController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode))
 
-    "respond with 200 status and the select charity registration number HTML view" in {
+    "respond with 200 status and the company registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
@@ -31,7 +31,7 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
   s"POST ${routes.CompanyRegistrationNumberController.onSubmit(NormalMode).url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.CompanyRegistrationNumberController.onSubmit(NormalMode))
 
-    "save the charity number then redirect to the business sector page" in {
+    "save the company registration number then redirect to the check your answers page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]

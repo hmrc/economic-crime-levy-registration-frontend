@@ -13,7 +13,7 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
   s"GET ${routes.CharityRegistrationNumberController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.CharityRegistrationNumberController.onPageLoad(NormalMode))
 
-    "respond with 200 status and the select charity registration number HTML view" in {
+    "respond with 200 status and the charity registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
@@ -31,7 +31,7 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
   s"POST ${routes.CharityRegistrationNumberController.onSubmit(NormalMode).url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.CharityRegistrationNumberController.onSubmit(NormalMode))
 
-    "save the charity number then redirect to the business sector page" in {
+    "save the charity registration number then redirect to the business sector page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]

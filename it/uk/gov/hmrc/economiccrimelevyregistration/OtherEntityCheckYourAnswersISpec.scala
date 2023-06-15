@@ -13,7 +13,7 @@ class OtherEntityCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviou
   s"GET ${routes.OtherEntityCheckYourAnswersController.onPageLoad().url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.OtherEntityCheckYourAnswersController.onPageLoad())
 
-    "respond with 200 status and the select entity type HTML view" in {
+    "respond with 200 status and the other check your answers HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
@@ -31,7 +31,7 @@ class OtherEntityCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviou
   s"POST ${routes.OtherEntityCheckYourAnswersController.onSubmit().url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.OtherEntityCheckYourAnswersController.onSubmit())
 
-    "save the selected entity type then redirect to the dummy page" in {
+    "redirect to the Business sector page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]

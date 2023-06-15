@@ -99,17 +99,16 @@ class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the selected entity type then redirect to the next page" in forAll {
-      (registration: Registration, entityType: OtherEntityType, mode: Mode) =>
-        new TestContext(registration) {
-          when(appConfig.privateBetaEnabled).thenReturn(false)
-          val result: Future[Result] =
-            controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
+    "redirect to the next page" in forAll { (registration: Registration, entityType: OtherEntityType, mode: Mode) =>
+      new TestContext(registration) {
+        when(appConfig.privateBetaEnabled).thenReturn(false)
+        val result: Future[Result] =
+          controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
 
-          status(result) shouldBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(onwardRoute.url)
-        }
+        redirectLocation(result) shouldBe Some(onwardRoute.url)
+      }
     }
   }
 }

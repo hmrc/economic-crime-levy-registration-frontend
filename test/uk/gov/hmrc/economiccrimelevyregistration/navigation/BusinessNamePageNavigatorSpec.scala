@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import org.scalacheck.Arbitrary
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -29,24 +31,40 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
   val pageNavigator = new BusinessNamePageNavigator()
 
   "nextPage" should {
-    "return a Call to the charity page if charity selected" in forAll { (registration: Registration, mode: Mode) =>
+    "(Normal Mode) return a call to the charity page if charity selected" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength)
+    ) { (registration: Registration, businessName: String) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
           entityType = Some(Charity),
-          businessName = Some("test")
+          businessName = Some(businessName)
         )
 
       val updatedRegistration: Registration =
         registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
-      pageNavigator.nextPage(mode, updatedRegistration) shouldBe Call(
-        GET,
-        mode match {
-          case NormalMode => routes.CharityRegistrationNumberController.onPageLoad(mode).url
-          case CheckMode  => routes.OtherEntityCheckYourAnswersController.onPageLoad().url
-        }
-      )
+      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
+    }
+
+    "(Check Mode) return a call to the charity page if charity selected" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength)
+    ) { (registration: Registration, businessName: String) =>
+      val otherEntityJourneyData = OtherEntityJourneyData
+        .empty()
+        .copy(
+          entityType = Some(Charity),
+          businessName = Some(businessName)
+        )
+
+      val updatedRegistration: Registration =
+        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+
+      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        routes.OtherEntityCheckYourAnswersController.onPageLoad()
     }
   }
 
