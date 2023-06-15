@@ -20,13 +20,16 @@ import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnector)(implicit ec: ExecutionContext)
-    extends AsyncPageNavigator {
+    extends AsyncPageNavigator
+    with FrontendHeaderCarrierProvider {
 
   override protected def navigateInNormalMode(
     registration: Registration
@@ -46,7 +49,7 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
       case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
-  private def sendNotLiableAuditEvent(internalId: String): Future[Call] = {
+  private def sendNotLiableAuditEvent(internalId: String)(implicit hc: HeaderCarrier): Future[Call] = {
     auditConnector
       .sendExtendedEvent(
         RegistrationNotLiableAuditEvent(

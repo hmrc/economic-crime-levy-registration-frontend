@@ -20,13 +20,16 @@ import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UkRevenuePageNavigator @Inject() (auditConnector: AuditConnector)(implicit ec: ExecutionContext)
-    extends AsyncPageNavigator {
+    extends AsyncPageNavigator
+    with FrontendHeaderCarrierProvider {
   override protected def navigateInNormalMode(registration: Registration)(implicit
     request: RequestHeader
   ): Future[Call] = navigate(NormalMode, registration)
@@ -35,7 +38,7 @@ class UkRevenuePageNavigator @Inject() (auditConnector: AuditConnector)(implicit
     request: RequestHeader
   ): Future[Call] = navigate(CheckMode, registration)
 
-  private def navigate(mode: Mode, registration: Registration): Future[Call] =
+  private def navigate(mode: Mode, registration: Registration)(implicit hc: HeaderCarrier): Future[Call] =
     registration.relevantApRevenue match {
       case Some(relevantApRevenue) =>
         registration.revenueMeetsThreshold match {
