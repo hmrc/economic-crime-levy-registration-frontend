@@ -16,17 +16,24 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CTUTRLength
+import play.api.data.FormError
+import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.OptionFieldBehaviours
+import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType
 
-import javax.inject.Inject
+class OtherEntityTypeFormProviderSpec extends OptionFieldBehaviours {
+  val form = new OtherEntityTypeFormProvider()()
 
-class AddCTUTRFormProvider @Inject extends Mappings {
+  "value" should {
+    val fieldName   = "value"
+    val requiredKey = "otherEntityType.error.required"
 
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("otherEntityType.ctutr.error.required")
-        .verifying(exactLength(CTUTRLength, "otherEntityType.ctutr.error.length"))
+    behave like optionsField[OtherEntityType](
+      form,
+      fieldName,
+      OtherEntityType.values,
+      FormError(fieldName, "error.invalid")
     )
+
+    behave like mandatoryField(form, fieldName, FormError(fieldName, requiredKey))
+  }
 }

@@ -18,15 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CTUTRLength
 
 import javax.inject.Inject
 
-class AddCTUTRFormProvider @Inject extends Mappings {
+class CharityRegistrationNumberFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> text("otherEntityType.ctutr.error.required")
-        .verifying(exactLength(CTUTRLength, "otherEntityType.ctutr.error.length"))
+      "value" -> text("charityRegistrationNumber.error.required")
     )
+
 }

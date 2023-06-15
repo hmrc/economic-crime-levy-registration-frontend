@@ -42,7 +42,7 @@ class AddCTUTRControllerSpec extends SpecBase {
   val errorHandler: ErrorHandler                             = app.injector.instanceOf[ErrorHandler]
   val formProvider: AddCTUTRFormProvider                     = new AddCTUTRFormProvider()
   val form: Form[String]                                     = formProvider()
-  val CTUTR = "0123456789"
+  val CTUTR                                                  = "0123456789"
 
   val pageNavigator: AddCTUTRPageNavigator = new AddCTUTRPageNavigator(mock[AddressLookupFrontendConnector]) {
     override protected def navigateInNormalMode(

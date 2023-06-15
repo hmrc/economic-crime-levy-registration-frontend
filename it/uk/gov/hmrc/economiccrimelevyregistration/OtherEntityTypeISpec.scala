@@ -53,7 +53,7 @@ class OtherEntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(mode = NormalMode).url)
+      redirectLocation(result) shouldBe Some(routes.BusinessNameController.onPageLoad(mode = NormalMode).url)
     }
   }
 

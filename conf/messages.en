@@ -327,6 +327,11 @@ checkYourAnswers.address.label = Address
 checkYourAnswers.nowSend = Now send your registration
 checkYourAnswers.bySubmitting = By submitting this registration you are confirming that, to the best of your knowledge, the details you are providing are correct.
 checkYourAnswers.confirmAndSend = Confirm and send
+checkYourAnswers.otherEntityType.label = Other entity type
+checkYourAnswers.businessName.label = Business name
+checkYourAnswers.charityRegistrationNumber.label = Charity registration number (CHRN)
+checkYourAnswers.companyRegistrationNumber.label = Company registration number
+checkYourAnswers.otherEntityDetails = Other entity details
 
 submitted.title = Registration submitted
 submitted.heading = Registration submitted
@@ -425,14 +430,17 @@ signedOut.guidance = We did not save your answers.
 privateBetaAccess.title = Register for the Economic Crime Levy
 privateBetaAccess.heading = Register for the Economic Crime Levy
 privateBetaAccess.p1 = You can now use this service to register for the Economic Crime Levy (ECL).
-privateBetaAccess.p2 = To register for the ECL, you need a 6-digit access code.
+privateBetaAccess.p2 = To register, you need a 6-digit access code.
+privateBetaAccess.p3 = We are asking users to sign up using an access code so that they can give us feedback on the service.
 privateBetaAccess.getAccessCode = Get an access code
 privateBetaAccess.registerInterest = You can register your interest in using the service by contacting HMRC: <a href="mailto:{0}" class="govuk-link">{0}</a>
 privateBetaAccess.emailSubject = In the subject of the email, put [Request for access code].
+privateBetaAccess.respond = We will respond to your email with an access code you can use to register for the Economic Crime Levy.
+privateBetaAccess.receive = You will receive an access code within 24 hours after you send your request.
 privateBetaAccess.doNotContact = Do not contact the ECL helpline for issues with registering, as they are currently unable to support these issues.
 privateBetaAccess.enterAccessCode = Enter your access code
 privateBetaAccess.toRegister = To register for the ECL, enter your 6-digit access code and select ''continue''.
-privateBetaAccess.enterYourCode = Enter your 6 character access code
+privateBetaAccess.enterYourCode = Enter your 6-digit access code
 privateBetaAccess.keepSafe = Keep this access code safe. You will need to enter the code every time you access the beta.
 privateBetaAccess.codeDoesNotWork = <strong>My access code doesn't work</strong>
 privateBetaAccess.codeDoesNotWork.contact = If you cannot access the service, contact HMRC: <a href="mailto:{0}" class="govuk-link">{0}</a>. In the email, you need to provide:
@@ -454,3 +462,23 @@ date.month.9 = September
 date.month.10 = October
 date.month.11 = November
 date.month.12 = December
+
+charityRegistrationNumber.title = What is your charity registration number (CHRN)?
+charityRegistrationNumber.heading = What is your charity registration number (CHRN)?
+charityRegistrationNumber.p1 = Your charity registration number is on any mail that the charity regulator has sent you.
+charityRegistrationNumber.p2 = In Scotland, your registration number will start with SC.
+charityRegistrationNumber.hint = For example, 01234567 or SC012345.
+charityRegistrationNumber.error.required = Enter a charity registration number
+
+businessName.title = What is the name of your business?
+businessName.heading = What is the name of your business?
+businessName.hint = This is the registered name of your business.
+businessName.error.required = Enter a business name
+BusinessName.error.length = Business name must not be more than {0} characters
+
+companyRegistrationNumber.title = What is your company registration number?
+companyRegistrationNumber.heading = What is your company registration number?
+companyRegistrationNumber.p1 = Your company registration number (CRN) is 8 characters long.
+companyRegistrationNumber.hint = For example, 01234567 or SC123456
+companyRegistrationNumber.error.required = Enter a company registration number
+companyRegistrationNumber.error.length = Company registration number must be exactly {0} characters

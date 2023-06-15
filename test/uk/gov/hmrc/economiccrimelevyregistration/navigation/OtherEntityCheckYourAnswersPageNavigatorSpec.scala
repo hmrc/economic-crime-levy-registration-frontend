@@ -17,17 +17,21 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
+import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode, Registration}
+import uk.gov.hmrc.http.HttpVerbs.GET
 
-class OtherEntityTypePageNavigator extends PageNavigator {
+class OtherEntityCheckYourAnswersPageNavigatorSpec extends SpecBase {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    navigateInEitherMode()
+  val pageNavigator = new OtherEntityCheckYourAnswersPageNavigator()
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    navigateInEitherMode()
+  "nextPage" should {
+    "return a call to the business sector page" in forAll { (registration: Registration, mode: Mode) =>
+      pageNavigator.nextPage(mode, registration) shouldBe
+        routes.BusinessSectorController.onPageLoad(NormalMode)
+    }
+  }
 
-  private def navigateInEitherMode(): Call =
-    routes.BusinessNameController.onPageLoad(NormalMode)
 }

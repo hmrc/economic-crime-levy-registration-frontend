@@ -20,6 +20,7 @@ import play.api.libs.json.{Json, OFormat}
 
 final case class OtherEntityJourneyData(
   entityType: Option[OtherEntityType],
+  businessName: Option[String],
   charityRegistrationNumber: Option[String],
   companyRegistrationNumber: Option[String],
   utrType: Option[UtrType],
@@ -34,6 +35,7 @@ object OtherEntityJourneyData {
 
   def empty(): OtherEntityJourneyData = OtherEntityJourneyData(
     entityType = None,
+    businessName = None,
     charityRegistrationNumber = None,
     companyRegistrationNumber = None,
     utrType = None,
