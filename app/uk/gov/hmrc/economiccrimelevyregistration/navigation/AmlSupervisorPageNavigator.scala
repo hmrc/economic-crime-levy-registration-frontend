@@ -21,13 +21,16 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisorType, NormalMode, Registration}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(implicit ec: ExecutionContext)
-    extends AsyncPageNavigator {
+    extends AsyncPageNavigator
+    with FrontendHeaderCarrierProvider {
 
   override protected def navigateInNormalMode(
     registration: Registration
@@ -53,7 +56,9 @@ class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(impl
       case _                   => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
-  private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType, registration: Registration): Future[Call] =
+  private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType, registration: Registration)(implicit
+    hc: HeaderCarrier
+  ): Future[Call] =
     amlSupervisorType match {
       case GamblingCommission        =>
         sendNotLiableAuditEvent(registration.internalId, NotLiableReason.SupervisedByGamblingCommission).map(_ =>
@@ -66,7 +71,9 @@ class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(impl
       case _                         => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
-  private def sendNotLiableAuditEvent(internalId: String, notLiableReason: NotLiableReason): Future[Unit] = {
+  private def sendNotLiableAuditEvent(internalId: String, notLiableReason: NotLiableReason)(implicit
+    hc: HeaderCarrier
+  ): Future[Unit] = {
     auditConnector
       .sendExtendedEvent(RegistrationNotLiableAuditEvent(internalId, notLiableReason).extendedDataEvent)
 
