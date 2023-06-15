@@ -209,4 +209,20 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
       result shouldEqual Invalid("error.invalid", Regex.EmailRegex)
     }
   }
+
+  "exactLength" should {
+    val value = "VALUE"
+    val error = "ERROR"
+
+    "return Valid for a string of correct length" in {
+      val result = exactLength(value.length, error).apply(value)
+      result shouldEqual Valid
+    }
+
+    "return Invalid for a string of incorrect length" in {
+      val length = value.length / 2
+      val result = exactLength(length, error).apply(value)
+      result shouldEqual Invalid(error, length)
+    }
+  }
 }

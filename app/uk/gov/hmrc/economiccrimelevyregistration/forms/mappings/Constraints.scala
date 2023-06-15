@@ -116,4 +116,10 @@ trait Constraints {
       case invalid => invalid
     }
   }
+
+  protected def exactLength(length: Int, invalidKey: String): Constraint[String] = Constraint {
+    case input if input.length != length =>
+      Invalid(invalidKey, length)
+    case _                               => Valid
+  }
 }

@@ -18,31 +18,32 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.{BodyParsers, Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.cleanup.OtherEntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
-import uk.gov.hmrc.economiccrimelevyregistration.forms.OtherEntityTypeFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.CompanyRegistrationNumberFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.OtherEntityTypePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.OtherEntityTypeView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.CompanyRegistrationNumberPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.CompanyRegistrationNumberView
 
 import scala.concurrent.Future
 
-class OtherEntityTypeControllerSpec extends SpecBase {
+class CompanyRegistrationNumberControllerSpec extends SpecBase {
 
-  val view: OtherEntityTypeView                 = app.injector.instanceOf[OtherEntityTypeView]
-  val formProvider: OtherEntityTypeFormProvider = new OtherEntityTypeFormProvider()
-  val form: Form[OtherEntityType]               = formProvider()
+  val view: CompanyRegistrationNumberView                 = app.injector.instanceOf[CompanyRegistrationNumberView]
+  val formProvider: CompanyRegistrationNumberFormProvider = new CompanyRegistrationNumberFormProvider()
+  val form: Form[String]                                  = formProvider()
 
-  val pageNavigator: OtherEntityTypePageNavigator = new OtherEntityTypePageNavigator(
+  val pageNavigator: CompanyRegistrationNumberPageNavigator = new CompanyRegistrationNumberPageNavigator(
   ) {
     override protected def navigateInNormalMode(
       registration: Registration
@@ -51,10 +52,6 @@ class OtherEntityTypeControllerSpec extends SpecBase {
     override protected def navigateInCheckMode(
       registration: Registration
     ): Call = onwardRoute
-  }
-
-  val dataCleanup: OtherEntityTypeDataCleanup = new OtherEntityTypeDataCleanup {
-    override def cleanup(registration: Registration): Registration = registration
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
@@ -68,14 +65,13 @@ class OtherEntityTypeControllerSpec extends SpecBase {
 
   class TestContext(registrationData: Registration) {
 
-    val controller = new OtherEntityTypeController(
+    val controller = new CompanyRegistrationNumberController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
       pageNavigator,
-      dataCleanup,
       enabled,
       view
     )
@@ -96,8 +92,9 @@ class OtherEntityTypeControllerSpec extends SpecBase {
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
-      (registration: Registration, entityType: OtherEntityType, mode: Mode) =>
-        val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(entityType = Some(entityType))
+      (registration: Registration, companyNumber: String, mode: Mode) =>
+        val otherEntityJourneyData =
+          OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))
         new TestContext(registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))) {
           when(appConfig.privateBetaEnabled).thenReturn(false)
 
@@ -105,37 +102,41 @@ class OtherEntityTypeControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(entityType), mode)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form.fill(companyNumber), mode)(fakeRequest, messages).toString
         }
     }
   }
 
   "onSubmit" should {
-    "save the selected entity type then redirect to the next page" in forAll {
-      (registration: Registration, entityType: OtherEntityType, mode: Mode) =>
-        val otherEntityJourneyData = registration.otherEntityJourneyData.copy(entityType = Some(entityType))
-        new TestContext(registration) {
-          val updatedRegistration: Registration = registration.copy(
-            optOtherEntityJourneyData = Some(otherEntityJourneyData)
-          )
+    "save the company number then redirect to the next page" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithExactLength(CompanyRegistrationNumberLength),
+      Arbitrary.arbitrary[Mode]
+    ) { (registration: Registration, companyNumber: String, mode: Mode) =>
+      val otherEntityJourneyData =
+        registration.otherEntityJourneyData.copy(companyRegistrationNumber = Some(companyNumber))
+      new TestContext(registration) {
+        val updatedRegistration: Registration = registration.copy(
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] =
-            controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
+        val result: Future[Result] =
+          controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", companyNumber)))
 
-          status(result) shouldBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(onwardRoute.url)
-        }
+        redirectLocation(result) shouldBe Some(onwardRoute.url)
+      }
     }
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll {
       (registration: Registration, mode: Mode) =>
         new TestContext(registration) {
-          val result: Future[Result]                = controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
-          val formWithErrors: Form[OtherEntityType] = form.bind(Map("value" -> ""))
+          val result: Future[Result]       = controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
+          val formWithErrors: Form[String] = form.bind(Map("value" -> ""))
 
           status(result) shouldBe BAD_REQUEST
 

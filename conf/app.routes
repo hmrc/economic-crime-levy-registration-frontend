@@ -120,6 +120,9 @@ GET         /address-lookup-continue/checkmode                               uk.
 GET         /check-your-answers                                              uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
 POST        /check-your-answers                                              uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onSubmit()
 
+GET         /other-entity-check-your-answers                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityCheckYourAnswersController.onPageLoad()
+POST        /other-entity-check-your-answers                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityCheckYourAnswersController.onSubmit()
+
 GET         /registration-submitted                                          uk.gov.hmrc.economiccrimelevyregistration.controllers.RegistrationSubmittedController.onPageLoad()
 
 GET         /answers-are-not-valid                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.answersAreInvalid()
@@ -146,7 +149,22 @@ GET         /account/sign-out-survey                                         uk.
 GET         /account/sign-out                                                uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
 GET         /account/signed-out                                              uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()
 
-GET         /other-entity-type                                               uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityTypeController.onPageLoad(mode: Mode = NormalMode)
-POST        /other-entity-type                                               uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityTypeController.onSubmit(mode: Mode = NormalMode)
-GET         /change-answer/other-entity-type                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityTypeController.onPageLoad(mode: Mode = CheckMode)
-POST        /change-answer/other-entity-type                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityTypeController.onSubmit(mode: Mode = CheckMode)
+GET         /tell-us-your-entity-type                                        uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityTypeController.onPageLoad(mode: Mode = NormalMode)
+POST        /tell-us-your-entity-type                                        uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityTypeController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/tell-us-your-entity-type                          uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityTypeController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/tell-us-your-entity-type                          uk.gov.hmrc.economiccrimelevyregistration.controllers.OtherEntityTypeController.onSubmit(mode: Mode = CheckMode)
+
+GET         /business-name                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessNameController.onPageLoad(mode: Mode = NormalMode)
+POST        /business-name                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessNameController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/business-name                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessNameController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/business-name                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.BusinessNameController.onSubmit(mode: Mode = CheckMode)
+
+GET         /what-is-your-charity-registration-number                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityRegistrationNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-charity-registration-number                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityRegistrationNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-charity-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityRegistrationNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-charity-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CharityRegistrationNumberController.onSubmit(mode: Mode = CheckMode)
+
+GET         /what-is-your-company-registration-number                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CompanyRegistrationNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-company-registration-number                        uk.gov.hmrc.economiccrimelevyregistration.controllers.CompanyRegistrationNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-company-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CompanyRegistrationNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-company-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CompanyRegistrationNumberController.onSubmit(mode: Mode = CheckMode)

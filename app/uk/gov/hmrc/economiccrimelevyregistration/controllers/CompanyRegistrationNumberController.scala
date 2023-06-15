@@ -19,39 +19,37 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.cleanup.OtherEntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, PublicBetaAction}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.CompanyRegistrationNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.forms.OtherEntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.OtherEntityTypePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.OtherEntityTypeView
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.CompanyRegistrationNumberPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.CompanyRegistrationNumberView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class OtherEntityTypeController @Inject() (
+class CompanyRegistrationNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
-  formProvider: OtherEntityTypeFormProvider,
-  pageNavigator: OtherEntityTypePageNavigator,
-  dataCleanup: OtherEntityTypeDataCleanup,
+  formProvider: CompanyRegistrationNumberFormProvider,
+  pageNavigator: CompanyRegistrationNumberPageNavigator,
   checkIfPublicBetaIsEnabled: PublicBetaAction,
-  view: OtherEntityTypeView
+  view: CompanyRegistrationNumberView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  val form: Form[OtherEntityType] = formProvider()
+  val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData) { implicit request =>
-      Ok(view(form.prepare(request.registration.otherEntityJourneyData.entityType), mode))
+      Ok(view(form.prepare(request.registration.otherEntityJourneyData.companyRegistrationNumber), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
@@ -60,17 +58,15 @@ class OtherEntityTypeController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          entityType => {
+          companyNumber => {
             val otherEntityJourneyData = request.registration.otherEntityJourneyData.copy(
-              entityType = Some(entityType)
+              companyRegistrationNumber = Some(companyNumber)
             )
 
             eclRegistrationConnector
               .upsertRegistration(
-                dataCleanup.cleanup(
-                  request.registration.copy(
-                    optOtherEntityJourneyData = Some(otherEntityJourneyData)
-                  )
+                request.registration.copy(
+                  optOtherEntityJourneyData = Some(otherEntityJourneyData)
                 )
               )
               .map { updatedRegistration =>
