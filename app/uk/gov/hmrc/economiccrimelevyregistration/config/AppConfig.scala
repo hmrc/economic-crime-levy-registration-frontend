@@ -48,6 +48,7 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val submitReturnUrl: String           = configuration.get[String]("urls.submitReturn")
   val yourEclAccountUrl: String         = configuration.get[String]("urls.yourEclAccount")
   val taxAndSchemeManagementUrl: String = configuration.get[String]("urls.taxAndSchemeManagement")
+  val claimEclEnrolmentUrl: String      = configuration.get[String]("urls.claimEclEnrolment")
 
   val accessibilityStatementServicePath: String =
     configuration.get[String]("accessibility-statement.service-path")
