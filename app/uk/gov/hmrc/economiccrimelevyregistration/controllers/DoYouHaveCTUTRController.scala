@@ -59,8 +59,10 @@ class DoYouHaveCTUTRController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          ctutr => {
-            val otherEntityJourneyData = request.registration.otherEntityJourneyData.copy(ctUtr = Some(ctutr.toString))
+          answer => {
+            val ctutr: Option[String]  = if (answer) Some(answer.toString) else None
+            val otherEntityJourneyData =
+              request.registration.otherEntityJourneyData.copy(ctUtr = ctutr, postcode = None)
             eclRegistrationConnector
               .upsertRegistration(
                 request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))

@@ -192,6 +192,12 @@ otherEntityType.ctutr.hint = For example, 0123456789
 otherEntityType.ctutr.error.required = Enter a Corporation Tax (CT) Unique Taxpayer Reference (UTR)
 otherEntityType.ctutr.error.length = Corporation Tax (CT) Unique Taxpayer Reference (UTR) must be 10 digits
 otherEntityType.error.required = Select an answer
+otherEntityType.ctutr.postcode.title = What is the postcode you used to register your association?
+otherEntityType.ctutr.postcode.h1 = What is the postcode you used to register your association?
+otherEntityType.ctutr.postcode.hint = For example, AB1 2YZ
+otherEntityType.ctutr.postcode.required = Enter a postcode
+otherEntityType.ctutr.postcode.error = Enter a real postcode
+otherEntityType.ctutr.postcode.label = CT UTR Postcode
 
 partnershipName.title = What is the partnership name?
 partnershipName.heading = What is the partnership name?

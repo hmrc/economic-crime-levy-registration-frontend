@@ -31,9 +31,8 @@ class DoYouHaveCTUTRPageNavigator @Inject() (implicit
   override protected def navigateInCheckMode(registration: Registration): Call = navigateInEitherMode(registration)
 
   private def navigateInEitherMode(registration: Registration): Call =
-    if (registration.otherEntityJourneyData.ctUtr.get.toBoolean) {
-      routes.AddCTUTRController.onPageLoad()
-    } else {
-      routes.CheckYourAnswersController.onPageLoad()
+    registration.otherEntityJourneyData.ctUtr match {
+      case Some(_) => routes.AddCTUTRController.onPageLoad()
+      case None    => routes.OtherEntityCheckYourAnswersController.onPageLoad()
     }
 }

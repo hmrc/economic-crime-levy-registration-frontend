@@ -15,28 +15,14 @@
  */
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
-import play.api.mvc.{Call, RequestHeader}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.AddressLookupFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import play.api.mvc.Call
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
-import uk.gov.hmrc.http.HttpVerbs.GET
+class AddCTUTRPageNavigator extends PageNavigator {
+  override protected def navigateInNormalMode(registration: Registration): Call =
+    routes.CTUTRPostcodeController.onPageLoad()
 
-import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-
-class AddCTUTRPageNavigator @Inject() (addressLookupFrontendConnector: AddressLookupFrontendConnector)(implicit
-  ec: ExecutionContext
-) extends AsyncPageNavigator
-    with FrontendHeaderCarrierProvider {
-  protected def navigateInNormalMode(registration: Registration)(implicit request: RequestHeader): Future[Call] =
-    navigateInEitherMode(NormalMode)
-
-  override protected def navigateInCheckMode(registration: Registration)(implicit
-    request: RequestHeader
-  ): Future[Call] =
-    navigateInEitherMode(CheckMode)
-
-  private def navigateInEitherMode(mode: Mode)(implicit requestHeader: RequestHeader): Future[Call] =
-    addressLookupFrontendConnector.initJourney(true, mode).map(journeyUrl => Call(GET, journeyUrl))
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    routes.OtherEntityCheckYourAnswersController.onPageLoad()
 }

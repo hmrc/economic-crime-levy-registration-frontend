@@ -44,14 +44,12 @@ class AddCTUTRControllerSpec extends SpecBase {
   val form: Form[String]                                     = formProvider()
   val CTUTR                                                  = "0123456789"
 
-  val pageNavigator: AddCTUTRPageNavigator = new AddCTUTRPageNavigator(mock[AddressLookupFrontendConnector]) {
-    override protected def navigateInNormalMode(
-      registration: Registration
-    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
+  val pageNavigator: AddCTUTRPageNavigator = new AddCTUTRPageNavigator() {
+    override protected def navigateInNormalMode(registration: Registration): Call =
+      onwardRoute
 
-    override protected def navigateInCheckMode(
-      registration: Registration
-    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
+    override protected def navigateInCheckMode(registration: Registration): Call =
+      onwardRoute
   }
 
   val enabled: PublicBetaAction = new PublicBetaAction(

@@ -174,3 +174,6 @@ POST        /do-you-have-a-corporation-tax-utr                               uk.
 
 GET         /what-is-your-corporation-tax-utr                                uk.gov.hmrc.economiccrimelevyregistration.controllers.AddCTUTRController.onPageLoad(mode: Mode = NormalMode)
 POST        /what-is-your-corporation-tax-utr                                uk.gov.hmrc.economiccrimelevyregistration.controllers.AddCTUTRController.onSubmit(mode: Mode = NormalMode)
+
+GET         /what-is-your-postcode                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.CTUTRPostcodeController.onPageLoad()
+POST        /what-is-your-postcode                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.CTUTRPostcodeController.onSubmit(mode: Mode = NormalMode)

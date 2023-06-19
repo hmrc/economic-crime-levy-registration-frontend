@@ -20,9 +20,7 @@ import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CTUTRLength
 
-import javax.inject.Inject
-
-class AddCTUTRFormProvider @Inject extends Mappings {
+class AddCTUTRFormProvider extends Mappings {
 
   def apply(): Form[String] =
     Form(

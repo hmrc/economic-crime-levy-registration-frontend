@@ -30,7 +30,7 @@ class AddCTUTRPageNavigatorSpec extends SpecBase {
 
   val mockAddressLookupFrontendConnector: AddressLookupFrontendConnector = mock[AddressLookupFrontendConnector]
 
-  val pageNavigator = new AddCTUTRPageNavigator(mockAddressLookupFrontendConnector)
+  val pageNavigator = new AddCTUTRPageNavigator()
 
   "nextPage" should {
     "return a call to the address lookup journey in either mode" in {
@@ -43,7 +43,7 @@ class AddCTUTRPageNavigatorSpec extends SpecBase {
         )
           .thenReturn(Future.successful(journeyUrl))
 
-        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
+        pageNavigator.nextPage(mode, updatedRegistration) shouldBe Call(GET, journeyUrl)
     }
   }
 
