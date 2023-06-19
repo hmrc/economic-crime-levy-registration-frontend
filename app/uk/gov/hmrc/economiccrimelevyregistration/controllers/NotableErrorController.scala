@@ -20,7 +20,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{UkLimitedCompany, UnlimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{RegisteredSociety, UkLimitedCompany, UnlimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.views.html._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -102,8 +102,8 @@ class NotableErrorController @Inject() (
       request.registration.entityType match {
         case Some(entityType) =>
           entityType match {
-            case UkLimitedCompany | UnlimitedCompany => Ok(detailsDoNotMatchCtView())
-            case _                                   => Ok(detailsDoNotMatchSaView())
+            case UkLimitedCompany | UnlimitedCompany | RegisteredSociety => Ok(detailsDoNotMatchCtView())
+            case _                                                       => Ok(detailsDoNotMatchSaView())
           }
         case _                => throw new IllegalStateException("Entity type not found in registration data")
       }

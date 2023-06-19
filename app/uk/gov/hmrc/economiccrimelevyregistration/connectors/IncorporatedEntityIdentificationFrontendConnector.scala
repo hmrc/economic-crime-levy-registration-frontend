@@ -18,8 +18,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.i18n.MessagesApi
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{RegisteredSociety, UkLimitedCompany, UnlimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, IncorporatedEntityCreateJourneyRequest, IncorporatedEntityJourneyData, ServiceNameLabels}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -27,7 +28,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 trait IncorporatedEntityIdentificationFrontendConnector {
-  def createUkCompanyJourney(companyType: EntityType, mode: Mode)(implicit
+  def createIncorporatedEntityJourney(incorporatedEntityType: EntityType, mode: Mode)(implicit
     hc: HeaderCarrier
   ): Future[GrsCreateJourneyResponse]
   def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData]
@@ -43,13 +44,19 @@ class IncorporatedEntityIdentificationFrontendConnectorImpl @Inject() (
   private val apiUrl =
     s"${appConfig.incorporatedEntityIdentificationFrontendBaseUrl}/incorporated-entity-identification/api"
 
-  def createUkCompanyJourney(companyType: EntityType, mode: Mode)(implicit
+  def createIncorporatedEntityJourney(incorporatedEntityType: EntityType, mode: Mode)(implicit
     hc: HeaderCarrier
   ): Future[GrsCreateJourneyResponse] = {
     val serviceNameLabels = ServiceNameLabels()
 
+    val url: String = incorporatedEntityType match {
+      case UkLimitedCompany | UnlimitedCompany => s"$apiUrl/limited-company-journey"
+      case RegisteredSociety                   => s"$apiUrl/registered-society-journey"
+      case e                                   => throw new IllegalArgumentException(s"$e is not a valid incorporated entity type")
+    }
+
     httpClient.POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-      s"$apiUrl/limited-company-journey",
+      url,
       IncorporatedEntityCreateJourneyRequest(
         continueUrl = s"${appConfig.grsContinueUrl}/${mode.toString.toLowerCase}",
         businessVerificationCheck = appConfig.incorporatedEntityBvEnabled,

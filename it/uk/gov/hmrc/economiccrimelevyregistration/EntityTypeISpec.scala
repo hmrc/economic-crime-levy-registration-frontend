@@ -32,16 +32,25 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
   s"POST ${routes.EntityTypeController.onSubmit(NormalMode).url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.EntityTypeController.onSubmit(NormalMode))
 
-    "save the selected entity type then redirect to the GRS UK Limited Company journey when the UK Limited Company option is selected" in {
+    "save the selected entity type then redirect to the GRS Incorporated Entity journey when one of the Incorporated Entity type options is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
 
+      val entityType = random[IncorporatedEntityType].entityType
+
+      val urlIncorporatedEntityType: String = entityType match {
+        case UkLimitedCompany | UnlimitedCompany => "limited-company-journey"
+        case RegisteredSociety                   => "registered-society-journey"
+        case e                                   => fail(s"$e is not a valid incorporated entity type")
+      }
+
       stubGetRegistration(registration)
-      stubCreateGrsJourney("/incorporated-entity-identification/api/limited-company-journey")
+
+      stubCreateGrsJourney(s"/incorporated-entity-identification/api/$urlIncorporatedEntityType")
 
       val updatedRegistration = registration.copy(
-        entityType = Some(UkLimitedCompany),
+        entityType = Some(entityType),
         incorporatedEntityJourneyData = None,
         soleTraderEntityJourneyData = None,
         partnershipEntityJourneyData = None,
@@ -52,7 +61,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(routes.EntityTypeController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", "UkLimitedCompany"))
+          .withFormUrlEncodedBody(("value", entityType.toString))
       )
 
       status(result) shouldBe SEE_OTHER

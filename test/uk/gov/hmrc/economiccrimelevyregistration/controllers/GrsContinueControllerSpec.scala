@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
-import uk.gov.hmrc.economiccrimelevyregistration.{LimitedPartnershipType, PartnershipType, ScottishOrGeneralPartnershipType}
+import uk.gov.hmrc.economiccrimelevyregistration.{IncorporatedEntityType, LimitedPartnershipType, PartnershipType, ScottishOrGeneralPartnershipType}
 
 import scala.concurrent.Future
 
@@ -61,9 +61,10 @@ class GrsContinueControllerSpec extends SpecBase {
         journeyId: String,
         registration: Registration,
         incorporatedEntityJourneyData: IncorporatedEntityJourneyData,
+        incorporatedEntityType: IncorporatedEntityType,
         businessPartnerId: String
       ) =>
-        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+        new TestContext(registration.copy(entityType = Some(incorporatedEntityType.entityType))) {
           val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
             incorporatedEntityJourneyData.copy(
               identifiersMatch = true,
@@ -77,7 +78,7 @@ class GrsContinueControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
 
           val updatedRegistration: Registration = registration.copy(
-            entityType = Some(UkLimitedCompany),
+            entityType = Some(incorporatedEntityType.entityType),
             incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
             soleTraderEntityJourneyData = None,
             partnershipEntityJourneyData = None
@@ -103,9 +104,10 @@ class GrsContinueControllerSpec extends SpecBase {
         journeyId: String,
         registration: Registration,
         incorporatedEntityJourneyData: IncorporatedEntityJourneyData,
+        incorporatedEntityType: IncorporatedEntityType,
         businessPartnerId: String
       ) =>
-        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+        new TestContext(registration.copy(entityType = Some(incorporatedEntityType.entityType))) {
           val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
             incorporatedEntityJourneyData.copy(
               identifiersMatch = true,
@@ -119,7 +121,7 @@ class GrsContinueControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
 
           val updatedRegistration: Registration = registration.copy(
-            entityType = Some(UkLimitedCompany),
+            entityType = Some(incorporatedEntityType.entityType),
             incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
             soleTraderEntityJourneyData = None,
             partnershipEntityJourneyData = None
@@ -144,9 +146,10 @@ class GrsContinueControllerSpec extends SpecBase {
       (
         journeyId: String,
         registration: Registration,
-        incorporatedEntityJourneyData: IncorporatedEntityJourneyData
+        incorporatedEntityJourneyData: IncorporatedEntityJourneyData,
+        incorporatedEntityType: IncorporatedEntityType
       ) =>
-        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+        new TestContext(registration.copy(entityType = Some(incorporatedEntityType.entityType))) {
           val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
             incorporatedEntityJourneyData.copy(identifiersMatch = true, businessVerification = failedBvResult)
 
@@ -156,7 +159,7 @@ class GrsContinueControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
 
           val updatedRegistration: Registration = registration.copy(
-            entityType = Some(UkLimitedCompany),
+            entityType = Some(incorporatedEntityType.entityType),
             incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
             soleTraderEntityJourneyData = None,
             partnershipEntityJourneyData = None
@@ -177,9 +180,10 @@ class GrsContinueControllerSpec extends SpecBase {
       (
         journeyId: String,
         registration: Registration,
-        incorporatedEntityJourneyData: IncorporatedEntityJourneyData
+        incorporatedEntityJourneyData: IncorporatedEntityJourneyData,
+        incorporatedEntityType: IncorporatedEntityType
       ) =>
-        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+        new TestContext(registration.copy(entityType = Some(incorporatedEntityType.entityType))) {
           val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
             incorporatedEntityJourneyData.copy(
               identifiersMatch = true,
@@ -193,7 +197,7 @@ class GrsContinueControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
 
           val updatedRegistration: Registration = registration.copy(
-            entityType = Some(UkLimitedCompany),
+            entityType = Some(incorporatedEntityType.entityType),
             incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
             soleTraderEntityJourneyData = None,
             partnershipEntityJourneyData = None
@@ -214,9 +218,10 @@ class GrsContinueControllerSpec extends SpecBase {
       (
         journeyId: String,
         registration: Registration,
-        incorporatedEntityJourneyData: IncorporatedEntityJourneyData
+        incorporatedEntityJourneyData: IncorporatedEntityJourneyData,
+        incorporatedEntityType: IncorporatedEntityType
       ) =>
-        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+        new TestContext(registration.copy(entityType = Some(incorporatedEntityType.entityType))) {
           val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
             incorporatedEntityJourneyData.copy(
               identifiersMatch = true,
@@ -230,7 +235,7 @@ class GrsContinueControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
 
           val updatedRegistration: Registration = registration.copy(
-            entityType = Some(UkLimitedCompany),
+            entityType = Some(incorporatedEntityType.entityType),
             incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
             soleTraderEntityJourneyData = None,
             partnershipEntityJourneyData = None
@@ -251,9 +256,10 @@ class GrsContinueControllerSpec extends SpecBase {
       (
         journeyId: String,
         registration: Registration,
-        incorporatedEntityJourneyData: IncorporatedEntityJourneyData
+        incorporatedEntityJourneyData: IncorporatedEntityJourneyData,
+        incorporatedEntityType: IncorporatedEntityType
       ) =>
-        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+        new TestContext(registration.copy(entityType = Some(incorporatedEntityType.entityType))) {
           val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
             incorporatedEntityJourneyData.copy(identifiersMatch = false)
 
@@ -263,7 +269,7 @@ class GrsContinueControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
 
           val updatedRegistration: Registration = registration.copy(
-            entityType = Some(UkLimitedCompany),
+            entityType = Some(incorporatedEntityType.entityType),
             incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
             soleTraderEntityJourneyData = None,
             partnershipEntityJourneyData = None
@@ -285,10 +291,11 @@ class GrsContinueControllerSpec extends SpecBase {
         journeyId: String,
         registration: Registration,
         incorporatedEntityJourneyData: IncorporatedEntityJourneyData,
+        incorporatedEntityType: IncorporatedEntityType,
         businessPartnerId: String,
         eclRegistrationReference: String
       ) =>
-        new TestContext(registration.copy(entityType = Some(UkLimitedCompany))) {
+        new TestContext(registration.copy(entityType = Some(incorporatedEntityType.entityType))) {
           val updatedIncorporatedEntityJourneyData: IncorporatedEntityJourneyData =
             incorporatedEntityJourneyData.copy(
               identifiersMatch = true,
@@ -302,7 +309,7 @@ class GrsContinueControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedIncorporatedEntityJourneyData))
 
           val updatedRegistration: Registration = registration.copy(
-            entityType = Some(UkLimitedCompany),
+            entityType = Some(incorporatedEntityType.entityType),
             incorporatedEntityJourneyData = Some(updatedIncorporatedEntityJourneyData),
             soleTraderEntityJourneyData = None,
             partnershipEntityJourneyData = None

@@ -33,6 +33,7 @@ object EntityType {
   case object ScottishLimitedPartnership extends EntityType
   case object LimitedLiabilityPartnership extends EntityType
   case object UnlimitedCompany extends EntityType
+  case object RegisteredSociety extends EntityType
   case object Other extends EntityType
 
   val values: Seq[EntityType] = Seq(
@@ -40,6 +41,7 @@ object EntityType {
     UkLimitedCompany,
     LimitedLiabilityPartnership,
     LimitedPartnership,
+    RegisteredSociety,
     ScottishLimitedPartnership,
     ScottishPartnership,
     SoleTrader,
@@ -73,6 +75,7 @@ object EntityType {
           case "ScottishLimitedPartnership"  => JsSuccess(ScottishLimitedPartnership)
           case "LimitedLiabilityPartnership" => JsSuccess(LimitedLiabilityPartnership)
           case "UnlimitedCompany"            => JsSuccess(UnlimitedCompany)
+          case "RegisteredSociety"           => JsSuccess(RegisteredSociety)
           case "Other"                       => JsSuccess(Other)
           case s                             => JsError(s"$s is not a valid EntityType")
         }

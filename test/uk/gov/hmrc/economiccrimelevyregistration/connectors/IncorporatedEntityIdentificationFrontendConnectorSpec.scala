@@ -18,12 +18,13 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import uk.gov.hmrc.economiccrimelevyregistration.UkCompanyType
+import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{RegisteredSociety, UkLimitedCompany, UnlimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 
 import scala.concurrent.Future
 
@@ -34,9 +35,18 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
 
   "createUkCompanyJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {
-      (grsCreateJourneyResponse: GrsCreateJourneyResponse, companyType: UkCompanyType, mode: Mode) =>
-        val entityType  = companyType.entityType
-        val expectedUrl = s"$apiUrl/limited-company-journey"
+      (
+        grsCreateJourneyResponse: GrsCreateJourneyResponse,
+        incorporatedEntityType: IncorporatedEntityType,
+        mode: Mode
+      ) =>
+        val entityType = incorporatedEntityType.entityType
+
+        val expectedUrl: String = incorporatedEntityType.entityType match {
+          case UkLimitedCompany | UnlimitedCompany => s"$apiUrl/limited-company-journey"
+          case RegisteredSociety                   => s"$apiUrl/registered-society-journey"
+          case e                                   => throw new IllegalArgumentException(s"$e is not a valid incorporated entity type")
+        }
 
         val expectedIncorporatedEntityCreateJourneyRequest: IncorporatedEntityCreateJourneyRequest = {
           val serviceNameLabels = ServiceNameLabels(
@@ -65,7 +75,7 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
         )
           .thenReturn(Future.successful(grsCreateJourneyResponse))
 
-        val result = await(connector.createUkCompanyJourney(entityType, mode))
+        val result = await(connector.createIncorporatedEntityJourney(entityType, mode))
 
         result shouldBe grsCreateJourneyResponse
 

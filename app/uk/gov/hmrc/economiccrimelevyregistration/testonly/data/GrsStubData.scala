@@ -78,7 +78,7 @@ trait GrsStubData {
   private def validCompanyProfile(partnership: Boolean): CompanyProfile = CompanyProfile(
     companyName = if (partnership) "Test Partnership Name" else "Test Company Name",
     companyNumber = "01234567",
-    dateOfIncorporation = LocalDate.parse("2007-12-03"),
+    dateOfIncorporation = "2007-12-03",
     unsanitisedCHROAddress = IncorporatedEntityAddress(
       address_line_1 = Some("Test Address Line 1"),
       address_line_2 = Some("Test Address Line 2"),
@@ -131,11 +131,11 @@ trait GrsStubData {
     registrationResult: GrsRegistrationResult,
     identifiersMatch: Boolean
   ): String = entityType match {
-    case UkLimitedCompany | UnlimitedCompany =>
+    case UkLimitedCompany | UnlimitedCompany | RegisteredSociety =>
       Json.prettyPrint(
         Json.toJson(defaultIncorporatedEntityJourneyData(businessVerification, registrationResult, identifiersMatch))
       )
-    case SoleTrader                          =>
+    case SoleTrader                                              =>
       Json.prettyPrint(
         Json.toJson(defaultSoleTraderJourneyData(businessVerification, registrationResult, identifiersMatch))
       )
@@ -146,7 +146,7 @@ trait GrsStubData {
           defaultPartnershipJourneyData(entityType, businessVerification, registrationResult, identifiersMatch)
         )
       )
-    case o                                   => throw new IllegalStateException(s"$o is not a valid GRS entity type")
+    case o                                                       => throw new IllegalStateException(s"$o is not a valid GRS entity type")
   }
 
 }
