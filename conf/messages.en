@@ -330,6 +330,7 @@ submitted.p1 = You have registered your eligibility for the Economic Crime Levy 
 submitted.p2 = You will need to submit a return and pay the levy on a yearly basis.
 submitted.p2.privateBeta = You will need to submit a return and pay the levy on a yearly basis. You will be able to submit a return later.
 submitted.p3 = The next deadline for submitting a return and making a payment is {0}. You will be charged interest if you make a late payment.
+submitted.p4 = You will not receive an email or notification from HMRC to remind you to submit a return.
 submitted.provide = When you complete your yearly return, you will need to tell us about:
 submitted.provide.b1 = the relevant accounting periods for your organisation
 submitted.provide.b2 = your UK revenue for the relevant accounting periods
