@@ -28,20 +28,12 @@ import scala.concurrent.Future
 
 class CtUtrPageNavigatorSpec extends SpecBase {
 
-  val mockAddressLookupFrontendConnector: AddressLookupFrontendConnector = mock[AddressLookupFrontendConnector]
-
   val pageNavigator = new CtUtrPageNavigator()
 
   "nextPage" should {
     "return a call to the address lookup journey in either mode" in {
       (registration: Registration, contactAddressIsUk: Boolean, journeyUrl: String, mode: Mode) =>
         val updatedRegistration: Registration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
-
-        when(
-          mockAddressLookupFrontendConnector
-            .initJourney(ArgumentMatchers.eq(contactAddressIsUk), ArgumentMatchers.eq(mode))(any())
-        )
-          .thenReturn(Future.successful(journeyUrl))
 
         pageNavigator.nextPage(mode, updatedRegistration) shouldBe Call(GET, journeyUrl)
     }

@@ -17,28 +17,25 @@
 package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
-
-object OtherEntityPostcodeSummary {
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+object DoYouHaveCtUtrSummary {
 
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.otherEntityJourneyData.postcode.map { answer =>
-      val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(answer))))
+    request.registration.otherEntityJourneyData.isCtUtrPresent.map { answer =>
+      val value = if (answer) "site.yes" else "site.no"
 
       SummaryListRowViewModel(
-        key = Key("otherEntityType.ctutr.postcode.label"),
-        value = value,
+        key = Key("otherEntityType.ctutr.question.label"),
+        value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.CtUtrPostcodeController.onPageLoad().url)
+          ActionItemViewModel("site.change", routes.DoYouHaveCtUtrController.onPageLoad().url)
             .withVisuallyHiddenText(
-              messages("otherEntityType.ctutr.postcode.label")
+              messages("otherEntityType.ctutr.question.label")
             )
         )
       )

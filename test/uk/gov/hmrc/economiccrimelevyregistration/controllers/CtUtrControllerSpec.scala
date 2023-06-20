@@ -97,15 +97,14 @@ class CtUtrControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "redirect to the next page" in forAll(Arbitrary.arbitrary[Registration]) { (registration: Registration) =>
-      val ctutr                             = CTUTR
-      val otherData: OtherEntityJourneyData = registration.otherEntityJourneyData.copy(ctUtr = Some(ctutr))
-      val updatedRegistration: Registration = registration.copy(optOtherEntityJourneyData = Some(otherData))
-      new TestContext(updatedRegistration) {
+      new TestContext(registration) {
+        val otherData: OtherEntityJourneyData = registration.otherEntityJourneyData.copy(ctUtr = Some(CTUTR))
+        val updatedRegistration: Registration = registration.copy(optOtherEntityJourneyData = Some(otherData))
         when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
           .thenReturn(Future.successful(updatedRegistration))
 
         val result: Future[Result] =
-          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", ctutr)))
+          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", CTUTR)))
 
         status(result) shouldBe SEE_OTHER
 

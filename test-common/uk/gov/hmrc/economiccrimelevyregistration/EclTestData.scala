@@ -283,6 +283,7 @@ trait EclTestData {
         businessName          <- Arbitrary.arbitrary[String]
         ctutr                 <- Arbitrary.arbitrary[String]
         postcode              <- Arbitrary.arbitrary[String]
+        isCtUtrPresent        <- Arbitrary.arbitrary[Boolean]
         otherEntityJourneyData = OtherEntityJourneyData(
                                    Some(UnincorporatedAssociation),
                                    Some(businessName),
@@ -290,7 +291,7 @@ trait EclTestData {
                                    None,
                                    None,
                                    Some(ctutr),
-                                   Some(true),
+                                   Some(isCtUtrPresent),
                                    None,
                                    None,
                                    Some(postcode)

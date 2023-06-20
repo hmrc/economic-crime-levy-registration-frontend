@@ -86,6 +86,7 @@ class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
             BusinessNameSummary.row(),
             CharityRegistrationNumberSummary.row(),
             CompanyRegistrationNumberSummary.row(),
+            DoYouHaveCtUtrSummary.row(),
             OtherEntityCtUtrSummary.row(),
             OtherEntityPostcodeSummary.row()
           ).flatten

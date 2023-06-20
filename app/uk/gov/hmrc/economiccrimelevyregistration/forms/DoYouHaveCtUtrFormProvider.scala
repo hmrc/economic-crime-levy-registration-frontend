@@ -21,6 +21,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
 class DoYouHaveCtUtrFormProvider extends Mappings {
   def apply(): Form[Boolean] = Form(
-    ("value", boolean("otherEntityType.error.required"))
+    ("value", boolean("otherEntityType.ctutr.error.required"))
   )
 }
