@@ -22,6 +22,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
 import uk.gov.hmrc.auth.core.{AffinityGroup, EnrolmentIdentifier, Enrolments, Enrolment => AuthEnrolment}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
+import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.UnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
@@ -43,6 +44,8 @@ final case class SelfAssessmentEntityType(entityType: EntityType)
 final case class EnrolmentsWithEcl(enrolments: Enrolments, eclReferenceNumber: String)
 
 final case class EnrolmentsWithoutEcl(enrolments: Enrolments)
+
+final case class RegistrationWithUnincorporatedAssociation(registration: Registration)
 
 final case class GroupEnrolmentsResponseWithEcl(
   groupEnrolmentsResponse: GroupEnrolmentsResponse,
@@ -273,4 +276,23 @@ trait EclTestData {
     telephoneNumber = Some(alphaNumericString)
   )
 
+  implicit val arbRegistrationWithUnincorporatedAssociation: Arbitrary[RegistrationWithUnincorporatedAssociation] =
+    Arbitrary {
+      for {
+        registration          <- Arbitrary.arbitrary[Registration]
+        otherEntityJourneyData = OtherEntityJourneyData(
+                                   Some(UnincorporatedAssociation),
+                                   Some("UA Test"),
+                                   None,
+                                   None,
+                                   None,
+                                   Some("0123456789"),
+                                   None,
+                                   None,
+                                   Some("A1B YT4")
+                                 )
+      } yield RegistrationWithUnincorporatedAssociation(registration =
+        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+      )
+    }
 }

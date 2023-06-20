@@ -20,10 +20,11 @@ import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, BodyParsers, Call, Result}
 import play.api.test.Helpers._
+import uk.gov.hmrc.economiccrimelevyregistration.RegistrationWithUnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.{arbEntitySubType, arbMode, arbRegistration, arbRegistrationWithUnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
@@ -70,10 +71,10 @@ class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view" in forAll { registration: Registration =>
-      new TestContext(registration) {
+    "return OK and the correct view" in forAll { registration: RegistrationWithUnincorporatedAssociation =>
+      new TestContext(registration.registration) {
         implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
-          RegistrationDataRequest(fakeRequest, registration.internalId, registration)
+          RegistrationDataRequest(fakeRequest, registration.registration.internalId, registration.registration)
         implicit val messages: Messages                                                       = messagesApi.preferred(registrationDataRequest)
 
         when(appConfig.privateBetaEnabled).thenReturn(false)
