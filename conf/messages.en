@@ -464,7 +464,7 @@ businessName.title = What is the name of your business?
 businessName.heading = What is the name of your business?
 businessName.hint = This is the registered name of your business.
 businessName.error.required = Enter a business name
-BusinessName.error.length = Business name must not be more than {0} characters
+businessName.error.length = Business name must not be more than {0} characters
 
 companyRegistrationNumber.title = What is your company registration number?
 companyRegistrationNumber.heading = What is your company registration number?
