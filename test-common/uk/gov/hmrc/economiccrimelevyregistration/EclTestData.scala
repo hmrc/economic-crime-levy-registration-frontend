@@ -280,19 +280,23 @@ trait EclTestData {
     Arbitrary {
       for {
         registration          <- Arbitrary.arbitrary[Registration]
+        businessName          <- Arbitrary.arbitrary[String]
+        ctutr                 <- Arbitrary.arbitrary[String]
+        postcode              <- Arbitrary.arbitrary[String]
         otherEntityJourneyData = OtherEntityJourneyData(
                                    Some(UnincorporatedAssociation),
-                                   Some("UA Test"),
+                                   Some(businessName),
                                    None,
                                    None,
                                    None,
-                                   Some("0123456789"),
+                                   Some(ctutr),
+                                   Some(true),
                                    None,
                                    None,
-                                   Some("A1B YT4")
+                                   Some(postcode)
                                  )
       } yield RegistrationWithUnincorporatedAssociation(registration =
-        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData), entityType = Some(Other))
       )
     }
 }

@@ -18,11 +18,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CTUTRPostcodeLength
-class CTUTRPostcodeFormProvider extends Mappings {
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("otherEntityType.ctutr.postcode.required")
-        .verifying(maxLength(CTUTRPostcodeLength, "otherEntityType.ctutr.postcode.error"))
-    )
+
+class DoYouHaveCtUtrFormProvider extends Mappings {
+  def apply(): Form[Boolean] = Form(
+    ("value", boolean("otherEntityType.error.required"))
+  )
 }

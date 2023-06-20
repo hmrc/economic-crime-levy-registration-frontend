@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.navigation
-import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-class AddCTUTRPageNavigator extends PageNavigator {
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    routes.CTUTRPostcodeController.onPageLoad()
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CTUTRLength
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    routes.OtherEntityCheckYourAnswersController.onPageLoad()
+class CtUtrFormProvider extends Mappings {
+
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("otherEntityType.ctutr.error.required")
+        .verifying(exactLength(CTUTRLength, "otherEntityType.ctutr.error.length"))
+    )
 }

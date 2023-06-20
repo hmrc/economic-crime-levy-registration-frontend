@@ -22,29 +22,29 @@ import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.{OK, SEE_OTHER}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AddCTUTRView
-import play.api.mvc.{BodyParsers, Call, RequestHeader, Result}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrView
+import play.api.mvc.{BodyParsers, Call, Result}
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.AddCTUTRFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.arbRegistration
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.AddCTUTRPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPageNavigator
 
 import scala.concurrent.Future
 
-class AddCTUTRControllerSpec extends SpecBase {
+class CtUtrControllerSpec extends SpecBase {
 
-  val view: AddCTUTRView                                     = app.injector.instanceOf[AddCTUTRView]
+  val view: CtUtrView                                        = app.injector.instanceOf[CtUtrView]
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   val errorHandler: ErrorHandler                             = app.injector.instanceOf[ErrorHandler]
-  val formProvider: AddCTUTRFormProvider                     = new AddCTUTRFormProvider()
+  val formProvider: CtUtrFormProvider                        = new CtUtrFormProvider()
   val form: Form[String]                                     = formProvider()
   val CTUTR                                                  = "0123456789"
 
-  val pageNavigator: AddCTUTRPageNavigator = new AddCTUTRPageNavigator() {
+  val pageNavigator: CtUtrPageNavigator = new CtUtrPageNavigator() {
     override protected def navigateInNormalMode(registration: Registration): Call =
       onwardRoute
 
@@ -59,7 +59,7 @@ class AddCTUTRControllerSpec extends SpecBase {
   )
 
   class TestContext(registrationData: Registration) {
-    val controller = new AddCTUTRController(
+    val controller = new CtUtrController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),

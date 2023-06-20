@@ -36,7 +36,7 @@ object OtherEntityPostcodeSummary {
         key = Key("otherEntityType.ctutr.postcode.label"),
         value = value,
         actions = Seq(
-          ActionItemViewModel("site.change", routes.CTUTRPostcodeController.onPageLoad().url)
+          ActionItemViewModel("site.change", routes.CtUtrPostcodeController.onPageLoad().url)
             .withVisuallyHiddenText(
               messages("otherEntityType.ctutr.postcode.label")
             )

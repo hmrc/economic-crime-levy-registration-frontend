@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, BodyParsers, Call, Result}
 import play.api.test.Helpers._
@@ -91,7 +90,6 @@ class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
             OtherEntityPostcodeSummary.row()
           ).flatten
         ).withCssClass("govuk-!-margin-bottom-9")
-
         status(result)          shouldBe OK
         contentAsString(result) shouldBe view(otherEntityDetails)(
           fakeRequest,

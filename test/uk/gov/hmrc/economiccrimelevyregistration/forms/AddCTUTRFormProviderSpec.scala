@@ -24,7 +24,7 @@ class AddCTUTRFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey = "otherEntityType.ctutr.error.required"
 
-  val form = new AddCTUTRFormProvider()()
+  val form = new CtUtrFormProvider()()
 
   "value" should {
 

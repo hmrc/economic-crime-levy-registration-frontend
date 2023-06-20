@@ -169,11 +169,11 @@ POST        /what-is-your-company-registration-number                        uk.
 GET         /change-answer/what-is-your-company-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CompanyRegistrationNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/what-is-your-company-registration-number          uk.gov.hmrc.economiccrimelevyregistration.controllers.CompanyRegistrationNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /do-you-have-a-corporation-tax-utr                               uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCTUTRController.onPageLoad(mode: Mode = NormalMode)
-POST        /do-you-have-a-corporation-tax-utr                               uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCTUTRController.onSubmit(mode: Mode = NormalMode)
+GET         /do-you-have-a-corporation-tax-utr                               uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCtUtrController.onPageLoad(mode: Mode = NormalMode)
+POST        /do-you-have-a-corporation-tax-utr                               uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCtUtrController.onSubmit(mode: Mode = NormalMode)
 
-GET         /what-is-your-corporation-tax-utr                                uk.gov.hmrc.economiccrimelevyregistration.controllers.AddCTUTRController.onPageLoad(mode: Mode = NormalMode)
-POST        /what-is-your-corporation-tax-utr                                uk.gov.hmrc.economiccrimelevyregistration.controllers.AddCTUTRController.onSubmit(mode: Mode = NormalMode)
+GET         /what-is-your-corporation-tax-utr                                uk.gov.hmrc.economiccrimelevyregistration.controllers.CtUtrController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-corporation-tax-utr                                uk.gov.hmrc.economiccrimelevyregistration.controllers.CtUtrController.onSubmit(mode: Mode = NormalMode)
 
-GET         /what-is-your-postcode                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.CTUTRPostcodeController.onPageLoad()
-POST        /what-is-your-postcode                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.CTUTRPostcodeController.onSubmit(mode: Mode = NormalMode)
+GET         /what-is-your-postcode                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.CtUtrPostcodeController.onPageLoad()
+POST        /what-is-your-postcode                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.CtUtrPostcodeController.onSubmit(mode: Mode = NormalMode)

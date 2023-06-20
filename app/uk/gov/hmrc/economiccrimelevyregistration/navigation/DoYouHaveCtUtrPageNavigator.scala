@@ -23,7 +23,7 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
-class DoYouHaveCTUTRPageNavigator @Inject() (implicit
+class DoYouHaveCtUtrPageNavigator @Inject() (implicit
   ex: ExecutionContext
 ) extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call = navigateInEitherMode(registration)
@@ -31,8 +31,9 @@ class DoYouHaveCTUTRPageNavigator @Inject() (implicit
   override protected def navigateInCheckMode(registration: Registration): Call = navigateInEitherMode(registration)
 
   private def navigateInEitherMode(registration: Registration): Call =
-    registration.otherEntityJourneyData.ctUtr match {
-      case Some(_) => routes.AddCTUTRController.onPageLoad()
-      case None    => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    if (registration.otherEntityJourneyData.isCtUtrPresent.get) {
+      routes.CtUtrController.onPageLoad()
+    } else {
+      routes.OtherEntityCheckYourAnswersController.onPageLoad()
     }
 }

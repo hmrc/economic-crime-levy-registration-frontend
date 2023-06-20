@@ -26,11 +26,11 @@ import uk.gov.hmrc.http.HttpVerbs.GET
 
 import scala.concurrent.Future
 
-class AddCTUTRPageNavigatorSpec extends SpecBase {
+class CtUtrPageNavigatorSpec extends SpecBase {
 
   val mockAddressLookupFrontendConnector: AddressLookupFrontendConnector = mock[AddressLookupFrontendConnector]
 
-  val pageNavigator = new AddCTUTRPageNavigator()
+  val pageNavigator = new CtUtrPageNavigator()
 
   "nextPage" should {
     "return a call to the address lookup journey in either mode" in {

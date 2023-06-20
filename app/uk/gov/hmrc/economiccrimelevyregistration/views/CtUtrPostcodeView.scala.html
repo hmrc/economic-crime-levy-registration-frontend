@@ -39,7 +39,7 @@
     <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("otherEntityType.ctutr.postcode.h1"))</h1>
     <div class="govuk-hint">@messages("otherEntityType.ctutr.postcode.hint")</div>
 
-    @formHelper(action = CTUTRPostcodeController.onSubmit()) {
+    @formHelper(action = CtUtrPostcodeController.onSubmit()) {
         @govukInput(
             InputViewModel(
                 field = form("value"),

@@ -25,5 +25,5 @@ object MaxLengths {
   val OrganisationNameMaxLength       = 160
   val CompanyRegistrationNumberLength = 8
   val CTUTRLength                     = 10
-  val CTUTRPostcodeLength             = 8
+  val CtUtrPostcodeLength             = 8
 }
