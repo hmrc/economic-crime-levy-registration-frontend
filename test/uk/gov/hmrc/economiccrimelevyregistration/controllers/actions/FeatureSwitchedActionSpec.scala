@@ -26,7 +26,6 @@ import scala.concurrent.Future
 
 class FeatureSwitchedActionSpec extends SpecBase {
 
-  val errorHandler: ErrorHandler    = app.injector.instanceOf[ErrorHandler]
   val parser: BodyParsers.Default   = app.injector.instanceOf[BodyParsers.Default]
   override val appConfig: AppConfig = mock[AppConfig]
 

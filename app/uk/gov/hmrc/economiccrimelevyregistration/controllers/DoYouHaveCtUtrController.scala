@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, PublicBetaAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveCtUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveCtUtrPageNavigator
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveCtUtrView
@@ -61,8 +61,13 @@ class DoYouHaveCtUtrController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           answer => {
-            val otherEntityJourneyData =
-              request.registration.otherEntityJourneyData.copy(isCtUtrPresent = Some(answer), postcode = None)
+            val userChangedIsCtutrPresentAnswer = ctutrIsNotPresentAnymore(request.registration, mode, answer)
+            val otherEntityJourneyData          =
+              request.registration.otherEntityJourneyData.copy(
+                isCtUtrPresent = Some(answer),
+                postcode = userChangedIsCtutrPresentAnswer._1,
+                ctUtr = userChangedIsCtutrPresentAnswer._2
+              )
             eclRegistrationConnector
               .upsertRegistration(
                 request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
@@ -70,5 +75,16 @@ class DoYouHaveCtUtrController @Inject() (
               .map(updatedRegistration => Redirect(pageNavigator.nextPage(mode, updatedRegistration)))
           }
         )
+    }
+
+  private def ctutrIsNotPresentAnymore(
+    registration: Registration,
+    mode: Mode,
+    answer: Boolean
+  ): (Option[String], Option[String]) =
+    if (!answer & mode == CheckMode) {
+      (None, None)
+    } else {
+      (registration.otherEntityJourneyData.postcode, registration.otherEntityJourneyData.ctUtr)
     }
 }

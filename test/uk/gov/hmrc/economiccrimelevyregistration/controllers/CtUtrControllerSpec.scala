@@ -24,7 +24,6 @@ import play.api.http.Status.{OK, SEE_OTHER}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
-import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrView
 import play.api.mvc.{BodyParsers, Call, Result}
@@ -40,11 +39,15 @@ class CtUtrControllerSpec extends SpecBase {
 
   val view: CtUtrView                                        = app.injector.instanceOf[CtUtrView]
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val errorHandler: ErrorHandler                             = app.injector.instanceOf[ErrorHandler]
   val formProvider: CtUtrFormProvider                        = new CtUtrFormProvider()
   val form: Form[String]                                     = formProvider()
   override val appConfig: AppConfig                          = mock[AppConfig]
   val CTUTR                                                  = "0123456789"
+  val publicBetaAction: PublicBetaAction                     = new PublicBetaAction(
+    errorHandler = errorHandler,
+    appConfig = appConfig,
+    parser = app.injector.instanceOf[BodyParsers.Default]
+  )
 
   val pageNavigator: CtUtrPageNavigator = new CtUtrPageNavigator() {
     override protected def navigateInNormalMode(registration: Registration): Call =
@@ -54,12 +57,6 @@ class CtUtrControllerSpec extends SpecBase {
       onwardRoute
   }
 
-  val enabled: PublicBetaAction = new PublicBetaAction(
-    errorHandler = errorHandler,
-    appConfig = appConfig,
-    parser = app.injector.instanceOf[BodyParsers.Default]
-  )
-
   class TestContext(registrationData: Registration) {
     when(appConfig.privateBetaEnabled).thenReturn(false)
     val controller = new CtUtrController(
@@ -67,7 +64,7 @@ class CtUtrControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
-      enabled,
+      publicBetaAction,
       formProvider,
       pageNavigator,
       view

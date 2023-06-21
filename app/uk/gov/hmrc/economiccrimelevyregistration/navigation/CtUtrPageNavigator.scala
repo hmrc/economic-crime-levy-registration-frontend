@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
 class CtUtrPageNavigator extends PageNavigator {
@@ -24,5 +24,16 @@ class CtUtrPageNavigator extends PageNavigator {
     routes.CtUtrPostcodeController.onPageLoad(NormalMode)
 
   override protected def navigateInCheckMode(registration: Registration): Call =
-    routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    registration.otherEntityJourneyData.isCtUtrPresent match {
+      case None        => routes.NotableErrorController.answersAreInvalid()
+      case Some(value) =>
+        if (value) {
+          registration.otherEntityJourneyData.postcode match {
+            case None    => routes.CtUtrPostcodeController.onPageLoad(CheckMode)
+            case Some(_) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+          }
+        } else {
+          routes.OtherEntityCheckYourAnswersController.onPageLoad()
+        }
+    }
 }
