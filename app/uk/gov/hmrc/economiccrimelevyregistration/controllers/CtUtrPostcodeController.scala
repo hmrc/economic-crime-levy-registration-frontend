@@ -45,10 +45,10 @@ class CtUtrPostcodeController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form: Form[String]               = formProvider()
-  def onPageLoad(): Action[AnyContent] =
+  val form: Form[String]                         = formProvider()
+  def onPageLoad(mode: Mode): Action[AnyContent] =
     (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData) { implicit request =>
-      Ok(view(form.prepare(request.registration.otherEntityJourneyData.postcode)))
+      Ok(view(form.prepare(request.registration.otherEntityJourneyData.postcode), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
@@ -56,7 +56,7 @@ class CtUtrPostcodeController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           postcode => {
             val otherEntity: OtherEntityJourneyData =
               request.registration.otherEntityJourneyData.copy(postcode = Some(postcode))

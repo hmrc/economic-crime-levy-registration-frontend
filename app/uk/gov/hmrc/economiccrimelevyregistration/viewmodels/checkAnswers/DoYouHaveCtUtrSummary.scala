@@ -33,7 +33,7 @@ object DoYouHaveCtUtrSummary {
         key = Key("otherEntityType.ctutr.question.label"),
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.DoYouHaveCtUtrController.onPageLoad().url)
+          ActionItemViewModel("site.change", routes.DoYouHaveCtUtrController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(
               messages("otherEntityType.ctutr.question.label")
             )

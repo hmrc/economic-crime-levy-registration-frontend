@@ -29,6 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntity
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrView
 import play.api.mvc.{BodyParsers, Call, Result}
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.arbRegistration
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPageNavigator
@@ -42,6 +43,7 @@ class CtUtrControllerSpec extends SpecBase {
   val errorHandler: ErrorHandler                             = app.injector.instanceOf[ErrorHandler]
   val formProvider: CtUtrFormProvider                        = new CtUtrFormProvider()
   val form: Form[String]                                     = formProvider()
+  override val appConfig: AppConfig                          = mock[AppConfig]
   val CTUTR                                                  = "0123456789"
 
   val pageNavigator: CtUtrPageNavigator = new CtUtrPageNavigator() {
@@ -59,6 +61,7 @@ class CtUtrControllerSpec extends SpecBase {
   )
 
   class TestContext(registrationData: Registration) {
+    when(appConfig.privateBetaEnabled).thenReturn(false)
     val controller = new CtUtrController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),

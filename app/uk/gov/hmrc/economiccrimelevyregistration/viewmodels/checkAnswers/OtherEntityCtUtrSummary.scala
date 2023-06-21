@@ -36,7 +36,7 @@ object OtherEntityCtUtrSummary {
         key = Key("checkYourAnswers.ctUtr.label"),
         value = value,
         actions = Seq(
-          ActionItemViewModel("site.change", routes.DoYouHaveCtUtrController.onPageLoad().url)
+          ActionItemViewModel("site.change", routes.DoYouHaveCtUtrController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(
               messages("checkYourAnswers.ctUtr.label")
             )

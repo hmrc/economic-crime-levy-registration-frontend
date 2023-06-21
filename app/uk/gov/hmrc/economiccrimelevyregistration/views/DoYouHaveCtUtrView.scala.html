@@ -40,7 +40,7 @@
 
   <div class="govuk-hint">@messages("otherEntityType.ctutr.question.hint")</div>
 
-    @formHelper(action = DoYouHaveCtUtrController.onSubmit()) {
+    @formHelper(action = DoYouHaveCtUtrController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }

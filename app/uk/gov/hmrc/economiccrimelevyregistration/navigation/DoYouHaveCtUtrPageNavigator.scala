@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -26,13 +26,21 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 class DoYouHaveCtUtrPageNavigator @Inject() (implicit
   ex: ExecutionContext
 ) extends PageNavigator {
-  override protected def navigateInNormalMode(registration: Registration): Call = navigateInEitherMode(registration)
+  override protected def navigateInNormalMode(registration: Registration): Call =
+    registration.otherEntityJourneyData.isCtUtrPresent match {
+      case Some(isCtUtrPresent) => navigateInEitherMode(isCtUtrPresent, NormalMode)
+      case None                 => routes.NotableErrorController.answersAreInvalid()
+    }
 
-  override protected def navigateInCheckMode(registration: Registration): Call = navigateInEitherMode(registration)
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    registration.otherEntityJourneyData.isCtUtrPresent match {
+      case Some(isCtUtrPresent) => navigateInEitherMode(isCtUtrPresent, CheckMode)
+      case None                 => routes.NotableErrorController.answersAreInvalid()
+    }
 
-  private def navigateInEitherMode(registration: Registration): Call =
-    if (registration.otherEntityJourneyData.isCtUtrPresent.get) {
-      routes.CtUtrController.onPageLoad()
+  private def navigateInEitherMode(isCtUtrPresent: Boolean, mode: Mode): Call =
+    if (isCtUtrPresent) {
+      routes.CtUtrController.onPageLoad(mode)
     } else {
       routes.OtherEntityCheckYourAnswersController.onPageLoad()
     }

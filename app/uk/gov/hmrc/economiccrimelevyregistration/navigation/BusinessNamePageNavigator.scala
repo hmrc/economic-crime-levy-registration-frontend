@@ -28,7 +28,7 @@ class BusinessNamePageNavigator extends PageNavigator {
       case Some(value) =>
         value match {
           case Charity                   => routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
-          case UnincorporatedAssociation => routes.DoYouHaveCtUtrController.onPageLoad()
+          case UnincorporatedAssociation => routes.DoYouHaveCtUtrController.onPageLoad(NormalMode)
           case _                         => ???
         }
     }

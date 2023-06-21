@@ -41,7 +41,7 @@
     <p class="govuk-body">@messages("otherEntityType.ctutr.body")</p>
     <div class="govuk-hint">@messages("otherEntityType.ctutr.hint")</div>
 
-    @formHelper(action = CtUtrController.onSubmit()) {
+    @formHelper(action = CtUtrController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),

@@ -29,7 +29,7 @@
         govukButton: GovukButton
 )
 
-@(form: Form[String])(implicit request: Request[_], messages: Messages)
+@(form: Form[String], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleWithForm(form, messages("otherEntityType.ctutr.postcode.title"))) {
     @if(form.errors.nonEmpty) {
@@ -39,7 +39,7 @@
     <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("otherEntityType.ctutr.postcode.h1"))</h1>
     <div class="govuk-hint">@messages("otherEntityType.ctutr.postcode.hint")</div>
 
-    @formHelper(action = CtUtrPostcodeController.onSubmit()) {
+    @formHelper(action = CtUtrPostcodeController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),
