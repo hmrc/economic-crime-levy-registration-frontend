@@ -28,19 +28,25 @@ class DoYouHaveCtUtrPageNavigator @Inject() (implicit
 ) extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.otherEntityJourneyData.isCtUtrPresent match {
-      case Some(isCtUtrPresent) => navigateInEitherMode(isCtUtrPresent, NormalMode)
+      case Some(isCtUtrPresent) =>
+        navigateInEitherMode(registration.otherEntityJourneyData.postcode, isCtUtrPresent, NormalMode)
       case None                 => routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call =
     registration.otherEntityJourneyData.isCtUtrPresent match {
-      case Some(isCtUtrPresent) => navigateInEitherMode(isCtUtrPresent, CheckMode)
+      case Some(isCtUtrPresent) =>
+        navigateInEitherMode(registration.otherEntityJourneyData.postcode, isCtUtrPresent, CheckMode)
       case None                 => routes.NotableErrorController.answersAreInvalid()
     }
 
-  private def navigateInEitherMode(isCtUtrPresent: Boolean, mode: Mode): Call =
+  private def navigateInEitherMode(postcode: Option[String], isCtUtrPresent: Boolean, mode: Mode): Call =
     if (isCtUtrPresent) {
-      routes.CtUtrController.onPageLoad(mode)
+      (mode, postcode) match {
+        case (CheckMode, Some(_)) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+        case (CheckMode, None)    => routes.CtUtrController.onPageLoad(mode)
+        case (NormalMode, _)      => routes.CtUtrController.onPageLoad(mode)
+      }
     } else {
       routes.OtherEntityCheckYourAnswersController.onPageLoad()
     }
