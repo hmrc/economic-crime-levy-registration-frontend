@@ -35,7 +35,7 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
     "save the charity registration number then redirect to the business sector page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val charityNumber = "-".repeat(CharityRegistrationNumberMaxLength)
+      val charityNumber = stringsWithMaxLength(CharityRegistrationNumberMaxLength).sample.get
 
       val registration = random[Registration]
 
