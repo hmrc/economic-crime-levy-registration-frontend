@@ -30,6 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
 import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
+import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpVerbs.GET
@@ -55,6 +56,7 @@ trait SpecBase
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val ec: ExecutionContext     = scala.concurrent.ExecutionContext.Implicits.global
   implicit val hc: HeaderCarrier        = HeaderCarrier()
+  val errorHandler: ErrorHandler        = app.injector.instanceOf[ErrorHandler]
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val appConfig: AppConfig                             = app.injector.instanceOf[AppConfig]

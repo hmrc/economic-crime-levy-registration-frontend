@@ -94,14 +94,13 @@ trait Constraints {
         Valid
     }
 
-  protected def nonEmptySet(errorKey: String): Constraint[Set[_]] =
+  protected def nonEmptySet(errorKey: String): Constraint[Set[_]]                                       =
     Constraint {
       case set if set.nonEmpty =>
         Valid
       case _                   =>
         Invalid(errorKey)
     }
-
   protected def telephoneNumber(max: Int, maxLengthKey: String, invalidKey: String): Constraint[String] = Constraint {
     s =>
       maxLength(max, maxLengthKey)(s) match {

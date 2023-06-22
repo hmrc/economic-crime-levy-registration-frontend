@@ -30,7 +30,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaA
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CharityRegistrationNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CharityRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.CharityRegistrationNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CharityRegistrationNumberView
@@ -55,7 +54,6 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val errorHandler: ErrorHandler                             = app.injector.instanceOf[ErrorHandler]
   override val appConfig: AppConfig                          = mock[AppConfig]
   val enabled: PublicBetaAction                              = new PublicBetaAction(
     errorHandler = errorHandler,
@@ -64,6 +62,7 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
   )
 
   class TestContext(registrationData: Registration) {
+    when(appConfig.privateBetaEnabled).thenReturn(false)
 
     val controller = new CharityRegistrationNumberController(
       mcc,
@@ -81,8 +80,6 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
     "return OK and the correct view when no answer has already been provided" in forAll {
       (registration: Registration, mode: Mode) =>
         new TestContext(registration.copy(optOtherEntityJourneyData = Some(OtherEntityJourneyData.empty()))) {
-          when(appConfig.privateBetaEnabled).thenReturn(false)
-
           val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
           status(result) shouldBe OK
@@ -96,7 +93,6 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
         val otherEntityJourneyData =
           OtherEntityJourneyData.empty().copy(charityRegistrationNumber = Some(charityNumber))
         new TestContext(registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))) {
-          when(appConfig.privateBetaEnabled).thenReturn(false)
 
           val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
