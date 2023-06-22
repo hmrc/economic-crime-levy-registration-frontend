@@ -61,7 +61,7 @@ class DoYouHaveCtUtrController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           answer => {
-            val userChangedIsCtutrPresentAnswer = ctutrIsNotPresentAnymore(request.registration, mode, answer)
+            val userChangedIsCtutrPresentAnswer = checckIfUserHasCtUtr(request.registration, answer)
             val otherEntityJourneyData          =
               request.registration.otherEntityJourneyData.copy(
                 isCtUtrPresent = Some(answer),
@@ -77,12 +77,11 @@ class DoYouHaveCtUtrController @Inject() (
         )
     }
 
-  private def ctutrIsNotPresentAnymore(
+  private def checckIfUserHasCtUtr(
     registration: Registration,
-    mode: Mode,
     answer: Boolean
   ): (Option[String], Option[String]) =
-    if (!answer & mode == CheckMode) {
+    if (!answer) {
       (None, None)
     } else {
       (registration.otherEntityJourneyData.postcode, registration.otherEntityJourneyData.ctUtr)
