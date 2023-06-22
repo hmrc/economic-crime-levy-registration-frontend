@@ -37,7 +37,7 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       val registration = random[Registration]
 
-      val companyNumber = "-".repeat(CompanyRegistrationNumberMaxLength)
+      val companyNumber = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
 
       stubGetRegistration(registration)
 
