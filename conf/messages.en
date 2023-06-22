@@ -457,8 +457,9 @@ charityRegistrationNumber.title = What is your charity registration number (CHRN
 charityRegistrationNumber.heading = What is your charity registration number (CHRN)?
 charityRegistrationNumber.p1 = Your charity registration number is on any mail that the charity regulator has sent you.
 charityRegistrationNumber.p2 = In Scotland, your registration number will start with SC.
-charityRegistrationNumber.hint = For example, 01234567 or SC012345.
+charityRegistrationNumber.hint = For example, 1234567 or SC01234.
 charityRegistrationNumber.error.required = Enter a charity registration number
+charityRegistrationNumber.error.length = Charity registration number must not exceed {0} characters
 
 businessName.title = What is the name of your business?
 businessName.heading = What is the name of your business?
@@ -471,4 +472,4 @@ companyRegistrationNumber.heading = What is your company registration number?
 companyRegistrationNumber.p1 = Your company registration number (CRN) is 8 characters long.
 companyRegistrationNumber.hint = For example, 01234567 or SC123456
 companyRegistrationNumber.error.required = Enter a company registration number
-companyRegistrationNumber.error.length = Company registration number must be exactly {0} characters
+companyRegistrationNumber.error.length = Company registration number must not exceed {0} characters

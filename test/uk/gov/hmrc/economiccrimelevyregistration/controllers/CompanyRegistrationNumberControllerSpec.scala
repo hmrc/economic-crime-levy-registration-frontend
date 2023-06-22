@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CompanyRegistrationNumberFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -110,7 +110,7 @@ class CompanyRegistrationNumberControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the company number then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithExactLength(CompanyRegistrationNumberLength),
+      stringsWithMaxLength(CompanyRegistrationNumberMaxLength),
       Arbitrary.arbitrary[Mode]
     ) { (registration: Registration, companyNumber: String, mode: Mode) =>
       val otherEntityJourneyData =

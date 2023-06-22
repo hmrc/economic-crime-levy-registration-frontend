@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 
 import javax.inject.Inject
 
@@ -27,7 +27,7 @@ class CompanyRegistrationNumberFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("companyRegistrationNumber.error.required")
-        .verifying(exactLength(CompanyRegistrationNumberLength, "companyRegistrationNumber.error.length"))
+        .verifying(maxLength(CompanyRegistrationNumberMaxLength, "companyRegistrationNumber.error.length"))
     )
 
 }
