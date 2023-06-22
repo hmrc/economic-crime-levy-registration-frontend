@@ -110,7 +110,7 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the charity registration number then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithExactLength(CharityRegistrationNumberMaxLength),
+      stringsWithMaxLength(CharityRegistrationNumberMaxLength),
       Arbitrary.arbitrary[Mode]
     ) { (registration: Registration, charityNumber: String, mode: Mode) =>
       val otherEntityJourneyData =
