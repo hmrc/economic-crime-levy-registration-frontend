@@ -30,7 +30,8 @@ class OtherEntityTypeDataCleanup @Inject() () extends DataCleanup {
       ctUtr = None,
       saUtr = None,
       overseasTaxIdentifier = None,
-      postcode = None
+      postcode = None,
+      isCtUtrPresent = None
     )
     registration.copy(
       optOtherEntityJourneyData = Some(otherEntityJourneyData)

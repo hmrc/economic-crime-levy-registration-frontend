@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{BodyParsers, Call, RequestHeader, Result}
+import play.api.mvc.{BodyParsers, Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
@@ -30,7 +30,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaA
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CompanyRegistrationNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.CompanyRegistrationNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CompanyRegistrationNumberView
@@ -55,7 +54,6 @@ class CompanyRegistrationNumberControllerSpec extends SpecBase {
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val errorHandler: ErrorHandler                             = app.injector.instanceOf[ErrorHandler]
   override val appConfig: AppConfig                          = mock[AppConfig]
   val enabled: PublicBetaAction                              = new PublicBetaAction(
     errorHandler = errorHandler,
@@ -64,6 +62,7 @@ class CompanyRegistrationNumberControllerSpec extends SpecBase {
   )
 
   class TestContext(registrationData: Registration) {
+    when(appConfig.privateBetaEnabled).thenReturn(false)
 
     val controller = new CompanyRegistrationNumberController(
       mcc,
@@ -81,7 +80,6 @@ class CompanyRegistrationNumberControllerSpec extends SpecBase {
     "return OK and the correct view when no answer has already been provided" in forAll {
       (registration: Registration, mode: Mode) =>
         new TestContext(registration.copy(optOtherEntityJourneyData = Some(OtherEntityJourneyData.empty()))) {
-          when(appConfig.privateBetaEnabled).thenReturn(false)
 
           val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
@@ -96,7 +94,6 @@ class CompanyRegistrationNumberControllerSpec extends SpecBase {
         val otherEntityJourneyData =
           OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))
         new TestContext(registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))) {
-          when(appConfig.privateBetaEnabled).thenReturn(false)
 
           val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 

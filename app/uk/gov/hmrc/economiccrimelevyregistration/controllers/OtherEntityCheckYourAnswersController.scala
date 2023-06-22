@@ -51,7 +51,10 @@ class OtherEntityCheckYourAnswersController @Inject() (
         OtherEntityTypeSummary.row(),
         BusinessNameSummary.row(),
         CharityRegistrationNumberSummary.row(),
-        CompanyRegistrationNumberSummary.row()
+        CompanyRegistrationNumberSummary.row(),
+        DoYouHaveCtUtrSummary.row(),
+        OtherEntityCtUtrSummary.row(),
+        OtherEntityPostcodeSummary.row()
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 
