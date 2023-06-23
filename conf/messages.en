@@ -475,7 +475,7 @@ charityRegistrationNumber.title = What is your charity registration number (CHRN
 charityRegistrationNumber.heading = What is your charity registration number (CHRN)?
 charityRegistrationNumber.p1 = Your charity registration number is on any mail that the charity regulator has sent you.
 charityRegistrationNumber.p2 = In Scotland, your registration number will start with SC.
-charityRegistrationNumber.hint = For example, 1234567 or SC01234.
+charityRegistrationNumber.hint = For example, A999 or AB99999.
 charityRegistrationNumber.error.required = Enter a charity registration number
 charityRegistrationNumber.error.length = Charity registration number must not exceed {0} characters
 
