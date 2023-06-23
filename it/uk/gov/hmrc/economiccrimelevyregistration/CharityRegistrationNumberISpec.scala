@@ -5,6 +5,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CharityRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
@@ -34,11 +35,13 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
     "save the charity registration number then redirect to the business sector page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
+      val charityNumber = stringsWithMaxLength(CharityRegistrationNumberMaxLength).sample.get
+
       val registration = random[Registration]
 
       stubGetRegistration(registration)
 
-      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(charityRegistrationNumber = Some("01234567"))
+      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(charityRegistrationNumber = Some(charityNumber))
       val updatedRegistration = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
@@ -47,7 +50,7 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       val result = callRoute(
         FakeRequest(routes.CharityRegistrationNumberController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", "01234567"))
+          .withFormUrlEncodedBody(("value", charityNumber))
       )
 
       status(result) shouldBe SEE_OTHER

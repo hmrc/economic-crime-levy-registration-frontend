@@ -5,6 +5,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
@@ -36,9 +37,11 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       val registration = random[Registration]
 
+      val companyNumber = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
+
       stubGetRegistration(registration)
 
-      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some("01234567"))
+      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))
       val updatedRegistration = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
@@ -47,7 +50,7 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       val result = callRoute(
         FakeRequest(routes.CompanyRegistrationNumberController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", "01234567"))
+          .withFormUrlEncodedBody(("value", companyNumber))
       )
 
       status(result) shouldBe SEE_OTHER
