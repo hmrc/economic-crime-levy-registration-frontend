@@ -8,6 +8,7 @@ val silencerVersion = "1.7.7"
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
+  .settings(SbtDistributablesPlugin.publishingSettings: _*)
   .settings(inConfig(Test)(testSettings): _*)
   .configs(IntegrationTest)
   .settings(inConfig(IntegrationTest)(itSettings): _*)
