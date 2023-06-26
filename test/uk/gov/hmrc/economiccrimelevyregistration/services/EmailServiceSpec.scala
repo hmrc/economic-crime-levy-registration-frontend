@@ -49,8 +49,7 @@ class EmailServiceSpec extends SpecBase {
           ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
           ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages),
           "true",
-          None,
-          (!appConfig.returnsJourneyEnabled).toString
+          None
         )
 
         when(
@@ -97,8 +96,7 @@ class EmailServiceSpec extends SpecBase {
           ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
           eclDueDate,
           "true",
-          Some(secondContactEmail),
-          (!appConfig.returnsJourneyEnabled).toString
+          Some(secondContactEmail)
         )
 
         val expectedSecondContactParams = RegistrationSubmittedEmailParameters(
@@ -107,8 +105,7 @@ class EmailServiceSpec extends SpecBase {
           ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
           eclDueDate,
           "false",
-          Some(secondContactEmail),
-          (!appConfig.returnsJourneyEnabled).toString
+          Some(secondContactEmail)
         )
 
         when(

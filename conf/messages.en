@@ -55,7 +55,6 @@ start.b2 = regulated by one of the Professional Body Supervisors (PBS) for AML s
 start.p2 = Check if you {0}.
 start.p2.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">need to pay the levy</a>
 start.p3 = You will be able to submit a return and pay the levy after you have registered. You must pay the levy by 30 September {0}. You will be charged interest if you make a late payment.
-start.p3.privateBeta = You cannot submit a return right now. You will be able to do so at a later date.
 start.beforeYouStart = Before you start
 start.provide = You will need to tell us:
 start.provide.b1 = about any accounting periods for your organisation ending in the relevant financial year
@@ -346,7 +345,6 @@ submitted.reference = ECL reference number: {0}
 submitted.subHeading = What happens next
 submitted.p1 = You have registered your eligibility for the Economic Crime Levy (ECL). You have received a reference number and an email confirmation. Please save these for your records.
 submitted.p2 = You will need to submit a return and pay the levy on a yearly basis.
-submitted.p2.privateBeta = You will need to submit a return and pay the levy on a yearly basis. You will be able to submit a return later.
 submitted.p3 = The next deadline for submitting a return and making a payment is {0}. You will be charged interest if you make a late payment.
 submitted.p4 = You will not receive an email or notification from HMRC to remind you to submit a return.
 submitted.provide = When you complete your yearly return, you will need to tell us about:

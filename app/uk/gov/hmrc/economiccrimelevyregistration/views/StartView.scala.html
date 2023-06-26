@@ -42,13 +42,8 @@
     </ul>
 
     <p class="govuk-body">@Html(messages("start.p2", messages("start.p2.link")))</p>
-    <p class="govuk-body">
-    @if(!appConfig.returnsJourneyEnabled) {
-        @messages("start.p3.privateBeta")
-    } else {
-        @messages("start.p3", EclTaxYear.yearDue)
-    }
-    </p>
+
+    <p class="govuk-body">@messages("start.p3", EclTaxYear.yearDue)</p>
 
     <h2 class="govuk-heading-m">@messages("start.beforeYouStart")</h2>
 
