@@ -21,6 +21,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
@@ -93,21 +94,32 @@ class CheckYourAnswersController @Inject() (
 
     val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
 
+    val entityType = request.registration.entityType
+
     for {
       _        <- eclRegistrationConnector.upsertRegistration(registration =
                     request.registration.copy(base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView))
                   )
-      response <- eclRegistrationConnector.submitRegistration(request.internalId)
+      response <- eclRegistrationConnector.submitRegistration(request.internalId, entityType)
       _         = emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference)
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield {
-      val updatedSession = request.session ++ Seq(
-        SessionKeys.EclReference             -> response.eclReference,
+      val session = entityType match {
+        case Some(Other) => request.session
+        case _           => request.session ++ Seq(
+          SessionKeys.EclReference -> response.eclReference,
+        )
+      }
+
+      val updatedSession = session ++ Seq(
         SessionKeys.FirstContactEmailAddress -> request.registration.contacts.firstContactDetails.emailAddress
           .getOrElse(throw new IllegalStateException("First contact email address not found in registration data"))
       )
 
-      Redirect(routes.RegistrationSubmittedController.onPageLoad()).withSession(
+      Redirect( entityType match {
+        case Some(Other) => routes.RegistrationReceivedController.onPageLoad()
+        case _           => routes.RegistrationSubmittedController.onPageLoad()
+      } ).withSession(
         request.registration.contacts.secondContactDetails.emailAddress.fold(updatedSession)(email =>
           updatedSession ++ Seq(SessionKeys.SecondContactEmailAddress -> email)
         )

@@ -183,3 +183,5 @@ GET         /what-is-your-postcode                                           uk.
 POST        /what-is-your-postcode                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.CtUtrPostcodeController.onSubmit(mode: Mode = NormalMode)
 GET         /change-answer/what-is-your-postcode                             uk.gov.hmrc.economiccrimelevyregistration.controllers.CtUtrPostcodeController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/what-is-your-postcode                             uk.gov.hmrc.economiccrimelevyregistration.controllers.CtUtrPostcodeController.onSubmit(mode: Mode = CheckMode)
+
+GET         /registration-received                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.RegistrationReceivedController.onPageLoad()
