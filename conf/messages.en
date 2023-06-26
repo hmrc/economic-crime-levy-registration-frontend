@@ -477,7 +477,7 @@ charityRegistrationNumber.p1 = Your charity registration number is on any mail t
 charityRegistrationNumber.p2 = This could be up to 7 characters and must begin with either 1 or 2 letters, followed by 1 to 5 numbers.
 charityRegistrationNumber.hint = For example, A999 or AB99999.
 charityRegistrationNumber.error.required = Enter a charity registration number
-charityRegistrationNumber.error.length = Charity registration number must not exceed {0} characters
+charityRegistrationNumber.error.length = Charity registration number must not be more than {0} characters
 
 businessName.title = What is the name of your business?
 businessName.heading = What is the name of your business?
@@ -489,5 +489,5 @@ companyRegistrationNumber.title = What is your company registration number?
 companyRegistrationNumber.heading = What is your company registration number?
 companyRegistrationNumber.p1 = Your company registration number (CRN) is 8 characters long.
 companyRegistrationNumber.hint = For example, 01234567 or SC123456
-companyRegistrationNumber.error.required = Enter a company registration number
-companyRegistrationNumber.error.length = Company registration number must not exceed {0} characters
+companyRegistrationNumber.error.required = Enter a company registration number (CRN)
+companyRegistrationNumber.error.length = Company registration number (CRN) must not be more than {0} characters
