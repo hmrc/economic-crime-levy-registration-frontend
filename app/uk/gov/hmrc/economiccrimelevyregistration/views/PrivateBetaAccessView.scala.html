@@ -77,7 +77,7 @@
     <p class="govuk-body">@messages("privateBetaAccess.receive")</p>
 
     @govukWarningText(WarningText(
-        iconFallbackText = messages("site.warningIconFallback"),
+        iconFallbackText = Option(messages("site.warningIconFallback")),
         content = Text(messages("privateBetaAccess.doNotContact"))
     ))
 
