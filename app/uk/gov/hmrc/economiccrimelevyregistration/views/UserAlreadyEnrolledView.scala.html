@@ -28,7 +28,5 @@
 
     <p class="govuk-body">@messages("userAlreadyEnrolled.body.p1", eclReferenceNumber)</p>
 
-    @if(appConfig.returnsJourneyEnabled) {
-        <p class="govuk-body">@Html(messages("userAlreadyEnrolled.body.p2", messages("userAlreadyEnrolled.body.p2.link", appConfig.submitReturnUrl)))</p>
-    }
+    <p class="govuk-body">@Html(messages("userAlreadyEnrolled.body.p2", messages("userAlreadyEnrolled.body.p2.link", appConfig.submitReturnUrl)))</p>
 }
