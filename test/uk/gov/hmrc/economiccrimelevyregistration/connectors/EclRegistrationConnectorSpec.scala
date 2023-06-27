@@ -279,7 +279,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
             .POSTEmpty[CreateEclSubscriptionResponse](ArgumentMatchers.eq(expectedUrl), any())(any(), any(), any())
         ).thenReturn(Future.successful(subscriptionResponse))
 
-        val result = await(connector.submitRegistration(internalId))
+        val result = await(connector.submitRegistration(internalId, None))
 
         result shouldBe subscriptionResponse
 

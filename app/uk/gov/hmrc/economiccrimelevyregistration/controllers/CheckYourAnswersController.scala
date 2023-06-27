@@ -101,14 +101,15 @@ class CheckYourAnswersController @Inject() (
                     request.registration.copy(base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView))
                   )
       response <- eclRegistrationConnector.submitRegistration(request.internalId, entityType)
-      _         = emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference)
+      _         = emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference, entityType)
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield {
       val session = entityType match {
         case Some(Other) => request.session
-        case _           => request.session ++ Seq(
-          SessionKeys.EclReference -> response.eclReference,
-        )
+        case _           =>
+          request.session ++ Seq(
+            SessionKeys.EclReference -> response.eclReference
+          )
       }
 
       val updatedSession = session ++ Seq(
@@ -116,10 +117,10 @@ class CheckYourAnswersController @Inject() (
           .getOrElse(throw new IllegalStateException("First contact email address not found in registration data"))
       )
 
-      Redirect( entityType match {
+      Redirect(entityType match {
         case Some(Other) => routes.RegistrationReceivedController.onPageLoad()
         case _           => routes.RegistrationSubmittedController.onPageLoad()
-      } ).withSession(
+      }).withSession(
         request.registration.contacts.secondContactDetails.emailAddress.fold(updatedSession)(email =>
           updatedSession ++ Seq(SessionKeys.SecondContactEmailAddress -> email)
         )

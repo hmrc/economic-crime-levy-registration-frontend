@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class RegistrationReceivedController @Inject()(
+class RegistrationReceivedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithoutEnrolmentCheck,
   view: RegistrationReceivedView

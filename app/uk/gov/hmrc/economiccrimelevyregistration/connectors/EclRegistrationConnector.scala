@@ -82,10 +82,12 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
         case Left(e)             => throw e
       }
 
-  def submitRegistration(internalId: String, entityType: Option[EntityType])(implicit hc: HeaderCarrier): Future[CreateEclSubscriptionResponse] = {
+  def submitRegistration(internalId: String, entityType: Option[EntityType])(implicit
+    hc: HeaderCarrier
+  ): Future[CreateEclSubscriptionResponse] =
     entityType match {
       case Some(Other) => Future.successful(CreateEclSubscriptionResponse(Instant.now, ""))
-      case _           => httpClient.POSTEmpty[CreateEclSubscriptionResponse](s"$eclRegistrationUrl/submit-registration/$internalId")
+      case _           =>
+        httpClient.POSTEmpty[CreateEclSubscriptionResponse](s"$eclRegistrationUrl/submit-registration/$internalId")
     }
-  }
 }
