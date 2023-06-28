@@ -32,14 +32,14 @@
 
 @(form: Form[String], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleWithForm(form, messages("otherEntityType.ctutr.title"))) {
+@layout(pageTitle = titleWithForm(form, messages("otherEntityType.addCtutr.title"))) {
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-    <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("otherEntityType.ctutr.h1"))</h1>
-    <p class="govuk-body">@messages("otherEntityType.ctutr.body")</p>
-    <div class="govuk-hint">@messages("otherEntityType.ctutr.hint")</div>
+    <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("otherEntityType.addCtutr.h1"))</h1>
+    <p class="govuk-body">@messages("otherEntityType.addCtutr.body")</p>
+    <div class="govuk-hint">@messages("otherEntityType.addCtutr.hint")</div>
 
     @formHelper(action = CtUtrController.onSubmit(mode)) {
         @govukInput(
