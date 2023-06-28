@@ -123,9 +123,9 @@ trait Constraints {
   }
 
   protected def areAllElementsNumbers(invalidKey: String): Constraint[String] = Constraint {
-    case input if !(input forall Character.isDigit) =>
+    case input if input.exists(!_.isDigit) =>
       Invalid(invalidKey)
-    case _                                          => Valid
+    case _                                 => Valid
 
   }
 }

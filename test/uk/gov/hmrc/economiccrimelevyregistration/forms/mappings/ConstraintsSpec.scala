@@ -225,4 +225,15 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
       result shouldEqual Invalid(error, length)
     }
   }
+
+  "areAllElementsNumbers" should {
+    "return Valid for a string of numbers" in {
+      val result = areAllElementsNumbers("otherEntityType.addCtutr.error.length").apply("0123456789")
+      result shouldEqual Valid
+    }
+    "return Invalid for a string that contains alphanumerical values" in {
+      val result = areAllElementsNumbers("otherEntityType.addCtutr.error.length").apply("10234567UK")
+      result shouldEqual Invalid("otherEntityType.addCtutr.error.length")
+    }
+  }
 }
