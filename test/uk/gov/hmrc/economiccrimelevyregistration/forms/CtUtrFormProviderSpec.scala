@@ -20,9 +20,9 @@ import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CTUTRLength
 
-class AddCTUTRFormProviderSpec extends StringFieldBehaviours {
+class CtUtrFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "otherEntityType.ctutr.error.required"
+  val requiredKey = "otherEntityType.addCtutr.error.required"
 
   val form = new CtUtrFormProvider()()
 
