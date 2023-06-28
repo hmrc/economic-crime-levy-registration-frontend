@@ -22,7 +22,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
-import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
@@ -31,9 +31,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
+import java.time.Instant
 import java.util.Base64
 import javax.inject.Singleton
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject() (
@@ -100,16 +101,25 @@ class CheckYourAnswersController @Inject() (
       _        <- eclRegistrationConnector.upsertRegistration(registration =
                     request.registration.copy(base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView))
                   )
-      response <- eclRegistrationConnector.submitRegistration(request.internalId, entityType)
+      response = entityType match {
+                    case Some(Other) || None => None
+                    case Some(_)             => Some(eclRegistrationConnector.submitRegistration(request.internalId))
+                  }
       _         = emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference, entityType)
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield {
       val session = entityType match {
         case Some(Other) => request.session
-        case _           =>
-          request.session ++ Seq(
-            SessionKeys.EclReference -> response.eclReference
-          )
+        case _           => {
+          val eclReference: String = response match {
+            case Some(future) => future.map(eclReference => {
+              request.session ++ Seq(
+                SessionKeys.EclReference -> eclReference
+              )
+            })
+            case _            => ""
+          }
+        }
       }
 
       val updatedSession = session ++ Seq(
