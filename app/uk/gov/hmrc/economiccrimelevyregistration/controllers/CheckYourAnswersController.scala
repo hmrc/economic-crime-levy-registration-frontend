@@ -101,7 +101,7 @@ class CheckYourAnswersController @Inject() (
       _        <- eclRegistrationConnector.upsertRegistration(registration =
                     request.registration.copy(base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView))
                   )
-      response <-  eclRegistrationConnector.submitRegistration(request.internalId, entityType)
+      response <- eclRegistrationConnector.submitRegistration(request.internalId, entityType)
       _         = emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference, entityType)
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield {
