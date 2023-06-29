@@ -16,26 +16,24 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
-import play.api.mvc.Call
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.{RegistrationWithUnincorporatedAssociation, ValidTrustRegistration}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.AddressLookupFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
-import uk.gov.hmrc.http.HttpVerbs.GET
-
-import scala.concurrent.Future
+import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 
 class CtUtrPageNavigatorSpec extends SpecBase {
 
   val pageNavigator = new CtUtrPageNavigator()
 
   "nextPage" should {
-    "return a call to the address lookup journey in either mode" in {
-      (registration: Registration, contactAddressIsUk: Boolean, journeyUrl: String, mode: Mode) =>
-        val updatedRegistration: Registration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
+    "redirect to Other entity check your answer page when Trust registration is valid in NormalMode" in {
+      (validTrustRegistration: ValidTrustRegistration) =>
+       pageNavigator.nextPage(NormalMode, validTrustRegistration.registration) shouldBe routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    }
 
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe Call(GET, journeyUrl)
+    "redirect to postcode page when Unincorporated Association registration is valid in NormalMode" in {
+      (registrationWithUnincorporatedAssociation: RegistrationWithUnincorporatedAssociation) =>
+        pageNavigator.nextPage(NormalMode, registrationWithUnincorporatedAssociation.registration) shouldBe routes.CtUtrPostcodeController.onPageLoad(NormalMode)
     }
   }
 
