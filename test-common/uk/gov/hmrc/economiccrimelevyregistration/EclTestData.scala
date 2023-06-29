@@ -305,21 +305,21 @@ trait EclTestData {
   implicit val arbValidTrustRegistration: Arbitrary[ValidTrustRegistration] =
     Arbitrary {
       for {
-        registration <- Arbitrary.arbitrary[Registration]
-        businessName <- Arbitrary.arbitrary[String]
-        ctutr <- Arbitrary.arbitrary[String]
+        registration          <- Arbitrary.arbitrary[Registration]
+        businessName          <- Arbitrary.arbitrary[String]
+        ctutr                 <- Arbitrary.arbitrary[String]
         otherEntityJourneyData = OtherEntityJourneyData(
-          Some(Trust),
-          Some(businessName),
-          None,
-          None,
-          None,
-          Some(ctutr),
-          None,
-          None,
-          None,
-          None
-        )
+                                   Some(Trust),
+                                   Some(businessName),
+                                   None,
+                                   None,
+                                   None,
+                                   Some(ctutr),
+                                   None,
+                                   None,
+                                   None,
+                                   None
+                                 )
       } yield ValidTrustRegistration(registration =
         registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData), entityType = Some(Other))
       )

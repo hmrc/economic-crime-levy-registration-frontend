@@ -28,12 +28,18 @@ class CtUtrPageNavigatorSpec extends SpecBase {
   "nextPage" should {
     "redirect to Other entity check your answer page when Trust registration is valid in NormalMode" in {
       (validTrustRegistration: ValidTrustRegistration) =>
-       pageNavigator.nextPage(NormalMode, validTrustRegistration.registration) shouldBe routes.OtherEntityCheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(
+          NormalMode,
+          validTrustRegistration.registration
+        ) shouldBe routes.OtherEntityCheckYourAnswersController.onPageLoad()
     }
 
     "redirect to postcode page when Unincorporated Association registration is valid in NormalMode" in {
       (registrationWithUnincorporatedAssociation: RegistrationWithUnincorporatedAssociation) =>
-        pageNavigator.nextPage(NormalMode, registrationWithUnincorporatedAssociation.registration) shouldBe routes.CtUtrPostcodeController.onPageLoad(NormalMode)
+        pageNavigator.nextPage(
+          NormalMode,
+          registrationWithUnincorporatedAssociation.registration
+        ) shouldBe routes.CtUtrPostcodeController.onPageLoad(NormalMode)
     }
   }
 
