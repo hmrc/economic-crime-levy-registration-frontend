@@ -38,23 +38,19 @@ class CtUtrPageNavigator extends PageNavigator {
 
   override protected def navigateInCheckMode(registration: Registration): Call =
     registration.otherEntityJourneyData.entityType match {
-      case None        => routes.NotableErrorController.answersAreInvalid()
-      case Some(value) =>
-        if (value == Trust) {
-          routes.OtherEntityCheckYourAnswersController.onPageLoad()
-        } else {
-          registration.otherEntityJourneyData.isCtUtrPresent match {
-            case None        => routes.NotableErrorController.answersAreInvalid()
-            case Some(value) =>
-              if (value) {
-                registration.otherEntityJourneyData.postcode match {
-                  case None    => routes.CtUtrPostcodeController.onPageLoad(CheckMode)
-                  case Some(_) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
-                }
-              } else {
-                routes.OtherEntityCheckYourAnswersController.onPageLoad()
-              }
-          }
+      case None           => routes.NotableErrorController.answersAreInvalid()
+      case Some(_ @Trust) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+      case Some(_)        =>
+        registration.otherEntityJourneyData.isCtUtrPresent match {
+          case None           => routes.NotableErrorController.answersAreInvalid()
+          case Some(_ @ true) =>
+            registration.otherEntityJourneyData.postcode match {
+              case None    => routes.CtUtrPostcodeController.onPageLoad(CheckMode)
+              case Some(_) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+            }
+          case Some(_)        => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+
         }
     }
+
 }
