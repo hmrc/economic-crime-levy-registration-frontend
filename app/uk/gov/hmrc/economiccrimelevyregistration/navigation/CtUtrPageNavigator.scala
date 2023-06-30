@@ -26,13 +26,9 @@ class CtUtrPageNavigator extends PageNavigator {
       case None    => routes.NotableErrorController.answersAreInvalid()
       case Some(_) =>
         registration.otherEntityJourneyData.entityType match {
-          case None        => routes.NotableErrorController.answersAreInvalid()
-          case Some(value) =>
-            if (value == Trust) {
-              routes.OtherEntityCheckYourAnswersController.onPageLoad()
-            } else {
-              routes.CtUtrPostcodeController.onPageLoad(NormalMode)
-            }
+          case None           => routes.NotableErrorController.answersAreInvalid()
+          case Some(_ @Trust) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+          case Some(_)        => routes.CtUtrPostcodeController.onPageLoad(NormalMode)
         }
     }
 
