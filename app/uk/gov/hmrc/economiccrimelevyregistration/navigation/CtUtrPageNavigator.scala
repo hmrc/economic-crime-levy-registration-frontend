@@ -18,22 +18,35 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Trust
 
 class CtUtrPageNavigator extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
-    routes.CtUtrPostcodeController.onPageLoad(NormalMode)
-
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    registration.otherEntityJourneyData.isCtUtrPresent match {
-      case None        => routes.NotableErrorController.answersAreInvalid()
-      case Some(value) =>
-        if (value) {
-          registration.otherEntityJourneyData.postcode match {
-            case None    => routes.CtUtrPostcodeController.onPageLoad(CheckMode)
-            case Some(_) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
-          }
-        } else {
-          routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    registration.otherEntityJourneyData.ctUtr match {
+      case None    => routes.NotableErrorController.answersAreInvalid()
+      case Some(_) =>
+        registration.otherEntityJourneyData.entityType match {
+          case None           => routes.NotableErrorController.answersAreInvalid()
+          case Some(_ @Trust) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+          case Some(_)        => routes.CtUtrPostcodeController.onPageLoad(NormalMode)
         }
     }
+
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    registration.otherEntityJourneyData.entityType match {
+      case None           => routes.NotableErrorController.answersAreInvalid()
+      case Some(_ @Trust) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+      case Some(_)        =>
+        registration.otherEntityJourneyData.isCtUtrPresent match {
+          case None           => routes.NotableErrorController.answersAreInvalid()
+          case Some(_ @ true) =>
+            registration.otherEntityJourneyData.postcode match {
+              case None    => routes.CtUtrPostcodeController.onPageLoad(CheckMode)
+              case Some(_) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+            }
+          case Some(_)        => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+
+        }
+    }
+
 }

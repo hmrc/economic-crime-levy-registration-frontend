@@ -22,7 +22,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
 import uk.gov.hmrc.auth.core.{AffinityGroup, EnrolmentIdentifier, Enrolments, Enrolment => AuthEnrolment}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.UnincorporatedAssociation
+import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.{Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
@@ -46,6 +46,7 @@ final case class EnrolmentsWithEcl(enrolments: Enrolments, eclReferenceNumber: S
 final case class EnrolmentsWithoutEcl(enrolments: Enrolments)
 
 final case class RegistrationWithUnincorporatedAssociation(registration: Registration)
+final case class ValidTrustRegistration(registration: Registration)
 
 final case class GroupEnrolmentsResponseWithEcl(
   groupEnrolmentsResponse: GroupEnrolmentsResponse,
@@ -297,6 +298,29 @@ trait EclTestData {
                                    Some(postcode)
                                  )
       } yield RegistrationWithUnincorporatedAssociation(registration =
+        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData), entityType = Some(Other))
+      )
+    }
+
+  implicit val arbValidTrustRegistration: Arbitrary[ValidTrustRegistration] =
+    Arbitrary {
+      for {
+        registration          <- Arbitrary.arbitrary[Registration]
+        businessName          <- Arbitrary.arbitrary[String]
+        ctutr                 <- Arbitrary.arbitrary[String]
+        otherEntityJourneyData = OtherEntityJourneyData(
+                                   Some(Trust),
+                                   Some(businessName),
+                                   None,
+                                   None,
+                                   None,
+                                   Some(ctutr),
+                                   None,
+                                   None,
+                                   None,
+                                   None
+                                 )
+      } yield ValidTrustRegistration(registration =
         registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData), entityType = Some(Other))
       )
     }

@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.{Charity, UnincorporatedAssociation}
+import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.{Charity, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
 class BusinessNamePageNavigator extends PageNavigator {
@@ -29,6 +29,7 @@ class BusinessNamePageNavigator extends PageNavigator {
         value match {
           case Charity                   => routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
           case UnincorporatedAssociation => routes.DoYouHaveCtUtrController.onPageLoad(NormalMode)
+          case Trust                     => routes.CtUtrController.onPageLoad(NormalMode)
           case _                         => ???
         }
     }

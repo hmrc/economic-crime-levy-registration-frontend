@@ -25,7 +25,9 @@ class CtUtrFormProvider extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("otherEntityType.addCtutr.error.required")
-        .verifying(exactLength(CTUTRLength, "otherEntityType.addCtutr.error.length"))
-        .verifying(areAllElementsNumbers("otherEntityType.addCtutr.error.length"))
+        .verifying(
+          exactLength(CTUTRLength, "otherEntityType.addCtutr.error.length"),
+          areAllElementsNumbers("otherEntityType.addCtutr.error.length")
+        )
     )
 }
