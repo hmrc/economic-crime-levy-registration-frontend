@@ -138,8 +138,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           when(
             mockEclRegistrationConnector.submitRegistration(
-              ArgumentMatchers.eq(updatedRegistration.internalId),
-              ArgumentMatchers.eq(updatedRegistration.entityType)
+              ArgumentMatchers.eq(updatedRegistration.internalId)
             )(any())
           )
             .thenReturn(Future.successful(createEclSubscriptionResponse))
@@ -167,7 +166,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         }
     }
 
-    "(Other Entity) redirect to the registration submitted page after submitting the registration with one contact and sending email successfully" in forAll(
+    "(Other Entity) redirect to the registration received page after submitting the registration with one contact and sending email successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
       Arbitrary.arbitrary[EntityType].retryUntil(_ == Other),
@@ -193,14 +192,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedRegistration))
 
           when(
-            mockEclRegistrationConnector.submitRegistration(
-              ArgumentMatchers.eq(updatedRegistration.internalId),
-              ArgumentMatchers.eq(updatedRegistration.entityType)
-            )(any())
-          )
-            .thenReturn(Future.successful(createEclSubscriptionResponse))
-
-          when(
             mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
           )
             .thenReturn(Future.successful(()))
@@ -214,7 +205,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
-            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference),
+            ArgumentMatchers.eq(""),
             ArgumentMatchers.eq(updatedRegistration.entityType)
           )(any(), any())
 
@@ -251,8 +242,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           when(
             mockEclRegistrationConnector.submitRegistration(
-              ArgumentMatchers.eq(updatedRegistration.internalId),
-              ArgumentMatchers.eq(updatedRegistration.entityType)
+              ArgumentMatchers.eq(updatedRegistration.internalId)
             )(any())
           )
             .thenReturn(Future.successful(createEclSubscriptionResponse))
@@ -280,7 +270,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         }
     }
 
-    "(Other Entity) redirect to the registration submitted page after submitting the registration with two contacts and sending emails successfully" in forAll(
+    "(Other Entity) redirect to the registration received page after submitting the registration with two contacts and sending emails successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
       Arbitrary.arbitrary[EntityType].retryUntil(_ == Other),
@@ -308,14 +298,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedRegistration))
 
           when(
-            mockEclRegistrationConnector.submitRegistration(
-              ArgumentMatchers.eq(updatedRegistration.internalId),
-              ArgumentMatchers.eq(updatedRegistration.entityType)
-            )(any())
-          )
-            .thenReturn(Future.successful(createEclSubscriptionResponse))
-
-          when(
             mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
           )
             .thenReturn(Future.successful(()))
@@ -329,7 +311,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
-            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference),
+            ArgumentMatchers.eq(""),
             ArgumentMatchers.eq(updatedRegistration.entityType)
           )(any(), any())
 
@@ -353,8 +335,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           when(
             mockEclRegistrationConnector.submitRegistration(
-              ArgumentMatchers.eq(updatedRegistration.internalId),
-              ArgumentMatchers.eq(updatedRegistration.entityType)
+              ArgumentMatchers.eq(updatedRegistration.internalId)
             )(any())
           )
             .thenReturn(Future.successful(createEclSubscriptionResponse))

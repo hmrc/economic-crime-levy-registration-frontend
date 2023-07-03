@@ -20,13 +20,11 @@ import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, EntityType, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, Registration}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpResponse, UpstreamErrorResponse}
 
-import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -82,11 +80,8 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
         case Left(e)             => throw e
       }
 
-  def submitRegistration(internalId: String, entityType: Option[EntityType])(implicit
+  def submitRegistration(internalId: String)(implicit
     hc: HeaderCarrier
-  ): Future[CreateEclSubscriptionResponse] = entityType match {
-    case Some(Other) => Future.successful(CreateEclSubscriptionResponse(Instant.now, ""))
-    case _           =>
-      httpClient.POSTEmpty[CreateEclSubscriptionResponse](s"$eclRegistrationUrl/submit-registration/$internalId")
-  }
+  ): Future[CreateEclSubscriptionResponse] =
+    httpClient.POSTEmpty[CreateEclSubscriptionResponse](s"$eclRegistrationUrl/submit-registration/$internalId")
 }

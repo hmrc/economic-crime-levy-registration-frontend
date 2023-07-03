@@ -22,13 +22,14 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EntityType, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import java.time.Instant
@@ -101,7 +102,7 @@ class CheckYourAnswersController @Inject() (
       _        <- eclRegistrationConnector.upsertRegistration(registration =
                     request.registration.copy(base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView))
                   )
-      response <- eclRegistrationConnector.submitRegistration(request.internalId, entityType)
+      response <- submitRegistration(request.internalId, entityType)
       _         = emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference, entityType)
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield {
@@ -131,4 +132,11 @@ class CheckYourAnswersController @Inject() (
 
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
     .encodeToString(html.getBytes)
+  def submitRegistration(internalId: String, entityType: Option[EntityType])(implicit
+    hc: HeaderCarrier
+  ): Future[CreateEclSubscriptionResponse]               = entityType match {
+    case Some(Other) => Future.successful(CreateEclSubscriptionResponse(Instant.now, ""))
+    case _           =>
+      eclRegistrationConnector.submitRegistration(internalId)
+  }
 }
