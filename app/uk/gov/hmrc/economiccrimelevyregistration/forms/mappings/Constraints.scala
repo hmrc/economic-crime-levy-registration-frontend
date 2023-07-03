@@ -122,10 +122,10 @@ trait Constraints {
     case _                               => Valid
   }
 
-  protected def areAllElementsNumbers(invalidKey: String): Constraint[String] = Constraint {
-    case input if input.exists(!_.isDigit) =>
+  protected def areAllElementsNumbersOfExactLength(length: Int, invalidKey: String): Constraint[String] = Constraint {
+    case input if input.exists(!_.isDigit) || input.length != length =>
       Invalid(invalidKey)
-    case _                                 => Valid
+    case _                                                           => Valid
 
   }
 }

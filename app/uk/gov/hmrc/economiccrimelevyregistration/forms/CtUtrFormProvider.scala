@@ -26,8 +26,7 @@ class CtUtrFormProvider extends Mappings {
     Form(
       "value" -> text("otherEntityType.addCtutr.error.required")
         .verifying(
-          exactLength(CTUTRLength, "otherEntityType.addCtutr.error.length"),
-          areAllElementsNumbers("otherEntityType.addCtutr.error.length")
+          areAllElementsNumbersOfExactLength(CTUTRLength, "otherEntityType.addCtutr.error.length")
         )
     )
 }
