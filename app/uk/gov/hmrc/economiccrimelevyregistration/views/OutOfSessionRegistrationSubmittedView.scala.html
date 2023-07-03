@@ -35,26 +35,22 @@
 
     <p class="govuk-body">@messages("submitted.p1")</p>
 
-    @if(!appConfig.returnsJourneyEnabled) {
-        <p class="govuk-body">@messages("submitted.p2.privateBeta")</p>
-    } else {
-        <p class="govuk-body">@messages("submitted.p2")</p>
+    <p class="govuk-body">@messages("submitted.p2")</p>
 
-        <p class="govuk-body">@messages("submitted.p3", formatLocalDate(EclTaxYear.dueDate))</p>
+    <p class="govuk-body">@messages("submitted.p3", formatLocalDate(EclTaxYear.dueDate))</p>
 
-        <p class="govuk-body">@messages("submitted.p4")</p>
+    <p class="govuk-body">@messages("submitted.p4")</p>
 
-        <p class="govuk-body">@messages("submitted.provide")</p>
+    <p class="govuk-body">@messages("submitted.provide")</p>
 
-        <ul class="govuk-list govuk-list--bullet">
-            <li>@messages("submitted.provide.b1")</li>
-            <li>@messages("submitted.provide.b2")</li>
-            <li>@messages("submitted.provide.b3")</li>
-            <li>@messages("submitted.provide.b4")</li>
-        </ul>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("submitted.provide.b1")</li>
+        <li>@messages("submitted.provide.b2")</li>
+        <li>@messages("submitted.provide.b3")</li>
+        <li>@messages("submitted.provide.b4")</li>
+    </ul>
 
-        <p class="govuk-body">@Html(messages("submitted.return", messages("submitted.return.link", appConfig.yourEclAccountUrl)))</p>
-    }
+    <p class="govuk-body">@Html(messages("submitted.return", messages("submitted.return.link", appConfig.yourEclAccountUrl)))</p>
 
     <p class="govuk-body">@Html(messages("exit.survey", messages("exit.survey.link", appConfig.exitSurveyUrl)))</p>
 

@@ -24,8 +24,7 @@ final case class RegistrationSubmittedEmailParameters(
   eclRegistrationDate: String,
   dateDue: String,
   isPrimaryContact: String,
-  secondContactEmail: Option[String],
-  privateBetaEnabled: String
+  secondContactEmail: Option[String]
 )
 
 object RegistrationSubmittedEmailParameters {
