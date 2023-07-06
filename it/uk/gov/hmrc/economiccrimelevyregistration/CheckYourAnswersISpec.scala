@@ -8,9 +8,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, Languages, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, EntityType, Languages, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
@@ -61,6 +62,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration      = random[Registration]
+      val entityType        = random[EntityType]
       val eclReference      = random[String]
       val contactDetails    = random[ContactDetails]
       val firstContactName  = random[String]
@@ -72,7 +74,8 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
             contactDetails.copy(name = Some(firstContactName), emailAddress = Some(firstContactEmail)),
           secondContact = Some(false),
           secondContactDetails = ContactDetails.empty
-        )
+        ),
+        entityType = Some(entityType)
       )
 
       stubGetRegistration(registrationWithOneContact)
@@ -99,12 +102,17 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
         )
       )
 
+      val call = entityType match {
+        case Other => routes.RegistrationReceivedController.onPageLoad().url
+        case _     => routes.RegistrationSubmittedController.onPageLoad().url
+      }
+
       stubDeleteRegistration()
 
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onSubmit()))
 
       status(result)           shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(call)
 
       eventually {
         verify(1, postRequestedFor(urlEqualTo("/hmrc/email")))
