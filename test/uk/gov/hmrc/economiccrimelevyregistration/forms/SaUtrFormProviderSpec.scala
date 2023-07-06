@@ -18,14 +18,13 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.UtrLength
 
-class CompanyRegistrationNumberFormProviderSpec extends StringFieldBehaviours {
+class SaUtrFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "companyRegistrationNumber.error.required"
-  val lengthKey   = "companyRegistrationNumber.error.length"
+  val requiredKey = "saUtr.error.required"
 
-  val form = new CompanyRegistrationNumberFormProvider()()
+  val form = new SaUtrFormProvider()()
 
   "value" should {
 
@@ -34,14 +33,7 @@ class CompanyRegistrationNumberFormProviderSpec extends StringFieldBehaviours {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(CompanyRegistrationNumberMaxLength)
-    )
-
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = CompanyRegistrationNumberMaxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(CompanyRegistrationNumberMaxLength))
+      numStringsWithConcreteLength(UtrLength)
     )
 
     behave like mandatoryField(

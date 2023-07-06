@@ -18,27 +18,20 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
+import uk.gov.hmrc.economiccrimelevyregistration.models.UtrType.{CtUtr, SaUtr}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
-class BusinessNamePageNavigator extends PageNavigator {
+class UtrTypePageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.otherEntityJourneyData.entityType match {
-      case Some(value) =>
-        value match {
-          case Charity                   => routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
-          case UnincorporatedAssociation => routes.DoYouHaveCtUtrController.onPageLoad(NormalMode)
-          case Trust                     => routes.CtUtrController.onPageLoad(NormalMode)
-          case NonUKEstablishment        => routes.NonUkCrnController.onPageLoad(NormalMode)
-          case _                         => error()
-        }
-      case _           => error()
+  override protected def navigateInNormalMode(registration: Registration): Call = {
+    val otherEntityJourneyData = registration.otherEntityJourneyData
+    otherEntityJourneyData.utrType match {
+      case Some(CtUtr) => routes.CtUtrController.onPageLoad(NormalMode)
+      case Some(SaUtr) => routes.SaUtrController.onPageLoad(NormalMode)
+      case _           => routes.NotableErrorController.answersAreInvalid()
     }
+  }
 
   override protected def navigateInCheckMode(registration: Registration): Call =
     routes.OtherEntityCheckYourAnswersController.onPageLoad()
-
-  private def error() =
-    routes.NotableErrorController.answersAreInvalid()
 }

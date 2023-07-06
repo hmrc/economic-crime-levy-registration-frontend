@@ -20,12 +20,12 @@ import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 
-class CompanyRegistrationNumberFormProviderSpec extends StringFieldBehaviours {
+class NonUkCrnFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "companyRegistrationNumber.error.required"
-  val lengthKey   = "companyRegistrationNumber.error.length"
+  val requiredKey = "nonUkCrn.error.required"
+  val lengthKey   = "nonUkCrn.error.length"
 
-  val form = new CompanyRegistrationNumberFormProvider()()
+  val form = new NonUkCrnFormProvider()()
 
   "value" should {
 

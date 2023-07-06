@@ -20,36 +20,25 @@ import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.NonUKEstablishment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 
-object CompanyRegistrationNumberSummary {
+object UtrTypeSummary {
 
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.otherEntityJourneyData.companyRegistrationNumber.map { answer =>
-      val value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer)))
-
-      val keys = request.registration.otherEntityJourneyData.entityType match {
-        case Some(NonUKEstablishment) =>
-          ("checkYourAnswers.nonUkCrn.label", routes.NonUkCrnController.onPageLoad(CheckMode).url)
-        case _                        =>
-          (
-            "checkYourAnswers.companyRegistrationNumber.label",
-            routes.CompanyRegistrationNumberController.onPageLoad(CheckMode).url
-          )
-      }
+    request.registration.otherEntityJourneyData.utrType.map { answer =>
+      val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(s"utrType.$answer"))))
 
       SummaryListRowViewModel(
-        key = Key(keys._1),
+        key = Key("checkYourAnswers.utrType.label"),
         value = value,
         actions = Seq(
-          ActionItemViewModel("site.change", keys._2)
+          ActionItemViewModel("site.change", routes.UtrTypeController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(
-              messages(keys._1)
+              messages("checkYourAnswers.utrType.label")
             )
         )
       )

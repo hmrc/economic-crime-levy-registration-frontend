@@ -16,31 +16,31 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, PublicBetaAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.forms.OverseasTaxIdentifierFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.OverseasTaxIdentifierPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.OverseasTaxIdentifierView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CtUtrController @Inject() (
+class OverseasTaxIdentifierController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
+  formProvider: OverseasTaxIdentifierFormProvider,
+  pageNavigator: OverseasTaxIdentifierPageNavigator,
   checkIfPublicBetaIsEnabled: PublicBetaAction,
-  formProvider: CtUtrFormProvider,
-  pageNavigator: CtUtrPageNavigator,
-  view: CtUtrView
+  view: OverseasTaxIdentifierView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -49,7 +49,7 @@ class CtUtrController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData) { implicit request =>
-      Ok(view(form.prepare(request.registration.otherEntityJourneyData.ctUtr), mode))
+      Ok(view(form.prepare(request.registration.otherEntityJourneyData.overseasTaxIdentifier), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
@@ -58,16 +58,20 @@ class CtUtrController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          ctutr => {
-            val otherEntity = request.registration.otherEntityJourneyData.copy(
-              ctUtr = Some(ctutr),
-              saUtr = None
-            );
+          overseasTaxIdentifier => {
+            val otherEntityJourneyData = request.registration.otherEntityJourneyData.copy(
+              overseasTaxIdentifier = Some(overseasTaxIdentifier)
+            )
+
             eclRegistrationConnector
               .upsertRegistration(
-                request.registration.copy(optOtherEntityJourneyData = Some(otherEntity))
+                request.registration.copy(
+                  optOtherEntityJourneyData = Some(otherEntityJourneyData)
+                )
               )
-              .map(updatedRegistration => Redirect(pageNavigator.nextPage(mode, updatedRegistration)))
+              .map { updatedRegistration =>
+                Redirect(pageNavigator.nextPage(mode, updatedRegistration))
+              }
           }
         )
     }

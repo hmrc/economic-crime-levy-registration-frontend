@@ -183,3 +183,24 @@ GET         /what-is-your-postcode                                           uk.
 POST        /what-is-your-postcode                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.CtUtrPostcodeController.onSubmit(mode: Mode = NormalMode)
 GET         /change-answer/what-is-your-postcode                             uk.gov.hmrc.economiccrimelevyregistration.controllers.CtUtrPostcodeController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/what-is-your-postcode                             uk.gov.hmrc.economiccrimelevyregistration.controllers.CtUtrPostcodeController.onSubmit(mode: Mode = CheckMode)
+
+GET         /what-is-your-non-uk-crn                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.NonUkCrnController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-non-uk-crn                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.NonUkCrnController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-non-uk-crn                           uk.gov.hmrc.economiccrimelevyregistration.controllers.NonUkCrnController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-non-uk-crn                           uk.gov.hmrc.economiccrimelevyregistration.controllers.NonUkCrnController.onSubmit(mode: Mode = CheckMode)
+
+GET         /what-is-your-utr                                                uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrTypeController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-utr                                                uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrTypeController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-utr                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrTypeController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-utr                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrTypeController.onSubmit(mode: Mode = CheckMode)
+
+GET         /what-is-your-self-assessment-utr                                uk.gov.hmrc.economiccrimelevyregistration.controllers.SaUtrController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-self-assessment-utr                                uk.gov.hmrc.economiccrimelevyregistration.controllers.SaUtrController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-self-assessment-utr                  uk.gov.hmrc.economiccrimelevyregistration.controllers.SaUtrController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-self-assessment-utr                  uk.gov.hmrc.economiccrimelevyregistration.controllers.SaUtrController.onSubmit(mode: Mode = CheckMode)
+
+GET         /what-is-your-overseas-tax-id                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.OverseasTaxIdentifierController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-overseas-tax-id                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.OverseasTaxIdentifierController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-overseas-tax-id                      uk.gov.hmrc.economiccrimelevyregistration.controllers.OverseasTaxIdentifierController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-overseas-tax-id                      uk.gov.hmrc.economiccrimelevyregistration.controllers.OverseasTaxIdentifierController.onSubmit(mode: Mode = CheckMode)
+

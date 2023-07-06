@@ -21,35 +21,35 @@ import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.{OK, SEE_OTHER}
-import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrView
 import play.api.mvc.{BodyParsers, Call, Result}
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
+import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
+import uk.gov.hmrc.economiccrimelevyregistration.forms.SaUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.arbRegistration
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.SaUtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.SaUtrView
 
 import scala.concurrent.Future
 
-class CtUtrControllerSpec extends SpecBase {
+class SaUtrControllerSpec extends SpecBase {
 
-  val view: CtUtrView                                        = app.injector.instanceOf[CtUtrView]
+  val view: SaUtrView                                        = app.injector.instanceOf[SaUtrView]
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val formProvider: CtUtrFormProvider                        = new CtUtrFormProvider()
+  val formProvider: SaUtrFormProvider                        = new SaUtrFormProvider()
   val form: Form[String]                                     = formProvider()
   override val appConfig: AppConfig                          = mock[AppConfig]
-  val CTUTR                                                  = "0123456789"
+  val SAUTR                                                  = "0123456789"
   val publicBetaAction: PublicBetaAction                     = new PublicBetaAction(
     errorHandler = errorHandler,
     appConfig = appConfig,
     parser = app.injector.instanceOf[BodyParsers.Default]
   )
 
-  val pageNavigator: CtUtrPageNavigator = new CtUtrPageNavigator() {
+  val pageNavigator: SaUtrPageNavigator = new SaUtrPageNavigator() {
     override protected def navigateInNormalMode(registration: Registration): Call =
       onwardRoute
 
@@ -59,7 +59,7 @@ class CtUtrControllerSpec extends SpecBase {
 
   class TestContext(registrationData: Registration) {
     when(appConfig.privateBetaEnabled).thenReturn(false)
-    val controller = new CtUtrController(
+    val controller = new SaUtrController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
@@ -83,7 +83,7 @@ class CtUtrControllerSpec extends SpecBase {
     }
 
     "return OK and the correct view when answer is provided" in { (registration: Registration) =>
-      val otherData: OtherEntityJourneyData = registration.otherEntityJourneyData.copy(ctUtr = Some(CTUTR))
+      val otherData: OtherEntityJourneyData = registration.otherEntityJourneyData.copy(saUtr = Some(SAUTR))
       new TestContext(registration.copy(optOtherEntityJourneyData = Some(otherData))) {
 
         val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
@@ -99,15 +99,15 @@ class CtUtrControllerSpec extends SpecBase {
     "redirect to the next page" in forAll(Arbitrary.arbitrary[Registration]) { (registration: Registration) =>
       new TestContext(registration) {
         val otherData: OtherEntityJourneyData = registration.otherEntityJourneyData.copy(
-          ctUtr = Some(CTUTR),
-          saUtr = None
+          saUtr = Some(SAUTR),
+          ctUtr = None
         )
         val updatedRegistration: Registration = registration.copy(optOtherEntityJourneyData = Some(otherData))
         when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
           .thenReturn(Future.successful(updatedRegistration))
 
         val result: Future[Result] =
-          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", CTUTR)))
+          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", SAUTR)))
 
         status(result) shouldBe SEE_OTHER
 

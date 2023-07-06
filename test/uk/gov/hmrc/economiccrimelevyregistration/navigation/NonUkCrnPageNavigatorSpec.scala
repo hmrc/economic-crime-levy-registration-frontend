@@ -22,25 +22,19 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class CompanyRegistrationNumberPageNavigatorSpec extends SpecBase {
+class NonUkCrnPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new CompanyRegistrationNumberPageNavigator()
+  val pageNavigator = new NonUkCrnPageNavigator()
 
   "nextPage" should {
-    "return a call to the other entity check your answers page" in forAll {
-      (registration: Registration, charityRegistrationNumber: String, companyRegistrationNumber: String, mode: Mode) =>
-        val otherEntityJourneyData = OtherEntityJourneyData
-          .empty()
-          .copy(
-            entityType = Some(Charity),
-            charityRegistrationNumber = Some(charityRegistrationNumber),
-            companyRegistrationNumber = Some(companyRegistrationNumber)
-          )
+    "return a call to the UTR type page in Normal mode" in forAll { (registration: Registration) =>
+      pageNavigator.nextPage(NormalMode, registration) shouldBe
+        routes.UtrTypeController.onPageLoad(NormalMode)
+    }
 
-        val updatedRegistration: Registration =
-          registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
-
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
+    "return a call to the other entity check your answers page in Check mode" in forAll {
+      (registration: Registration) =>
+        pageNavigator.nextPage(CheckMode, registration) shouldBe
           routes.OtherEntityCheckYourAnswersController.onPageLoad()
     }
   }
