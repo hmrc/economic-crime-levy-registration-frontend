@@ -80,6 +80,8 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
         case Left(e)             => throw e
       }
 
-  def submitRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[CreateEclSubscriptionResponse] =
+  def submitRegistration(internalId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[CreateEclSubscriptionResponse] =
     httpClient.POSTEmpty[CreateEclSubscriptionResponse](s"$eclRegistrationUrl/submit-registration/$internalId")
 }

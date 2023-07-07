@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.TemplateId
+import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.NormalEntityTemplateId
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.http.{HttpClient, HttpResponse, UpstreamErrorResponse}
 
@@ -47,7 +47,7 @@ class EmailConnectorSpec extends SpecBase {
               ArgumentMatchers.eq(
                 RegistrationSubmittedEmailRequest(
                   Seq(to),
-                  templateId = TemplateId,
+                  templateId = NormalEntityTemplateId,
                   registrationSubmittedEmailParameters,
                   force = false,
                   None
@@ -58,7 +58,8 @@ class EmailConnectorSpec extends SpecBase {
         )
           .thenReturn(Future.successful(Right(response)))
 
-        val result: Unit = await(connector.sendRegistrationSubmittedEmail(to, registrationSubmittedEmailParameters))
+        val result: Unit =
+          await(connector.sendRegistrationSubmittedEmail(to, registrationSubmittedEmailParameters, None))
 
         result shouldBe ()
 
@@ -83,7 +84,7 @@ class EmailConnectorSpec extends SpecBase {
               ArgumentMatchers.eq(
                 RegistrationSubmittedEmailRequest(
                   Seq(to),
-                  templateId = TemplateId,
+                  templateId = NormalEntityTemplateId,
                   registrationSubmittedEmailParameters,
                   force = false,
                   None
@@ -95,7 +96,7 @@ class EmailConnectorSpec extends SpecBase {
           .thenReturn(Future.successful(Left(response)))
 
         val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
-          await(connector.sendRegistrationSubmittedEmail(to, registrationSubmittedEmailParameters))
+          await(connector.sendRegistrationSubmittedEmail(to, registrationSubmittedEmailParameters, None))
         }
 
         result.getMessage shouldBe "Internal server error"
@@ -106,7 +107,7 @@ class EmailConnectorSpec extends SpecBase {
             ArgumentMatchers.eq(
               RegistrationSubmittedEmailRequest(
                 Seq(to),
-                templateId = TemplateId,
+                templateId = NormalEntityTemplateId,
                 registrationSubmittedEmailParameters,
                 force = false,
                 None

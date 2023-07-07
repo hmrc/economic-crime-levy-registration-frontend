@@ -184,6 +184,9 @@ POST        /what-is-your-postcode                                           uk.
 GET         /change-answer/what-is-your-postcode                             uk.gov.hmrc.economiccrimelevyregistration.controllers.CtUtrPostcodeController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/what-is-your-postcode                             uk.gov.hmrc.economiccrimelevyregistration.controllers.CtUtrPostcodeController.onSubmit(mode: Mode = CheckMode)
 
+GET         /registration-received                                           uk.gov.hmrc.economiccrimelevyregistration.controllers.RegistrationReceivedController.onPageLoad()
+
+
 GET         /what-is-your-non-uk-crn                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.NonUkCrnController.onPageLoad(mode: Mode = NormalMode)
 POST        /what-is-your-non-uk-crn                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.NonUkCrnController.onSubmit(mode: Mode = NormalMode)
 GET         /change-answer/what-is-your-non-uk-crn                           uk.gov.hmrc.economiccrimelevyregistration.controllers.NonUkCrnController.onPageLoad(mode: Mode = CheckMode)

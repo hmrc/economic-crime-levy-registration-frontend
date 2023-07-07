@@ -1,0 +1,69 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+@import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+
+@this(
+        layout: templates.Layout,
+        govukPanel: GovukPanel,
+        appConfig: AppConfig
+)
+
+@(firstContactEmailAddress: String, secondContactEmailAddress: Option[String])(implicit request: Request[_], messages: Messages)
+
+@layout(
+    pageTitle = title(messages("registration.received.title")),
+    showBackLink = false
+) {
+    <h1 class="govuk-heading-m">@messages("registration.received.heading")</h1>
+
+    <p class="govuk-body">@messages("registration.received.first.email", firstContactEmailAddress)</p>
+
+    @if(secondContactEmailAddress.isDefined) {
+        <p class="govuk-body">@messages("registration.received.second.email", secondContactEmailAddress.get)</p>
+    }
+
+    <h2 class="govuk-heading-m">@messages("registration.received.h1")</h2>
+
+    <p class="govuk-body">@messages("registration.received.p2")</p>
+
+    <p class="govuk-body">@messages("registration.received.p3")</p>
+
+    <p class="govuk-body">@messages("registration.received.p4")</p>
+
+    <h2 class="govuk-heading-m">@messages("registration.received.h2")</h2>
+
+    <p class="govuk-body">@messages("registration.received.p5")</p>
+
+    <p class="govuk-body">@messages("registration.received.p6")</p>
+
+    <p class="govuk-body">@messages("registration.received.p7")</p>
+
+    <p class="govuk-body">@messages("registration.received.p8")</p>
+
+    <p class="govuk-body">@messages("registration.received.p9")</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("registration.received.b1")</li>
+        <li>@messages("registration.received.b2")</li>
+        <li>@messages("registration.received.b3")</li>
+        <li>@messages("registration.received.b4")</li>
+    </ul>
+
+    <p class="govuk-body">@Html(messages("exit.survey", messages("exit.survey.link", appConfig.exitSurveyUrl)))</p>
+
+}

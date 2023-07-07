@@ -20,7 +20,8 @@ import play.api.Logging
 import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.Contacts
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EntityType}
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailParameters
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
@@ -34,7 +35,11 @@ class EmailService @Inject() (emailConnector: EmailConnector, appConfig: AppConf
   ec: ExecutionContext
 ) extends Logging {
 
-  def sendRegistrationSubmittedEmails(contacts: Contacts, eclRegistrationReference: String)(implicit
+  def sendRegistrationSubmittedEmails(
+    contacts: Contacts,
+    eclRegistrationReference: String,
+    entityType: Option[EntityType]
+  )(implicit
     hc: HeaderCarrier,
     messages: Messages
   ): Future[Unit] = {
@@ -56,7 +61,8 @@ class EmailService @Inject() (emailConnector: EmailConnector, appConfig: AppConf
           eclDueDate,
           isPrimaryContact = isPrimaryContact.toString,
           secondContactEmail = secondContactEmail
-        )
+        ),
+        entityType
       )
 
     ((
