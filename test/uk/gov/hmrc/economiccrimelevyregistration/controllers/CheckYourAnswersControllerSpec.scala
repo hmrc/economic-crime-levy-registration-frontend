@@ -27,8 +27,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidatedRegistrationAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, CreateEclSubscriptionResponse, Registration, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, CreateEclSubscriptionResponse, EntityType, Registration, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -110,17 +111,20 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "redirect to the registration submitted page after submitting the registration with one contact and sending email successfully" in forAll(
+    "(Normal Entity) redirect to the registration submitted page after submitting the registration with one contact and sending email successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[EntityType].retryUntil(_ != Other),
       emailAddress(EmailMaxLength)
     ) {
       (
         createEclSubscriptionResponse: CreateEclSubscriptionResponse,
         registration: Registration,
+        entityType: EntityType,
         firstContactEmailAddress: String
       ) =>
         val updatedRegistration = registration.copy(
+          entityType = Some(entityType),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
             secondContact = Some(false),
@@ -133,7 +137,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedRegistration))
 
           when(
-            mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
+            mockEclRegistrationConnector.submitRegistration(
+              ArgumentMatchers.eq(updatedRegistration.internalId)
+            )(any())
           )
             .thenReturn(Future.successful(createEclSubscriptionResponse))
 
@@ -152,26 +158,77 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
-            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference)
+            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference),
+            ArgumentMatchers.eq(updatedRegistration.entityType)
           )(any(), any())
 
           reset(mockEmailService)
         }
     }
 
-    "redirect to the registration submitted page after submitting the registration with two contacts and sending emails successfully" in forAll(
+    "(Other Entity) redirect to the registration received page after submitting the registration with one contact and sending email successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[EntityType].retryUntil(_ == Other),
+      emailAddress(EmailMaxLength)
+    ) {
+      (
+        createEclSubscriptionResponse: CreateEclSubscriptionResponse,
+        registration: Registration,
+        entityType: EntityType,
+        firstContactEmailAddress: String
+      ) =>
+        val updatedRegistration = registration.copy(
+          entityType = Some(entityType),
+          contacts = Contacts(
+            firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
+            secondContact = Some(false),
+            secondContactDetails = ContactDetails.empty
+          )
+        )
+
+        new TestContext(updatedRegistration) {
+          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          when(
+            mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
+          )
+            .thenReturn(Future.successful(()))
+
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
+
+          status(result)                                             shouldBe SEE_OTHER
+          session(result).get(SessionKeys.FirstContactEmailAddress)  shouldBe Some(firstContactEmailAddress)
+          session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe None
+          redirectLocation(result)                                   shouldBe Some(routes.RegistrationReceivedController.onPageLoad().url)
+
+          verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
+            ArgumentMatchers.eq(updatedRegistration.contacts),
+            ArgumentMatchers.eq(""),
+            ArgumentMatchers.eq(updatedRegistration.entityType)
+          )(any(), any())
+
+          reset(mockEmailService)
+        }
+    }
+
+    "(Normal Entity) redirect to the registration submitted page after submitting the registration with two contacts and sending emails successfully" in forAll(
+      Arbitrary.arbitrary[CreateEclSubscriptionResponse],
+      Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[EntityType].retryUntil(_ != Other),
       emailAddress(EmailMaxLength),
       emailAddress(EmailMaxLength)
     ) {
       (
         createEclSubscriptionResponse: CreateEclSubscriptionResponse,
         registration: Registration,
+        entityType: EntityType,
         firstContactEmailAddress: String,
         secondContactEmailAddress: String
       ) =>
         val updatedRegistration = registration.copy(
+          entityType = Some(entityType),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
             secondContact = Some(true),
@@ -184,7 +241,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedRegistration))
 
           when(
-            mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
+            mockEclRegistrationConnector.submitRegistration(
+              ArgumentMatchers.eq(updatedRegistration.internalId)
+            )(any())
           )
             .thenReturn(Future.successful(createEclSubscriptionResponse))
 
@@ -203,7 +262,57 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
-            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference)
+            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference),
+            ArgumentMatchers.eq(updatedRegistration.entityType)
+          )(any(), any())
+
+          reset(mockEmailService)
+        }
+    }
+
+    "(Other Entity) redirect to the registration received page after submitting the registration with two contacts and sending emails successfully" in forAll(
+      Arbitrary.arbitrary[CreateEclSubscriptionResponse],
+      Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[EntityType].retryUntil(_ == Other),
+      emailAddress(EmailMaxLength),
+      emailAddress(EmailMaxLength)
+    ) {
+      (
+        createEclSubscriptionResponse: CreateEclSubscriptionResponse,
+        registration: Registration,
+        entityType: EntityType,
+        firstContactEmailAddress: String,
+        secondContactEmailAddress: String
+      ) =>
+        val updatedRegistration = registration.copy(
+          entityType = Some(entityType),
+          contacts = Contacts(
+            firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
+            secondContact = Some(true),
+            secondContactDetails = validContactDetails.copy(emailAddress = Some(secondContactEmailAddress))
+          )
+        )
+
+        new TestContext(updatedRegistration) {
+          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          when(
+            mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
+          )
+            .thenReturn(Future.successful(()))
+
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
+
+          status(result)                                             shouldBe SEE_OTHER
+          session(result).get(SessionKeys.FirstContactEmailAddress)  shouldBe Some(firstContactEmailAddress)
+          session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe Some(secondContactEmailAddress)
+          redirectLocation(result)                                   shouldBe Some(routes.RegistrationReceivedController.onPageLoad().url)
+
+          verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
+            ArgumentMatchers.eq(updatedRegistration.contacts),
+            ArgumentMatchers.eq(""),
+            ArgumentMatchers.eq(updatedRegistration.entityType)
           )(any(), any())
 
           reset(mockEmailService)
@@ -225,7 +334,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(Future.successful(updatedRegistration))
 
           when(
-            mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
+            mockEclRegistrationConnector.submitRegistration(
+              ArgumentMatchers.eq(updatedRegistration.internalId)
+            )(any())
           )
             .thenReturn(Future.successful(createEclSubscriptionResponse))
 
@@ -242,7 +353,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
-            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference)
+            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference),
+            ArgumentMatchers.eq(updatedRegistration.entityType)
           )(any(), any())
 
           reset(mockEmailService)

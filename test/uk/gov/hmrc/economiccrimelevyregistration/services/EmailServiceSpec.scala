@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailParameters
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, EntityType}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
@@ -33,6 +34,7 @@ class EmailServiceSpec extends SpecBase {
 
   val mockEmailConnector: EmailConnector = mock[EmailConnector]
   val service                            = new EmailService(mockEmailConnector, appConfig)
+  val entityType                         = Some(random[EntityType])
 
   "sendRegistrationSubmittedEmails" should {
     "send an email for the first contact and return unit" in forAll {
@@ -56,18 +58,25 @@ class EmailServiceSpec extends SpecBase {
           mockEmailConnector
             .sendRegistrationSubmittedEmail(
               ArgumentMatchers.eq(firstContactEmail),
-              ArgumentMatchers.eq(expectedFirstContactParams)
+              ArgumentMatchers.eq(expectedFirstContactParams),
+              ArgumentMatchers.eq(entityType)
             )(any())
         )
           .thenReturn(Future.successful(()))
 
         val result: Unit =
-          await(service.sendRegistrationSubmittedEmails(updatedContacts, eclRegistrationReference)(hc, messages))
+          await(
+            service.sendRegistrationSubmittedEmails(
+              updatedContacts,
+              eclRegistrationReference,
+              entityType
+            )(hc, messages)
+          )
 
         result shouldBe ()
 
         verify(mockEmailConnector, times(1))
-          .sendRegistrationSubmittedEmail(any(), any())(any())
+          .sendRegistrationSubmittedEmail(any(), any(), any())(any())
 
         reset(mockEmailConnector)
     }
@@ -112,7 +121,8 @@ class EmailServiceSpec extends SpecBase {
           mockEmailConnector
             .sendRegistrationSubmittedEmail(
               ArgumentMatchers.eq(firstContactEmail),
-              ArgumentMatchers.eq(expectedFirstContactParams)
+              ArgumentMatchers.eq(expectedFirstContactParams),
+              ArgumentMatchers.eq(entityType)
             )(any())
         )
           .thenReturn(Future.successful(()))
@@ -121,29 +131,42 @@ class EmailServiceSpec extends SpecBase {
           mockEmailConnector
             .sendRegistrationSubmittedEmail(
               ArgumentMatchers.eq(secondContactEmail),
-              ArgumentMatchers.eq(expectedSecondContactParams)
+              ArgumentMatchers.eq(expectedSecondContactParams),
+              ArgumentMatchers.eq(entityType)
             )(any())
         )
           .thenReturn(Future.successful(()))
 
         val result: Unit =
-          await(service.sendRegistrationSubmittedEmails(updatedContacts, eclRegistrationReference)(hc, messages))
+          await(
+            service.sendRegistrationSubmittedEmails(
+              updatedContacts,
+              eclRegistrationReference,
+              entityType
+            )(hc, messages)
+          )
 
         result shouldBe ()
 
         verify(mockEmailConnector, times(2))
-          .sendRegistrationSubmittedEmail(any(), any())(any())
+          .sendRegistrationSubmittedEmail(any(), any(), any())(any())
 
         reset(mockEmailConnector)
     }
 
     "throw an IllegalStateException when the first contact details are missing" in forAll {
       eclRegistrationReference: String =>
-        when(mockEmailConnector.sendRegistrationSubmittedEmail(any(), any())(any()))
+        when(mockEmailConnector.sendRegistrationSubmittedEmail(any(), any(), any())(any()))
           .thenReturn(Future.successful(()))
 
         val result = intercept[IllegalStateException] {
-          await(service.sendRegistrationSubmittedEmails(Contacts.empty, eclRegistrationReference)(hc, messages))
+          await(
+            service.sendRegistrationSubmittedEmails(
+              Contacts.empty,
+              eclRegistrationReference,
+              entityType
+            )(hc, messages)
+          )
         }
 
         result.getMessage shouldBe "Invalid contact details"
