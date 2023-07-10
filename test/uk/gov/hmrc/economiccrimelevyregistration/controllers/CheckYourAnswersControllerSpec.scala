@@ -354,6 +354,11 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             await(controller.onSubmit()(fakeRequest))
           }
 
+          val eclReference = entityType match {
+            case Other => ""
+            case _     => createEclSubscriptionResponse.eclReference
+          }
+
           result.getMessage shouldBe "First contact email address not found in registration data"
 
           val eclReference = if (entityType == Other) "" else createEclSubscriptionResponse.eclReference
