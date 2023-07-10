@@ -361,8 +361,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           result.getMessage shouldBe "First contact email address not found in registration data"
 
-          val eclReference = if (entityType == Other) "" else createEclSubscriptionResponse.eclReference
-
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
             ArgumentMatchers.eq(eclReference),
