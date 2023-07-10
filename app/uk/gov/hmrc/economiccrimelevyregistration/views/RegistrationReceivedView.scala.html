@@ -29,13 +29,9 @@
     pageTitle = title(messages("registration.received.title")),
     showBackLink = false
 ) {
-    <h1 class="govuk-heading-m">@messages("registration.received.heading")</h1>
-
-    <p class="govuk-body">@messages("registration.received.first.email", firstContactEmailAddress)</p>
-
-    @if(secondContactEmailAddress.isDefined) {
-        <p class="govuk-body">@messages("registration.received.second.email", secondContactEmailAddress.get)</p>
-    }
+    @govukPanel(Panel(
+        title = HtmlContent(messages("registration.received.heading"))
+    ))
 
     <h2 class="govuk-heading-m">@messages("registration.received.h1")</h2>
 
@@ -53,9 +49,8 @@
 
     <p class="govuk-body">@messages("registration.received.p7")</p>
 
-    <p class="govuk-body">@messages("registration.received.p8")</p>
 
-    <p class="govuk-body">@messages("registration.received.p9")</p>
+    <p class="govuk-body">@messages("registration.received.p8")</p>
 
     <ul class="govuk-list govuk-list--bullet">
         <li>@messages("registration.received.b1")</li>
@@ -64,6 +59,11 @@
         <li>@messages("registration.received.b4")</li>
     </ul>
 
-    <p class="govuk-body">@Html(messages("exit.survey", messages("exit.survey.link", appConfig.exitSurveyUrl)))</p>
+    <p class="govuk-body">@messages("registration.received.first.email", firstContactEmailAddress)</p>
 
+    @if(secondContactEmailAddress.isDefined) {
+        <p class="govuk-body">@messages("registration.received.second.email", secondContactEmailAddress.get)</p>
+    }
+
+    <p class="govuk-body">@Html(messages("exit.survey", messages("exit.survey.link", appConfig.exitSurveyUrl)))</p>
 }
