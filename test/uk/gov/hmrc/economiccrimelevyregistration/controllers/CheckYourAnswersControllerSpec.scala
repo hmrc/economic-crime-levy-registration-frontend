@@ -320,8 +320,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     }
 
     "throw an IllegalStateException when the first contact email address is not present in the registration" in forAll {
-      (createEclSubscriptionResponse: CreateEclSubscriptionResponse, registration: Registration) =>
+      (
+        createEclSubscriptionResponse: CreateEclSubscriptionResponse,
+        registration: Registration,
+        entityType: EntityType
+      ) =>
         val updatedRegistration = registration.copy(
+          entityType = Some(entityType),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = None),
             secondContact = Some(false),
@@ -349,11 +354,16 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             await(controller.onSubmit()(fakeRequest))
           }
 
+          val eclReference = entityType match {
+            case Other => ""
+            case _     => createEclSubscriptionResponse.eclReference
+          }
+
           result.getMessage shouldBe "First contact email address not found in registration data"
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
-            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference),
+            ArgumentMatchers.eq(eclReference),
             ArgumentMatchers.eq(updatedRegistration.entityType)
           )(any(), any())
 
