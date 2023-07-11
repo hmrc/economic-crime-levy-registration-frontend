@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
+package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-object MaxLengths {
+import play.api.mvc.Call
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
-  val EmailMaxLength                     = 132
-  val NameMaxLength                      = 160
-  val TelephoneNumberMaxLength           = 24
-  val RoleMaxLength                      = 160
-  val OrganisationNameMaxLength          = 160
-  val CharityRegistrationNumberMaxLength = 7
-  val CompanyRegistrationNumberMaxLength = 8
-  val UtrLength                          = 10
-  val CtUtrPostcodeLength                = 8
+class SaUtrPageNavigator extends PageNavigator {
 
+  override protected def navigateInNormalMode(registration: Registration): Call =
+    routes.OverseasTaxIdentifierController.onPageLoad(NormalMode)
+
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    routes.OtherEntityCheckYourAnswersController.onPageLoad()
 }

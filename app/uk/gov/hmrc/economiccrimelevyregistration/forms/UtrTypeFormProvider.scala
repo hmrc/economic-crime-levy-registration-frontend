@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-object MaxLengths {
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.models.UtrType
 
-  val EmailMaxLength                     = 132
-  val NameMaxLength                      = 160
-  val TelephoneNumberMaxLength           = 24
-  val RoleMaxLength                      = 160
-  val OrganisationNameMaxLength          = 160
-  val CharityRegistrationNumberMaxLength = 7
-  val CompanyRegistrationNumberMaxLength = 8
-  val UtrLength                          = 10
-  val CtUtrPostcodeLength                = 8
-
+class UtrTypeFormProvider extends Mappings {
+  def apply(): Form[UtrType] = Form(("value", enumerable[UtrType]("utrType.error.required")))
 }

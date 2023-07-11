@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CTUTRLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.UtrLength
 
 class CtUtrFormProvider extends Mappings {
 
@@ -26,7 +26,7 @@ class CtUtrFormProvider extends Mappings {
     Form(
       "value" -> text("otherEntityType.addCtutr.error.required")
         .verifying(
-          areAllElementsNumbersOfExactLength(CTUTRLength, "otherEntityType.addCtutr.error.length")
+          areAllElementsNumbersOfExactLength(UtrLength, "otherEntityType.addCtutr.error.length")
         )
     )
 }

@@ -21,7 +21,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.data.validation.{Invalid, Valid}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CTUTRLength, EmailMaxLength, TelephoneNumberMaxLength}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{EmailMaxLength, TelephoneNumberMaxLength, UtrLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
 
 import java.time.LocalDate
@@ -229,13 +229,14 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
   "areAllElementsNumbers" should {
     "return Valid for a string of numbers" in {
       val result =
-        areAllElementsNumbersOfExactLength(CTUTRLength, "otherEntityType.addCtutr.error.length").apply("0123456789")
+        areAllElementsNumbersOfExactLength(UtrLength, "otherEntityType.addCtutr.error.length").apply("0123456789")
       result shouldEqual Valid
     }
+
     "return Invalid for a string that contains alphanumerical values" in {
       val result =
-        areAllElementsNumbersOfExactLength(CTUTRLength, "otherEntityType.addCtutr.error.length").apply("10234567UK")
-      result shouldEqual Invalid("otherEntityType.addCtutr.error.length")
+        areAllElementsNumbersOfExactLength(UtrLength, "otherEntityType.addCtutr.error.length").apply("10234567UK")
+      result shouldEqual Invalid("otherEntityType.addCtutr.error.length", UtrLength)
     }
   }
 }

@@ -190,7 +190,7 @@ otherEntityType.addCtutr.h1 = What is your Corporation Tax Unique Taxpayer Refer
 otherEntityType.addCtutr.body = Your Corporation Tax (CT) Unique Taxpayer Reference (UTR) number is 10 digits long.
 otherEntityType.addCtutr.hint = For example, 0123456789
 otherEntityType.addCtutr.error.required = Enter a Corporation Tax (CT) Unique Taxpayer Reference (UTR)
-otherEntityType.addCtutr.error.length = Corporation Tax (CT) Unique Taxpayer Reference (UTR) must be 10 digits
+otherEntityType.addCtutr.error.length = Corporation Tax (CT) Unique Taxpayer Reference (UTR) must be {0} numbers
 otherEntityType.ctutr.error.required = Select an answer
 otherEntityType.ctutr.postcode.title = What is the postcode you used to register your association?
 otherEntityType.ctutr.postcode.h1 = What is the postcode you used to register your association?
@@ -315,8 +315,8 @@ checkYourAnswers.businessSector.label = Business sector
 checkYourAnswers.entityType.label = Entity type
 checkYourAnswers.entityName.label = Entity name
 checkYourAnswers.companyNumber.label = Company number
-checkYourAnswers.ctUtr.label = Corporation tax UTR
-checkYourAnswers.saUtr.label = Self assessment UTR
+checkYourAnswers.ctUtr.label = Unique Taxpayer Reference number
+checkYourAnswers.saUtr.label = Unique Taxpayer Reference number
 checkYourAnswers.nino.label = National insurance number
 checkYourAnswers.dob.label = Date of birth
 checkYourAnswers.firstContactName.label = Contact name
@@ -338,6 +338,9 @@ checkYourAnswers.businessName.label = Business name
 checkYourAnswers.charityRegistrationNumber.label = Charity registration number (CHRN)
 checkYourAnswers.companyRegistrationNumber.label = Company registration number
 checkYourAnswers.otherEntityDetails = Other entity details
+checkYourAnswers.utrType.label = Unique taxpayer reference type
+checkYourAnswers.nonUkCrn.label = Non-UK CRN
+checkYourAnswers.overseasTaxIdentifier.label = Overseas Tax Identifier
 
 submitted.title = Registration submitted
 submitted.heading = Registration submitted
@@ -489,6 +492,33 @@ companyRegistrationNumber.p1 = Your company registration number (CRN) is 8 chara
 companyRegistrationNumber.hint = For example, 01234567 or SC123456
 companyRegistrationNumber.error.required = Enter a company registration number (CRN)
 companyRegistrationNumber.error.length = Company registration number (CRN) must not be more than {0} characters
+
+nonUkCrn.title = What is your company registration number?
+nonUkCrn.heading = What is your company registration number?
+nonUkCrn.p1 = Your company registration number (CRN) is 8 characters long.
+nonUkCrn.hint = For example, 01234567 or SC123456
+nonUkCrn.error.required = Enter a company registration number
+nonUkCrn.error.length = Company registration number must not be more than {0} characters
+
+utrType.title = What is your UK UTR?
+utrType.heading = What is your UK Unique Taxpayer Reference?
+utrType.CtUtr = Company Tax (CT) Unique Taxpayer Reference (UTR)
+utrType.SaUtr = Self Assessment (SA) Unique Taxpayer Reference (UTR)
+utrType.p1 = Your Unique Taxpayer Reference (UTR) is 10 numbers long. You can find it on tax returns or letters from HMRC.
+utrType.error.required = Select your UK Unique Taxpayer Reference type
+
+saUtr.title = What is your Self-Assessment Unique Taxpayer Reference?
+saUtr.h1 = What is your Self-Assessment Unique Taxpayer Reference?
+saUtr.body = Your Self Assessment (SA) Unique Taxpayer Reference (UTR) is 10 numbers long.
+saUtr.hint = For example, 0123456789
+saUtr.error.required = Enter a Self Assessment (SA) Unique Taxpayer Reference (UTR)
+saUtr.error.length = Self Assessment (SA) Unique Taxpayer Reference (UTR) must be {0} numbers
+
+overseasTaxIdentifier.title = What is your overseas tax identifier?
+overseasTaxIdentifier.heading = What is your overseas tax identifier?
+overseasTaxIdentifier.p1 = We may use this number to help us identify your business.
+overseasTaxIdentifier.p2 = Your overseas tax identifier could be a VAT registration number, Employee Identification Number (EIN), or any other information we could use to verify your details.
+overseasTaxIdentifier.error.required = Enter an overseas tax identifier
 
 registration.received.title = Registration received
 registration.received.heading = Registration received

@@ -19,28 +19,29 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
+import uk.gov.hmrc.economiccrimelevyregistration.models.UtrType.{CtUtr, SaUtr}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class CompanyRegistrationNumberPageNavigatorSpec extends SpecBase {
+class UtrTypeNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new CompanyRegistrationNumberPageNavigator()
+  val pageNavigator = new UtrTypePageNavigator()
 
   "nextPage" should {
-    "return a call to the other entity check your answers page" in forAll {
-      (registration: Registration, charityRegistrationNumber: String, companyRegistrationNumber: String, mode: Mode) =>
-        val otherEntityJourneyData = OtherEntityJourneyData
-          .empty()
-          .copy(
-            entityType = Some(Charity),
-            charityRegistrationNumber = Some(charityRegistrationNumber),
-            companyRegistrationNumber = Some(companyRegistrationNumber)
-          )
+    "return a call to the correct UTR entry page in Normal mode" in forAll {
+      (registration: Registration, utrType: UtrType) =>
+        val otherData           = OtherEntityJourneyData.empty().copy(utrType = Some(utrType))
+        val updatedRegistration = registration.copy(optOtherEntityJourneyData = Some(otherData))
+        val call                = utrType match {
+          case SaUtr => routes.SaUtrController.onPageLoad(NormalMode)
+          case CtUtr => routes.CtUtrController.onPageLoad(NormalMode)
+        }
 
-        val updatedRegistration: Registration =
-          registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe call
+    }
 
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
+    "return a call to the other entity check your answers page in Check mode" in forAll {
+      (registration: Registration) =>
+        pageNavigator.nextPage(CheckMode, registration) shouldBe
           routes.OtherEntityCheckYourAnswersController.onPageLoad()
     }
   }

@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Trust
+import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.{NonUKEstablishment, Trust}
 
 class CtUtrPageNavigator extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
@@ -26,17 +26,19 @@ class CtUtrPageNavigator extends PageNavigator {
       case None    => routes.NotableErrorController.answersAreInvalid()
       case Some(_) =>
         registration.otherEntityJourneyData.entityType match {
-          case None           => routes.NotableErrorController.answersAreInvalid()
-          case Some(_ @Trust) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
-          case Some(_)        => routes.CtUtrPostcodeController.onPageLoad(NormalMode)
+          case None                        => routes.NotableErrorController.answersAreInvalid()
+          case Some(_ @Trust)              => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+          case Some(_ @NonUKEstablishment) => routes.OverseasTaxIdentifierController.onPageLoad(NormalMode)
+          case Some(_)                     => routes.CtUtrPostcodeController.onPageLoad(NormalMode)
         }
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call =
     registration.otherEntityJourneyData.entityType match {
-      case None           => routes.NotableErrorController.answersAreInvalid()
-      case Some(_ @Trust) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
-      case Some(_)        =>
+      case None                        => routes.NotableErrorController.answersAreInvalid()
+      case Some(_ @Trust)              => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+      case Some(_ @NonUKEstablishment) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+      case Some(_)                     =>
         registration.otherEntityJourneyData.isCtUtrPresent match {
           case None           => routes.NotableErrorController.answersAreInvalid()
           case Some(_ @ true) =>

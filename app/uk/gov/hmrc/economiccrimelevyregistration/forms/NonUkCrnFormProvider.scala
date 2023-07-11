@@ -16,30 +16,18 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.data.FormError
-import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.UtrLength
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 
-class CtUtrFormProviderSpec extends StringFieldBehaviours {
+import javax.inject.Inject
 
-  val requiredKey = "otherEntityType.addCtutr.error.required"
+class NonUkCrnFormProvider @Inject() extends Mappings {
 
-  val form = new CtUtrFormProvider()()
-
-  "value" should {
-
-    val fieldName = "value"
-
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      numStringsWithConcreteLength(UtrLength)
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("nonUkCrn.error.required")
+        .verifying(maxLength(CompanyRegistrationNumberMaxLength, "nonUkCrn.error.length"))
     )
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
-  }
 }

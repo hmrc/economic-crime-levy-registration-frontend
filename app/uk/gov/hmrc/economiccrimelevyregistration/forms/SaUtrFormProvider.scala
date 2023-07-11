@@ -16,30 +16,17 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.data.FormError
-import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.UtrLength
 
-class CtUtrFormProviderSpec extends StringFieldBehaviours {
+class SaUtrFormProvider extends Mappings {
 
-  val requiredKey = "otherEntityType.addCtutr.error.required"
-
-  val form = new CtUtrFormProvider()()
-
-  "value" should {
-
-    val fieldName = "value"
-
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      numStringsWithConcreteLength(UtrLength)
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("saUtr.error.required")
+        .verifying(
+          areAllElementsNumbersOfExactLength(UtrLength, "saUtr.error.length")
+        )
     )
-
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
-  }
 }

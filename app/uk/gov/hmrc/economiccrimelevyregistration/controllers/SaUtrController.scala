@@ -16,31 +16,32 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, PublicBetaAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
+import uk.gov.hmrc.economiccrimelevyregistration.forms.SaUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.models.UtrType.CtUtr
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.SaUtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.SaUtrView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CtUtrController @Inject() (
+class SaUtrController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
   checkIfPublicBetaIsEnabled: PublicBetaAction,
-  formProvider: CtUtrFormProvider,
-  pageNavigator: CtUtrPageNavigator,
-  view: CtUtrView
+  formProvider: SaUtrFormProvider,
+  pageNavigator: SaUtrPageNavigator,
+  view: SaUtrView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -49,7 +50,7 @@ class CtUtrController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData) { implicit request =>
-      Ok(view(form.prepare(request.registration.otherEntityJourneyData.ctUtr), mode))
+      Ok(view(form.prepare(request.registration.otherEntityJourneyData.saUtr), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
@@ -58,10 +59,10 @@ class CtUtrController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          ctutr => {
+          saUtr => {
             val otherEntity = request.registration.otherEntityJourneyData.copy(
-              ctUtr = Some(ctutr),
-              saUtr = None
+              saUtr = Some(saUtr),
+              ctUtr = None
             );
             eclRegistrationConnector
               .upsertRegistration(
