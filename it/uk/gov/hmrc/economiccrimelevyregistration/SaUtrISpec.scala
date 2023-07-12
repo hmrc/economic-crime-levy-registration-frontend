@@ -25,7 +25,7 @@ class SaUtrISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe OK
 
-      html(result) should include("What is your Self-Assessment Unique Taxpayer Reference?")
+      html(result) should include("What is your self assessment unique taxpayer reference?")
     }
   }
 

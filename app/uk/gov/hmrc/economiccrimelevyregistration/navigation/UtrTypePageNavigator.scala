@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.UtrType.{CtUtr, SaUtr}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 
 class UtrTypePageNavigator extends PageNavigator {
 
@@ -32,6 +32,12 @@ class UtrTypePageNavigator extends PageNavigator {
     }
   }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    routes.OtherEntityCheckYourAnswersController.onPageLoad()
+  override protected def navigateInCheckMode(registration: Registration): Call = {
+    val otherEntityJourneyData = registration.otherEntityJourneyData
+    otherEntityJourneyData.utrType match {
+      case Some(CtUtr) if otherEntityJourneyData.ctUtr.isEmpty => routes.CtUtrController.onPageLoad(CheckMode)
+      case Some(SaUtr) if otherEntityJourneyData.saUtr.isEmpty => routes.SaUtrController.onPageLoad(CheckMode)
+      case _                                                   => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    }
+  }
 }
