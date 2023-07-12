@@ -37,7 +37,7 @@ class UtrTypePageNavigator extends PageNavigator {
     otherEntityJourneyData.utrType match {
       case Some(CtUtr) if otherEntityJourneyData.ctUtr.isEmpty => routes.CtUtrController.onPageLoad(CheckMode)
       case Some(SaUtr) if otherEntityJourneyData.saUtr.isEmpty => routes.SaUtrController.onPageLoad(CheckMode)
-      case _           => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+      case _                                                   => routes.OtherEntityCheckYourAnswersController.onPageLoad()
     }
   }
 }
