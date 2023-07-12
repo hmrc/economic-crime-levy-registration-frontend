@@ -31,6 +31,8 @@
 @layout(pageTitle = titleWithForm(form, messages("utrType.title"))) {
     @formHelper(action = UtrTypeController.onSubmit(mode)) {
 
+<h1 class="govuk-heading-l">@messages("utrType.heading")</h1>
+
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
         }
@@ -40,7 +42,7 @@
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(messages("utrType.heading")).asPageHeading(LegendSize.Large),
+                legend = LegendViewModel(""),
                 items = UtrType.options(appConfig)
             )
         )
