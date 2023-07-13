@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDat
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{CheckYourAnswersView, OtherRegistrationPdfView}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -46,7 +46,9 @@ class CheckYourAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
   validateRegistrationData: ValidatedRegistrationAction,
-  emailService: EmailService
+  emailService: EmailService,
+  otherEntityController: OtherEntityCheckYourAnswersController,
+  otherRegistrationPdfView: OtherRegistrationPdfView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -132,11 +134,26 @@ class CheckYourAnswersController @Inject() (
 
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
     .encodeToString(html.getBytes)
+
   def submitRegistration(internalId: String, entityType: Option[EntityType])(implicit
-    hc: HeaderCarrier
+    hc: HeaderCarrier,
+    request: RegistrationDataRequest[_]
   ): Future[CreateEclSubscriptionResponse]               = entityType match {
-    case Some(Other) => Future.successful(CreateEclSubscriptionResponse(Instant.now, ""))
+    case Some(Other) => createPdf()
     case _           =>
       eclRegistrationConnector.submitRegistration(internalId)
+  }
+
+  private def createPdf()(implicit request: RegistrationDataRequest[_]): Future[CreateEclSubscriptionResponse] = {
+    val date = Instant.now
+    val organisation = organisationDetails()
+    val contact = contactDetails()
+    val otherEntity = otherEntityController.otherEntityDetails()
+    val html = otherRegistrationPdfView(
+      organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
+      contact.copy(rows = contact.rows.map(_.copy(actions = None))),
+      otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None)))
+    ).toString()
+    Future.successful(CreateEclSubscriptionResponse(date, ""))
   }
 }

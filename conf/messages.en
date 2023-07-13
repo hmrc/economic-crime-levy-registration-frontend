@@ -554,3 +554,6 @@ registration.received.b3 = how long you carried out anti-money laundering (AML) 
 registration.received.b4 = the contact details of the person in your organisation who is completing the return
 registration.received.first.email = We have sent an email to {0}
 registration.received.second.email = We have also sent an email to {0} because you added them as a second point of contact.
+
+otherRegistration.pdfHtml.title = Application to Register for the Economic Crime Levy
+otherRegistration.pdfHtml.submissionDate = Submission date
