@@ -18,7 +18,7 @@
 
 @this(pdfLayout: PdfLayout, govukSummaryList: GovukSummaryList)
 
-@(organisationDetails: SummaryList, contactDetails: SummaryList, otherEntityDetails: SummaryList)(implicit request: Request[_], messages: Messages)
+@(date: String, organisationDetails: SummaryList, contactDetails: SummaryList, otherEntityDetails: SummaryList)(implicit request: Request[_], messages: Messages)
 
 @pdfLayout(messages("otherRegistration.pdfHtml.title")) {
     <h2>@messages("checkYourAnswers.organisationDetails")</h2>

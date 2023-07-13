@@ -27,12 +27,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDat
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
+import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{CheckYourAnswersView, OtherRegistrationPdfView}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 import java.util.Base64
 import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
@@ -145,15 +146,16 @@ class CheckYourAnswersController @Inject() (
   }
 
   private def createPdf()(implicit request: RegistrationDataRequest[_]): Future[CreateEclSubscriptionResponse] = {
-    val date = Instant.now
+    val date = LocalDate.now
     val organisation = organisationDetails()
     val contact = contactDetails()
     val otherEntity = otherEntityController.otherEntityDetails()
     val html = otherRegistrationPdfView(
+      ViewUtils.formatLocalDate(date),
       organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
       contact.copy(rows = contact.rows.map(_.copy(actions = None))),
       otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None)))
     ).toString()
-    Future.successful(CreateEclSubscriptionResponse(date, ""))
+    Future.successful(CreateEclSubscriptionResponse(Instant.now, ""))
   }
 }
