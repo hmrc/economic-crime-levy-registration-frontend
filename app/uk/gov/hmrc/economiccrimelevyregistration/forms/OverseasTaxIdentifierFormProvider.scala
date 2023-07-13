@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.GeneralMaxLength
 
 import javax.inject.Inject
 
@@ -26,6 +27,7 @@ class OverseasTaxIdentifierFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("overseasTaxIdentifier.error.required")
+        .verifying(maxLength(GeneralMaxLength, "overseasTaxIdentifier.error.length"))
     )
 
 }
