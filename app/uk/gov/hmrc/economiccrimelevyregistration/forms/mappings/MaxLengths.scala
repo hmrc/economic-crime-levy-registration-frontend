@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
 
 object MaxLengths {
-
+  val GeneralMaxLength                   = 60
   val EmailMaxLength                     = 132
   val NameMaxLength                      = 160
   val TelephoneNumberMaxLength           = 24
