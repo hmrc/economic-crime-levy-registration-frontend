@@ -18,11 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.GeneralMaxLength
 
 class OverseasTaxIdentifierFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey = "overseasTaxIdentifier.error.required"
+  val lengthKey   = "overseasTaxIdentifier.error.length"
 
   val form = new OverseasTaxIdentifierFormProvider()()
 
@@ -33,7 +34,14 @@ class OverseasTaxIdentifierFormProviderSpec extends StringFieldBehaviours {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(OrganisationNameMaxLength)
+      stringsWithMaxLength(GeneralMaxLength)
+    )
+
+    behave like fieldWithMaxLength(
+      form,
+      fieldName,
+      maxLength = GeneralMaxLength,
+      lengthError = FormError(fieldName, lengthKey, Seq(GeneralMaxLength))
     )
 
     behave like mandatoryField(

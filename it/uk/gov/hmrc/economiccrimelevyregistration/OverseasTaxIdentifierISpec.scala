@@ -5,6 +5,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.GeneralMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
@@ -36,7 +37,7 @@ class OverseasTaxIdentifierISpec extends ISpecBase with AuthorisedBehaviour {
 
       val registration = random[Registration]
 
-      val taxIdentifier = stringsLongerThan(1).sample.get
+      val taxIdentifier = stringsWithMaxLength(GeneralMaxLength).sample.get
 
       stubGetRegistration(registration)
 
