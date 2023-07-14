@@ -33,6 +33,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
+import java.nio.file.{Files, Paths}
 import java.time.{Instant, LocalDate}
 import java.util.Base64
 import javax.inject.Singleton
@@ -156,6 +157,10 @@ class CheckYourAnswersController @Inject() (
       contact.copy(rows = contact.rows.map(_.copy(actions = None))),
       otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None)))
     ).toString()
+    Files.writeString(
+      Paths.get("/Users/patricklucas/Library/CloudStorage/OneDrive-OpencastSoftwareEuropeLtd/Desktop/PDF.html"),
+      html
+    )
     Future.successful(CreateEclSubscriptionResponse(Instant.now, ""))
   }
 }

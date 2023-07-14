@@ -556,4 +556,4 @@ registration.received.first.email = We have sent an email to {0}
 registration.received.second.email = We have also sent an email to {0} because you added them as a second point of contact.
 
 otherRegistration.pdfHtml.title = Application to Register for the Economic Crime Levy
-otherRegistration.pdfHtml.submissionDate = Submission date
+otherRegistration.pdfHtml.submissionDate = Submission date: {0}
