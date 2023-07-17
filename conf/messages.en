@@ -255,6 +255,7 @@ firstContactEmail.use = We will only use this email address to contact {0} about
 
 firstContactNumber.title = What is {0}''s telephone number?
 firstContactNumber.heading = What is {0}''s telephone number?
+firstContactNumber.label = Telephone number
 firstContactNumber.legend = This is the telephone number of your named contact.
 firstContactNumber.hint = For international numbers include the country code.
 firstContactNumber.error.required = Enter a telephone number
@@ -291,6 +292,7 @@ secondContactEmail.use = We will only use this email address to contact {0} abou
 
 secondContactNumber.title = What is {0}''s telephone number?
 secondContactNumber.heading = What is {0}''s telephone number?
+secondContactNumber.label = Telephone number
 secondContactNumber.legend = This is the telephone number of your named contact.
 secondContactNumber.hint = For international numbers include the country code.
 secondContactNumber.error.required = Enter a telephone number
