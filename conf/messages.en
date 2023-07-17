@@ -251,7 +251,7 @@ firstContactEmail.legend = This is the email address of your named contact.
 firstContactEmail.error.required = Enter an email address
 firstContactEmail.error.length = Email address must be {0} characters or less
 firstContactEmail.error.invalid = Enter an email address in the correct format, like name@example.com
-firstContactEmail.use = We will only use this email address to contact {0} about the Economic Crime Levy.
+firstContactEmail.use = We will only use this email address to contact them about the Economic Crime Levy.
 
 firstContactNumber.title = What is {0}''s telephone number?
 firstContactNumber.heading = What is {0}''s telephone number?
@@ -261,7 +261,7 @@ firstContactNumber.hint = For international numbers include the country code.
 firstContactNumber.error.required = Enter a telephone number
 firstContactNumber.error.length = Telephone number must be {0} characters or less
 firstContactNumber.error.invalid = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
-firstContactNumber.use = We will only use this telephone number to contact {0} about the Economic Crime Levy.
+firstContactNumber.use = We will only use this telephone number to contact them about the Economic Crime Levy.
 
 addAnotherContact.title = Would you like to add another contact?
 addAnotherContact.heading = Would you like to add another contact?
@@ -288,7 +288,7 @@ secondContactEmail.legend = This is the email address of your named contact.
 secondContactEmail.error.required = Enter an email address
 secondContactEmail.error.length = Email address must be {0} characters or less
 secondContactEmail.error.invalid = Enter an email address in the correct format, like name@example.com
-secondContactEmail.use = We will only use this email address to contact {0} about the Economic Crime Levy.
+secondContactEmail.use = We will only use this email address to contact them about the Economic Crime Levy.
 
 secondContactNumber.title = What is {0}''s telephone number?
 secondContactNumber.heading = What is {0}''s telephone number?
@@ -298,7 +298,7 @@ secondContactNumber.hint = For international numbers include the country code.
 secondContactNumber.error.required = Enter a telephone number
 secondContactNumber.error.length = Telephone number must be {0} characters or less
 secondContactNumber.error.invalid = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
-secondContactNumber.use = We will only use this telephone number to contact {0} about the Economic Crime Levy.
+secondContactNumber.use = We will only use this telephone number to contact them about the Economic Crime Levy.
 
 confirmContactAddress.title = Do you want to use this registered address as the main contact address?
 confirmContactAddress.heading = Do you want to use this registered address as the main contact address?
