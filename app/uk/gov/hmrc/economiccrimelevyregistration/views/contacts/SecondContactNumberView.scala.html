@@ -34,19 +34,18 @@
     <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("secondContactNumber.heading", name))</h1>
     <p class="govuk-body">@messages("secondContactNumber.legend")</p>
 
+    <p class="govuk-body">@messages("secondContactNumber.use", name)</p>
+
     @formHelper(action = SecondContactNumberController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text(messages("secondContactNumber.heading"))).asHiddenPageHeading()
+                label = LabelViewModel(Text(messages("secondContactNumber.label")))
             ).withWidth(Fixed20).withHint(Hint(content = Text(messages("secondContactNumber.hint"))))
         )
 
         @govukButton(
             ButtonViewModel(messages("site.saveAndContinue"))
         )
-
-        <p class="govuk-body">@messages("secondContactNumber.use", name)</p>
-
     }
 }

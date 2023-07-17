@@ -35,19 +35,18 @@
     <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("firstContactNumber.heading", name))</h1>
     <p class="govuk-body">@messages("firstContactNumber.legend")</p>
 
+    <p class="govuk-body">@messages("firstContactNumber.use", name)</p>
+
     @formHelper(action = FirstContactNumberController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text(messages("firstContactNumber.heading"))).asHiddenPageHeading()
+                label = LabelViewModel(Text(messages("firstContactNumber.label")))
             ).withWidth(Fixed20).withHint(Hint(content = Text(messages("firstContactNumber.hint"))))
         )
 
         @govukButton(
             ButtonViewModel(messages("site.saveAndContinue"))
         )
-
-        <p class="govuk-body">@messages("firstContactNumber.use", name)</p>
-
     }
 }
