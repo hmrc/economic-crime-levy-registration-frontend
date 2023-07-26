@@ -104,9 +104,15 @@ class CheckYourAnswersController @Inject() (
 
     for {
       _        <- eclRegistrationConnector.upsertRegistration(registration =
-                    request.registration.copy(base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView))
+                    request.registration.copy(
+                      base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView),
+                      base64EncodedDmsSubmissionHtml = entityType match {
+                        case Some(Other) => Some(createAbdEncodeHtmlForPdf())
+                        case _           => None
+                      }
+                    )
                   )
-      response <- submitRegistration(request.internalId, entityType)
+      response <- eclRegistrationConnector.submitRegistration(request.registration.internalId)
       _         = emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference, entityType)
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield {
@@ -137,30 +143,16 @@ class CheckYourAnswersController @Inject() (
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
     .encodeToString(html.getBytes)
 
-  def submitRegistration(internalId: String, entityType: Option[EntityType])(implicit
-    hc: HeaderCarrier,
-    request: RegistrationDataRequest[_]
-  ): Future[CreateEclSubscriptionResponse]               = entityType match {
-    case Some(Other) => createPdf()
-    case _           =>
-      eclRegistrationConnector.submitRegistration(internalId)
-  }
-
-  private def createPdf()(implicit request: RegistrationDataRequest[_]): Future[CreateEclSubscriptionResponse] = {
+  private def createAbdEncodeHtmlForPdf()(implicit request: RegistrationDataRequest[_]): String = {
     val date = LocalDate.now
     val organisation = organisationDetails()
     val contact = contactDetails()
     val otherEntity = otherEntityController.otherEntityDetails()
-    val html = otherRegistrationPdfView(
+    base64EncodeHtmlView(otherRegistrationPdfView(
       ViewUtils.formatLocalDate(date),
       organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
       contact.copy(rows = contact.rows.map(_.copy(actions = None))),
       otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None)))
-    ).toString()
-    Files.writeString(
-      Paths.get("/Users/patricklucas/Library/CloudStorage/OneDrive-OpencastSoftwareEuropeLtd/Desktop/PDF.html"),
-      html
-    )
-    Future.successful(CreateEclSubscriptionResponse(Instant.now, ""))
+    ).toString())
   }
 }
