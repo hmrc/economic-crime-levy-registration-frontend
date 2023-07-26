@@ -34,6 +34,8 @@
     <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("firstContactEmail.heading", name))</h1>
     <p class="govuk-body">@messages("firstContactEmail.legend")</p>
 
+    <p class="govuk-body">@messages("firstContactEmail.use", name)</p>
+
     @formHelper(action = FirstContactEmailController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
@@ -45,8 +47,5 @@
         @govukButton(
             ButtonViewModel(messages("site.saveAndContinue"))
         )
-
-        <p class="govuk-body">@messages("firstContactEmail.use", name)</p>
-
     }
 }
