@@ -9,14 +9,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Trust
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, EntityType, Languages, OtherEntityJourneyData, OtherEntityType, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
-import java.nio.file.{Files, Paths}
 import java.time.{LocalDate, ZoneOffset}
 
 class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
@@ -57,7 +55,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.CheckYourAnswersController.onSubmit().url}"  should {
+  s"POST ${routes.CheckYourAnswersController.onSubmit().url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onSubmit())
 
     "redirect to the registration submitted page after submitting the registration successfully" in {
@@ -69,12 +67,8 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       val contactDetails    = random[ContactDetails]
       val firstContactName  = random[String]
       val firstContactEmail = random[String]
-      val otherEntityType = random[OtherEntityType]
 
       val registrationWithOneContact = registration.copy(
-        optOtherEntityJourneyData = Some(OtherEntityJourneyData.empty().copy(
-          entityType = Some(otherEntityType)
-        )),
         contacts = Contacts(
           firstContactDetails =
             contactDetails.copy(name = Some(firstContactName), emailAddress = Some(firstContactEmail)),

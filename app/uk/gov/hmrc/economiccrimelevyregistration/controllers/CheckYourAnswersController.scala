@@ -114,7 +114,7 @@ class CheckYourAnswersController @Inject() (
                       }
                     )
                   )
-      response <- eclRegistrationConnector.submitRegistration(request.registration.internalId)
+      response <- eclRegistrationConnector.submitRegistration(request.internalId)
       _         = emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference, entityType)
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield {
