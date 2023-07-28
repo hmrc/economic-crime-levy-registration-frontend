@@ -427,23 +427,15 @@ partyTypeMismatch.body.p2 = Check that you have chosen the right entity type and
 
 detailsDoNotMatch.title = The details you have entered do not match our records
 detailsDoNotMatch.heading = The details you have entered do not match our records
-detailsDoNotMatch.telephone.uk.label = Telephone:
-detailsDoNotMatch.textphone.label = Textphone:
-detailsDoNotMatch.telephone.intl.label = Outside UK:
-detailsDoNotMatch.open.label = Opening times:
-detailsDoNotMatch.open = Monday to Friday, 8am to 6pm
-detailsDoNotMatch.closed = Closed on weekends and bank holidays.
 
 detailsDoNotMatch.ct.body.p1 = Check your company''s Corporation Tax records and try again.
-detailsDoNotMatch.ct.body.p2 = If you are still having problems, contact the Corporation Tax helpline.
-detailsDoNotMatch.ct.telephone.uk.number = 0300 200 3410
-detailsDoNotMatch.ct.telephone.intl.number = +44 151 268 0571
+detailsDoNotMatch.ct.body.p2 = Check your office address postcode matches the postcode registered with Companies House.
+detailsDoNotMatch.ct.body.p3 = If you are still having problems, you can find your Unique Taxpayer Reference, National Insurance details and tax code information in your HMRC online account.
 
 detailsDoNotMatch.sa.body.p1 = Check your Self Assessment records and try again.
-detailsDoNotMatch.sa.body.p2 = If you are still having problems, contact the Self Assessment helpline.
-detailsDoNotMatch.sa.telephone.uk.number = 0300 200 3600
-detailsDoNotMatch.sa.textphone.number = 0300 200 3603
-detailsDoNotMatch.sa.telephone.intl.number = +44 161 930 8445
+detailsDoNotMatch.sa.body.p2 = Check the postcode you entered matches the postcode on your Partnership Self Assessment.
+detailsDoNotMatch.sa.body.p3 = If you are still having problems, you can find your Unique Taxpayer Reference, National Insurance details and tax code information in your HMRC online account.
+
 
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.
