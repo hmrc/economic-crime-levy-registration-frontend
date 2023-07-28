@@ -428,7 +428,7 @@ partyTypeMismatch.body.p2 = Check that you have chosen the right entity type and
 detailsDoNotMatch.title = The details you have entered do not match our records
 detailsDoNotMatch.heading = The details you have entered do not match our records
 
-detailsDoNotMatch.ct.body.p1 = Check your Self Assessment records and try again.
+detailsDoNotMatch.ct.body.p1 = Check your company''s Corporation Tax records and try again.
 detailsDoNotMatch.ct.body.p2 = Check your office address postcode matches the postcode registered with Companies House.
 detailsDoNotMatch.ct.body.p3 = If you are still having problems, you can find your Unique Taxpayer Reference, National Insurance details and tax code information in your HMRC online account.
 
