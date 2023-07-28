@@ -21,24 +21,6 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@insetTextHtml = {
-    <p class="govuk-body">@messages("detailsDoNotMatch.telephone.uk.label")
-        <br/>
-        <b>@messages("detailsDoNotMatch.sa.telephone.uk.number")</b>
-    </p>
-    <p class="govuk-body">@messages("detailsDoNotMatch.textphone.label")
-        <br/>
-        <b>@messages("detailsDoNotMatch.sa.textphone.number")</b>
-    </p>
-    <p class="govuk-body">@messages("detailsDoNotMatch.telephone.intl.label")
-        <br/>
-        <b>@messages("detailsDoNotMatch.sa.telephone.intl.number")</b>
-    </p>
-    <p class="govuk-body">@messages("detailsDoNotMatch.open.label")
-        <br/>
-        <b>@messages("detailsDoNotMatch.open")</b>
-    </p>
-}
 
 @layout(
     pageTitle = title(messages("detailsDoNotMatch.title")),
@@ -49,11 +31,6 @@
 
     <p class="govuk-body">@messages("detailsDoNotMatch.sa.body.p1")</p>
     <p class="govuk-body">@messages("detailsDoNotMatch.sa.body.p2")</p>
-
-    @insetText(InsetText(
-        content = HtmlContent(insetTextHtml)
-    ))
-
-    <p class="govuk-body">@messages("detailsDoNotMatch.closed")</p>
+    <p class="govuk-body">@messages("detailsDoNotMatch.sa.body.p3")</p>
 
 }
