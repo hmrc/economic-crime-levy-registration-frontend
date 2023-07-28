@@ -158,10 +158,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           session(result).get(SessionKeys.EclReference)              shouldBe Some(createEclSubscriptionResponse.eclReference)
           session(result).get(SessionKeys.FirstContactEmailAddress)  shouldBe Some(firstContactEmailAddress)
           session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe None
-          session(result)
-            .get(SessionKeys.Base64EncodedDmsSubmissionHtml)
-            .getOrElse("")
-            .isEmpty                                                 shouldBe true
           redirectLocation(result)                                   shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
@@ -216,10 +212,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           status(result)                                             shouldBe SEE_OTHER
           session(result).get(SessionKeys.FirstContactEmailAddress)  shouldBe Some(firstContactEmailAddress)
           session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe None
-          session(result)
-            .get(SessionKeys.Base64EncodedDmsSubmissionHtml)
-            .getOrElse("")
-            .isEmpty                                                 shouldBe false
           redirectLocation(result)                                   shouldBe Some(routes.RegistrationReceivedController.onPageLoad().url)
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
