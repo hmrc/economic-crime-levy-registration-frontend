@@ -431,8 +431,6 @@ detailsDoNotMatch.heading = The details you have entered do not match our record
 detailsDoNotMatch.ct.body.p1 = Check your Self Assessment records and try again.
 detailsDoNotMatch.ct.body.p2 = Check your office address postcode matches the postcode registered with Companies House.
 detailsDoNotMatch.ct.body.p3 = If you are still having problems, you can find your Unique Taxpayer Reference, National Insurance details and tax code information in your HMRC online account.
-detailsDoNotMatch.ct.telephone.uk.number = 0300 200 3410
-detailsDoNotMatch.ct.telephone.intl.number = +44 151 268 0571
 
 detailsDoNotMatch.sa.body.p1 = Check your Self Assessment records and try again.
 detailsDoNotMatch.sa.body.p2 = Check the postcode you entered matches the postcode on your Partnership Self Assessment.
