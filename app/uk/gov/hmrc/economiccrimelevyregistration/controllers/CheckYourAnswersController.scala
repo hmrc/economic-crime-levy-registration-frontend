@@ -100,7 +100,7 @@ class CheckYourAnswersController @Inject() (
 
     val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
     val base64EncodedHtmlViewForPdf   = entityType match {
-      case Some(Other) => createAbdEncodeHtmlForPdf()
+      case Some(Other) => createAndEncodeHtmlForPdf()
       case _           => ""
     }
 
@@ -148,7 +148,7 @@ class CheckYourAnswersController @Inject() (
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
     .encodeToString(html.getBytes)
 
-  private def createAbdEncodeHtmlForPdf()(implicit request: RegistrationDataRequest[_]): String = {
+  private def createAndEncodeHtmlForPdf()(implicit request: RegistrationDataRequest[_]): String = {
     val date         = LocalDate.now
     val organisation = organisationDetails()
     val contact      = contactDetails()
