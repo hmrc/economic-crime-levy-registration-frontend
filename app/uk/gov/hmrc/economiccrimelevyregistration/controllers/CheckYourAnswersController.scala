@@ -120,9 +120,10 @@ class CheckYourAnswersController @Inject() (
     } yield {
       val session = entityType match {
         case Some(Other) => request.session
-        case _           => request.session ++ Seq(
-          SessionKeys.EclReference -> response.eclReference
-        )
+        case _           =>
+          request.session ++ Seq(
+            SessionKeys.EclReference -> response.eclReference
+          )
       }
 
       val updatedSession = session ++ Seq(

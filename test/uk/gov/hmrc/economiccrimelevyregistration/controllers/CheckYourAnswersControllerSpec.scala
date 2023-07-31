@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.scalacheck.Arbitrary
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result}
@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.Email
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, CreateEclSubscriptionResponse, EntityType, Registration, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -166,6 +166,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             ArgumentMatchers.eq(updatedRegistration.entityType)
           )(any(), any())
 
+          reset(mockEclRegistrationConnector)
           reset(mockEmailService)
         }
     }
@@ -220,6 +221,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             ArgumentMatchers.eq(updatedRegistration.entityType)
           )(any(), any())
 
+          val argCaptor                           = ArgumentCaptor.forClass(classOf[Registration])
+          verify(mockEclRegistrationConnector, times(1))
+            .upsertRegistration(argCaptor.capture())(any())
+          val submittedRegistration: Registration = argCaptor.getValue
+          submittedRegistration.base64EncodedDmsSubmissionHtml.getOrElse("").isBlank shouldBe false
+
+          reset(mockEclRegistrationConnector)
           reset(mockEmailService)
         }
     }
@@ -277,6 +285,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             ArgumentMatchers.eq(updatedRegistration.entityType)
           )(any(), any())
 
+          reset(mockEclRegistrationConnector)
           reset(mockEmailService)
         }
     }
@@ -333,6 +342,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             ArgumentMatchers.eq(updatedRegistration.entityType)
           )(any(), any())
 
+          val argCaptor                           = ArgumentCaptor.forClass(classOf[Registration])
+          verify(mockEclRegistrationConnector, times(1))
+            .upsertRegistration(argCaptor.capture())(any())
+          val submittedRegistration: Registration = argCaptor.getValue
+          submittedRegistration.base64EncodedDmsSubmissionHtml.getOrElse("").isBlank shouldBe false
+
+          reset(mockEclRegistrationConnector)
           reset(mockEmailService)
         }
     }
@@ -380,6 +396,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             ArgumentMatchers.eq(updatedRegistration.entityType)
           )(any(), any())
 
+          reset(mockEclRegistrationConnector)
           reset(mockEmailService)
         }
     }
