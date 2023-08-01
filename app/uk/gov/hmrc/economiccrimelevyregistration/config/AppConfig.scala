@@ -95,4 +95,5 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val privateBetaContactEmail: String     = configuration.get[String]("features.privateBeta.contactEmail")
   val privateBetaEnabled: Boolean         = configuration.get[Boolean]("features.privateBeta.enabled")
 
+  val otherEntityTypeEnabled : Boolean = configuration.get[Boolean]("features.otherEntityTypeEnabled")
 }
