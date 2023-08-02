@@ -58,7 +58,7 @@ object EntityType {
       )
     }
 
-    if (appConfig.otherEntityTypeEnabled) radioItems.filterNot(_.value.contains(Other.toString)) else radioItems
+    if (!appConfig.otherEntityTypeEnabled) radioItems.filterNot(_.value.contains(Other.toString)) else radioItems
   }
 
   implicit val enumerable: Enumerable[EntityType] = Enumerable(values.map(v => (v.toString, v)): _*)
