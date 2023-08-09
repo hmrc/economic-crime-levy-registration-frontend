@@ -133,7 +133,7 @@ relevantAp12Months.hidden3 = If your relevant accounting period is less than 12 
 relevantAp12Months.error.required = Select an answer
 
 ukRevenue.title = What was your total UK revenue in your relevant accounting period?
-ukRevenue.heading = What was your total UK revenue in your accounting period?
+ukRevenue.heading = What was your total UK revenue in your relevant accounting period?
 ukRevenue.p1 = For the purposes of the Economic Crime Levy (ECL), your UK revenue is defined as:
 ukRevenue.b1 = your turnover during the accounting period
 ukRevenue.b2 = any other amounts not included within your turnover that are recognised as revenue according to Generally Accepted Accounting Principles (GAAP)
