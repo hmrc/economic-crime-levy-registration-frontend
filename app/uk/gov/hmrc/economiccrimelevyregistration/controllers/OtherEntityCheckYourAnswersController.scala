@@ -39,7 +39,7 @@ class OtherEntityCheckYourAnswersController @Inject() (
   getRegistrationData: DataRetrievalAction,
   pageNavigator: OtherEntityCheckYourAnswersPageNavigator,
   val controllerComponents: MessagesControllerComponents,
-  checkIfPublicBetaIsEnabled: OtherEntityTypeAction,
+  checkIfOtherEntityTypeEnabled: OtherEntityTypeAction,
   view: OtherEntityCheckYourAnswersView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -62,12 +62,12 @@ class OtherEntityCheckYourAnswersController @Inject() (
     ).withCssClass("govuk-!-margin-bottom-9")
 
   def onPageLoad(): Action[AnyContent] =
-    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData) { implicit request =>
+    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData) { implicit request =>
       Ok(view(otherEntityDetails()))
     }
 
   def onSubmit(): Action[AnyContent] =
-    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
+    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
       Future.successful(Redirect(pageNavigator.nextPage(NormalMode, request.registration)))
     }
 }

@@ -39,7 +39,7 @@ class UtrTypeController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: UtrTypeFormProvider,
   pageNavigator: UtrTypePageNavigator,
-  checkIfPublicBetaIsEnabled: OtherEntityTypeAction,
+  checkIfOtherEntityTypeEnabled: OtherEntityTypeAction,
   view: UtrTypeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -48,12 +48,12 @@ class UtrTypeController @Inject() (
   val form: Form[UtrType] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData) { implicit request =>
+    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.utrType), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
+    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

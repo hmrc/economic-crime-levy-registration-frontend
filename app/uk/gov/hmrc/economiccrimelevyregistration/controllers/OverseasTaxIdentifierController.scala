@@ -39,7 +39,7 @@ class OverseasTaxIdentifierController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: OverseasTaxIdentifierFormProvider,
   pageNavigator: OverseasTaxIdentifierPageNavigator,
-  checkIfPublicBetaIsEnabled: OtherEntityTypeAction,
+  checkIfOtherEntityTypeEnabled: OtherEntityTypeAction,
   view: OverseasTaxIdentifierView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -48,12 +48,12 @@ class OverseasTaxIdentifierController @Inject() (
   val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData) { implicit request =>
+    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.overseasTaxIdentifier), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
+    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

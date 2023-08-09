@@ -43,7 +43,9 @@ class SaUtrControllerSpec extends SpecBase {
   val form: Form[String]                                     = formProvider()
   override val appConfig: AppConfig                          = mock[AppConfig]
   val SAUTR                                                  = "0123456789"
-  val otherEntityTypeAction: OtherEntityTypeAction           = new OtherEntityTypeAction(
+  when(appConfig.otherEntityTypeEnabled).thenReturn(true)
+
+  val otherEntityTypeAction: OtherEntityTypeAction = new OtherEntityTypeAction(
     errorHandler = errorHandler,
     appConfig = appConfig,
     parser = app.injector.instanceOf[BodyParsers.Default]
@@ -58,7 +60,6 @@ class SaUtrControllerSpec extends SpecBase {
   }
 
   class TestContext(registrationData: Registration) {
-    when(appConfig.otherEntityTypeEnabled).thenReturn(true)
     val controller = new SaUtrController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),

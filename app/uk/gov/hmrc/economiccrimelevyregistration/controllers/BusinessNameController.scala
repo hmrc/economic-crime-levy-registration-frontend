@@ -39,7 +39,7 @@ class BusinessNameController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: BusinessNameFormProvider,
   pageNavigator: BusinessNamePageNavigator,
-  checkIfPublicBetaIsEnabled: OtherEntityTypeAction,
+  checkIfOtherEntityTypeEnabled: OtherEntityTypeAction,
   view: BusinessNameView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -48,12 +48,12 @@ class BusinessNameController @Inject() (
   val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData) { implicit request =>
+    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.businessName), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
+    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

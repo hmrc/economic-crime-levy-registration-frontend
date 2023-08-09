@@ -55,15 +55,15 @@ class CompanyRegistrationNumberControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   override val appConfig: AppConfig                          = mock[AppConfig]
-  val otherEntityTypeAction: OtherEntityTypeAction           = new OtherEntityTypeAction(
+  when(appConfig.otherEntityTypeEnabled).thenReturn(true)
+
+  val otherEntityTypeAction: OtherEntityTypeAction = new OtherEntityTypeAction(
     errorHandler = errorHandler,
     appConfig = appConfig,
     parser = app.injector.instanceOf[BodyParsers.Default]
   )
 
   class TestContext(registrationData: Registration) {
-    when(appConfig.otherEntityTypeEnabled).thenReturn(true)
-
     val controller = new CompanyRegistrationNumberController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),

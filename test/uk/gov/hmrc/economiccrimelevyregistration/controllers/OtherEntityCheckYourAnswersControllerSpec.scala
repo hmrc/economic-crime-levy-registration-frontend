@@ -36,8 +36,10 @@ import scala.concurrent.Future
 
 class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
 
-  val view: OtherEntityCheckYourAnswersView        = app.injector.instanceOf[OtherEntityCheckYourAnswersView]
-  override val appConfig: AppConfig                = mock[AppConfig]
+  val view: OtherEntityCheckYourAnswersView = app.injector.instanceOf[OtherEntityCheckYourAnswersView]
+  override val appConfig: AppConfig         = mock[AppConfig]
+  when(appConfig.otherEntityTypeEnabled).thenReturn(true)
+
   val otherEntityTypeAction: OtherEntityTypeAction = new OtherEntityTypeAction(
     errorHandler = errorHandler,
     appConfig = appConfig,
@@ -56,8 +58,6 @@ class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
   }
 
   class TestContext(registrationData: Registration) {
-    when(appConfig.otherEntityTypeEnabled).thenReturn(true)
-
     val controller = new OtherEntityCheckYourAnswersController(
       messagesApi,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),

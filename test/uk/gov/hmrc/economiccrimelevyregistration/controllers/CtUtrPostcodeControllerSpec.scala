@@ -36,10 +36,12 @@ import scala.concurrent.Future
 
 class CtUtrPostcodeControllerSpec extends SpecBase {
 
-  val view: CtUtrPostcodeView                      = app.injector.instanceOf[CtUtrPostcodeView]
-  val formProvider: CtUtrPostcodeFormProvider      = new CtUtrPostcodeFormProvider()
-  val form: Form[String]                           = formProvider()
-  override val appConfig: AppConfig                = mock[AppConfig]
+  val view: CtUtrPostcodeView                 = app.injector.instanceOf[CtUtrPostcodeView]
+  val formProvider: CtUtrPostcodeFormProvider = new CtUtrPostcodeFormProvider()
+  val form: Form[String]                      = formProvider()
+  override val appConfig: AppConfig           = mock[AppConfig]
+  when(appConfig.otherEntityTypeEnabled).thenReturn(true)
+
   val otherEntityTypeAction: OtherEntityTypeAction = new OtherEntityTypeAction(
     errorHandler = errorHandler,
     appConfig = appConfig,
@@ -81,13 +83,16 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString()
         }
     }
+
     "return OK and the correct view when answer has already been provided" in {
       (registration: RegistrationWithUnincorporatedAssociation) =>
         new TestContext(
           registration = registration.registration
         ) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
-          status(result)          shouldBe Ok
+
+          status(result) shouldBe Ok
+
           contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString()
         }
     }
