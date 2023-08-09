@@ -17,13 +17,11 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import org.scalacheck.Arbitrary
-import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.http.HttpVerbs.GET
 
 class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
 

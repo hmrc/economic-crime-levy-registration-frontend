@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.SEE_OTHER
 import play.api.mvc.{BodyParsers, Call, Result}
@@ -27,14 +26,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.RegistrationWithUnincorporatedA
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.OtherEntityTypeAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrPostcodeFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPostcodePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrPostcodeView
 
 import scala.concurrent.Future
-import scala.language.postfixOps
 
 class CtUtrPostcodeControllerSpec extends SpecBase {
 
@@ -42,7 +40,9 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
   val formProvider: CtUtrPostcodeFormProvider = new CtUtrPostcodeFormProvider()
   val form: Form[String]                      = formProvider()
   override val appConfig: AppConfig           = mock[AppConfig]
-  val publicBetaAction: PublicBetaAction      = new PublicBetaAction(
+  when(appConfig.otherEntityTypeEnabled).thenReturn(true)
+
+  val otherEntityTypeAction: OtherEntityTypeAction = new OtherEntityTypeAction(
     errorHandler = errorHandler,
     appConfig = appConfig,
     parser = app.injector.instanceOf[BodyParsers.Default]
@@ -61,7 +61,7 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registration.internalId),
       fakeDataRetrievalAction(registration),
-      publicBetaAction,
+      otherEntityTypeAction,
       mockEclRegistrationConnector,
       formProvider,
       pageNavigator,
@@ -83,13 +83,16 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString()
         }
     }
+
     "return OK and the correct view when answer has already been provided" in {
       (registration: RegistrationWithUnincorporatedAssociation) =>
         new TestContext(
           registration = registration.registration
         ) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
-          status(result)          shouldBe Ok
+
+          status(result) shouldBe Ok
+
           contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString()
         }
     }

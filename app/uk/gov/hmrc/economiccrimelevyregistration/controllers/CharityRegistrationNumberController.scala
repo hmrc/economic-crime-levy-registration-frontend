@@ -20,7 +20,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, PublicBetaAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, OtherEntityTypeAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CharityRegistrationNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -39,7 +39,7 @@ class CharityRegistrationNumberController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: CharityRegistrationNumberFormProvider,
   pageNavigator: CharityRegistrationNumberPageNavigator,
-  checkIfPublicBetaIsEnabled: PublicBetaAction,
+  checkIfOtherEntityTypeEnabled: OtherEntityTypeAction,
   view: CharityRegistrationNumberView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -48,12 +48,12 @@ class CharityRegistrationNumberController @Inject() (
   val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData) { implicit request =>
+    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.charityRegistrationNumber), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
+    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
