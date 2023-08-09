@@ -29,10 +29,10 @@ POST        /relevant-accounting-period-length-question                      uk.
 GET         /change-answer/relevant-accounting-period-length-question        uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantApLengthController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/relevant-accounting-period-length-question        uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantApLengthController.onSubmit(mode: Mode = CheckMode)
 
-GET         /uk-revenue                                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad(mode: Mode = NormalMode)
-POST        /uk-revenue                                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit(mode: Mode = NormalMode)
-GET         /change-answer/uk-revenue                                        uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad(mode: Mode = CheckMode)
-POST        /change-answer/uk-revenue                                        uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit(mode: Mode = CheckMode)
+GET         /uk-revenue-in-accounting-period                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad(mode: Mode = NormalMode)
+POST        /uk-revenue-in-accounting-period                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/uk-revenue-in-accounting-period                   uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/uk-revenue-in-accounting-period                   uk.gov.hmrc.economiccrimelevyregistration.controllers.UkRevenueController.onSubmit(mode: Mode = CheckMode)
 
 GET         /you-do-not-need-to-register                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.NotLiableController.youDoNotNeedToRegister()
 

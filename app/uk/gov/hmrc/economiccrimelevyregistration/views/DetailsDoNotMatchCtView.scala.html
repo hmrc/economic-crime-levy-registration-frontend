@@ -21,21 +21,6 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@insetTextHtml = {
-    <p class="govuk-body">@messages("detailsDoNotMatch.telephone.uk.label")
-        <br/>
-        <b>@messages("detailsDoNotMatch.ct.telephone.uk.number")</b>
-    </p>
-    <p class="govuk-body">@messages("detailsDoNotMatch.telephone.intl.label")
-        <br/>
-        <b>@messages("detailsDoNotMatch.ct.telephone.intl.number")</b>
-    </p>
-    <p class="govuk-body">@messages("detailsDoNotMatch.open.label")
-        <br/>
-        <b>@messages("detailsDoNotMatch.open")</b>
-    </p>
-}
-
 @layout(
     pageTitle = title(messages("detailsDoNotMatch.title")),
     showBackLink = false
@@ -45,11 +30,6 @@
 
     <p class="govuk-body">@messages("detailsDoNotMatch.ct.body.p1")</p>
     <p class="govuk-body">@messages("detailsDoNotMatch.ct.body.p2")</p>
-
-    @insetText(InsetText(
-        content = HtmlContent(insetTextHtml)
-    ))
-
-    <p class="govuk-body">@messages("detailsDoNotMatch.closed")</p>
+    <p class="govuk-body">@messages("detailsDoNotMatch.ct.body.p3")</p>
 
 }
