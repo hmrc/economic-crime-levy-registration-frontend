@@ -23,15 +23,14 @@ import play.api.http.Status.OK
 import play.api.mvc.{BodyParsers, Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.cleanup.OtherEntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
-import uk.gov.hmrc.economiccrimelevyregistration.forms.{OtherEntityTypeFormProvider, UtrTypeFormProvider}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.OtherEntityTypeAction
+import uk.gov.hmrc.economiccrimelevyregistration.forms.UtrTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{OtherEntityTypePageNavigator, UtrTypePageNavigator}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OtherEntityTypeView, UtrTypeView}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.UtrTypePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.UtrTypeView
 
 import scala.concurrent.Future
 
@@ -54,14 +53,14 @@ class UtrTypeControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   override val appConfig: AppConfig                          = mock[AppConfig]
-  val enabled: PublicBetaAction                              = new PublicBetaAction(
+  val otherEntityTypeAction: OtherEntityTypeAction           = new OtherEntityTypeAction(
     errorHandler = errorHandler,
     appConfig = appConfig,
     parser = app.injector.instanceOf[BodyParsers.Default]
   )
 
   class TestContext(registrationData: Registration) {
-    when(appConfig.privateBetaEnabled).thenReturn(false)
+    when(appConfig.otherEntityTypeEnabled).thenReturn(true)
 
     val controller = new UtrTypeController(
       mcc,
@@ -70,7 +69,7 @@ class UtrTypeControllerSpec extends SpecBase {
       mockEclRegistrationConnector,
       formProvider,
       pageNavigator,
-      enabled,
+      otherEntityTypeAction,
       view
     )
   }

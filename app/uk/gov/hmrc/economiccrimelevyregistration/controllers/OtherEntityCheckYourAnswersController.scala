@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, PublicBetaAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, OtherEntityTypeAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.OtherEntityCheckYourAnswersPageNavigator
@@ -39,7 +39,7 @@ class OtherEntityCheckYourAnswersController @Inject() (
   getRegistrationData: DataRetrievalAction,
   pageNavigator: OtherEntityCheckYourAnswersPageNavigator,
   val controllerComponents: MessagesControllerComponents,
-  checkIfPublicBetaIsEnabled: PublicBetaAction,
+  checkIfPublicBetaIsEnabled: OtherEntityTypeAction,
   view: OtherEntityCheckYourAnswersView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController

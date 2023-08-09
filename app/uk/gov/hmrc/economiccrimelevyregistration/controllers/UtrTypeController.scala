@@ -20,7 +20,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, PublicBetaAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, OtherEntityTypeAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UtrTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -39,7 +39,7 @@ class UtrTypeController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: UtrTypeFormProvider,
   pageNavigator: UtrTypePageNavigator,
-  checkIfPublicBetaIsEnabled: PublicBetaAction,
+  checkIfPublicBetaIsEnabled: OtherEntityTypeAction,
   view: UtrTypeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController

@@ -20,7 +20,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, PublicBetaAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, OtherEntityTypeAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.OverseasTaxIdentifierFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -39,7 +39,7 @@ class OverseasTaxIdentifierController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: OverseasTaxIdentifierFormProvider,
   pageNavigator: OverseasTaxIdentifierPageNavigator,
-  checkIfPublicBetaIsEnabled: PublicBetaAction,
+  checkIfPublicBetaIsEnabled: OtherEntityTypeAction,
   view: OverseasTaxIdentifierView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController

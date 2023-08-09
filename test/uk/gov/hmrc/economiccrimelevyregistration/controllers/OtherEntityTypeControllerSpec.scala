@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.OtherEntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.PublicBetaAction
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.OtherEntityTypeAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.OtherEntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -58,14 +58,14 @@ class OtherEntityTypeControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   override val appConfig: AppConfig                          = mock[AppConfig]
-  val enabled: PublicBetaAction                              = new PublicBetaAction(
+  val otherEntityTypeAction: OtherEntityTypeAction           = new OtherEntityTypeAction(
     errorHandler = errorHandler,
     appConfig = appConfig,
     parser = app.injector.instanceOf[BodyParsers.Default]
   )
 
   class TestContext(registrationData: Registration) {
-    when(appConfig.privateBetaEnabled).thenReturn(false)
+    when(appConfig.otherEntityTypeEnabled).thenReturn(true)
 
     val controller = new OtherEntityTypeController(
       mcc,
@@ -75,7 +75,7 @@ class OtherEntityTypeControllerSpec extends SpecBase {
       formProvider,
       pageNavigator,
       dataCleanup,
-      enabled,
+      otherEntityTypeAction,
       view
     )
   }
