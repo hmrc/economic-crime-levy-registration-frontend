@@ -45,7 +45,7 @@ class OtherEntityCheckYourAnswersController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private def otherEntityDetails()(implicit request: RegistrationDataRequest[_]): SummaryList =
+  def otherEntityDetails()(implicit request: RegistrationDataRequest[_]): SummaryList =
     SummaryListViewModel(
       rows = Seq(
         OtherEntityTypeSummary.row(),

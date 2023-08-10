@@ -22,20 +22,20 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EntityType, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.CheckYourAnswersView
+import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{CheckYourAnswersView, OtherRegistrationPdfView}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
-import java.time.Instant
+import java.time.LocalDate
 import java.util.Base64
 import javax.inject.Singleton
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CheckYourAnswersController @Inject() (
@@ -46,7 +46,9 @@ class CheckYourAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
   validateRegistrationData: ValidatedRegistrationAction,
-  emailService: EmailService
+  emailService: EmailService,
+  otherEntityController: OtherEntityCheckYourAnswersController,
+  otherRegistrationPdfView: OtherRegistrationPdfView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -94,15 +96,25 @@ class CheckYourAnswersController @Inject() (
   def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     val htmlView = view(organisationDetails(), contactDetails())
 
-    val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
-
     val entityType = request.registration.entityType
+
+    val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
+    val base64EncodedHtmlViewForPdf   = entityType match {
+      case Some(Other) => createAndEncodeHtmlForPdf()
+      case _           => ""
+    }
 
     for {
       _        <- eclRegistrationConnector.upsertRegistration(registration =
-                    request.registration.copy(base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView))
+                    request.registration.copy(
+                      base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView),
+                      base64EncodedDmsSubmissionHtml = entityType match {
+                        case Some(Other) => Some(base64EncodedHtmlViewForPdf)
+                        case _           => None
+                      }
+                    )
                   )
-      response <- submitRegistration(request.internalId, entityType)
+      response <- eclRegistrationConnector.submitRegistration(request.internalId)
       _         = emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference, entityType)
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield {
@@ -132,11 +144,19 @@ class CheckYourAnswersController @Inject() (
 
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
     .encodeToString(html.getBytes)
-  def submitRegistration(internalId: String, entityType: Option[EntityType])(implicit
-    hc: HeaderCarrier
-  ): Future[CreateEclSubscriptionResponse]               = entityType match {
-    case Some(Other) => Future.successful(CreateEclSubscriptionResponse(Instant.now, ""))
-    case _           =>
-      eclRegistrationConnector.submitRegistration(internalId)
+
+  private def createAndEncodeHtmlForPdf()(implicit request: RegistrationDataRequest[_]): String = {
+    val date         = LocalDate.now
+    val organisation = organisationDetails()
+    val contact      = contactDetails()
+    val otherEntity  = otherEntityController.otherEntityDetails()
+    base64EncodeHtmlView(
+      otherRegistrationPdfView(
+        ViewUtils.formatLocalDate(date),
+        organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
+        contact.copy(rows = contact.rows.map(_.copy(actions = None))),
+        otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None)))
+      ).toString()
+    )
   }
 }
