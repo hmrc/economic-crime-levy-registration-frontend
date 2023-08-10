@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.{RegistrationWithUnincorporatedAssociation, ValidTrustRegistration}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode

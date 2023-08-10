@@ -36,8 +36,12 @@
     <ul class="govuk-list govuk-list--bullet">
         <li>@messages("ukRevenue.b1")</li>
         <li>@messages("ukRevenue.b2")</li>
+        <li>@messages("ukRevenue.b3")</li>
     </ul>
     <p class="govuk-body">@messages("ukRevenue.p2")</p>
+    <h3 class="govuk-heading-s">@messages("ukRevenue.h1")</h3>
+    <p class="govuk-body">@messages("ukRevenue.p3")</p>
+
 
     @formHelper(action = UkRevenueController.onSubmit(mode)) {
         @govukInput(

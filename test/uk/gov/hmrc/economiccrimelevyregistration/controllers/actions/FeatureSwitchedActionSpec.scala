@@ -20,7 +20,6 @@ import play.api.mvc.{BodyParsers, Request, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 
 import scala.concurrent.Future
 
@@ -40,7 +39,7 @@ class FeatureSwitchedActionSpec extends SpecBase {
 
   "feature switched action" should {
     "return Ok if enabled" in {
-      when(appConfig.privateBetaEnabled).thenReturn(false)
+      when(appConfig.otherEntityTypeEnabled).thenReturn(true)
 
       val enabled = featureSwitchedAction(true)
 
@@ -51,7 +50,7 @@ class FeatureSwitchedActionSpec extends SpecBase {
     }
 
     "return not found if disabled" in {
-      when(appConfig.privateBetaEnabled).thenReturn(true)
+      when(appConfig.otherEntityTypeEnabled).thenReturn(false)
 
       val enabled = featureSwitchedAction(false)
 

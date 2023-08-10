@@ -34,8 +34,8 @@ class RegistrationReceivedController @Inject() (
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
+    val firstContactEmailAddress: Option[String]  = request.session.get(SessionKeys.FirstContactEmailAddress)
     val secondContactEmailAddress: Option[String] = request.session.get(SessionKeys.SecondContactEmailAddress)
-    val firstContactEmailAddress                  = request.session(SessionKeys.FirstContactEmailAddress)
-    Ok(view(firstContactEmailAddress, secondContactEmailAddress))
+    Ok(view(firstContactEmailAddress.getOrElse(""), secondContactEmailAddress))
   }
 }

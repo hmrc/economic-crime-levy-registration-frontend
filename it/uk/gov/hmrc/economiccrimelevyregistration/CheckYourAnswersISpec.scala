@@ -2,7 +2,9 @@ package uk.gov.hmrc.economiccrimelevyregistration
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import com.github.tomakehurst.wiremock.client.WireMock.{postRequestedFor, urlEqualTo, verify}
+import org.scalacheck.Arbitrary
 import org.scalatest.concurrent.Eventually.eventually
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -11,7 +13,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, EntityType, Languages, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
@@ -55,69 +57,69 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.CheckYourAnswersController.onSubmit().url}"  should {
+  s"POST ${routes.CheckYourAnswersController.onSubmit().url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onSubmit())
 
     "redirect to the registration submitted page after submitting the registration successfully" in {
-      stubAuthorisedWithNoGroupEnrolment()
-
-      val registration      = random[Registration]
-      val entityType        = random[EntityType]
-      val eclReference      = random[String]
-      val contactDetails    = random[ContactDetails]
-      val firstContactName  = random[String]
-      val firstContactEmail = random[String]
-
-      val registrationWithOneContact = registration.copy(contacts =
-        Contacts(
-          firstContactDetails =
-            contactDetails.copy(name = Some(firstContactName), emailAddress = Some(firstContactEmail)),
-          secondContact = Some(false),
-          secondContactDetails = ContactDetails.empty
-        ),
-        entityType = Some(entityType)
-      )
-
-      stubGetRegistration(registrationWithOneContact)
-
-      stubUpsertRegistrationWithoutRequestMatching(registrationWithOneContact)
-
-      stubSubmitRegistration(eclReference)
-
-      stubSendRegistrationSubmittedEmail(
-        RegistrationSubmittedEmailRequest(
-          to = Seq(firstContactEmail),
-          parameters = RegistrationSubmittedEmailParameters(
-            name = firstContactName,
-            eclRegistrationReference = eclReference,
-            eclRegistrationDate = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(
-              messagesApi.preferred(Seq(Languages.english))
-            ),
-            dateDue = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(
-              messagesApi.preferred(Seq(Languages.english))
-            ),
-            "true",
-            None
-          )
-        )
-      )
-
-      val call = entityType match {
-        case Other => routes.RegistrationReceivedController.onPageLoad().url
-        case _     => routes.RegistrationSubmittedController.onPageLoad().url
+      Arbitrary.arbitrary[EntityType].retryUntil(_ != Other).map { entityType =>
+        testOnSubmit(entityType, routes.RegistrationSubmittedController.onPageLoad().url)
       }
-
-      stubDeleteRegistration()
-
-      val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onSubmit()))
-
-      status(result)           shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(call)
-
-      eventually {
-        verify(1, postRequestedFor(urlEqualTo("/hmrc/email")))
-      }
+      testOnSubmit(Other, routes.RegistrationReceivedController.onPageLoad().url)
     }
   }
 
+  private def testOnSubmit(entityType: EntityType, expectedRedirectUrl: String) = {
+    stubAuthorisedWithNoGroupEnrolment()
+
+    val registration      = random[Registration]
+    val eclReference      = random[String]
+    val contactDetails    = random[ContactDetails]
+    val firstContactName  = random[String]
+    val firstContactEmail = random[String]
+
+    val registrationWithOneContact = registration.copy(
+      contacts = Contacts(
+        firstContactDetails =
+          contactDetails.copy(name = Some(firstContactName), emailAddress = Some(firstContactEmail)),
+        secondContact = Some(false),
+        secondContactDetails = ContactDetails.empty
+      ),
+      entityType = Some(entityType)
+    )
+
+    stubGetRegistration(registrationWithOneContact)
+
+    stubUpsertRegistrationWithoutRequestMatching(registrationWithOneContact)
+
+    stubSubmitRegistration(eclReference)
+
+    stubSendRegistrationSubmittedEmail(
+      RegistrationSubmittedEmailRequest(
+        to = Seq(firstContactEmail),
+        parameters = RegistrationSubmittedEmailParameters(
+          name = firstContactName,
+          eclRegistrationReference = eclReference,
+          eclRegistrationDate = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(
+            messagesApi.preferred(Seq(Languages.english))
+          ),
+          dateDue = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(
+            messagesApi.preferred(Seq(Languages.english))
+          ),
+          "true",
+          None
+        )
+      )
+    )
+
+    stubDeleteRegistration()
+
+    val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onSubmit()))
+
+    status(result)           shouldBe SEE_OTHER
+    redirectLocation(result) shouldBe Some(expectedRedirectUrl)
+
+    eventually {
+      verify(1, postRequestedFor(urlEqualTo("/hmrc/email")))
+    }
+  }
 }

@@ -20,11 +20,10 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, PublicBetaAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, OtherEntityTypeAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.SaUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.models.UtrType.CtUtr
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.SaUtrPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.SaUtrView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -38,7 +37,7 @@ class SaUtrController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
-  checkIfPublicBetaIsEnabled: PublicBetaAction,
+  checkIfOtherEntityTypeEnabled: OtherEntityTypeAction,
   formProvider: SaUtrFormProvider,
   pageNavigator: SaUtrPageNavigator,
   view: SaUtrView
@@ -49,12 +48,12 @@ class SaUtrController @Inject() (
   val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData) { implicit request =>
+    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.saUtr), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (checkIfPublicBetaIsEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
+    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

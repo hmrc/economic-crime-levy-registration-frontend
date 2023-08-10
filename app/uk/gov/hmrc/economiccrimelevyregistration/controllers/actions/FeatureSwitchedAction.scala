@@ -39,11 +39,11 @@ abstract class FeatureSwitchedAction @Inject() (
 
 }
 
-class PublicBetaAction @Inject() (
+class OtherEntityTypeAction @Inject() (
   errorHandler: ErrorHandler,
   override val parser: BodyParsers.Default,
   appConfig: AppConfig
 )(implicit override val executionContext: ExecutionContext)
     extends FeatureSwitchedAction(errorHandler, parser) {
-  override val featureEnabled: Boolean = !appConfig.privateBetaEnabled
+  override val featureEnabled: Boolean = appConfig.otherEntityTypeEnabled
 }

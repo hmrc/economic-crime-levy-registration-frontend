@@ -19,7 +19,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class NonUkCrnPageNavigatorSpec extends SpecBase {
