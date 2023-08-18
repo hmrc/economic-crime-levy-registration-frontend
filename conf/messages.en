@@ -558,3 +558,7 @@ registration.received.second.email = We have also sent an email to {0} because y
 
 otherRegistration.pdfHtml.title = Application to Register for the Economic Crime Levy
 otherRegistration.pdfHtml.submissionDate = Submission date: {0}
+
+start.amend.title = Amend your Economic Crime Levy registration
+start.amend.table.header = ECL registration details
+start.amend.table.registrationNumber = ECL registration number

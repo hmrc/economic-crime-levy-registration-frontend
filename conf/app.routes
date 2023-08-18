@@ -207,3 +207,4 @@ POST        /what-is-your-overseas-tax-id                                    uk.
 GET         /change-answer/what-is-your-overseas-tax-id                      uk.gov.hmrc.economiccrimelevyregistration.controllers.OverseasTaxIdentifierController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/what-is-your-overseas-tax-id                      uk.gov.hmrc.economiccrimelevyregistration.controllers.OverseasTaxIdentifierController.onSubmit(mode: Mode = CheckMode)
 
+GET         /start/amend/:eclReference                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendRegistrationStartController.onPageLoad(eclReference)
