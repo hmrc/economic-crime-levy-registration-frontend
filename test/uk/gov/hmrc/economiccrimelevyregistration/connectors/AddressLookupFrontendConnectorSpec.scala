@@ -45,7 +45,7 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
           continueUrl = "http://localhost:14000/register-for-economic-crime-levy/address-lookup-continue/normalmode",
           homeNavHref = "/register-for-economic-crime-levy",
           signOutHref = "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
-          accessibilityFooterUrl = "/accessibility-statement/register-for-economic-crime-levy",
+          accessibilityFooterUrl = "/accessibility-statement/economic-crime-levy",
           deskProServiceName = "economic-crime-levy-registration-frontend",
           ukMode = ukMode
         ),
