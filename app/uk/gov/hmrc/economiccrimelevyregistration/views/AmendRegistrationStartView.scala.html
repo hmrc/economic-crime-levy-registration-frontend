@@ -30,6 +30,8 @@
     showSignOut = false
 ) {
 
+    <h1 class="govuk-heading-l">@messages("start.amend.h1")</h1>
+
     @table(Table(
         rows = Seq(
             Seq(TableRow(content = Text(messages("start.amend.table.registrationNumber")), classes = "govuk-summary-list__key"),
@@ -42,4 +44,27 @@
         classes = "govuk-table"
     ))
 
+    <p class="govuk-body">@messages("start.amend.body.p1")</p>
+
+    <p class="govuk-body">@messages("start.amend.body.p2")</p>
+
+    <h2 class="govuk-heading-m">@messages("start.amend.h2")</h2>
+
+    <p class="govuk-body">@messages("start.amend.body.p3")</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("start.amend.list.b1")</li>
+        <li>@messages("start.amend.list.b2")</li>
+        <li>@messages("start.amend.list.b3")</li>
+        <li>@Html(messages("start.amend.list.b4", messages("start.amend.list.b4.link")))</li>
+        <li>@messages("start.amend.list.b5")</li>
+        <li>@messages("start.amend.list.b6")</li>
+    </ul>
+
+    <p class="govuk-body">@messages("start.amend.body.p4")</p>
+
+    @button(
+    ButtonViewModel(messages("start.amend.button"))
+    .asLink(AmlSupervisorController.onPageLoad(CheckMode).url)
+    )
 }
