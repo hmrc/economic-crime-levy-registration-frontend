@@ -35,7 +35,8 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
     registration: Registration
   )(implicit request: RequestHeader): Future[Call] =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
-      case Some(true)  => Future.successful(routes.AmlSupervisorController.onPageLoad(NormalMode))
+      case Some(true)  =>
+        Future.successful(routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get))
       case Some(false) => sendNotLiableAuditEvent(registration.internalId)
       case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }

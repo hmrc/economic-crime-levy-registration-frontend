@@ -143,6 +143,7 @@ abstract class BaseAuthorisedAction @Inject() (
                   Future.successful(Redirect(routes.NotableErrorController.assistantCannotRegister()))
                 }
               case _         =>
+
                 if (checkForEclEnrolment) {
                   eclEnrolment match {
                     case Some(_) => Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))

@@ -22,6 +22,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
@@ -131,9 +132,10 @@ class CheckYourAnswersController @Inject() (
           .getOrElse(throw new IllegalStateException("First contact email address not found in registration data"))
       )
 
-      Redirect(entityType match {
-        case Some(Other) => routes.RegistrationReceivedController.onPageLoad()
-        case _           => routes.RegistrationSubmittedController.onPageLoad()
+      Redirect((entityType, request.registration.registrationType) match {
+        case (Some(Other), Some(Initial))   => routes.RegistrationReceivedController.onPageLoad()
+        case (Some(Other), Some(Amendment)) => routes.AmendmentRequestedController.onPageLoad()
+        case _                              => routes.RegistrationSubmittedController.onPageLoad()
       }).withSession(
         request.registration.contacts.secondContactDetails.emailAddress.fold(updatedSession)(email =>
           updatedSession ++ Seq(SessionKeys.SecondContactEmailAddress -> email)

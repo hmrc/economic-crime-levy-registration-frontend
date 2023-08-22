@@ -14,10 +14,10 @@ POST        /aml-regulated-activity-question                                 uk.
 GET         /change-answer/aml-regulated-activity-question                   uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/aml-regulated-activity-question                   uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onSubmit(mode: Mode = CheckMode)
 
-GET         /your-aml-supervisor                                             uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = NormalMode)
-POST        /your-aml-supervisor                                             uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = NormalMode)
-GET         /change-answer/your-aml-supervisor                               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = CheckMode)
-POST        /change-answer/your-aml-supervisor                               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = CheckMode)
+GET         /your-aml-supervisor/:registrationType                                             uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = NormalMode, registrationType: RegistrationType)
+POST        /your-aml-supervisor/:registrationType                                             uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = NormalMode, registrationType: RegistrationType)
+GET         /change-answer/your-aml-supervisor/:registrationType                               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = CheckMode, registrationType: RegistrationType)
+POST        /change-answer/your-aml-supervisor/:registrationType                               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = CheckMode, registrationType: RegistrationType)
 
 GET         /accounting-period-question                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onPageLoad(mode: Mode = NormalMode)
 POST        /accounting-period-question                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onSubmit(mode: Mode = NormalMode)
@@ -208,6 +208,5 @@ GET         /change-answer/what-is-your-overseas-tax-id                      uk.
 POST        /change-answer/what-is-your-overseas-tax-id                      uk.gov.hmrc.economiccrimelevyregistration.controllers.OverseasTaxIdentifierController.onSubmit(mode: Mode = CheckMode)
 
 GET         /amend-economic-crime-levy-registration/:eclReference            uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendRegistrationStartController.onPageLoad(eclReference)
-
 GET         /amend-economic-crime-levy-registration/confirmation             uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendmentRequestedController.onPageLoad()
 
