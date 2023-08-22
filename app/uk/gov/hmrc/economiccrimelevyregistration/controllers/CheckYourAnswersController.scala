@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Base64EncodedFields, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
@@ -108,11 +108,15 @@ class CheckYourAnswersController @Inject() (
     for {
       _        <- eclRegistrationConnector.upsertRegistration(registration =
                     request.registration.copy(
-                      base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView),
-                      base64EncodedDmsSubmissionHtml = entityType match {
-                        case Some(Other) => Some(base64EncodedHtmlViewForPdf)
-                        case _           => None
-                      }
+                      base64EncodedFields = Some(
+                        Base64EncodedFields(
+                          nrsSubmissionHtml = Some(base64EncodedHtmlView),
+                          dmsSubmissionHtml = entityType match {
+                            case Some(Other) => Some(base64EncodedHtmlViewForPdf)
+                            case _           => None
+                          }
+                        )
+                      )
                     )
                   )
       response <- eclRegistrationConnector.submitRegistration(request.internalId)
