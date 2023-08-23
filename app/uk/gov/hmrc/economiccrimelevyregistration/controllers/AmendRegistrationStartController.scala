@@ -28,9 +28,9 @@ class AmendRegistrationStartController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: AmendRegistrationStartView
 ) extends FrontendBaseController
-  with I18nSupport {
+    with I18nSupport {
 
-  def onPageLoad(eclReference: String): Action[AnyContent] = Action {implicit request =>
+  def onPageLoad(eclReference: String): Action[AnyContent] = Action { implicit request =>
     Ok(view(eclReference))
   }
 }

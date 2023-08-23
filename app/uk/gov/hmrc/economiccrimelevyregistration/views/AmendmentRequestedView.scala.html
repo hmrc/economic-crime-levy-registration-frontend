@@ -17,23 +17,23 @@
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 
 @this(
-    layout: templates.Layout,
-    govukPanel: GovukPanel,
-    appConfig: AppConfig
+        layout: templates.Layout,
+        govukPanel: GovukPanel,
+        appConfig: AppConfig
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
 
 @layout(
-pageTitle = title(messages("amendmentRequested.title")),
-timeout = false,
-showBackLink = false,
-showSignOut = false
+    pageTitle = title(messages("amendmentRequested.title")),
+    timeout = false,
+    showBackLink = false,
+    showSignOut = false
 ) {
 
     @govukPanel(Panel(
-    title = HtmlContent(messages("amendmentRequested.panel.title"))
+        title = HtmlContent(messages("amendmentRequested.panel.title"))
     ))
 
     <p class="govuk-body">@messages("amendmentRequested.body.p1")</p>

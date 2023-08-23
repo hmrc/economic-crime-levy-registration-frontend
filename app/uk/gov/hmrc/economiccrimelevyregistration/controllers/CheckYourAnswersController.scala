@@ -97,12 +97,12 @@ class CheckYourAnswersController @Inject() (
   def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     val htmlView = view(organisationDetails(), contactDetails())
 
-    val entityType = request.registration.entityType
+    val registration = request.registration
 
     val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
-    val base64EncodedHtmlViewForPdf   = entityType match {
-      case Some(Other) => createAndEncodeHtmlForPdf()
-      case _           => ""
+    val base64EncodedHtmlViewForPdf   = (registration.entityType, registration.registrationType) match {
+      case (Some(_), Some(Amendment)) | (Some(Other), _) | (None, Some(Amendment)) => createAndEncodeHtmlForPdf()
+      case _       => ""
     }
 
     for {
