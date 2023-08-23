@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.EnrolmentsWithEcl
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
-import uk.gov.hmrc.economiccrimelevyregistration.services.EnrolmentStoreProxyService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
 
 import scala.concurrent.Future
 
@@ -38,10 +38,12 @@ class AuthorisedActionAgentsAllowedSpec extends SpecBase {
   val defaultBodyParser: BodyParsers.Default                     = app.injector.instanceOf[BodyParsers.Default]
   val mockAuthConnector: AuthConnector                           = mock[AuthConnector]
   val mockEnrolmentStoreProxyService: EnrolmentStoreProxyService = mock[EnrolmentStoreProxyService]
+  val mockEclRegistrationService: EclRegistrationService         = mock[EclRegistrationService]
 
   val authorisedAction =
     new AuthorisedActionAgentsAllowedImpl(
       mockAuthConnector,
+      mockEclRegistrationService,
       mockEnrolmentStoreProxyService,
       appConfig,
       defaultBodyParser

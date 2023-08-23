@@ -33,7 +33,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{CheckYourAnswersView, OtherRegistrationPdfView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, OtherRegistrationPdfView}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 import scala.concurrent.Future
@@ -42,6 +42,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
   val view: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
   val pdfView                    = app.injector.instanceOf[OtherRegistrationPdfView]
+  val amendPdfView               = app.injector.instanceOf[AmendRegistrationPdfView]
   val otherEntity                = app.injector.instanceOf[OtherEntityCheckYourAnswersController]
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
@@ -58,7 +59,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       new FakeValidatedRegistrationAction(registrationData),
       mockEmailService,
       otherEntity,
-      pdfView
+      pdfView,
+      amendPdfView
     )
   }
 
@@ -225,7 +227,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           verify(mockEclRegistrationConnector, times(1))
             .upsertRegistration(argCaptor.capture())(any())
           val submittedRegistration: Registration = argCaptor.getValue
-          submittedRegistration.base64EncodedDmsSubmissionHtml.getOrElse("").isBlank shouldBe false
+          submittedRegistration.base64EncodedFields.flatMap(_.dmsSubmissionHtml).getOrElse("").isBlank shouldBe false
 
           reset(mockEclRegistrationConnector)
           reset(mockEmailService)
@@ -346,7 +348,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           verify(mockEclRegistrationConnector, times(1))
             .upsertRegistration(argCaptor.capture())(any())
           val submittedRegistration: Registration = argCaptor.getValue
-          submittedRegistration.base64EncodedDmsSubmissionHtml.getOrElse("").isBlank shouldBe false
+          submittedRegistration.base64EncodedFields.flatMap(_.dmsSubmissionHtml).getOrElse("").isBlank shouldBe false
 
           reset(mockEclRegistrationConnector)
           reset(mockEmailService)

@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -73,7 +73,10 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form, NormalMode, RegistrationType.Initial)(
+          fakeRequest,
+          messages
+        ).toString
       }
     }
 
@@ -84,7 +87,10 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(amlSupervisor), NormalMode)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form.fill(amlSupervisor), NormalMode, RegistrationType.Initial)(
+            fakeRequest,
+            messages
+          ).toString
         }
     }
   }
@@ -120,7 +126,10 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode, RegistrationType.Initial)(
+          fakeRequest,
+          messages
+        ).toString
       }
     }
   }

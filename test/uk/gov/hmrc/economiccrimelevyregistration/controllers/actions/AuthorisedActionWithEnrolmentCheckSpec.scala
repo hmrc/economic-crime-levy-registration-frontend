@@ -27,8 +27,9 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
-import uk.gov.hmrc.economiccrimelevyregistration.services.EnrolmentStoreProxyService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
 import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, EnrolmentsWithoutEcl}
 
 import scala.concurrent.Future
@@ -38,10 +39,12 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
   val defaultBodyParser: BodyParsers.Default                     = app.injector.instanceOf[BodyParsers.Default]
   val mockAuthConnector: AuthConnector                           = mock[AuthConnector]
   val mockEnrolmentStoreProxyService: EnrolmentStoreProxyService = mock[EnrolmentStoreProxyService]
+  val mockEclRegistrationService: EclRegistrationService         = mock[EclRegistrationService]
 
   val authorisedAction =
     new AuthorisedActionWithEnrolmentCheckImpl(
       mockAuthConnector,
+      mockEclRegistrationService,
       mockEnrolmentStoreProxyService,
       appConfig,
       defaultBodyParser
@@ -71,6 +74,9 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
 
         when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
           .thenReturn(Future.successful(None))
+
+        when(mockEclRegistrationService.getOrCreateRegistration(ArgumentMatchers.eq(internalId))(any()))
+          .thenReturn(Future.successful(Initial))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 

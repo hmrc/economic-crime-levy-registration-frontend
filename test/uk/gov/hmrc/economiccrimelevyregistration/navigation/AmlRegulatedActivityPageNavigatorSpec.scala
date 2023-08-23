@@ -20,6 +20,7 @@ import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -37,7 +38,7 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
         await(
           pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.AmlSupervisorController
-          .onPageLoad(NormalMode)
+          .onPageLoad(NormalMode, Amendment)
     }
 
     "return a Call to the check your answers page from the AML regulated activity page in CheckMode when the 'Yes' option is selected" in forAll {
