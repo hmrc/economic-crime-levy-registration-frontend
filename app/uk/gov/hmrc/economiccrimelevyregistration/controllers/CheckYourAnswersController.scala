@@ -113,8 +113,8 @@ class CheckYourAnswersController @Inject() (
                       base64EncodedFields = Some(
                         Base64EncodedFields(
                           nrsSubmissionHtml = Some(base64EncodedHtmlView),
-                          dmsSubmissionHtml = registration.entityType match {
-                            case Some(Other) => Some(base64EncodedHtmlViewForPdf)
+                          dmsSubmissionHtml = (registration.entityType, registration.registrationType) match {
+                            case (Some(_), Some(Amendment)) | (Some(Other), _) | (None, Some(Amendment)) => Some(base64EncodedHtmlViewForPdf)
                             case _           => None
                           }
                         )
@@ -144,7 +144,7 @@ class CheckYourAnswersController @Inject() (
 
       Redirect((registration.entityType, registration.registrationType) match {
         case (Some(Other), Some(Initial))   => routes.RegistrationReceivedController.onPageLoad()
-        case (Some(Other), Some(Amendment)) => routes.AmendmentRequestedController.onPageLoad()
+        case (Some(_), Some(Amendment)) => routes.AmendmentRequestedController.onPageLoad()
         case _                              => routes.RegistrationSubmittedController.onPageLoad()
       }).withSession(
         registration.contacts.secondContactDetails.emailAddress.fold(updatedSession)(email =>
