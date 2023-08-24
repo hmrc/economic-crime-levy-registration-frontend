@@ -579,8 +579,8 @@ start.amend.button = Start now
 
 amendmentRequested.title = Economic Crime Levy registration amendment requested - Amend your ECL registration - GOV.UK
 amendmentRequested.panel.title = Economic Crime Levy registration amendment requested
-amendmentRequested.body.p1 = You have requested to amend your registration for the Economic Crime Levy (ECL) on (DD Month YYYY) for the financial year 2022 to 2023.
-amendmentRequested.body.p2 = We have sent a confirmation email to (name@email.com). Please save this for your records.
+amendmentRequested.body.p1 = You have requested to amend your registration for the Economic Crime Levy (ECL) on {0}.
+amendmentRequested.body.p2 = We have sent a confirmation email to {0}. Please save this for your records.
 amendmentRequested.body.p3 = You will not receive an email or notification from HMRC to remind you to submit a return.
 amendmentRequested.body.p4 = When you complete your yearly return, you will need to tell us:
 amendmentRequested.body.p5 = We will review your answers. We may contact you using the details you provided if we need any more information. This process will take up to 15 working days.

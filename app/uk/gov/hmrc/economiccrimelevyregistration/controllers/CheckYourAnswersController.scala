@@ -114,8 +114,9 @@ class CheckYourAnswersController @Inject() (
                         Base64EncodedFields(
                           nrsSubmissionHtml = Some(base64EncodedHtmlView),
                           dmsSubmissionHtml = (registration.entityType, registration.registrationType) match {
-                            case (Some(_), Some(Amendment)) | (Some(Other), _) | (None, Some(Amendment)) => Some(base64EncodedHtmlViewForPdf)
-                            case _           => None
+                            case (Some(_), Some(Amendment)) | (Some(Other), _) | (None, Some(Amendment)) =>
+                              Some(base64EncodedHtmlViewForPdf)
+                            case _                                                                       => None
                           }
                         )
                       )
@@ -143,9 +144,10 @@ class CheckYourAnswersController @Inject() (
       )
 
       Redirect((registration.entityType, registration.registrationType) match {
-        case (Some(Other), Some(Initial))   => routes.RegistrationReceivedController.onPageLoad()
-        case (Some(_), Some(Amendment)) => routes.AmendmentRequestedController.onPageLoad()
-        case _                              => routes.RegistrationSubmittedController.onPageLoad()
+        case (Some(Other), Some(Initial)) => routes.RegistrationReceivedController.onPageLoad()
+        case (Some(_), Some(Amendment))   => routes.AmendmentRequestedController.onPageLoad()
+        case (None, Some(Amendment))      => routes.AmendmentRequestedController.onPageLoad()
+        case _                            => routes.RegistrationSubmittedController.onPageLoad()
       }).withSession(
         registration.contacts.secondContactDetails.emailAddress.fold(updatedSession)(email =>
           updatedSession ++ Seq(SessionKeys.SecondContactEmailAddress -> email)

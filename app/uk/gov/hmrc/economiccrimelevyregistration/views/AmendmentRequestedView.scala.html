@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+@import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
 @this(
         layout: templates.Layout,
@@ -22,7 +23,7 @@
         appConfig: AppConfig
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(email: String)(implicit request: Request[_], messages: Messages)
 
 
 @layout(
@@ -36,9 +37,10 @@
         title = HtmlContent(messages("amendmentRequested.panel.title"))
     ))
 
-    <p class="govuk-body">@messages("amendmentRequested.body.p1")</p>
+    <p class="govuk-body">@messages("amendmentRequested.body.p1",
+        ViewUtils.formatLocalDate(LocalDate.now()))</p>
 
-    <p class="govuk-body">@messages("amendmentRequested.body.p2")</p>
+    <p class="govuk-body">@messages("amendmentRequested.body.p2", email)</p>
 
     <p class="govuk-body">@messages("amendmentRequested.body.p3")</p>
 
@@ -58,4 +60,4 @@
     <p class="govuk-body">@messages("amendmentRequested.body.p6")</p>
 
     <p class="govuk-body">@Html(messages("amendmentRequested.body.p7", messages("amendmentRequested.body.p7.link", appConfig.exitSurveyUrl)))</p>
-}
+}@import java.time.LocalDate

@@ -33,7 +33,8 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
   "nextPage" should {
     "return a Call to the AML supervisor page from the AML regulated activity page in NormalMode when the 'Yes' option is selected" in forAll {
       registration: Registration =>
-        val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
+        val updatedRegistration =
+          registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true), registrationType = Some(Amendment))
 
         await(
           pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
@@ -43,7 +44,8 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
 
     "return a Call to the check your answers page from the AML regulated activity page in CheckMode when the 'Yes' option is selected" in forAll {
       registration: Registration =>
-        val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
+        val updatedRegistration =
+          registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true), registrationType = Some(Initial))
 
         await(
           pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
@@ -52,7 +54,8 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
 
     "return a Call to the not liable page from the AML regulated activity page in either mode when the 'No' option is selected" in forAll {
       (registration: Registration, mode: Mode) =>
-        val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
+        val updatedRegistration =
+          registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false), registrationType = Some(Initial))
 
         await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe routes.NotLiableController
           .youDoNotNeedToRegister()

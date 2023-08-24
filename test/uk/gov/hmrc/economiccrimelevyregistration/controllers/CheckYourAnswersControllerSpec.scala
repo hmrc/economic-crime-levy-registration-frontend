@@ -22,15 +22,17 @@ import org.scalacheck.Arbitrary
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
+import uk.gov.hmrc.economiccrimelevyregistration.ValidRegistrationWithRegistrationType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidatedRegistrationAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, OtherRegistrationPdfView}
@@ -65,10 +67,14 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view" in forAll { registration: Registration =>
-      new TestContext(registration) {
+    "return OK and the correct view" in forAll { validRegistration: ValidRegistrationWithRegistrationType =>
+      new TestContext(validRegistration.registration) {
         implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
-          RegistrationDataRequest(fakeRequest, registration.internalId, registration)
+          RegistrationDataRequest(
+            fakeRequest,
+            validRegistration.registration.internalId,
+            validRegistration.registration
+          )
         implicit val messages: Messages                                                       = messagesApi.preferred(registrationDataRequest)
 
         val result: Future[Result] = controller.onPageLoad()(registrationDataRequest)
@@ -131,6 +137,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       ) =>
         val updatedRegistration = registration.copy(
           entityType = Some(entityType),
+          registrationType = Some(Initial),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
             secondContact = Some(false),
@@ -187,6 +194,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       ) =>
         val updatedRegistration = registration.copy(
           entityType = Some(entityType),
+          registrationType = Some(Initial),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
             secondContact = Some(false),
@@ -250,6 +258,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       ) =>
         val updatedRegistration = registration.copy(
           entityType = Some(entityType),
+          registrationType = Some(Initial),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
             secondContact = Some(true),
@@ -308,6 +317,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       ) =>
         val updatedRegistration = registration.copy(
           entityType = Some(entityType),
+          registrationType = Some(Initial),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
             secondContact = Some(true),
@@ -363,6 +373,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       ) =>
         val updatedRegistration = registration.copy(
           entityType = Some(entityType),
+          registrationType = Some(Initial),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = None),
             secondContact = Some(false),

@@ -25,7 +25,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
-import uk.gov.hmrc.economiccrimelevyregistration.EnrolmentsWithEcl
+import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, ValidRegistrationWithRegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
@@ -61,7 +61,13 @@ class AuthorisedActionAgentsAllowedSpec extends SpecBase {
 
   "invokeBlock" should {
     "execute the block and return the result if authorised" in forAll {
-      (internalId: String, enrolmentsWithEcl: EnrolmentsWithEcl, groupId: String, affinityGroup: AffinityGroup) =>
+      (
+        internalId: String,
+        enrolmentsWithEcl: EnrolmentsWithEcl,
+        groupId: String,
+        affinityGroup: AffinityGroup,
+        validRegistration: ValidRegistrationWithRegistrationType
+      ) =>
         when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
           .thenReturn(
             Future(
@@ -73,6 +79,9 @@ class AuthorisedActionAgentsAllowedSpec extends SpecBase {
 
         when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
           .thenReturn(Future.successful(None))
+
+        when(mockEclRegistrationService.getOrCreateRegistration(any())(any()))
+          .thenReturn(Future.successful(validRegistration.registration))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
@@ -93,7 +102,12 @@ class AuthorisedActionAgentsAllowedSpec extends SpecBase {
     }
 
     "redirect the user to the assistant not supported page if they have an assistant credential role" in forAll {
-      (internalId: String, enrolmentsWithEcl: EnrolmentsWithEcl, groupId: String) =>
+      (
+        internalId: String,
+        enrolmentsWithEcl: EnrolmentsWithEcl,
+        groupId: String,
+        validRegistration: ValidRegistrationWithRegistrationType
+      ) =>
         when(
           mockAuthConnector
             .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
@@ -105,6 +119,9 @@ class AuthorisedActionAgentsAllowedSpec extends SpecBase {
               )
             )
           )
+
+        when(mockEclRegistrationService.getOrCreateRegistration(any())(any()))
+          .thenReturn(Future.successful(validRegistration.registration))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 

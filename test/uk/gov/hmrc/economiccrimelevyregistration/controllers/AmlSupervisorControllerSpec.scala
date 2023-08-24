@@ -32,6 +32,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMo
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 
 import scala.concurrent.Future
 
@@ -99,7 +100,8 @@ class AmlSupervisorControllerSpec extends SpecBase {
     "save the selected AML supervisor option then redirect to the next page" in forAll {
       (registration: Registration, amlSupervisor: AmlSupervisor) =>
         new TestContext(registration) {
-          val updatedRegistration: Registration = registration.copy(amlSupervisor = Some(amlSupervisor))
+          val updatedRegistration: Registration =
+            registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))

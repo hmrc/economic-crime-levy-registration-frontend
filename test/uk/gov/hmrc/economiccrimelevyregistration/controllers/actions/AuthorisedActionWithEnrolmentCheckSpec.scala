@@ -27,10 +27,12 @@ import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
-import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, EnrolmentsWithoutEcl}
+import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, EnrolmentsWithoutEcl, ValidRegistrationWithRegistrationType}
 
 import scala.concurrent.Future
 
@@ -62,7 +64,9 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
 
   "invokeBlock" should {
     "execute the block and return the result if authorised" in forAll {
-      (internalId: String, enrolmentsWithoutEcl: EnrolmentsWithoutEcl, groupId: String) =>
+      (internalId: String, enrolmentsWithoutEcl: EnrolmentsWithoutEcl, groupId: String, registration: Registration) =>
+        val validRegistration = registration.copy(registrationType = Some(Initial))
+
         when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
           .thenReturn(
             Future(
@@ -76,7 +80,7 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
           .thenReturn(Future.successful(None))
 
         when(mockEclRegistrationService.getOrCreateRegistration(ArgumentMatchers.eq(internalId))(any()))
-          .thenReturn(Future.successful(Initial))
+          .thenReturn(Future.successful(validRegistration))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
@@ -97,7 +101,12 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
     }
 
     "redirect the user to the already registered page if they have the ECL enrolment" in forAll {
-      (internalId: String, enrolmentsWithEcl: EnrolmentsWithEcl, groupId: String) =>
+      (
+        internalId: String,
+        enrolmentsWithEcl: EnrolmentsWithEcl,
+        groupId: String,
+        validRegistration: ValidRegistrationWithRegistrationType
+      ) =>
         when(
           mockAuthConnector
             .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
@@ -107,6 +116,9 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
               Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Organisation) and Some(User)
             )
           )
+
+        when(mockEclRegistrationService.getOrCreateRegistration(ArgumentMatchers.eq(internalId))(any()))
+          .thenReturn(Future.successful(validRegistration.registration))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
@@ -119,7 +131,8 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
         internalId: String,
         enrolmentsWithoutEcl: EnrolmentsWithoutEcl,
         groupId: String,
-        eclReferenceNumber: String
+        eclReferenceNumber: String,
+        validRegistration: ValidRegistrationWithRegistrationType
       ) =>
         when(
           mockAuthConnector
@@ -136,6 +149,9 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
         when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
           .thenReturn(Future.successful(Some(eclReferenceNumber)))
 
+        when(mockEclRegistrationService.getOrCreateRegistration(ArgumentMatchers.eq(internalId))(any()))
+          .thenReturn(Future.successful(validRegistration.registration))
+
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
         status(result)                 shouldBe SEE_OTHER
@@ -143,7 +159,12 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
     }
 
     "redirect the user to the agent not supported page if they have an agent affinity group" in forAll {
-      (internalId: String, enrolmentsWithoutEcl: EnrolmentsWithoutEcl, groupId: String) =>
+      (
+        internalId: String,
+        enrolmentsWithoutEcl: EnrolmentsWithoutEcl,
+        groupId: String,
+        validRegistration: ValidRegistrationWithRegistrationType
+      ) =>
         when(
           mockAuthConnector
             .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
@@ -157,6 +178,9 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
         when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
           .thenReturn(Future.successful(None))
 
+        when(mockEclRegistrationService.getOrCreateRegistration(ArgumentMatchers.eq(internalId))(any()))
+          .thenReturn(Future.successful(validRegistration.registration))
+
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
         status(result)                 shouldBe SEE_OTHER
@@ -164,7 +188,12 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
     }
 
     "redirect the user to the assistant not supported page if they have an assistant credential role" in forAll {
-      (internalId: String, enrolmentsWithEcl: EnrolmentsWithEcl, groupId: String) =>
+      (
+        internalId: String,
+        enrolmentsWithEcl: EnrolmentsWithEcl,
+        groupId: String,
+        validRegistration: ValidRegistrationWithRegistrationType
+      ) =>
         when(
           mockAuthConnector
             .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
@@ -176,6 +205,9 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
               )
             )
           )
+
+        when(mockEclRegistrationService.getOrCreateRegistration(ArgumentMatchers.eq(internalId))(any()))
+          .thenReturn(Future.successful(validRegistration.registration))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
