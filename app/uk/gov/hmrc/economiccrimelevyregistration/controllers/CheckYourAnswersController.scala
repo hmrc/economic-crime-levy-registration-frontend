@@ -22,13 +22,14 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
-import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Base64EncodedFields, RegistrationType, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{CheckYourAnswersView, OtherRegistrationPdfView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, OtherRegistrationPdfView}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -48,7 +49,8 @@ class CheckYourAnswersController @Inject() (
   validateRegistrationData: ValidatedRegistrationAction,
   emailService: EmailService,
   otherEntityController: OtherEntityCheckYourAnswersController,
-  otherRegistrationPdfView: OtherRegistrationPdfView
+  otherRegistrationPdfView: OtherRegistrationPdfView,
+  amendRegistrationPdfView: AmendRegistrationPdfView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -96,29 +98,39 @@ class CheckYourAnswersController @Inject() (
   def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     val htmlView = view(organisationDetails(), contactDetails())
 
-    val entityType = request.registration.entityType
+    val registration = request.registration
 
     val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
-    val base64EncodedHtmlViewForPdf   = entityType match {
-      case Some(Other) => createAndEncodeHtmlForPdf()
-      case _           => ""
+    val base64EncodedHtmlViewForPdf   = (registration.entityType, registration.registrationType) match {
+      case (Some(_), Some(Amendment)) | (Some(Other), _) | (None, Some(Amendment)) =>
+        createAndEncodeHtmlForPdf(registration.registrationType)
+      case _                                                                       => ""
     }
 
     for {
       _        <- eclRegistrationConnector.upsertRegistration(registration =
-                    request.registration.copy(
-                      base64EncodedNrsSubmissionHtml = Some(base64EncodedHtmlView),
-                      base64EncodedDmsSubmissionHtml = entityType match {
-                        case Some(Other) => Some(base64EncodedHtmlViewForPdf)
-                        case _           => None
-                      }
+                    registration.copy(
+                      base64EncodedFields = Some(
+                        Base64EncodedFields(
+                          nrsSubmissionHtml = Some(base64EncodedHtmlView),
+                          dmsSubmissionHtml = (registration.entityType, registration.registrationType) match {
+                            case (Some(_), Some(Amendment)) | (Some(Other), _) | (None, Some(Amendment)) =>
+                              Some(base64EncodedHtmlViewForPdf)
+                            case _                                                                       => None
+                          }
+                        )
+                      )
                     )
                   )
       response <- eclRegistrationConnector.submitRegistration(request.internalId)
-      _         = emailService.sendRegistrationSubmittedEmails(request.registration.contacts, response.eclReference, entityType)
+      _         = emailService.sendRegistrationSubmittedEmails(
+                    registration.contacts,
+                    response.eclReference,
+                    registration.entityType
+                  )
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield {
-      val session = entityType match {
+      val session = registration.entityType match {
         case Some(Other) => request.session
         case _           =>
           request.session ++ Seq(
@@ -127,15 +139,17 @@ class CheckYourAnswersController @Inject() (
       }
 
       val updatedSession = session ++ Seq(
-        SessionKeys.FirstContactEmailAddress -> request.registration.contacts.firstContactDetails.emailAddress
+        SessionKeys.FirstContactEmailAddress -> registration.contacts.firstContactDetails.emailAddress
           .getOrElse(throw new IllegalStateException("First contact email address not found in registration data"))
       )
 
-      Redirect(entityType match {
-        case Some(Other) => routes.RegistrationReceivedController.onPageLoad()
-        case _           => routes.RegistrationSubmittedController.onPageLoad()
+      Redirect((registration.entityType, registration.registrationType) match {
+        case (Some(Other), Some(Initial)) => routes.RegistrationReceivedController.onPageLoad()
+        case (Some(_), Some(Amendment))   => routes.AmendmentRequestedController.onPageLoad()
+        case (None, Some(Amendment))      => routes.AmendmentRequestedController.onPageLoad()
+        case _                            => routes.RegistrationSubmittedController.onPageLoad()
       }).withSession(
-        request.registration.contacts.secondContactDetails.emailAddress.fold(updatedSession)(email =>
+        registration.contacts.secondContactDetails.emailAddress.fold(updatedSession)(email =>
           updatedSession ++ Seq(SessionKeys.SecondContactEmailAddress -> email)
         )
       )
@@ -145,18 +159,32 @@ class CheckYourAnswersController @Inject() (
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
     .encodeToString(html.getBytes)
 
-  private def createAndEncodeHtmlForPdf()(implicit request: RegistrationDataRequest[_]): String = {
+  private def createAndEncodeHtmlForPdf(
+    registrationType: Option[RegistrationType]
+  )(implicit request: RegistrationDataRequest[_]): String = {
     val date         = LocalDate.now
     val organisation = organisationDetails()
     val contact      = contactDetails()
     val otherEntity  = otherEntityController.otherEntityDetails()
-    base64EncodeHtmlView(
-      otherRegistrationPdfView(
-        ViewUtils.formatLocalDate(date),
-        organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
-        contact.copy(rows = contact.rows.map(_.copy(actions = None))),
-        otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None)))
-      ).toString()
-    )
+
+    registrationType match {
+      case Some(Amendment) =>
+        base64EncodeHtmlView(
+          amendRegistrationPdfView(
+            ViewUtils.formatLocalDate(date),
+            organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
+            contact.copy(rows = contact.rows.map(_.copy(actions = None)))
+          ).toString()
+        )
+      case _               =>
+        base64EncodeHtmlView(
+          otherRegistrationPdfView(
+            ViewUtils.formatLocalDate(date),
+            organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
+            contact.copy(rows = contact.rows.map(_.copy(actions = None))),
+            otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None)))
+          ).toString()
+        )
+    }
   }
 }

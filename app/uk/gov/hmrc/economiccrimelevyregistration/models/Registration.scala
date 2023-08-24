@@ -41,8 +41,8 @@ final case class Registration(
   partnershipName: Option[String],
   privateBetaAccessCode: Option[String],
   optOtherEntityJourneyData: Option[OtherEntityJourneyData],
-  base64EncodedNrsSubmissionHtml: Option[String],
-  base64EncodedDmsSubmissionHtml: Option[String]
+  base64EncodedFields: Option[Base64EncodedFields],
+  registrationType: Option[RegistrationType]
 ) {
 
   def grsAddressToEclAddress: Option[EclAddress] = {
@@ -125,7 +125,7 @@ object Registration {
     partnershipName = None,
     privateBetaAccessCode = None,
     optOtherEntityJourneyData = None,
-    base64EncodedNrsSubmissionHtml = None,
-    base64EncodedDmsSubmissionHtml = None
+    base64EncodedFields = None,
+    registrationType = None
   )
 }

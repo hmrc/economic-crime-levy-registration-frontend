@@ -28,10 +28,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 
 import scala.concurrent.Future
 
@@ -73,7 +74,10 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form, NormalMode, RegistrationType.Initial)(
+          fakeRequest,
+          messages
+        ).toString
       }
     }
 
@@ -84,7 +88,10 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(amlSupervisor), NormalMode)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form.fill(amlSupervisor), NormalMode, RegistrationType.Initial)(
+            fakeRequest,
+            messages
+          ).toString
         }
     }
   }
@@ -93,7 +100,8 @@ class AmlSupervisorControllerSpec extends SpecBase {
     "save the selected AML supervisor option then redirect to the next page" in forAll {
       (registration: Registration, amlSupervisor: AmlSupervisor) =>
         new TestContext(registration) {
-          val updatedRegistration: Registration = registration.copy(amlSupervisor = Some(amlSupervisor))
+          val updatedRegistration: Registration =
+            registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
@@ -120,7 +128,10 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode, RegistrationType.Initial)(
+          fakeRequest,
+          messages
+        ).toString
       }
     }
   }

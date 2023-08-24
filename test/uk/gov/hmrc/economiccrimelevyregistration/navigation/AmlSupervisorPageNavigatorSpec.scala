@@ -22,6 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{FinancialConductAuthority, GamblingCommission, Hmrc, Other}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -34,7 +35,10 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
   "nextPage" should {
     "return a Call to the register with GC page in NormalMode when the Gambling Commission option is selected" in forAll {
       registration: Registration =>
-        val updatedRegistration = registration.copy(amlSupervisor = Some(AmlSupervisor(GamblingCommission, None)))
+        val updatedRegistration = registration.copy(
+          amlSupervisor = Some(AmlSupervisor(GamblingCommission, None)),
+          registrationType = Some(Initial)
+        )
 
         await(
           pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
@@ -48,7 +52,10 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
 
     "return a Call to the register with GC page in CheckMode when the Gambling Commission option is selected" in forAll {
       registration: Registration =>
-        val updatedRegistration = registration.copy(amlSupervisor = Some(AmlSupervisor(GamblingCommission, None)))
+        val updatedRegistration = registration.copy(
+          amlSupervisor = Some(AmlSupervisor(GamblingCommission, None)),
+          registrationType = Some(Initial)
+        )
 
         await(
           pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
@@ -63,7 +70,10 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
     "return a Call to the register with FCA page in NormalMode when the Financial Conduct Authority option is selected" in forAll {
       registration: Registration =>
         val updatedRegistration =
-          registration.copy(amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None)))
+          registration.copy(
+            amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None)),
+            registrationType = Some(Initial)
+          )
 
         await(
           pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
@@ -78,7 +88,10 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
     "return a Call to the register with FCA page in CheckMode when the Financial Conduct Authority option is selected" in forAll {
       registration: Registration =>
         val updatedRegistration =
-          registration.copy(amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None)))
+          registration.copy(
+            amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None)),
+            registrationType = Some(Initial)
+          )
 
         await(
           pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
@@ -96,7 +109,8 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
         val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample
         val amlSupervisor         =
           AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = otherProfessionalBody)
-        val updatedRegistration   = registration.copy(amlSupervisor = Some(amlSupervisor))
+        val updatedRegistration   =
+          registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
         await(
           pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
@@ -110,7 +124,8 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
         val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample
         val amlSupervisor         =
           AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = otherProfessionalBody)
-        val updatedRegistration   = registration.copy(amlSupervisor = Some(amlSupervisor))
+        val updatedRegistration   =
+          registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
         await(
           pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)

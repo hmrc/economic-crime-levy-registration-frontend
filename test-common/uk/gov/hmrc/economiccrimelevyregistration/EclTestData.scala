@@ -23,6 +23,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, EnrolmentIdentifier, Enrolments, En
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.{Trust, UnincorporatedAssociation}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
@@ -47,6 +48,8 @@ final case class EnrolmentsWithoutEcl(enrolments: Enrolments)
 
 final case class RegistrationWithUnincorporatedAssociation(registration: Registration)
 final case class ValidTrustRegistration(registration: Registration)
+
+final case class ValidRegistrationWithRegistrationType(registration: Registration)
 
 final case class GroupEnrolmentsResponseWithEcl(
   groupEnrolmentsResponse: GroupEnrolmentsResponse,
@@ -323,5 +326,12 @@ trait EclTestData {
       } yield ValidTrustRegistration(registration =
         registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData), entityType = Some(Other))
       )
+    }
+
+  implicit val arbValidRegistrationWithRegistrationType: Arbitrary[ValidRegistrationWithRegistrationType] =
+    Arbitrary {
+      for {
+        registration <- Arbitrary.arbitrary[Registration]
+      } yield ValidRegistrationWithRegistrationType(registration.copy(registrationType = Some(Initial)))
     }
 }
