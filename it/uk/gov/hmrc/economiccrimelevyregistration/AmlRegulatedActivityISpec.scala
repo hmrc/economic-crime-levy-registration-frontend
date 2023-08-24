@@ -43,10 +43,10 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
+      val validRegistration = registration.copy(registrationType = Some(Initial))
+      stubGetRegistration(validRegistration)
 
-      stubGetRegistration(registration)
-
-      val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
+      val updatedRegistration = validRegistration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
 
       stubUpsertRegistration(updatedRegistration)
 
