@@ -1,9 +1,13 @@
 package uk.gov.hmrc.economiccrimelevyregistration.behaviours
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 
 import scala.concurrent.Future
 
@@ -23,6 +27,10 @@ trait AuthorisedBehaviour {
 
       "go to already registered page if the user has the ECL enrolment" in {
         stubAuthorisedWithEclEnrolment()
+
+        val registration = random[Registration]
+
+        stubGetRegistration(registration.copy(registrationType = Some(Initial)))
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
