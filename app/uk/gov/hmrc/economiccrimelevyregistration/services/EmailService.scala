@@ -21,7 +21,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EntityType}
-import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailParameters
+import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, RegistrationSubmittedEmailParameters}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.http.HeaderCarrier
@@ -99,4 +99,17 @@ class EmailService @Inject() (emailConnector: EmailConnector, appConfig: AppConf
     }
 
   }
+
+  def sendAmendRegistrationSubmitted(contacts: Contacts)(implicit hc: HeaderCarrier, messages: Messages): Future[Unit] =
+    (contacts.firstContactDetails.emailAddress, contacts.firstContactDetails.name) match {
+      case (Some(emailAddress), Some(name)) =>
+        emailConnector.sendAmendRegistrationSubmittedEmail(
+          to = emailAddress,
+          AmendRegistrationSubmittedEmailParameters(
+            name = name,
+            dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now())
+          )
+        )
+      case _                                => throw new IllegalStateException("Invalid contact details")
+    }
 }
