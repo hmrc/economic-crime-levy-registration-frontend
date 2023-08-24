@@ -11,6 +11,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -84,7 +85,8 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
         secondContact = Some(false),
         secondContactDetails = ContactDetails.empty
       ),
-      entityType = Some(entityType)
+      entityType = Some(entityType),
+      registrationType = Some(Initial)
     )
 
     stubGetRegistration(registrationWithOneContact)

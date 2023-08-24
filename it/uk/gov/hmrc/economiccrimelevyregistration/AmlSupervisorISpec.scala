@@ -38,6 +38,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
+      val validRegistration = registration.copy(registrationType = Some(Initial))
 
       val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
       val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample.get
@@ -50,9 +51,9 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
         case _                                                 => Seq(("value", amlSupervisor.supervisorType.toString))
       }
 
-      stubGetRegistration(registration)
+      stubGetRegistration(validRegistration)
 
-      val updatedRegistration = registration.copy(amlSupervisor = Some(amlSupervisor))
+      val updatedRegistration = validRegistration.copy(amlSupervisor = Some(amlSupervisor))
 
       stubUpsertRegistration(updatedRegistration)
 
@@ -68,7 +69,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option then redirect to the register with GC page when the answer is GC" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration].copy(internalId = testInternalId)
+      val registration = random[Registration].copy(internalId = testInternalId, registrationType = Some(Initial))
 
       val amlSupervisor =
         AmlSupervisor(GamblingCommission, None)
@@ -92,7 +93,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option then redirect to the register with FCA page when the answer is FCA" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration].copy(internalId = testInternalId)
+      val registration = random[Registration].copy(internalId = testInternalId, registrationType = Some(Initial))
 
       val amlSupervisor =
         AmlSupervisor(FinancialConductAuthority, None)
