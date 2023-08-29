@@ -297,7 +297,6 @@ trait EclTestData {
                                    Some(ctutr),
                                    Some(isCtUtrPresent),
                                    None,
-                                   None,
                                    Some(postcode)
                                  )
       } yield RegistrationWithUnincorporatedAssociation(registration =
@@ -318,7 +317,6 @@ trait EclTestData {
                                    None,
                                    None,
                                    Some(ctutr),
-                                   None,
                                    None,
                                    None,
                                    None

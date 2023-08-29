@@ -41,11 +41,13 @@ class SaUtrISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
 
-      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(
-        saUtr = Some(saUtr),
-        ctUtr = None
-      )
-      val updatedRegistration = registration.copy(
+      val otherEntityJourneyData = OtherEntityJourneyData
+        .empty()
+        .copy(
+          saUtr = Some(saUtr),
+          ctUtr = None
+        )
+      val updatedRegistration    = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
 
@@ -58,7 +60,7 @@ class SaUtrISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.OverseasTaxIdentifierController.onPageLoad(NormalMode).url)
+      redirectLocation(result) shouldBe Some(routes.OtherEntityCheckYourAnswersController.onPageLoad().url)
     }
   }
 
