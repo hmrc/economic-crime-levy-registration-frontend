@@ -202,11 +202,6 @@ POST        /what-is-your-self-assessment-utr                                   
 GET         /change-answer/what-is-your-self-assessment-utr                     uk.gov.hmrc.economiccrimelevyregistration.controllers.SaUtrController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/what-is-your-self-assessment-utr                     uk.gov.hmrc.economiccrimelevyregistration.controllers.SaUtrController.onSubmit(mode: Mode = CheckMode)
 
-GET         /what-is-your-overseas-tax-id                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.OverseasTaxIdentifierController.onPageLoad(mode: Mode = NormalMode)
-POST        /what-is-your-overseas-tax-id                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.OverseasTaxIdentifierController.onSubmit(mode: Mode = NormalMode)
-GET         /change-answer/what-is-your-overseas-tax-id                         uk.gov.hmrc.economiccrimelevyregistration.controllers.OverseasTaxIdentifierController.onPageLoad(mode: Mode = CheckMode)
-POST        /change-answer/what-is-your-overseas-tax-id                         uk.gov.hmrc.economiccrimelevyregistration.controllers.OverseasTaxIdentifierController.onSubmit(mode: Mode = CheckMode)
-
 GET         /amend-economic-crime-levy-registration/:eclReference               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendRegistrationStartController.onPageLoad(eclReference)
 GET         /amend-economic-crime-levy-registration/success/confirmation        uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendmentRequestedController.onPageLoad()
 

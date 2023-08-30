@@ -28,7 +28,7 @@ class SaUtrPageNavigatorSpec extends SpecBase {
   "nextPage" should {
     "return a call to the overseas tax identifier page in Normal mode" in forAll { (registration: Registration) =>
       pageNavigator.nextPage(NormalMode, registration) shouldBe
-        routes.OverseasTaxIdentifierController.onPageLoad(NormalMode)
+        routes.OtherEntityCheckYourAnswersController.onPageLoad()
     }
 
     "return a call to the other entity check your answers page in Check mode" in forAll {

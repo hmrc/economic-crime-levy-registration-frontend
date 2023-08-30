@@ -319,6 +319,7 @@ isUkAddress.error.required = Select if your contact address is in the UK
 alf.labels.submit = Save and continue
 alf.labels.select.title = Select your address
 alf.labels.select.heading = Select your address
+
 alf.labels.lookup.title = What address do you want to use as organisation''s contact address?
 alf.labels.lookup.heading = What address do you want to use as organisation''s contact address?
 alf.labels.lookup.postcode = UK postcode
@@ -530,13 +531,6 @@ saUtr.body = Your Self Assessment (SA) Unique Taxpayer Reference (UTR) is 10 num
 saUtr.hint = For example, 0123456789
 saUtr.error.required = Enter a Self Assessment (SA) Unique Taxpayer Reference (UTR)
 saUtr.error.length = Self Assessment (SA) Unique Taxpayer Reference (UTR) must be {0} numbers
-
-overseasTaxIdentifier.title = What is your overseas tax identifier?
-overseasTaxIdentifier.heading = What is your overseas tax identifier?
-overseasTaxIdentifier.p1 = We may use this number to help us identify your business.
-overseasTaxIdentifier.p2 = Your overseas tax identifier could be a VAT registration number, Employee Identification Number (EIN), or any other information we could use to verify your details.
-overseasTaxIdentifier.error.required = Enter an overseas tax identifier
-overseasTaxIdentifier.error.length = Overseas tax identifier must not be more than {0} characters
 
 registration.received.title = Registration received
 registration.received.heading = Registration received
