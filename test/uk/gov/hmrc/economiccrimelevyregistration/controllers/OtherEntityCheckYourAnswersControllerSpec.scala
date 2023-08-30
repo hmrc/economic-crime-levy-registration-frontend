@@ -87,8 +87,7 @@ class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
             UtrTypeSummary.row(),
             OtherEntitySaUtrSummary.row(),
             OtherEntityCtUtrSummary.row(),
-            OtherEntityPostcodeSummary.row(),
-            OverseasTaxIdentifierSummary.row()
+            OtherEntityPostcodeSummary.row()
           ).flatten
         ).withCssClass("govuk-!-margin-bottom-9")
         status(result)          shouldBe OK

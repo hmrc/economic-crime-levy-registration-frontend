@@ -29,7 +29,6 @@ class OtherEntityTypeDataCleanup @Inject() () extends DataCleanup {
       utrType = None,
       ctUtr = None,
       saUtr = None,
-      overseasTaxIdentifier = None,
       postcode = None,
       isCtUtrPresent = None
     )

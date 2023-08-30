@@ -531,13 +531,6 @@ saUtr.hint = For example, 0123456789
 saUtr.error.required = Enter a Self Assessment (SA) Unique Taxpayer Reference (UTR)
 saUtr.error.length = Self Assessment (SA) Unique Taxpayer Reference (UTR) must be {0} numbers
 
-overseasTaxIdentifier.title = What is your overseas tax identifier?
-overseasTaxIdentifier.heading = What is your overseas tax identifier?
-overseasTaxIdentifier.p1 = We may use this number to help us identify your business.
-overseasTaxIdentifier.p2 = Your overseas tax identifier could be a VAT registration number, Employee Identification Number (EIN), or any other information we could use to verify your details.
-overseasTaxIdentifier.error.required = Enter an overseas tax identifier
-overseasTaxIdentifier.error.length = Overseas tax identifier must not be more than {0} characters
-
 registration.received.title = Registration received
 registration.received.heading = Registration received
 registration.received.h1 = What happens next
