@@ -123,11 +123,19 @@ class CheckYourAnswersController @Inject() (
                     )
                   )
       response <- eclRegistrationConnector.submitRegistration(request.internalId)
-      _         = emailService.sendRegistrationSubmittedEmails(
-                    registration.contacts,
-                    response.eclReference,
-                    registration.entityType
-                  )
+      _         = request.registration.registrationType match {
+                    case Some(registrationType) =>
+                      registrationType match {
+                        case Initial   =>
+                          emailService.sendRegistrationSubmittedEmails(
+                            registration.contacts,
+                            response.eclReference,
+                            registration.entityType
+                          )
+                        case Amendment => emailService.sendAmendRegistrationSubmitted(registration.contacts)
+                      }
+                    case None                   => throw new IllegalStateException("Invalid contact details")
+                  }
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
     } yield {
       val session = registration.entityType match {
