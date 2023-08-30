@@ -55,6 +55,12 @@ class CheckYourAnswersController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
+  private def eclDetails()(implicit request: RegistrationDataRequest[_]): SummaryList = SummaryListViewModel(
+    rows = Seq(
+      EclReferenceNumberSummary.row()
+    ).flatten
+  ).withCssClass("govuk-!-margin-bottom-9")
+
   private def organisationDetails()(implicit request: RegistrationDataRequest[_]): SummaryList =
     SummaryListViewModel(
       rows = Seq(
@@ -92,11 +98,11 @@ class CheckYourAnswersController @Inject() (
 
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getRegistrationData andThen validateRegistrationData) { implicit request =>
-      Ok(view(organisationDetails(), contactDetails()))
+      Ok(view(eclDetails(), organisationDetails(), contactDetails()))
     }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
-    val htmlView = view(organisationDetails(), contactDetails())
+    val htmlView = view(eclDetails(), organisationDetails(), contactDetails())
 
     val registration = request.registration
 
@@ -180,6 +186,7 @@ class CheckYourAnswersController @Inject() (
         base64EncodeHtmlView(
           amendRegistrationPdfView(
             ViewUtils.formatLocalDate(date),
+            eclDetails(),
             organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
             contact.copy(rows = contact.rows.map(_.copy(actions = None)))
           ).toString()

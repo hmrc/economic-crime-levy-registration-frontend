@@ -73,11 +73,18 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           RegistrationDataRequest(
             fakeRequest,
             validRegistration.registration.internalId,
-            validRegistration.registration
+            validRegistration.registration,
+            Some("ECLRefNumber12345")
           )
         implicit val messages: Messages                                                       = messagesApi.preferred(registrationDataRequest)
 
         val result: Future[Result] = controller.onPageLoad()(registrationDataRequest)
+
+        val eclDetails: SummaryList = SummaryListViewModel(
+          rows = Seq(
+            EclReferenceNumberSummary.row()
+          ).flatten
+        ).withCssClass("govuk-!-margin-bottom-9")
 
         val organisationDetails: SummaryList = SummaryListViewModel(
           rows = Seq(
@@ -114,7 +121,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         ).withCssClass("govuk-!-margin-bottom-9")
 
         status(result)          shouldBe OK
-        contentAsString(result) shouldBe view(organisationDetails, contactDetails)(
+        contentAsString(result) shouldBe view(eclDetails, organisationDetails, contactDetails)(
           fakeRequest,
           messages
         ).toString

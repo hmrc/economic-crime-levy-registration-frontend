@@ -367,6 +367,8 @@ checkYourAnswers.otherEntityDetails = Other entity details
 checkYourAnswers.utrType.label = Unique taxpayer reference type
 checkYourAnswers.nonUkCrn.label = Non-UK CRN
 checkYourAnswers.overseasTaxIdentifier.label = Overseas Tax Identifier
+checkYourAnswers.eclDetails = ECL details
+checkYourAnswers.eclReferenceNumber.label = ECL reference number
 
 submitted.title = Registration submitted
 submitted.heading = Registration submitted

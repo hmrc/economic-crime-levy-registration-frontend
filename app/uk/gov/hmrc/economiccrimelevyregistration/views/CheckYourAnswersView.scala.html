@@ -21,15 +21,15 @@
         govukButton: GovukButton
 )
 
-@(organisationDetails: SummaryList, contactDetails: SummaryList)(implicit request: Request[_], messages: Messages)
+@(eclDetails: SummaryList, organisationDetails: SummaryList, contactDetails: SummaryList)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(messages("checkYourAnswers.title"))) {
     @formHelper(action = CheckYourAnswersController.onSubmit()) {
         <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
-        <h1 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h1>
+        <h1 class="govuk-heading-m">@messages("checkYourAnswers.eclDetails")</h1>
 
-        @govukSummaryList(organisationDetails)
+        @govukSummaryList(eclDetails)
 
         <h1 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h1>
 
