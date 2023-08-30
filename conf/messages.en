@@ -320,11 +320,11 @@ alf.labels.submit = Save and continue
 alf.labels.select.title = Select your address
 alf.labels.select.heading = Select your address
 
-alf.labels.lookup.title = What address do you want to use as organisation''s contact address?
-alf.labels.lookup.heading = What address do you want to use as organisation''s contact address?
+alf.labels.lookup.title = What address do you want to use as the organisation''s contact address?
+alf.labels.lookup.heading = What address do you want to use as the organisation''s contact address?
 alf.labels.lookup.postcode = UK postcode
-alf.labels.edit.title = What address do you want to use as organisation''s contact address?
-alf.labels.edit.heading = What address do you want to use as organisation''s contact address?
+alf.labels.edit.title = What address do you want to use as the organisation''s contact address?
+alf.labels.edit.heading = What address do you want to use as the organisation''s contact address?
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
