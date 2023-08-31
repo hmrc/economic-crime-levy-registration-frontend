@@ -53,9 +53,11 @@ class DataRetrievalActionSpec extends SpecBase {
         when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
 
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
-          dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, None))
+          dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
 
-        await(result) shouldBe Right(RegistrationDataRequest(fakeRequest, internalId, registration))
+        await(result) shouldBe Right(
+          RegistrationDataRequest(fakeRequest, internalId, registration, Some("ECLRefNumber12345"))
+        )
     }
 
     "transform an AuthorisedRequest into a RegistrationDataRequest when private beta is enabled and the access code matches one that is held in config" in forAll {
@@ -67,9 +69,11 @@ class DataRetrievalActionSpec extends SpecBase {
         when(mockAppConfig.privateBetaAccessCodes).thenReturn(Seq(privateBetaAccessCode))
 
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
-          dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, None))
+          dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
 
-        await(result) shouldBe Right(RegistrationDataRequest(fakeRequest, internalId, updatedRegistration))
+        await(result) shouldBe Right(
+          RegistrationDataRequest(fakeRequest, internalId, updatedRegistration, Some("ECLRefNumber12345"))
+        )
     }
 
     "redirect to the private beta access page when private beta is enabled and the access code does not match one that is held in config" in forAll {

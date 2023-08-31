@@ -320,11 +320,11 @@ alf.labels.submit = Save and continue
 alf.labels.select.title = Select your address
 alf.labels.select.heading = Select your address
 
-alf.labels.lookup.title = What address do you want to use as organisation''s contact address?
-alf.labels.lookup.heading = What address do you want to use as organisation''s contact address?
+alf.labels.lookup.title = What address do you want to use as the organisation''s contact address?
+alf.labels.lookup.heading = What address do you want to use as the organisation''s contact address?
 alf.labels.lookup.postcode = UK postcode
-alf.labels.edit.title = What address do you want to use as organisation''s contact address?
-alf.labels.edit.heading = What address do you want to use as organisation''s contact address?
+alf.labels.edit.title = What address do you want to use as the organisation''s contact address?
+alf.labels.edit.heading = What address do you want to use as the organisation''s contact address?
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
@@ -367,6 +367,8 @@ checkYourAnswers.otherEntityDetails = Other entity details
 checkYourAnswers.utrType.label = Unique taxpayer reference type
 checkYourAnswers.nonUkCrn.label = Non-UK CRN
 checkYourAnswers.overseasTaxIdentifier.label = Overseas Tax Identifier
+checkYourAnswers.eclDetails = ECL details
+checkYourAnswers.eclReferenceNumber.label = ECL reference number
 
 submitted.title = Registration submitted
 submitted.heading = Registration submitted
@@ -588,6 +590,8 @@ amendmentRequested.list.b3 = how long you carried out AML-regulated activities f
 amendmentRequested.list.b4 = the name, role, and contact details of the person in your organisation who is completing the return
 amendmentRequested.h2 = What happens next
 
+amendRegistration.pdfHtml.title = Application to Amend register for the Economic Crime Levy
+amendRegistration.pdfHtml.submissionDate = Submission date: {0}
 
 
 
