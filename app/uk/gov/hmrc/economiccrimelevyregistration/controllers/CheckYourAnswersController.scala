@@ -98,11 +98,23 @@ class CheckYourAnswersController @Inject() (
 
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getRegistrationData andThen validateRegistrationData) { implicit request =>
-      Ok(view(eclDetails(), organisationDetails(), contactDetails()))
+      Ok(
+        view(
+          eclDetails(),
+          organisationDetails(),
+          contactDetails(),
+          request.registration.registrationType.contains(Amendment)
+        )
+      )
     }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
-    val htmlView = view(eclDetails(), organisationDetails(), contactDetails())
+    val htmlView = view(
+      eclDetails(),
+      organisationDetails(),
+      contactDetails(),
+      request.registration.registrationType.contains(Amendment)
+    )
 
     val registration = request.registration
 
