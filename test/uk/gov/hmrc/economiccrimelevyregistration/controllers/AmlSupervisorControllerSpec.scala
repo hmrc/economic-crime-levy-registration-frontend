@@ -25,7 +25,7 @@ import play.api.mvc.{Call, RequestHeader, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.{AmendAmlSupervisorFormProvider, AmlSupervisorFormProvider}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration, RegistrationType}
@@ -38,9 +38,10 @@ import scala.concurrent.Future
 
 class AmlSupervisorControllerSpec extends SpecBase {
 
-  val view: AmlSupervisorView                 = app.injector.instanceOf[AmlSupervisorView]
-  val formProvider: AmlSupervisorFormProvider = new AmlSupervisorFormProvider()
-  val form: Form[AmlSupervisor]               = formProvider(appConfig)
+  val view: AmlSupervisorView                           = app.injector.instanceOf[AmlSupervisorView]
+  val formProvider: AmlSupervisorFormProvider           = new AmlSupervisorFormProvider()
+  val amendFormProvider: AmendAmlSupervisorFormProvider = new AmendAmlSupervisorFormProvider()
+  val form: Form[AmlSupervisor]                         = formProvider(appConfig)
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
@@ -61,6 +62,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
+      amendFormProvider,
       appConfig,
       pageNavigator,
       view
