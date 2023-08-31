@@ -590,7 +590,7 @@ amendmentRequested.list.b3 = how long you carried out AML-regulated activities f
 amendmentRequested.list.b4 = the name, role, and contact details of the person in your organisation who is completing the return
 amendmentRequested.h2 = What happens next
 
-amendRegistration.pdfHtml.title = Application to Amend register for the Economic Crime Levy
+amendRegistration.pdfHtml.title = Application to amend register for the Economic Crime Levy
 amendRegistration.pdfHtml.submissionDate = Submission date: {0}
 
 
