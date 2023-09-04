@@ -38,12 +38,16 @@ class RegistrationDataRetrievalAction @Inject() (
     eclRegistrationService.getOrCreateRegistration(request.internalId)(hc(request)).map { registration =>
       if (appConfig.privateBetaEnabled) {
         if (registration.privateBetaAccessCode.fold(false)(appConfig.privateBetaAccessCodes.contains(_))) {
-          Right(RegistrationDataRequest(request.request, request.internalId, registration))
+          Right(
+            RegistrationDataRequest(request.request, request.internalId, registration, request.eclRegistrationReference)
+          )
         } else {
           Left(Redirect(routes.PrivateBetaAccessController.onPageLoad(s"${appConfig.host}${request.uri}")))
         }
       } else {
-        Right(RegistrationDataRequest(request.request, request.internalId, registration))
+        Right(
+          RegistrationDataRequest(request.request, request.internalId, registration, request.eclRegistrationReference)
+        )
       }
     }
 

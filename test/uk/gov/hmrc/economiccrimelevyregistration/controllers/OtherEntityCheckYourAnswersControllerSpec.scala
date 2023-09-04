@@ -73,7 +73,12 @@ class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
     "return OK and the correct view" in forAll { registration: RegistrationWithUnincorporatedAssociation =>
       new TestContext(registration.registration) {
         implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
-          RegistrationDataRequest(fakeRequest, registration.registration.internalId, registration.registration)
+          RegistrationDataRequest(
+            fakeRequest,
+            registration.registration.internalId,
+            registration.registration,
+            Some("ECLRefNumber12345")
+          )
         implicit val messages: Messages                                                       = messagesApi.preferred(registrationDataRequest)
         val result: Future[Result]                                                            = controller.onPageLoad()(registrationDataRequest)
 
@@ -87,8 +92,7 @@ class OtherEntityCheckYourAnswersControllerSpec extends SpecBase {
             UtrTypeSummary.row(),
             OtherEntitySaUtrSummary.row(),
             OtherEntityCtUtrSummary.row(),
-            OtherEntityPostcodeSummary.row(),
-            OverseasTaxIdentifierSummary.row()
+            OtherEntityPostcodeSummary.row()
           ).flatten
         ).withCssClass("govuk-!-margin-bottom-9")
         status(result)          shouldBe OK

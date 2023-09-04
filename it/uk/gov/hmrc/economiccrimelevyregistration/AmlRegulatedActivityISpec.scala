@@ -8,6 +8,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+
 
 class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -41,10 +43,10 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
+      val validRegistration = registration.copy(registrationType = Some(Initial))
+      stubGetRegistration(validRegistration)
 
-      stubGetRegistration(registration)
-
-      val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
+      val updatedRegistration = validRegistration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
 
       stubUpsertRegistration(updatedRegistration)
 
@@ -55,7 +57,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.AmlSupervisorController.onPageLoad(NormalMode).url)
+      redirectLocation(result) shouldBe Some(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial).url)
     }
 
     "save the selected AML regulated activity option then redirect to the not liable page when the No option is selected" in {

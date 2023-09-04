@@ -44,7 +44,10 @@ object AmlSupervisorSummary {
           key = Key("checkYourAnswers.amlSupervisor.label"),
           value = value,
           actions = Seq(
-            ActionItemViewModel("site.change", routes.AmlSupervisorController.onPageLoad(CheckMode).url)
+            ActionItemViewModel(
+              "site.change",
+              routes.AmlSupervisorController.onPageLoad(CheckMode, request.registration.registrationType.get).url
+            )
               .withVisuallyHiddenText(
                 messages("checkYourAnswers.amlSupervisor.label")
               )

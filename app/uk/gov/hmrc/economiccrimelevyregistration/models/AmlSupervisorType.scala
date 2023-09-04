@@ -46,6 +46,11 @@ object AmlSupervisorType {
     Other
   )
 
+  val amendValues: Seq[AmlSupervisorType] = Seq(
+    Hmrc,
+    Other
+  )
+
   def options(
     appConfig: AppConfig,
     govukSelect: GovukSelect,
@@ -98,7 +103,59 @@ object AmlSupervisorType {
     }
   }
 
-  implicit val enumerable: Enumerable[AmlSupervisorType] = Enumerable(values.map(v => (v.toString, v)): _*)
+  def optionsAmend(
+    appConfig: AppConfig,
+    govukSelect: GovukSelect,
+    form: Form[AmlSupervisor]
+  )(implicit
+    messages: Messages
+  ): Seq[RadioItem] = {
+    val amlProfessionalBodySupervisorOptions: Seq[SelectItem] =
+      SelectItem(
+        text = "&nbsp;"
+      ) +: appConfig.amlProfessionalBodySupervisors.map { opb =>
+        SelectItem(
+          value = Some(opb),
+          text = messages(s"amlSupervisor.$opb"),
+          selected = form.value match {
+            case Some(AmlSupervisor(_, Some(value))) => value == opb
+            case _                                   => false
+          }
+        )
+      }
+
+    val selectAmlProfessionalBody = govukSelect(
+      Select(
+        id = "otherProfessionalBody",
+        name = "otherProfessionalBody",
+        items = amlProfessionalBodySupervisorOptions,
+        label = Label(
+          content = Text(messages("amlSupervisor.selectFromList.label"))
+        ).withCssClass("govuk-!-font-weight-bold"),
+        hint = Some(Hint(content = Text(messages("amlSupervisor.selectFromList.hint")))),
+        errorMessage = if (form.errors.exists(_.key == "otherProfessionalBody")) {
+          Some(ErrorMessage(content = Text(messages("amlSupervisor.selectFromList.error"))))
+        } else {
+          None
+        }
+      ).asAccessibleAutocomplete(
+        Some(AccessibleAutocomplete(defaultValue = Some(""), showAllValues = true, autoSelect = true))
+      )
+    )
+
+    amendValues.zipWithIndex.map { case (value, index) =>
+      RadioItem(
+        content = Text(messages(s"amlSupervisor.${value.toString}")),
+        value = Some(value.toString),
+        id = Some(s"value_$index"),
+        conditionalHtml = if (value == Other) {
+          Some(selectAmlProfessionalBody)
+        } else {
+          None
+        }
+      )
+    }
+  }
 
   implicit val format: Format[AmlSupervisorType] = new Format[AmlSupervisorType] {
     override def reads(json: JsValue): JsResult[AmlSupervisorType] = json.validate[String] match {

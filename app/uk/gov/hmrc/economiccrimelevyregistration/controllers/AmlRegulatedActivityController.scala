@@ -24,6 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -58,7 +59,10 @@ class AmlRegulatedActivityController @Inject() (
         amlRegulatedActivity =>
           eclRegistrationConnector
             .upsertRegistration(
-              request.registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity))
+              request.registration.copy(
+                carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity),
+                registrationType = Some(Initial)
+              )
             )
             .flatMap { updatedRegistration =>
               pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)

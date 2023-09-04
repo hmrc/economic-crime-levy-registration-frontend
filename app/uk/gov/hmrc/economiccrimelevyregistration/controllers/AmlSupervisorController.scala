@@ -22,8 +22,9 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlSupervisorFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.{AmendAmlSupervisorFormProvider, AmlSupervisorFormProvider}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
@@ -39,6 +40,7 @@ class AmlSupervisorController @Inject() (
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: AmlSupervisorFormProvider,
+  amendFormProvider: AmendAmlSupervisorFormProvider,
   appConfig: AppConfig,
   pageNavigator: AmlSupervisorPageNavigator,
   view: AmlSupervisorView
@@ -48,21 +50,31 @@ class AmlSupervisorController @Inject() (
 
   val form: Form[AmlSupervisor] = formProvider(appConfig)
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.amlSupervisor), mode))
-  }
+  val amendForm: Form[AmlSupervisor] = amendFormProvider(appConfig)
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-        amlSupervisor =>
-          eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(amlSupervisor = Some(amlSupervisor)))
-            .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
-            }
-      )
-  }
+  def onPageLoad(mode: Mode, registrationType: RegistrationType = Initial): Action[AnyContent] =
+    (authorise andThen getRegistrationData) { implicit request =>
+      registrationType match {
+        case Initial   => Ok(view(form.prepare(request.registration.amlSupervisor), mode, registrationType))
+        case Amendment => Ok(view(amendForm.prepare(request.registration.amlSupervisor), mode, registrationType))
+      }
+    }
+
+  def onSubmit(mode: Mode, registrationType: RegistrationType = Initial): Action[AnyContent] =
+    (authorise andThen getRegistrationData).async { implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, registrationType))),
+          amlSupervisor =>
+            eclRegistrationConnector
+              .upsertRegistration(
+                request.registration
+                  .copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(registrationType))
+              )
+              .flatMap { updatedRegistration =>
+                pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
+              }
+        )
+    }
 }

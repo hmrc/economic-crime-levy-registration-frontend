@@ -28,7 +28,7 @@ class CtUtrPageNavigator extends PageNavigator {
         registration.otherEntityJourneyData.entityType match {
           case None                        => routes.NotableErrorController.answersAreInvalid()
           case Some(_ @Trust)              => routes.OtherEntityCheckYourAnswersController.onPageLoad()
-          case Some(_ @NonUKEstablishment) => routes.OverseasTaxIdentifierController.onPageLoad(NormalMode)
+          case Some(_ @NonUKEstablishment) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
           case Some(_)                     => routes.CtUtrPostcodeController.onPageLoad(NormalMode)
         }
     }

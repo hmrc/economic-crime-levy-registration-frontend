@@ -21,7 +21,7 @@ trait GrsStubs { self: WireMockStubs =>
                |  "deskProServiceId" : "economic-crime-levy-registration-frontend",
                |  "signOutUrl" : "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
                |  "regime" : "ECL",
-               |  "accessibilityUrl" : "/accessibility-statement/register-for-economic-crime-levy",
+               |  "accessibilityUrl" : "/accessibility-statement/economic-crime-levy",
                |  "labels" : {
                |    "en" : {
                |      "optServiceName" : "Register for the Economic Crime Levy"

@@ -20,13 +20,13 @@ import play.api.data.Forms.mapping
 import play.api.data.{Form, Forms}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Other, values}
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Other, amendValues, values}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, Enumerable}
 import uk.gov.voa.play.form.ConditionalMappings.mandatoryIfEqual
 
-class AmlSupervisorFormProvider extends Mappings {
+class AmendAmlSupervisorFormProvider extends Mappings {
 
-  implicit val enumerable: Enumerable[AmlSupervisorType] = Enumerable(values.map(v => (v.toString, v)): _*)
+  implicit val enumerable: Enumerable[AmlSupervisorType] = Enumerable(amendValues.map(v => (v.toString, v)): _*)
 
   def apply(appConfig: AppConfig): Form[AmlSupervisor] = Form(
     mapping(
