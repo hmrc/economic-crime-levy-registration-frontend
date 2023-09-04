@@ -22,6 +22,7 @@ import play.api.i18n.Messages
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 object ViewUtils {
 
@@ -51,9 +52,7 @@ object ViewUtils {
       localDate.format(formatter)
     }
 
-  def formatMoney(amount: Number): String = {
-    val formatter = NumberFormat.getNumberInstance
-    formatter.format(amount)
-  }
+  def formatMoney(amount: BigDecimal): String =
+    if (amount.isWhole) f"£$amount%,.0f" else f"£$amount%,.2f"
 
 }
