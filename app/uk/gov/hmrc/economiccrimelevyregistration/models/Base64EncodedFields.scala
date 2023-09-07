@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.forms
+package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.GeneralMaxLength
+import play.api.libs.json.{Json, OFormat}
 
-import javax.inject.Inject
+final case class Base64EncodedFields(nrsSubmissionHtml: Option[String], dmsSubmissionHtml: Option[String])
 
-class OverseasTaxIdentifierFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("overseasTaxIdentifier.error.required")
-        .verifying(maxLength(GeneralMaxLength, "overseasTaxIdentifier.error.length"))
-    )
-
+object Base64EncodedFields {
+  implicit val format: OFormat[Base64EncodedFields] = Json.format[Base64EncodedFields]
 }

@@ -16,7 +16,7 @@ date.day = Day
 date.month = Month
 date.year = Year
 
-timeout.title = You’re about to be signed out
+timeout.title = You''re about to be signed out
 timeout.message = For security reasons, you will be signed out of this service in
 timeout.keepAlive = Stay signed in
 timeout.signOut = Sign out
@@ -319,11 +319,12 @@ isUkAddress.error.required = Select if your contact address is in the UK
 alf.labels.submit = Save and continue
 alf.labels.select.title = Select your address
 alf.labels.select.heading = Select your address
-alf.labels.lookup.title = What address do you want to use as the contact address?
-alf.labels.lookup.heading = What address do you want to use as the contact address?
+
+alf.labels.lookup.title = What address do you want to use as the organisation''s contact address?
+alf.labels.lookup.heading = What address do you want to use as the organisation''s contact address?
 alf.labels.lookup.postcode = UK postcode
-alf.labels.edit.title = What address do you want to use as the contact address?
-alf.labels.edit.heading = What address do you want to use as the contact address?
+alf.labels.edit.title = What address do you want to use as the organisation''s contact address?
+alf.labels.edit.heading = What address do you want to use as the organisation''s contact address?
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
@@ -366,6 +367,8 @@ checkYourAnswers.otherEntityDetails = Other entity details
 checkYourAnswers.utrType.label = Unique taxpayer reference type
 checkYourAnswers.nonUkCrn.label = Non-UK CRN
 checkYourAnswers.overseasTaxIdentifier.label = Overseas Tax Identifier
+checkYourAnswers.eclDetails = ECL details
+checkYourAnswers.eclReferenceNumber.label = ECL reference number
 
 submitted.title = Registration submitted
 submitted.heading = Registration submitted
@@ -531,13 +534,6 @@ saUtr.hint = For example, 0123456789
 saUtr.error.required = Enter a Self Assessment (SA) Unique Taxpayer Reference (UTR)
 saUtr.error.length = Self Assessment (SA) Unique Taxpayer Reference (UTR) must be {0} numbers
 
-overseasTaxIdentifier.title = What is your overseas tax identifier?
-overseasTaxIdentifier.heading = What is your overseas tax identifier?
-overseasTaxIdentifier.p1 = We may use this number to help us identify your business.
-overseasTaxIdentifier.p2 = Your overseas tax identifier could be a VAT registration number, Employee Identification Number (EIN), or any other information we could use to verify your details.
-overseasTaxIdentifier.error.required = Enter an overseas tax identifier
-overseasTaxIdentifier.error.length = Overseas tax identifier must not be more than {0} characters
-
 registration.received.title = Registration received
 registration.received.heading = Registration received
 registration.received.h1 = What happens next
@@ -558,3 +554,44 @@ registration.received.second.email = We have also sent an email to {0} because y
 
 otherRegistration.pdfHtml.title = Application to Register for the Economic Crime Levy
 otherRegistration.pdfHtml.submissionDate = Submission date: {0}
+
+start.amend.title = Amend your Economic Crime Levy registration
+start.amend.table.header = ECL registration details
+start.amend.table.registrationNumber = ECL registration number
+start.amend.body.p1 = Use this service to amend your Economic Crime Levy (ECL) registration details.
+start.amend.body.p2 = You will not be able to use the answers you sent for your original registration. You will need to submit all of your answers again, including what you want to amend.
+start.amend.body.p3 = You cannot change your anti-money laundering supervisor to the Gambling Commission (GC) or the Financial Conduct Authority (FCA).
+start.amend.body.p4 = You will need to tell us:
+start.amend.body.p5 = After you amend your registration, we''ll review your answers. This process will take up to 15 working days.
+start.amend.h1 = Amend your Economic Crime Levy registration
+start.amend.h2 = Before you start
+start.amend.list.b1 = about any accounting periods for your organisation ending in the relevant financial year
+start.amend.list.b2 = your organisation's UK revenue in any relevant accounting periods
+start.amend.list.b3 = if your organisation carried out AML-regulated activity for the full financial year
+start.amend.list.b4 = details we can use to confirm the identity of your business, {0}
+start.amend.list.b4.link = <a href="https://www.gov.uk/guidance/register-for-the-economic-crime-levy" class="govuk-link">see list of details needed</a>
+start.amend.list.b5 = the business sector your organisation operates in
+start.amend.list.b6 = the details of someone in your organisation who can act as a point of contact for any activities related to the ECL
+start.amend.button = Start now
+
+amendmentRequested.title = Economic Crime Levy registration amendment requested - Amend your ECL registration - GOV.UK
+amendmentRequested.panel.title = Economic Crime Levy registration amendment requested
+amendmentRequested.body.p1 = You have requested to amend your registration for the Economic Crime Levy (ECL) on {0}.
+amendmentRequested.body.p2 = We have sent a confirmation email to {0}. Please save this for your records.
+amendmentRequested.body.p3 = You will not receive an email or notification from HMRC to remind you to submit a return.
+amendmentRequested.body.p4 = When you complete your yearly return, you will need to tell us:
+amendmentRequested.body.p5 = We will review your answers. We may contact you using the details you provided if we need any more information. This process will take up to 15 working days.
+amendmentRequested.body.p6 = We will send you a letter once we''ve amended your registration.
+amendmentRequested.body.p7  = {0} (takes 30 seconds)
+amendmentRequested.body.p7.link = <a href="{0}" class="govuk-link">What did you think of this service?</a>
+amendmentRequested.list.b1 = the relevant accounting period for your organisation
+amendmentRequested.list.b2 = your UK revenue for the relevant accounting period
+amendmentRequested.list.b3 = how long you carried out AML-regulated activities for during the financial year
+amendmentRequested.list.b4 = the name, role, and contact details of the person in your organisation who is completing the return
+amendmentRequested.h2 = What happens next
+
+amendRegistration.pdfHtml.title = Application to amend register for the Economic Crime Levy
+amendRegistration.pdfHtml.submissionDate = Submission date: {0}
+
+
+

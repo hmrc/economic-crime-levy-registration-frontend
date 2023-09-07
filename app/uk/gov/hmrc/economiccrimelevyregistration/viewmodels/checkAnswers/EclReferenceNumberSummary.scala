@@ -18,29 +18,21 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 
-object OverseasTaxIdentifierSummary {
+object EclReferenceNumberSummary {
 
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.otherEntityJourneyData.overseasTaxIdentifier.map { answer =>
-      val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(answer))))
-
+    Some(
       SummaryListRowViewModel(
-        key = Key("checkYourAnswers.overseasTaxIdentifier.label"),
-        value = value,
-        actions = Seq(
-          ActionItemViewModel("site.change", routes.OverseasTaxIdentifierController.onPageLoad(CheckMode).url)
-            .withVisuallyHiddenText(
-              messages("checkYourAnswers.overseasTaxIdentifier.label")
-            )
-        )
+        key = Key("checkYourAnswers.eclReferenceNumber.label"),
+        value = ValueViewModel(HtmlContent(HtmlFormat.escape(request.eclRegistrationReference.getOrElse(""))))
       )
-    }
+    )
+
 }

@@ -1,0 +1,74 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
+
+@this(
+        layout: templates.Layout,
+        button: GovukButton,
+        table: GovukTable
+)
+
+@(eclReference: String)(implicit request: Request[_], messages: Messages)
+
+
+@layout(
+    pageTitle = title(messages("start.amend.title")),
+    timeout = false,
+    showBackLink = false,
+    showSignOut = false
+) {
+
+    <h1 class="govuk-heading-l">@messages("start.amend.h1")</h1>
+
+    @table(Table(
+        rows = Seq(
+            Seq(TableRow(content = Text(messages("start.amend.table.registrationNumber")), classes = "govuk-summary-list__key"),
+                TableRow(content = Text(eclReference), classes = "govuk-body"))
+        ),
+        head = None,
+        firstCellIsHeader = false,
+        caption = Some(messages("start.amend.table.header")),
+        captionClasses = "govuk-heading-m",
+        classes = "govuk-table"
+    ))
+
+    <p class="govuk-body">@messages("start.amend.body.p1")</p>
+
+    <p class="govuk-body">@messages("start.amend.body.p2")</p>
+
+    <p class="govuk-body">@messages("start.amend.body.p3")</p>
+
+    <h2 class="govuk-heading-m">@messages("start.amend.h2")</h2>
+
+    <p class="govuk-body">@messages("start.amend.body.p4")</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("start.amend.list.b1")</li>
+        <li>@messages("start.amend.list.b2")</li>
+        <li>@messages("start.amend.list.b3")</li>
+        <li>@Html(messages("start.amend.list.b4", messages("start.amend.list.b4.link")))</li>
+        <li>@messages("start.amend.list.b5")</li>
+        <li>@messages("start.amend.list.b6")</li>
+    </ul>
+
+    <p class="govuk-body">@messages("start.amend.body.p5")</p>
+
+    @button(
+    ButtonViewModel(messages("start.amend.button"))
+    .asLink(AmlSupervisorController.onPageLoad(NormalMode, Amendment).url)
+    )
+}

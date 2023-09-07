@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisorType, NormalMode, Registration}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -35,13 +36,18 @@ class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(impl
   override protected def navigateInNormalMode(
     registration: Registration
   )(implicit request: RequestHeader): Future[Call] =
-    registration.amlSupervisor match {
-      case Some(amlSupervisor) =>
+    (registration.amlSupervisor, registration.registrationType) match {
+      case (Some(amlSupervisor), Some(Initial))   =>
         amlSupervisor.supervisorType match {
           case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, registration)
           case Hmrc | Other                                         => Future.successful(routes.RelevantAp12MonthsController.onPageLoad(NormalMode))
         }
-      case _                   => Future.successful(routes.NotableErrorController.answersAreInvalid())
+      case (Some(amlSupervisor), Some(Amendment)) =>
+        amlSupervisor.supervisorType match {
+          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, registration)
+          case Hmrc | Other                                         => Future.successful(routes.BusinessSectorController.onPageLoad(NormalMode))
+        }
+      case _                                      => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
   override protected def navigateInCheckMode(
