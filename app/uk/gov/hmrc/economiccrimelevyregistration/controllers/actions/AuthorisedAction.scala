@@ -133,10 +133,11 @@ abstract class BaseAuthorisedAction @Inject() (
         val eclRegistrationReference: Option[String] =
           eclEnrolment.flatMap(_.getIdentifier(EclEnrolment.IdentifierKey).map(_.value))
 
-        val isAmendmentRoute = if (!request.uri.contains("Amendment")) {
+        println("URI!!!: " + request.uri)
+        val isAmendmentRoute = if (!request.uri.contains("amend")) {
           eclRegistrationService
             .getOrCreateRegistration(internalId)(hc(request))
-            .map(_.registrationType.getOrElse(Initial))
+            .map(_.registrationType.getOrElse(Amendment))
         } else {
           Future.successful(Amendment)
         }

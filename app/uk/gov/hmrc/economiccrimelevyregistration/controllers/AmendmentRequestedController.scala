@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendmentRequestedView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -27,11 +28,12 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class AmendmentRequestedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
+  authorise: AuthorisedActionWithEnrolmentCheck,
   view: AmendmentRequestedView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = Action { implicit request =>
+  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     val firstContactEmailAddress = request.session(SessionKeys.FirstContactEmailAddress)
     Ok(view(firstContactEmailAddress))
   }
