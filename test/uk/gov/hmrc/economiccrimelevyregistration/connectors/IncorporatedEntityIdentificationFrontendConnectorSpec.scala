@@ -51,7 +51,7 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
         val expectedIncorporatedEntityCreateJourneyRequest: IncorporatedEntityCreateJourneyRequest = {
           val serviceNameLabels = ServiceNameLabels(
             OptServiceName("Register for the Economic Crime Levy"),
-            OptServiceName("service.name")
+            OptServiceName("Cofrestru ar gyfer yr Ardoll Troseddau Economaidd")
           )
 
           IncorporatedEntityCreateJourneyRequest(
