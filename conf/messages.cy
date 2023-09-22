@@ -1,3 +1,560 @@
+service.name = Cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+
+site.back = Yn ôl
+site.remove = Tynnu
+site.change = Newid
+site.no = Na
+site.yes = Iawn
+site.continue = Yn eich blaen
+site.saveAndContinue = Cadw ac yn eich blaen
+site.start = Dechrau nawr
+site.signIn = Mewngofnodi
+site.govuk = GOV.UK
+site.warningIconFallback = Rhybudd
+
+date.day = Diwrnod
+date.month = Mis
+date.year = Blwyddyn
+
+timeout.title = Rydych ar fin cael eich allgofnodi
+timeout.message = Am resymau diogelwch, cewch eich allgofnodi o’r gwasanaeth hwn ymhen
+timeout.keepAlive = Parhau i fod wedi’ch mewngofnodi
+timeout.signOut = Allgofnodi
+
+error.browser.title.prefix = Gwall:
+error.boolean = Rhowch ateb
+error.day.required = Nodwch ddiwrnod
+error.day.invalid = Mae’n rhaid i’r diwrnod a nodir fod yn ddiwrnod go iawn
+error.month.required = Nodwch fis
+error.month.invalid = Mae’n rhaid i’r mis a nodir fod yn fis go iawn
+error.year.required = Nodwch flwyddyn
+error.year.invalid = Mae’n rhaid i’r flwyddyn a nodir fod yn flwyddyn go iawn
+error.dayMonth.required = Mae’n rhaid i’r dyddiad a nodir gynnwys diwrnod a mis
+error.dayYear.required = Mae’n rhaid i’r dyddiad a nodir gynnwys diwrnod a blwyddyn
+error.monthYear.required = Mae’n rhaid i’r dyddiad a nodir gynnwys mis a blwyddyn
+error.date.required = Nodwch ddyddiad
+error.date.invalid = Mae’n rhaid i’r dyddiad a nodir fod yn ddyddiad go iawn
+error.required = Nodwch werth
+error.summary.title = Mae problem wedi codi
+error.problemWithService.title = Mae’n ddrwg gennym, ond mae problem gyda’r gwasanaeth – Ardoll Troseddau Economaidd – GOV.UK
+error.problemWithService.heading = Mae’n ddrwg gennym, ond mae problem gyda’r gwasanaeth
+error.problemWithService.message = Rhowch gynnig arall arni yn nes ymlaen.
+
+answersAreInvalid.title = Nid yw’r atebion a roddwyd gennych yn ddilys
+answersAreInvalid.heading = Nid yw’r atebion a roddwyd gennych yn ddilys
+answersAreInvalid.p1 = Nid yw’r atebion a roddwyd gennych yn ddilys neu maen nhw’n anghyflawn.
+answersAreInvalid.p2 = Bydd angen i chi gyflwyno’ch atebion eto.
+answersAreInvalid.p3 = Bydd angen i chi gyflwyno’ch atebion eto.
+answersAreInvalid.button = Cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+
+start.title = Cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+start.heading = Cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+start.p1 = Defnyddiwch y gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd (ECL) os ydych yn sefydliad neu’n endid:
+start.b1 = regulated by HMRC for anti-money laundering (AML) supervision
+start.b2 = sy’n cael ei reoleiddio gan un o Oruchwylwyr Corff Proffesiynol (PBS) ar gyfer goruchwyliaeth gwrth-wyngalchu arian (AML)
+start.p2 = Gwiriwch a {0}.
+start.p2.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">oes angen i chi dalu’r ardoll</a>
+start.p3 = Os ydych yn rhan o grŵp busnes, mae’n rhaid i chi gofrestru ar gyfer pob endid yn eich grŵp sy’n bodloni’r gofynion.
+start.p4 = You will be able to submit a return and pay the levy after you have registered. You must pay the levy by 30 September 2023. You will be charged interest if you make a late payment.
+start.beforeYouStart = Cyn i chi ddechrau
+start.provide = Bydd angen i chi roi gwybod i ni am y canlynol:
+start.provide.b1 = unrhyw gyfnodau cyfrifyddu ar gyfer eich sefydliad sy’n dod i ben yn ystod y flwyddyn ariannol berthnasol
+start.provide.b2 = refeniw yn y DU eich sefydliad yn ystod unrhyw gyfnodau cyfrifyddu perthnasol
+start.provide.b3 = a wnaeth eich sefydliad gynnal gweithgaredd a reoleiddir gan reoliadau AML ar gyfer y flwyddyn ariannol lawn
+start.provide.b4 = y manylion y gallwn eu defnyddio i adnabod eich busnes – gweler y rhestr o fanylion sydd eu hangen, <a href="https://www.gov.uk/guidance/register-for-the-economic-crime-levy" class="govuk-link">y sector busnes mae’ch sefydliad yn gweithredu ynddo</a>
+start.provide.b5 = y sector busnes mae’ch sefydliad yn gweithredu ynddo
+start.provide.b6 = manylion rhywun yn eich sefydliad a all weithredu fel pwynt cyswllt ar gyfer unrhyw weithgareddau sy’n berthnasol i’r ECL
+start.doNotUse = Peidiwch â defnyddio’r gwasanaeth hwn os yw’r canlynol yn wir:
+start.doNotUse.b1 = mae’r Awdurdod Ymddygiad Ariannol (FCA), neu’r Comisiwn Hapchwarae (GC), yn goruchwylio eich gweithgareddau AML
+start.doNotUse.b2 = rydych yn asiant sy’n gweithredu ar ran cleient – ar hyn o bryd, ni allwch gofrestru ar gyfer yr ECL ar ran eich cleient
+start.doNotUse.b3 = nid ydych yn bodloni gofynion refeniw y DU o ran cofrestru
+
+amlRegulatedActivity.title = A wnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau AML rhwng 1 Ebrill {0} a 31 Mawrth {1}?
+amlRegulatedActivity.heading = A wnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) rhwng 1 Ebrill {0} a 31 Mawrth {1}?
+amlRegulatedActivity.error.required = Dewiswch ateb
+
+notLiable.title = Does dim angen i chi gofrestru
+notLiable.heading = Does dim angen i chi gofrestru ar gyfer yr Ardoll Troseddau Economaidd
+notLiable.inset.p1 = Mae hyn naill ai oherwydd nad yw’ch refeniw yn y DU yn cyrraedd y trothwy i dalu’r ardoll, neu oherwydd nad ydych wedi cynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol hon.
+notLiable.inset.p2 = Mae’n bosibl y bydd angen i chi gofrestru os yw’ch amgylchiadau’n newid.
+notLiable.inset.p3 = Mae rhagor o wybodaeth ar gael yn yr {0}, gan gynnwys pwy sydd angen talu’r ardoll.
+notLiable.inset.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">Arweiniad ynghylch yr Ardoll Troseddau Economaidd</a>
+
+amlSupervisor.title = Eich goruchwyliwr gwrth-wyngalchu arian (AML)
+amlSupervisor.heading = Eich goruchwyliwr gwrth-wyngalchu arian (AML)
+amlSupervisor.p1 = Dyma’r corff rheoleiddio sy’n goruchwylio’ch gweithgaredd gwrth-wyngalchu arian (AML).
+amlSupervisor.p2 = Os ydych o dan oruchwyliaeth corff rheoleiddio, mae’n rhaid i chi gofrestru ar gyfer yr Ardoll Troseddau Economaidd gyda CThEF.
+amlSupervisor.p3 = Os yw CThEF yn goruchwylio’ch gweithgareddau gwrth-wyngalchu arian ar y cyd â chorff proffesiynol arall, mae’n rhaid i chi gofrestru gyda’r corff proffesiynol hwnnw.
+amlSupervisor.h2 = Pwy yw eich goruchwyliwr AML?
+amlSupervisor.Hmrc = CThEF
+amlSupervisor.GamblingCommission = Y Comisiwn Hapchwarae (GC)
+amlSupervisor.FinancialConductAuthority = Yr Awdurdod Ymddygiad Ariannol (FCA)
+amlSupervisor.Other = Arall
+amlSupervisor.selectFromList.label = Enw’r corff proffesiynol
+amlSupervisor.selectFromList.hint = Nodwch enw’ch corff proffesiynol, neu dewiswch enw o’r rhestr.
+amlSupervisor.selectFromList.error = Dewiswch gorff proffesiynol o’r rhestr
+amlSupervisor.error.required = Dewiswch oruchwyliwr AML
+amlSupervisor.AssociationOfAccountingTechnicians = Cymdeithas Technegwyr Cyfrifyddu
+amlSupervisor.AssociationOfCharteredCertifiedAccountants = Cymdeithas y Cyfrifwyr Ardystiedig Siartredig
+amlSupervisor.AssociationOfInternationalAccountants = Cymdeithas y Cyfrifwyr Rhyngwladol
+amlSupervisor.AssociationOfTaxationTechnicians = Cymdeithas Technegwyr Trethiant
+amlSupervisor.CharteredInstituteOfLegalExecutives = Sefydliad Siartredig y Gweithredwyr Cyfreithiol
+amlSupervisor.CharteredInstituteOfManagementAccountants = Sefydliad Siartredig y Cyfrifwyr Rheoli
+amlSupervisor.CharteredInstituteOfTaxation = Sefydliad Siartredig Trethu
+amlSupervisor.CouncilOfLicensedConveyancers = Cyngor Trawsgludwyr Trwyddedig
+amlSupervisor.DepartmentOfEnterpriseTradeAndInvestmentNorthernIreland = Yr Adran Menter, Masnach a Buddsoddiad, yng Ngogledd Iwerddon
+amlSupervisor.FacultyOfAdvocates = Cyfadran yr Eiriolwyr
+amlSupervisor.FacultyOfficeOfTheArchbishopOfCanterbury = Cyfadran Swyddfa Archesgob Caergaint
+amlSupervisor.GeneralCouncilOfTheBar = Cyngor Cyffredinol y Bar
+amlSupervisor.GeneralCouncilOfTheBarOfNorthernIreland = Cyngor Cyffredinol y Bar yng Ngogledd Iwerddon
+amlSupervisor.InsolvencyPractitionersAssociation = Cymdeithas Ymarferwyr Ansolfedd
+amlSupervisor.InstituteOfCertifiedBookkeepers = Sefydliad Llyfrifwyr Ardystiedig
+amlSupervisor.InstituteOfCharteredAccountantsInEnglandAndWales = Sefydliad Cyfrifwyr Siartredig yng Nghymru a Lloegr
+amlSupervisor.InstituteOfCharteredAccountantsInIreland = Sefydliad Cyfrifwyr Siartredig yn Iwerddon
+amlSupervisor.InstituteOfCharteredAccountantsOfScotland = Sefydliad Cyfrifwyr Siartredig yr Alban
+amlSupervisor.InstituteOfFinancialAccountants = Sefydliad Cyfrifwyr Ariannol
+amlSupervisor.InternationalAssociationOfBookkeepers = Cymdeithas Ryngwladol Llyfrifwyr
+amlSupervisor.LawSociety = Cymdeithas y Cyfreithwyr
+amlSupervisor.LawSocietyOfNorthernIreland = Cymdeithas Cyfreithwyr Gogledd Iwerddon
+amlSupervisor.LawSocietyOfScotland = Cymdeithas Cyfreithwyr yr Alban
+
+relevantAp12Months.title = A yw’ch cyfnod cyfrifyddu perthnasol yn 12 mis?
+relevantAp12Months.heading = A yw’ch cyfnod cyfrifyddu perthnasol yn 12 mis?
+relevantAp12Months.p1 = Eich cyfnod cyfrifyddu perthnasol yw unrhyw gyfnod sy’n dod i ben yn ystod y flwyddyn ariannol. Mae’n seiliedig ar y cyfnod cyfrifyddu rydych yn ei ddefnyddio ar gyfer eich Ffurflen Dreth y Cwmni.
+relevantAp12Months.p2 = Mae’n bosibl bod gennych fwy nag un cyfnod cyfrifyddu perthnasol yn dod i ben yn ystod y flwyddyn ariannol.
+relevantAp12Months.p3 = Mae’r flwyddyn ariannol ar gyfer yr Ardoll Troseddau Economaidd (ECL) yn dechrau ar 1 Ebrill, ac yn dod i ben ar 31 Mawrth y flwyddyn ganlynol.
+relevantAp12Months.ex.heading = Enghraifft
+relevantAp12Months.ex.p1 = Mae’ch cyfnod cyfrifyddu perthnasol yn 12 mis. Mae’n dechrau ar 1 Ionawr, ac yn dod i ben ar 31 Rhagfyr o’r un flwyddyn.
+relevantAp12Months.ex.p2 = Mae’r cyfnod cyfrifyddu hwn yn dod i ben yn ystod y flwyddyn ariannol ar gyfer yr ECL. Mae’r flwyddyn hon yn dechrau ar 1 Ebrill, ac yn dod i ben ar 31 Mawrth y flwyddyn ganlynol.
+relevantAp12Months.ex.p3 = Mae’ch busnes yn cael ei reoleiddio at ddibenion gwrth-wyngalchu arian (AML) drwy gydol eich cyfnod cyfrifyddu perthnasol cyfan. Mae’r cyfnod hwn yn rhedeg am 12 mis.
+relevantAp12Months.ex.p4 = Eich refeniw ar gyfer y cyfnod cyfrifyddu hwn yw £30 miliwn.
+relevantAp12Months.ex.p5 = Yn seiliedig ar yr enghraifft hon, bydd eich busnes yn agored i gofrestru ar gyfer yr ECL.
+relevantAp12Months.hidden1 = Y rheswm ein bod yn gofyn am hyd eich cyfnod cyfrifyddu perthnasol
+relevantAp12Months.hidden2 = Rydym yn gofyn am hyn oherwydd bod y refeniw yn y DU yr ydych yn ei ennill yn ystod unrhyw gyfnod cyfrifyddu perthnasol yn cael ei ddefnyddio i gyfrifo a ydych yn atebol i dalu’r ECL am y flwyddyn ariannol hon.
+relevantAp12Months.hidden3 = Os yw’ch cyfnod cyfrifyddu perthnasol yn llai na 12 mis, bydd angen i chi roi gwybod i ni hyd y cyfnod hwnnw mewn diwrnodau.
+relevantAp12Months.error.required = Dewiswch ateb
+
+ukRevenue.title = Beth oedd cyfanswm eich refeniw yn y DU yn ystod eich cyfnod cyfrifyddu?
+ukRevenue.heading = Beth oedd cyfanswm eich refeniw yn y DU yn ystod eich cyfnod cyfrifyddu?
+ukRevenue.p1 = At ddiben yr Ardoll Troseddau Economaidd (ECL), diffinnir eich refeniw yn y DU fel a ganlyn:
+ukRevenue.b1 = eich trosiant yn ystod y flwyddyn ariannol
+ukRevenue.b2 = unrhyw symiau eraill sydd heb gael eu cynnwys yn eich trosiant, ond sy’n cael eu hystyried yn refeniw o dan Egwyddorion Cyfrifyddu a Dderbynnir yn Gyffredinol (GAAP)
+ukRevenue.b3 = os ydych yn rhan o grŵp busnes, mae’r swm hwn ar gyfer yr endid rydych yn ei gofrestru
+ukRevenue.p2 =Os oes gennych fwy nag un cyfnod cyfrifyddu perthnasol sy’n dod i ben yn ystod y flwyddyn ariannol, mae angen i chi gyfuno’r symiau i gyd.
+ukRevenue.h1 = Os oes gennych fwy nag un cyfnod cyfrifyddu sy’n dod i ben yn ystod y flwyddyn ariannol
+ukRevenue.p3 = Mae angen i chi gyfuno’r refeniw o bob cyfnod cyfrifyddu. Bydd cyfanswm y symiau hyn yn pennu a oes angen i chi gofrestru ar gyfer yr Ardoll Troseddau Economaidd (ECL).
+ukRevenue.hint = Nodwch y swm mewn punnoedd, wedi’i dalgrynnu i lawr i’r bunt agosaf
+ukRevenue.error.required = Nodwch y refeniw yn y DU
+ukRevenue.error.wholeNumber = Mae’n rhaid i’r refeniw yn y DU fod yn rhif wedi’i dalgrynnu i lawr i’r bunt agosaf
+ukRevenue.error.nonNumeric = Mae’n rhaid i’r refeniw yn y DU fod yn rhif wedi’i dalgrynnu i lawr i’r bunt agosaf
+ukRevenue.error.outOfRange = Mae’n rhaid i’r refeniw yn y DU fod rhwng {0} a {1}
+
+relevantApLength.title = Pa mor hir yw’ch cyfnod cyfrifyddu perthnasol?
+relevantApLength.heading = Pa mor hir yw’ch cyfnod cyfrifyddu perthnasol?
+relevantApLength.p1 = Eich cyfnod cyfrifyddu perthnasol yw unrhyw gyfnod sy’n dod i ben yn ystod y flwyddyn ariannol. Mae’n seiliedig ar y cyfnod cyfrifyddu rydych yn ei ddefnyddio ar gyfer eich Ffurflen Dreth y Cwmni.
+relevantApLength.p2 = Mae’n bosibl bod gennych fwy nag un cyfnod cyfrifyddu perthnasol yn dod i ben yn ystod y flwyddyn ariannol.
+relevantApLength.p3 = At ddibenion yr ECL, mae’r flwyddyn ariannol yn dechrau ar 1 Ebrill ac yn dod i ben ar 31 Mawrth y flwyddyn ganlynol.
+relevantApLength.hint = Nodwch hyd eich cyfnod cyfrifyddu mewn diwrnodau
+relevantApLength.ex.heading = Enghraifft
+relevantApLength.ex.p1 = Mae’ch cyfnod cyfrifyddu perthnasol yn 9 mis. Mae’n dechrau ar 1 Ionawr, ac yn dod i ben ar 30 Medi o’r un flwyddyn.
+relevantApLength.ex.p2 = Mae’r cyfnod cyfrifyddu hwn yn dod i ben yn ystod y flwyddyn ariannol ar gyfer yr ECL. Mae’r flwyddyn hon yn dechrau ar 1 Ebrill, ac yn dod i ben ar 31 Mawrth y flwyddyn ganlynol.
+relevantApLength.ex.p3 = Mae’ch busnes yn cael ei reoleiddio at ddibenion gwrth-wyngalchu arian (AML) drwy gydol eich cyfnod cyfrifyddu perthnasol cyfan. Mae’r cyfnod hwn yn rhedeg am 9 mis.
+relevantApLength.ex.p4 = Eich refeniw ar gyfer y cyfnod cyfrifyddu hwn yw £20 miliwn.
+relevantApLength.ex.p5 = Yn seiliedig ar yr enghraifft hon, bydd eich busnes yn agored i gofrestru ar gyfer yr ECL.
+relevantApLength.error.required = Nodwch yr hyd
+relevantApLength.error.wholeNumber = Mae’n rhaid i’r hyd fod yn rhif cyfan
+relevantApLength.error.nonNumeric = Mae’n rhaid i’r hyd fod yn rhif cyfan
+relevantApLength.error.outOfRange = Mae’n rhaid i’r hyd fod rhwng {0} a {1}
+
+registerWith.title = Mae angen i chi gofrestru gyda’r
+registerWith.title.fca = FCA
+registerWith.title.gc = GC
+registerWith.heading = Mae angen i chi gofrestru gyda’r {0} er mwyn talu’r ardoll
+registerWith.heading.fca = Awdurdod Ymddygiad Ariannol (FCA)
+registerWith.heading.gc = Comisiwn Hapchwarae (GC)
+registerWith.body.p1 = Mae gan yr Ardoll Troseddau Economaidd {0}.
+registerWith.body.p1.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">rhagor o wybodaeth</a>
+registerWith.body.p2 = Mae angen i chi gofrestru gyda’r corff rheoleiddio sy’n goruchwylio’ch gweithgaredd Gwrth-wyngalchu Arian (AML) er mwyn talu’r Ardoll Troseddau Economaidd (ECL).
+registerWith.body.p3 = {0}.
+registerWith.body.p3.fcaLink = <a href="https://www.fca.org.uk/" class="govuk-link">Ewch i wefan yr Awdurdod Ymddygiad Ariannol</a>
+registerWith.body.p3.gcLink = <a href="https://www.gamblingcommission.gov.uk/" class="govuk-link">Ewch i wefan y Comisiwn Hapchwarae</a>
+
+entityType.title = Pa fath o endid sydd gennych?
+entityType.GeneralPartnership = Partneriaeth gyffredinol
+entityType.UkLimitedCompany = Cwmni cyfyngedig
+entityType.LimitedLiabilityPartnership = Partneriaeth atebolrwydd cyfyngedig
+entityType.LimitedPartnership = Partneriaeth gyfyngedig
+entityType.RegisteredSociety = Cymdeithas gofrestredig
+entityType.ScottishLimitedPartnership = Partneriaeth gyfyngedig yn yr Alban
+entityType.ScottishPartnership = Partneriaeth yn yr Alban
+entityType.SoleTrader = Unig fasnachwr
+entityType.UnlimitedCompany = Unlimited company
+entityType.Other = Arall
+entityType.error.required = Dewiswch eich math o endid
+
+otherEntityType.title = Rhowch wybod i ni ba fath o endid sydd gennych
+otherEntityType.heading = Rhowch wybod i ni ba fath o endid sydd gennych
+otherEntityType.Charity = Elusen
+otherEntityType.Trust = Ymddiriedolaeth
+otherEntityType.NonUKEstablishment = Sefydliad y tu allan i’r DU
+otherEntityType.UnincorporatedAssociation = Cymdeithas anghorfforedig
+otherEntityType.error.required = Dewiswch eich math o endid
+otherEntityType.ctutr.question.title = A oes gennych Gyfeirnod Unigryw y Trethdalwr ar gyfer Treth Gorfforaeth?
+otherEntityType.ctutr.question.label = A oes gennych Gyfeirnod Unigryw y Trethdalwr ar gyfer Treth Gorfforaeth?
+otherEntityType.ctutr.question.h1 = A oes gennych Gyfeirnod Unigryw y Trethdalwr ar gyfer Treth Gorfforaeth?
+otherEntityType.ctutr.question.body = Mae’ch Cyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth (CT) yn 10 digid.
+otherEntityType.ctutr.question.hint = Er enghraifft, 0123456789
+otherEntityType.addCtutr.title = Beth yw eich Cyfeirnod Unigryw y Trethdalwr ar gyfer Treth Gorfforaeth?
+otherEntityType.addCtutr.h1 = Beth yw eich Cyfeirnod Unigryw y Trethdalwr ar gyfer Treth Gorfforaeth?
+otherEntityType.addCtutr.body = Mae’ch Cyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth (CT) yn 10 digid.
+otherEntityType.addCtutr.hint = Er enghraifft, 0123456789
+otherEntityType.addCtutr.error.required = Nodwch Gyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth (CT)
+otherEntityType.addCtutr.error.length = Mae’n rhaid i Gyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth (CT) fod yn {0} digid
+otherEntityType.ctutr.error.required = Dewiswch ateb
+otherEntityType.ctutr.postcode.title = Beth yw’r cod post a ddefnyddioch wrth gofrestru’ch cymdeithas?
+otherEntityType.ctutr.postcode.h1 = Beth yw’r cod post a ddefnyddioch wrth gofrestru’ch cymdeithas?
+otherEntityType.ctutr.postcode.hint = Er enghraifft, AB1 2YZ
+otherEntityType.ctutr.postcode.required = Nodwch god post
+otherEntityType.ctutr.postcode.error = Nodwch god post
+otherEntityType.ctutr.postcode.label = CT UTR Cod post
+
+partnershipName.title = Beth yw enw’r bartneriaeth?
+partnershipName.heading = Beth yw enw’r bartneriaeth?
+partnershipName.error.required = Nodwch enw partneriaeth
+partnershipName.error.length = Mae’n rhaid i enw partneriaeth fod yn {0} o gymeriadau neu lai
+
+businessSector.title = Beth yw sector eich busnes?
+businessSector.Auditor = Archwilydd
+businessSector.CreditInstitution = Sefydliad credyd
+businessSector.CryptoAssetExchangeProvider = Darparwr cyfnewidfeydd cryptoasedion neu ddarparwr waledi gwarchodol
+businessSector.EstateAgentOrLettingAgent = Asiant eiddo neu asiant gosod eiddo
+businessSector.ExternalAccountant = Cyfrifydd allanol
+businessSector.FinancialInstitution = Sefydliad ariannol
+businessSector.HighValueDealer = Deliwr mewn gwerthoedd uchel, casino, platfform ocsiwn neu gyfranogwr yn y farchnad gelf
+businessSector.IndependentLegalProfessional = Gweithiwr cyfreithiol annibynnol proffesiynol
+businessSector.InsolvencyPractitioner = Ymarferwyr ansolfedd
+businessSector.TaxAdviser = Ymgynghorydd treth
+businessSector.TrustOrCompanyServiceProvider = Darparwr gwasanaeth cwmni neu ymddiriedolaeth
+businessSector.error.required = Dewiswch sector busnes
+
+firstContactName.title = Rhowch enw cyswllt
+firstContactName.heading = Rhowch enw cyswllt
+firstContactName.legend.p1 = Rhowch fanylion person yn eich sefydliad a all gweithredu fel pwynt cyswllt. Nid yw’n gorfod fod yn rhan o’ch adran gyfrifyddu na’ch adran dreth.
+firstContactName.legend.p2 = Gallwch ychwanegu enw a manylion ail gyswllt ar ôl i chi ychwanegu manylion y cyswllt cyntaf.
+firstContactName.hint = Er enghraifft, ''John Jones'' neu ''Laura Smith''.
+firstContactName.error.required = Nodwch enw llawn
+firstContactName.error.length = Dewiswch sector busnes
+
+firstContactRole.title = Beth yw rôl {0}?
+firstContactRole.heading = Beth yw rôl {0}?
+firstContactRole.legend = Rhowch fanylion i ni am ei rôl yn eich sefydliad.
+firstContactRole.hint = Er enghraifft, ''Swyddog Cydymffurfiad''.
+firstContactRole.error.required = Nodwch rôl
+firstContactRole.error.length = Mae’n rhaid i’r rôl fod yn {0} o gymeriadau neu lai
+
+firstContactEmail.title = Beth yw cyfeiriad e-bost {0}?
+firstContactEmail.heading = Beth yw cyfeiriad e-bost {0}?
+firstContactEmail.legend = Dyma gyfeiriad e-bost y cyswllt a enwyd gennych.
+firstContactEmail.error.required = Nodwch gyfeiriad e-bost
+firstContactEmail.error.length = Mae’n rhaid i’r cyfeiriad e-bost fod yn {0} o gymeriadau neu lai
+firstContactEmail.error.invalid = Nodwch gyfeiriad e-bost yn y fformat cywir, megis enw@enghraifft.com
+firstContactEmail.use = Byddwn ond yn defnyddio’r cyfeiriad e-bost hwn i gysylltu â’ch cyswllt ynghylch yr Ardoll Troseddau Economaidd.
+
+firstContactNumber.title = Beth yw rhif ffôn {0}?
+firstContactNumber.heading = Beth yw rhif ffôn {0}?
+firstContactNumber.label = Rhif ffôn
+firstContactNumber.legend = Dyma’r rhif ffôn ar gyfer y cyswllt a enwyd gennych.
+firstContactNumber.hint = Ar gyfer rhifau rhyngwladol, cofiwch nodi cod y wlad
+firstContactNumber.error.required = Nodwch rif ffôn
+firstContactNumber.error.length = Mae’n rhaid i’r rhif ffôn gynnwys {0} o gymeriadau neu lai
+firstContactNumber.error.invalid = Nodwch rif ffôn, megis 01632 960 001, 07700 900 982 neu +44 808 157 0192
+firstContactNumber.use = Byddwn ond yn defnyddio’r rhif ffôn hwn i gysylltu â’ch cyswllt ynghylch yr Ardoll Troseddau Economaidd.
+
+addAnotherContact.title = A hoffech ychwanegu cyswllt arall?
+addAnotherContact.heading = A hoffech ychwanegu cyswllt arall?
+addAnotherContact.legend = Gallwch ychwanegu manylion ar gyfer cyswllt arall yn eich sefydliad.
+addAnotherContact.error.required = Dewiswch os hoffech ychwanegu cyswllt arall
+
+secondContactName.title = Rhowch enw ail gyswllt
+secondContactName.heading = Rhowch enw ail gyswllt
+secondContactName.legend = Ychwanegwch fanylion cyswllt arall yn eich sefydliad.
+secondContactName.hint = Er enghraifft, ''John Jones'' neu ''Laura Smith''
+secondContactName.error.required = Nodwch enw llawn
+secondContactName.error.length = Mae’n rhaid i’r enw llawn fod yn {0} o gymeriadau neu lai
+
+secondContactRole.title = Beth yw rôl {0}?
+secondContactRole.heading = Beth yw rôl {0}?
+secondContactRole.legend = Rhowch fanylion i ni am ei rôl yn eich sefydliad.
+secondContactRole.hint = Er enghraifft, ‘Swyddog Cydymffurfiad’.
+secondContactRole.error.required = Nodwch rôl
+secondContactRole.error.length = Mae’n rhaid i’r rôl fod yn {0} o gymeriadau neu lai
+
+secondContactEmail.title = Beth yw cyfeiriad e-bost {0}?
+secondContactEmail.heading = Beth yw cyfeiriad e-bost {0}?
+secondContactEmail.legend = Dyma gyfeiriad e-bost y cyswllt a enwyd gennych.
+secondContactEmail.error.required = Nodwch gyfeiriad e-bost
+secondContactEmail.error.length = Mae’n rhaid i’r cyfeiriad e-bost fod yn {0} o gymeriadau neu lai
+secondContactEmail.error.invalid = Nodwch gyfeiriad e-bost yn y fformat cywir, megis enw@enghraifft.com
+secondContactEmail.use = Byddwn ond yn defnyddio’r cyfeiriad e-bost hwn i gysylltu â’ch cyswllt ynghylch yr Ardoll Troseddau Economaidd.
+
+secondContactNumber.title = Beth yw rhif ffôn {0}?
+secondContactNumber.heading = Beth yw rhif ffôn {0}?
+secondContactNumber.label = Rhif ffôn
+secondContactNumber.legend = Dyma’r rhif ffôn ar gyfer y cyswllt a enwyd gennych.
+secondContactNumber.hint = Ar gyfer rhifau rhyngwladol, cofiwch nodi cod y wlad
+secondContactNumber.error.required = Nodwch rif ffôn
+secondContactNumber.error.length = Mae’n rhaid i’r rhif ffôn gynnwys {0} o gymeriadau neu lai
+secondContactNumber.error.invalid = Nodwch rif ffôn, megis 01632 960 001, 07700 900 982 neu +44 808 157 0192
+secondContactNumber.use = Byddwn ond yn defnyddio’r rhif ffôn hwn i gysylltu â’ch cyswllt ynghylch yr Ardoll Troseddau Economaidd.
+
+confirmContactAddress.title = A ydych am ddefnyddio’r cyfeiriad cofrestredig hwn fel y prif gyfeiriad cyswllt?
+confirmContactAddress.heading = A ydych am ddefnyddio’r cyfeiriad cofrestredig hwn fel y prif gyfeiriad cyswllt?
+confirmContactAddress.yes = Iawn, defnyddiwch y cyfeiriad hwn
+confirmContactAddress.no = Na, defnyddiwch gyfeiriad gwahanol
+confirmContactAddress.error.required = Dewiswch ateb
+
+isUkAddress.title = A yw’ch cyfeiriad cyswllt wedi’i leoli yn y DU?
+isUkAddress.error.required = Dewiswch a yw’ch cyfeiriad cyswllt wedi’i leoli yn y DU
+
+alf.labels.submit = Cadw ac yn eich blaen
+alf.labels.select.title = Dewiswch eich cyfeiriad
+alf.labels.select.heading = Dewiswch eich cyfeiriad
+
+alf.labels.lookup.title = Pa gyfeiriad yr hoffech ei ddefnyddio fel cyfeiriad cyswllt y sefydliad?
+alf.labels.lookup.heading = Pa gyfeiriad yr hoffech ei ddefnyddio fel cyfeiriad cyswllt y sefydliad?
+alf.labels.lookup.postcode = Cod post yn y DU
+alf.labels.edit.title = Pa gyfeiriad yr hoffech ei ddefnyddio fel cyfeiriad cyswllt y sefydliad?
+alf.labels.edit.heading = Pa gyfeiriad yr hoffech ei ddefnyddio fel cyfeiriad cyswllt y sefydliad?
+
+checkYourAnswers.title = Gwiriwch eich atebion
+checkYourAnswers.heading = Gwiriwch eich atebion
+checkYourAnswers.organisationDetails = Manylion y sefydliad
+checkYourAnswers.contactDetails = Manylion cyswllt
+checkYourAnswers.amlRegulatedActivity.label = Gweithgaredd a reoleiddir gan reoliadau AML wedi’i gynnal
+checkYourAnswers.amlSupervisor.label = Goruchwyliwr AML
+checkYourAnswers.relevantAp12Months.label = Mae’r cyfnod cyfrifyddu perthnasol yn 12 mis
+checkYourAnswers.relevantApLength.label = Hyd y cyfnod cyfrifyddu perthnasol
+checkYourAnswers.relevantApLength.days = diwrnodau
+checkYourAnswers.ukRevenue.label = Refeniw yn y DU
+checkYourAnswers.amlSupervisor.label = Goruchwyliwr AML
+checkYourAnswers.businessSector.label = Y sector busnes
+checkYourAnswers.entityType.label = Math o endid
+checkYourAnswers.entityName.label = Enw’r endid
+checkYourAnswers.companyNumber.label = Rhif y cwmni
+checkYourAnswers.ctUtr.label = Cyfeirnod Unigryw y Trethdalwr
+checkYourAnswers.saUtr.label = Cyfeirnod Unigryw y Trethdalwr
+checkYourAnswers.nino.label = Rhif Yswiriant Gwladol
+checkYourAnswers.dob.label = Dyddiad geni
+checkYourAnswers.firstContactName.label = Enw cyswllt
+checkYourAnswers.firstContactRole.label = Rôl
+checkYourAnswers.firstContactEmail.label = Cyfeiriad e-bost
+checkYourAnswers.firstContactNumber.label = Rhif ffôn
+checkYourAnswers.secondContact.label = Ail gyswllt
+checkYourAnswers.secondContactName.label = Enw’r ail gyswllt
+checkYourAnswers.secondContactRole.label = Rôl
+checkYourAnswers.secondContactEmail.label = Cyfeiriad e-bost
+checkYourAnswers.secondContactNumber.label = Rhif ffôn
+checkYourAnswers.useRegisteredAddress.label = Defnyddiwch y cyfeiriad cofrestredig
+checkYourAnswers.address.label = Cyfeiriad
+checkYourAnswers.nowSend = Anfonwch eich cofrestriad nawr
+checkYourAnswers.bySubmitting = Drwy gyflwyno’r cofrestriad hwn, rydych yn cadarnhau, hyd eithaf eich gwybodaeth, fod y manylion rydych chi’n eu darparu yn gywir.
+checkYourAnswers.confirmAndSend = Cadarnhau ac anfon
+checkYourAnswers.otherEntityType.label = Math o endid arall
+checkYourAnswers.businessName.label = Enw’r busnes
+checkYourAnswers.charityRegistrationNumber.label = Rhif cofrestru’r elusen (CHRN)
+checkYourAnswers.companyRegistrationNumber.label = Rhif cofrestru’r cwmni
+checkYourAnswers.otherEntityDetails = Manylion endid arall
+checkYourAnswers.utrType.label = Math o gyfeirnod unigryw y trethdalwr
+checkYourAnswers.nonUkCrn.label = CRN y tu allan i’r DU
+checkYourAnswers.overseasTaxIdentifier.label = Dynodydd treth tramor
+checkYourAnswers.eclDetails = Manylion ECL
+checkYourAnswers.eclReferenceNumber.label = Cyfeirnod ECL
+
+submitted.title = Cofrestriad wedi’i gyflwyno
+submitted.heading = Cofrestriad wedi’i gyflwyno
+submitted.reference = Cyfeirnod ECL: {0}
+submitted.subHeading = Yr hyn sy’n digwydd nesaf
+submitted.p1 = Rydych wedi cofrestru’ch cymhwystra ar gyfer yr Ardoll Troseddau Economaidd (ECL). Rydych wedi cael cyfeirnod ac e-bost cadarnhau. Cadwch y rhain ar gyfer eich cofnodion.
+submitted.p2 = Bydd angen i chi gyflwyno datganiad a thalu’r ardoll yn flynyddol.
+submitted.p3 = Y dyddiad cau nesaf ar gyfer cyflwyno datganiad a gwneud taliad yw 30 Medi 2023. Codir llog arnoch os ydych yn talu’n hwyr.
+submitted.p4 = Ni fyddwch yn cael e-bost na hysbysiad oddi wrth CThEF i’ch atgoffa i gyflwyno datganiad.
+submitted.provide = Pan fyddwch yn llenwi’ch datganiad blynyddol, bydd angen i chi roi gwybod i ni am y canlynol:
+submitted.provide.b1 = y cyfnodau cyfrifyddu perthnasol ar gyfer eich sefydliad
+submitted.provide.b2 = eich refeniw yn y DU ar gyfer y cyfnodau cyfrifyddu perthnasol
+submitted.provide.b3 = pa mor hir y gwnaethoch gynnal gweithgareddau a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
+submitted.provide.b4 = enw, rôl, a manylion cyswllt y person yn eich sefydliad sy’n llenwi’r datganiad
+submitted.return = Gallwch gyflwyno datganiad drwy
+submitted.return.link = <a href="{0}" class="govuk-link">eich cyfrif ECL</a>
+submitted.first.email = Rydym wedi anfon e-bost i {0}
+submitted.second.email = Rydym hefyd wedi anfon e-bost i {0}, gan eich bod wedi’i enwi’n ail gyswllt.
+
+userAlreadyEnrolled.title = Rydych eisoes wedi cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+userAlreadyEnrolled.heading = Rydych eisoes wedi cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+userAlreadyEnrolled.body.p1 = Eich cyfeirnod ECL yw {0}.
+userAlreadyEnrolled.body.p2 = Os ydych yn barod, gallwch wneud y canlynol: {0}.
+userAlreadyEnrolled.body.p2.link = <a href="{0}" class="govuk-link">cyflwyno Ffurflen Dreth</a>
+
+groupAlreadyEnrolled.title = Mae’ch sefydliad eisoes wedi cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+groupAlreadyEnrolled.heading = Mae’ch sefydliad eisoes wedi cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+groupAlreadyEnrolled.body.p1 = Eich cyfeirnod ECL yw {0}.
+groupAlreadyEnrolled.body.p2 = Gallwch wneud y canlynol: {0}.
+groupAlreadyEnrolled.body.p2.link = <a href="{0}" class="govuk-link">ychwanegu’r ardoll hwn i’ch cyfrif treth busnes</a>
+
+agentCannotRegister.title = Ni allwch ddefnyddio’r gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd
+agentCannotRegister.heading = Ni allwch ddefnyddio’r gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd
+agentCannotRegister.p1 = Ni all asiantau cwblhau cofrestriad ar gyfer yr Ardoll Troseddau Economaidd (ECL) ar ran cleient.
+agentCannotRegister.p2 = Mae’n rhaid i’ch cleient gofrestru drwy ddefnyddio’i Dynodydd Defnyddiwr (ID) ar gyfer Porth y Llywodraeth ei hun.
+agentCannotRegister.p3 = Ewch i’ch {0}.
+agentCannotRegister.p3.link = <a href="https://www.gov.uk/guidance/sign-in-to-your-agent-services-account" class="govuk-link">cyfrif gwasanaethau asiant</a>
+
+assistantCannotRegister.title = Mae’n rhaid i chi fod yn weinyddwr i gofrestru ar gyfer y gwasanaeth hwn
+assistantCannotRegister.heading = Nid ydych yn weinyddwr ar gyfer eich sefydliad. Ni allwch ddefnyddio’r gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd (ECL).
+assistantCannotRegister.p1 = Bydd angen i chi ofyn gweinyddwr yn eich sefydliad i’ch ychwanegu chi at y cyfrif.
+assistantCannotRegister.p2 = Mae’ch sefydliad eisoes wedi cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+
+organisationAlreadyRegistered.title = Mae’ch sefydliad eisoes wedi cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+organisationAlreadyRegistered.heading = Mae’ch sefydliad eisoes wedi cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+organisationAlreadyRegistered.body.p1 = Eich cyfeirnod ECL yw {0}.
+organisationAlreadyRegistered.body.p2 = Gallwch wneud y canlynol: {0}.
+organisationAlreadyRegistered.body.p2.link = <a href="{0}" class="govuk-link">ychwanegu’r ardoll hwn i’ch cyfrif treth busnes</a>
+organisationAlreadyRegistered.provide = Bydd angen i chi ddarparu’r canlynol:
+organisationAlreadyRegistered.provide.b1 = y dyddiad y gwnaeth eich sefydliad gofrestru ar gyfer yr Ardoll Troseddau Economaidd (ECL).
+organisationAlreadyRegistered.provide.b2 = eich cyfeirnod ECL
+
+registrationFailed.title = Cofrestriad wedi methu
+registrationFailed.heading = Cofrestriad wedi methu
+registrationFailed.body.p1 = Ni allwn gwblhau’ch cofrestriad.
+registrationFailed.body.p2 = {0} er mwyn i ni eich helpu gyda’ch cofrestriad.
+registrationFailed.body.p2.link = <a href="{0}" class="govuk-link">Cysylltu â ni</a>
+
+partyTypeMismatch.title = Nid yw’ch manylion yn cyd-fynd â’n cofnodion
+partyTypeMismatch.heading = Nid yw’ch manylion yn cyd-fynd â’n cofnodion
+partyTypeMismatch.body.p1 = Mae’ch cofrestriad wedi methu oherwydd nad yw’ch manylion yn cyd-fynd â’n cofnodion.
+partyTypeMismatch.body.p2 = Gwiriwch eich bod wedi dewis y math cywir o endid a chyflwynwch eich atebion eto.
+
+detailsDoNotMatch.title = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+detailsDoNotMatch.heading = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+
+detailsDoNotMatch.ct.body.p1 = Gwiriwch gofnodion Treth Gorfforaeth eich cwmni a rhowch gynnig arall arni.
+detailsDoNotMatch.ct.body.p2 = Gwiriwch fod cod post cyfeiriad eich swyddfa yn cyd-fynd â’r cod post sydd wedi’i gofrestru gyda Thŷ’r Cwmnïau.
+detailsDoNotMatch.ct.body.p3 = Os ydych yn dal i gael problemau, gallwch ddod o hyd i’ch Cyfeirnod Unigryw y Trethdalwr, manylion Yswiriant Gwladol a gwybodaeth cod treth yn eich cyfrif ar-lein CThEF.
+
+detailsDoNotMatch.sa.body.p1 = Gwiriwch eich cofnodion Hunanasesiad a rhowch gynnig arall arni.
+detailsDoNotMatch.sa.body.p2 = Gwiriwch fod y cod post y gwnaethoch ei nodi yn cyd-fynd a’r cod post sydd ar Hunanasesiad eich Partneriaeth.
+detailsDoNotMatch.sa.body.p3 = Os ydych yn dal i gael problemau, gallwch ddod o hyd i’ch Cyfeirnod Unigryw y Trethdalwr, manylion Yswiriant Gwladol a gwybodaeth cod treth yn eich cyfrif ar-lein CThEF.
+
+
+feedback.heading = Rhowch eich barn
+feedback.p1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw’ch barn amdano.
+feedback.link = <a href="{0}" class="govuk-link">Anfonwch eich adborth atom</a>
+feedback.p2 = {0}. Bydd eich meddyliau a’ch syniadau’n ein helpu i wneud gwelliannau.
+
+exit.survey.link = <a href="{0}" class="govuk-link">Beth oedd eich barn am y gwasanaeth hwn?</a>
+exit.survey = {0} Mae’r arolwg ymadael yn (cymryd 30 eiliad).
+
+signedOut.title = Er eich diogelwch, gwnaethom eich allgofnodi
+signedOut.heading = Er eich diogelwch, gwnaethom eich allgofnodi
+signedOut.guidance = Ni wnaethom gadw’ch atebion.
+
+privateBetaAccess.title = Cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+privateBetaAccess.heading = Cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+privateBetaAccess.p1 = Gallwch nawr ddefnyddio’r gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd (ECL).
+privateBetaAccess.p2 = I gofrestru, bydd angen cod mynediad 6 digid arnoch.
+privateBetaAccess.p3 = Rydym yn gofyn i ddefnyddwyr gofrestru gan ddefnyddio cod mynediad er mwyn iddynt allu rhoi adborth ar y gwasanaeth.
+privateBetaAccess.getAccessCode = Cael cod mynediad
+privateBetaAccess.registerInterest = Gallwch fynegi eich diddordeb mewn defnyddio’r gwasanaeth drwy gysylltu â CThEF:
+privateBetaAccess.emailSubject = Yn llinell pwnc yr e-bost, rhowch [Cais am god mynediad / Request for access code].
+privateBetaAccess.respond = Byddwn yn cynnwys cod mynediad yn ein hymateb i’ch e-bost, a gallwch ei ddefnyddio i gofrestru ar gyfer yr Ardoll Troseddau Economaidd.
+privateBetaAccess.receive = Byddwch yn cael cod mynediad cyn pen 24 awr ar ôl i chi anfon eich cais.
+privateBetaAccess.doNotContact = Peidiwch â chysylltu â llinell gymorth yr ECL ar gyfer problemau wrth gofrestru, gan nad yw staff y llinell gymorth yn gallu helpu gyda’r problemau hyn ar hyn o bryd.
+privateBetaAccess.enterAccessCode = Nodwch eich cod mynediad
+privateBetaAccess.toRegister = I gofrestru ar gyfer yr ECL, nodwch eich cod mynediad 6 digid, a dewiswch ‘Yn eich blaen’.
+privateBetaAccess.enterYourCode = Nodwch eich cod mynediad 6 digid
+privateBetaAccess.keepSafe = Cadwch y cod mynediad hwn yn ddiogel. Bydd angen i chi nodi’r cod bob tro y byddwch yn cael mynediad at y beta.
+privateBetaAccess.codeDoesNotWork = <strong>Nid yw fy nghod mynediad yn gweithio</strong>
+privateBetaAccess.codeDoesNotWork.contact = Os na allwch gael mynediad at y gwasanaeth, cysylltwch â CThEF: <a href="mailto:{0}" class="govuk-link">{0}</a>. Yn yr e-bost, bydd angen i chi roi’r canlynol:
+privateBetaAccess.codeDoesNotWork.b1 = eich enw
+privateBetaAccess.codeDoesNotWork.b2 = y dyddiad a’r amser y gwnaethoch geisio defnyddio’r gwasanaeth
+privateBetaAccess.codeDoesNotWork.b3 = eich cod mynediad 6 digid
+privateBetaAccess.error.required = Nodwch god mynediad
+privateBetaAccess.error.invalid = Nodwch god mynediad dilys
+
+date.month.1 = Ionawr
+date.month.2 = Chwefror
+date.month.3 = Mawrth
+date.month.4 = Ebrill
+date.month.5 = Mai
+date.month.6 = Mehefin
+date.month.7 = Gorffennaf
+date.month.8 = Awst
+date.month.9 = Medi
+date.month.10 = Hydref
+date.month.11 = Tachwedd
+date.month.12 = Rhagfyr
+
+charityRegistrationNumber.title = Beth yw rhif cofrestru’ch elusen (CHRN)?
+charityRegistrationNumber.heading = Beth yw rhif cofrestru’ch elusen (CHRN)?
+charityRegistrationNumber.p1 = Bydd rhif cofrestru’ch elusen i’w weld ar unrhyw ohebiaeth mae’r rheoleiddiwr elusennau wedi’i hanfon atoch.
+charityRegistrationNumber.p2 = Gallai hyn fod hyd at 7 o gymeriadau – rhaid iddo ddechrau gyda naill ai un neu ddwy lythyren, ac yna rhifau rhwng 1 a 5.
+charityRegistrationNumber.hint = Er enghraifft, A999 neu AB99999
+charityRegistrationNumber.error.required = Nodwch rif cofrestru’r elusen
+charityRegistrationNumber.error.length = Ni all rhif cofrestru’r elusen fod yn fwy na {0} o gymeriadau
+
+businessName.title = Beth yw enw’ch busnes?
+businessName.heading = Beth yw enw’ch busnes?
+businessName.hint = Dyma enw cofrestredig eich busnes.
+businessName.error.required = Nodwch enw busnes
+businessName.error.length = Ni all enw’r busnes fod yn fwy na {0} o gymeriadau
+
+companyRegistrationNumber.title = Beth yw rhif cofrestru’ch cwmni?
+companyRegistrationNumber.heading = Beth yw rhif cofrestru’ch cwmni?
+companyRegistrationNumber.p1 = Mae rhif cofrestru’ch cwmni (CRN) yn 8 o gymeriadau.
+companyRegistrationNumber.hint = Er enghraifft, 01234567 neu SC123456
+companyRegistrationNumber.error.required = Nodwch rif cofrestru’r cwmni (CRN)
+companyRegistrationNumber.error.length = Ni all rhif cofrestru’r cwmni (CRN) fod yn fwy nag {0} o gymeriadau
+
+nonUkCrn.title = Beth yw rhif cofrestru’ch cwmni?
+nonUkCrn.heading = Beth yw rhif cofrestru’ch cwmni?
+nonUkCrn.p1 = Mae rhif cofrestru’ch cwmni (CRN) yn 8 o gymeriadau.
+nonUkCrn.hint = Er enghraifft, 01234567 neu SC123456
+nonUkCrn.error.required = Nodwch rif cofrestru’r cwmni (CRN)
+nonUkCrn.error.length = Ni all rhif cofrestru’r cwmni (CRN) fod yn fwy nag {0} o gymeriadau
+
+utrType.title = Beth yw eich UTR yn y DU?
+utrType.heading = Beth yw’ch Cyfeirnod Unigryw y Trethdalwr yn y DU?
+utrType.CtUtr = Cyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth (CT)
+utrType.SaUtr = Cyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Hunanasesiad (SA)
+utrType.p1 = Mae’ch Cyfeirnod Unigryw y Trethdalwr (UTR) yn 10 digid. Mae hwn i’w weld ar Ffurflenni Treth a llythyrau oddi wrth CThEF.
+utrType.error.required = Mae’n rhaid i Gyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Hunanasesiad (SA) fod yn hirach na {0} digid
+
+saUtr.title = Beth yw’ch Cyfeirnod Unigryw y Trethdalwr ar gyfer Hunanasesiad?
+saUtr.h1 = Beth yw’ch Cyfeirnod Unigryw y Trethdalwr ar gyfer Hunanasesiad?
+saUtr.body = Mae’ch Cyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Hunanasesiad (SA) yn 10 digid.
+saUtr.hint = Er enghraifft, 0123456789
+saUtr.error.required = Nodwch Gyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Hunanasesiad (SA)
+saUtr.error.length = Mae’n rhaid i Gyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Hunanasesiad (SA) fod yn {0} o rifau
+
+registration.received.title = Cofrestriad wedi dod i law
+registration.received.heading = Cofrestriad wedi dod i law
+registration.received.h1 = Yr hyn sy’n digwydd nesaf
+registration.received.p2 = Byddwn yn adolygu’ch atebion. Efallai y byddwn yn cysylltu â chi gan ddefnyddio’r manylion a roddwyd gennych os bydd angen rhagor o wybodaeth arnom.
+registration.received.p3 = Byddwch yn cael eich cyfeirnod ECL mewn llythyr ar ôl i ni gyfateb eich manylion i’n cofnodion.
+registration.received.p4 = Gallwch wedyn ychwanegu’r Ardoll Troseddau Economaidd at eich cyfrif treth busnes.
+registration.received.h2 = Sut i gyflwyno datganiad
+registration.received.p5 = Bydd angen i chi lenwi datganiad a thalu’r ardoll yn flynyddol.
+registration.received.p6 = Ni fyddwch yn cael e-bost na hysbysiad oddi wrth CThEF i’ch atgoffa i gyflwyno datganiad.
+registration.received.p7 = Y dyddiad cau nesaf ar gyfer cyflwyno datganiad a gwneud taliad yw 30 Medi 2023. Codir llog arnoch os ydych yn talu’n hwyr.
+registration.received.p8 = Pan fyddwch yn llenwi’ch datganiad blynyddol, bydd angen i chi roi gwybod i ni am y canlynol:
+registration.received.b1 = y cyfnodau cyfrifyddu perthnasol ar gyfer eich sefydliad
+registration.received.b2 = eich refeniw yn y DU ar gyfer y cyfnodau cyfrifyddu perthnasol
+registration.received.b3 = pa mor hir y gwnaethoch gynnal gweithgareddau a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
+registration.received.b4 = manylion cyswllt y person yn eich sefydliad sy’n llenwi’r datganiad
+registration.received.first.email = Rydym wedi anfon e-bost i {0}
+registration.received.second.email = Rydym hefyd wedi anfon e-bost i {0}, gan eich bod wedi’i enwi’n ail gyswllt.
+
+otherRegistration.pdfHtml.title = Cais i gofrestru ar gyfer yr Ardoll Troseddau Economaidd
+otherRegistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad: {0}
+
 start.amend.title = Diwygio’ch cofrestriad Ardoll Troseddau Economaidd
 start.amend.table.header = Manylion cofrestru ECL
 start.amend.table.registrationNumber = Rhif cofrestru ECL
@@ -32,3 +589,6 @@ amendmentRequested.list.b2 = eich refeniw yn y DU ar gyfer y cyfnod cyfrifyddu p
 amendmentRequested.list.b3 = pa mor hir y gwnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
 amendmentRequested.list.b4 = enw, rôl, a manylion cyswllt y person yn eich sefydliad sy’n llenwi’r datganiad
 amendmentRequested.h2 = Yr hyn sy’n digwydd nesaf
+
+amendRegistration.pdfHtml.title = Cais i ddiwygio cofrestriad yr Ardoll Troseddau Economaidd
+amendRegistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad {0}

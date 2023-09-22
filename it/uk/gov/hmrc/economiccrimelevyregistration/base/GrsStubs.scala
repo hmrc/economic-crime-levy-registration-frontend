@@ -27,7 +27,7 @@ trait GrsStubs { self: WireMockStubs =>
                |      "optServiceName" : "Register for the Economic Crime Levy"
                |    },
                |    "cy" : {
-               |      "optServiceName" : "service.name"
+               |      "optServiceName" : "Cofrestru ar gyfer yr Ardoll Troseddau Economaidd"
                |    }
                |  }
                |}
