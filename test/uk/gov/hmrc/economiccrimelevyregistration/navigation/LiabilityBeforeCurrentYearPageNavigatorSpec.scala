@@ -21,9 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationNotLiableAuditEvent
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 
 import scala.concurrent.Future
@@ -52,14 +50,37 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
         reset(mockAuditConnector)
     }
 
-    "return a Call to the entity type page if selected option is 'Yes' regardless of revenue" in forAll {
+    "return a Call to the not liable page if selected option is 'No' and amount does not meet threshold" in forAll {
       registration: Registration =>
         val updatedRegistration =
           registration.copy(
-            relevantApRevenue = Some(random[Long])
+            relevantApRevenue = Some(random[Long]),
+            revenueMeetsThreshold = Some(false)
           )
 
-        pageNavigator.nextPage(true, updatedRegistration) shouldBe routes.EntityTypeController.onPageLoad(NormalMode)
+        when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
+          .thenReturn(Future.successful(AuditResult.Success))
+
+        pageNavigator.nextPage(false, updatedRegistration) shouldBe routes.NotLiableController.youDoNotNeedToRegister()
+
+        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
+
+        reset(mockAuditConnector)
+    }
+
+    "return a Call to the entity type page if selected option is 'No' and amount meets threshold" in forAll {
+      registration: Registration =>
+        val updatedRegistration =
+          registration.copy(
+            relevantApRevenue = Some(random[Long]),
+            revenueMeetsThreshold = Some(true)
+          )
+
+        pageNavigator.nextPage(false, updatedRegistration) shouldBe routes.EntityTypeController.onPageLoad(NormalMode)
+    }
+
+    "return a Call to the entity type page if selected option is 'Yes'" in forAll { registration: Registration =>
+      pageNavigator.nextPage(true, registration) shouldBe routes.EntityTypeController.onPageLoad(NormalMode)
     }
   }
 

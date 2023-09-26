@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityBeforeCurrentYearPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{DoYouHaveCtUtrView, LiabilityBeforeCurrentYearView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -38,6 +39,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   formProvider: LiabilityBeforeCurrentYearFormProvider,
+  service: RegistrationAdditionalInfoService,
   pageNavigator: LiabilityBeforeCurrentYearPageNavigator,
   view: LiabilityBeforeCurrentYearView
 )(implicit
@@ -62,9 +64,12 @@ class LiabilityBeforeCurrentYearController @Inject() (
           liableBeforeCurrentYear => {
             val info = RegistrationAdditionalInfo(
               request.registration.internalId,
-              getLiabilityYear(liableBeforeCurrentYear)
+              getLiabilityYear(liableBeforeCurrentYear),
+              request.eclRegistrationReference
             )
-            Future.successful(Redirect(pageNavigator.nextPage(liableBeforeCurrentYear, request.registration)))
+            service
+              .createOrUpdate(info)
+              .map(_ => Redirect(pageNavigator.nextPage(liableBeforeCurrentYear, request.registration)))
           }
         )
     }

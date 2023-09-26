@@ -41,9 +41,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
 
       stubGetRegistration(registration)
 
-      val updatedRegistration = registration.copy(contactAddressIsUk = Some(liableBeforeCurrentYear))
-
-      stubUpsertRegistration(updatedRegistration)
+      stubUpsertRegistration(registration)
 
       val result = callRoute(
         FakeRequest(routes.LiabilityBeforeCurrentYearController.onSubmit())
@@ -56,7 +54,10 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
         routes.EntityTypeController.onPageLoad(NormalMode)
       } else {
         registration.relevantApRevenue match {
-          case Some(_) => routes.EntityTypeController.onPageLoad(NormalMode)
+          case Some(_) => registration.revenueMeetsThreshold match {
+            case Some(true) => routes.EntityTypeController.onPageLoad(NormalMode)
+            case _          => routes.NotLiableController.youDoNotNeedToRegister()
+          }
           case None    => routes.NotLiableController.youDoNotNeedToRegister()
         }
       }

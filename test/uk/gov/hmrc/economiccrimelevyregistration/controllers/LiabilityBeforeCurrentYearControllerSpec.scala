@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
@@ -25,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYea
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityBeforeCurrentYearPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -35,6 +37,8 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
   val view: LiabilityBeforeCurrentYearView                 = app.injector.instanceOf[LiabilityBeforeCurrentYearView]
   val formProvider: LiabilityBeforeCurrentYearFormProvider = new LiabilityBeforeCurrentYearFormProvider()
   val form: Form[Boolean]                                  = formProvider()
+
+  val mockService = mock[RegistrationAdditionalInfoService]
 
   val pageNavigator: LiabilityBeforeCurrentYearPageNavigator = new LiabilityBeforeCurrentYearPageNavigator(
     mock[AuditConnector]
@@ -49,6 +53,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       formProvider,
+      mockService,
       pageNavigator,
       view
     )
@@ -73,8 +78,11 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
           val info: RegistrationAdditionalInfo =
             RegistrationAdditionalInfo(
               registration.internalId,
-              controller.getLiabilityYear(liableBeforeCurrentYear)
+              controller.getLiabilityYear(liableBeforeCurrentYear),
+              None
             )
+
+          when(mockService.createOrUpdate(any())(any())).thenReturn(Future.successful())
 
           val result: Future[Result] =
             controller.onSubmit()(
@@ -84,6 +92,10 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
           status(result) shouldBe SEE_OTHER
 
           redirectLocation(result) shouldBe Some(onwardRoute.url)
+
+          verify(mockService, times(1)).createOrUpdate(any())(any())
+
+          reset(mockService)
         }
     }
 
