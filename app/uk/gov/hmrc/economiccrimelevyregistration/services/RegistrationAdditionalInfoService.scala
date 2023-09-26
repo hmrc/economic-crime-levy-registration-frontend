@@ -35,5 +35,9 @@ class RegistrationAdditionalInfoService @Inject() (
     internalId: String,
     eclReference: Option[String]
   )(implicit hc: HeaderCarrier): Future[Unit] =
-    registrationAdditionalInfoConnector.upsert(RegistrationAdditionalInfo(internalId, None, eclReference))
+    registrationAdditionalInfoConnector.upsert(RegistrationAdditionalInfo(internalId, None, eclReference)).recover {
+      case e =>
+        println("ERROR from insert: " + e.getMessage)
+        ()
+    }
 }
