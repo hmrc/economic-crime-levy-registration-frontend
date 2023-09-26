@@ -32,13 +32,9 @@ class LiabilityBeforeCurrentYearPageNavigator @Inject() (auditConnector: AuditCo
     if (liableBeforeCurrentYear) {
       routes.EntityTypeController.onPageLoad(NormalMode)
     } else {
-      registration.relevantApRevenue match {
-        case Some(_) =>
-          registration.revenueMeetsThreshold match {
-            case Some(true) => routes.EntityTypeController.onPageLoad(NormalMode)
-            case _          => sendNotLiableAuditEvent(registration.internalId)
-          }
-        case None    => sendNotLiableAuditEvent(registration.internalId)
+      (registration.relevantApRevenue, registration.revenueMeetsThreshold) match {
+        case (Some(_), Some(true)) => routes.EntityTypeController.onPageLoad(NormalMode)
+        case (_, _)                => sendNotLiableAuditEvent(registration.internalId)
       }
     }
 

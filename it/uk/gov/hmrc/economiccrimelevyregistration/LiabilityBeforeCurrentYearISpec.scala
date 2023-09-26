@@ -53,12 +53,9 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       val call: Call = if (liableBeforeCurrentYear) {
         routes.EntityTypeController.onPageLoad(NormalMode)
       } else {
-        registration.relevantApRevenue match {
-          case Some(_) => registration.revenueMeetsThreshold match {
-            case Some(true) => routes.EntityTypeController.onPageLoad(NormalMode)
-            case _          => routes.NotLiableController.youDoNotNeedToRegister()
-          }
-          case None    => routes.NotLiableController.youDoNotNeedToRegister()
+        (registration.relevantApRevenue, registration.revenueMeetsThreshold) match {
+          case (Some(_), Some(true)) => routes.EntityTypeController.onPageLoad(NormalMode)
+          case (_, _)                => routes.NotLiableController.youDoNotNeedToRegister()
         }
       }
 
