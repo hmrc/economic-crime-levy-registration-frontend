@@ -18,16 +18,13 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnector)(implicit ec: ExecutionContext)
+class AmlRegulatedActivityPageNavigator @Inject() ()(implicit ec: ExecutionContext)
     extends AsyncPageNavigator
     with FrontendHeaderCarrierProvider {
 
@@ -37,7 +34,7 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  =>
         Future.successful(routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get))
-      case Some(false) => sendNotLiableAuditEvent(registration.internalId)
+      case Some(false) => Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad())
       case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
@@ -46,20 +43,8 @@ class AmlRegulatedActivityPageNavigator @Inject() (auditConnector: AuditConnecto
   )(implicit request: RequestHeader): Future[Call] =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
-      case Some(false) => sendNotLiableAuditEvent(registration.internalId)
+      case Some(false) => Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad())
       case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
-
-  private def sendNotLiableAuditEvent(internalId: String)(implicit hc: HeaderCarrier): Future[Call] = {
-    auditConnector
-      .sendExtendedEvent(
-        RegistrationNotLiableAuditEvent(
-          internalId,
-          NotLiableReason.DidNotCarryOutAmlRegulatedActivity
-        ).extendedDataEvent
-      )
-
-    Future.successful(routes.NotLiableController.youDoNotNeedToRegister())
-  }
 
 }

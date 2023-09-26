@@ -16,18 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 class UkRevenuePageNavigatorSpec extends SpecBase {
 
-  val mockAuditConnector: AuditConnector = mock[AuditConnector]
-
-  val pageNavigator = new UkRevenuePageNavigator(mockAuditConnector)
+  val pageNavigator = new UkRevenuePageNavigator()
 
   "nextPage" should {
     "return a Call to the entity type page in NormalMode when the revenue meets threshold flag is true" in forAll {
@@ -49,17 +45,15 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
         ) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
 
-    "return a Call to the not liable page in either mode when the revenue meets threshold flag is false" in forAll {
+    "return a Call to the liable in previous year page in either mode when the revenue meets threshold flag is false" in forAll {
       (registration: Registration, ukRevenue: Long, mode: Mode) =>
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(false))
 
-        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe routes.NotLiableController
-          .notLiable()
-
-        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
-
-        reset(mockAuditConnector)
+        await(
+          pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.LiabilityBeforeCurrentYearController
+          .onPageLoad()
     }
   }
 

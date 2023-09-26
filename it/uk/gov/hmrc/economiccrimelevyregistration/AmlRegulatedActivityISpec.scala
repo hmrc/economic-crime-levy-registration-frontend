@@ -60,7 +60,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
       redirectLocation(result) shouldBe Some(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial).url)
     }
 
-    "save the selected AML regulated activity option then redirect to the not liable page when the No option is selected" in {
+    "save the selected AML regulated activity option then redirect to the liable for previous year page when the No option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration].copy(internalId = testInternalId)
@@ -81,7 +81,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.NotLiableController.youDoNotNeedToRegister().url)
+      redirectLocation(result) shouldBe Some(routes.LiabilityBeforeCurrentYearController.onPageLoad().url)
     }
   }
 }

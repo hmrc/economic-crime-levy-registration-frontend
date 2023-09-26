@@ -593,5 +593,11 @@ amendmentRequested.h2 = What happens next
 amendRegistration.pdfHtml.title = Application to amend register for the Economic Crime Levy
 amendRegistration.pdfHtml.submissionDate = Submission date: {0}
 
-
-
+liabilityBeforeCurrentYear.title = Were you liable to pay the ECL from 1 April 2022 to 31 March 2023?
+liabilityBeforeCurrentYear.h1 = Were you liable to pay the ECL from 1 April 2022 to 31 March 2023?
+liabilityBeforeCurrentYear.p1 = You were liable to pay the ECL
+liabilityBeforeCurrentYear.list.b1 = your UK revenue met the threshold, or
+liabilityBeforeCurrentYear.list.b2 = you have carried out anti-money laundering (AML) regulated activity during the financial year
+liabilityBeforeCurrentYear.p2 = The financial year runs from 1 April to 31 March of the following year.
+liabilityBeforeCurrentYear.p3 = The Economic Crime Levy guidance has more information on <a href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy"> who needs to pay the levy</a>.
+liabilityBeforeCurrentYear.required = Select an option

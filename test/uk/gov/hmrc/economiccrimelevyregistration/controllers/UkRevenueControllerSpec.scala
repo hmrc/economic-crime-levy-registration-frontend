@@ -44,10 +44,9 @@ class UkRevenueControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   val mockEclCalculatorService: EclCalculatorService         = mock[EclCalculatorService]
-  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
 
   val pageNavigator: UkRevenuePageNavigator =
-    new UkRevenuePageNavigator(mockAuditConnector) {
+    new UkRevenuePageNavigator() {
       override protected def navigateInNormalMode(registration: Registration)(implicit
         request: RequestHeader
       ): Future[Call] = Future.successful(onwardRoute)
@@ -116,8 +115,6 @@ class UkRevenueControllerSpec extends SpecBase {
           )(any())
         )
           .thenReturn(Future.successful(updatedRegistration))
-
-        when(mockAuditConnector.sendExtendedEvent(any())(any(), any())).thenReturn(Future.successful(Success))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", ukRevenue.toString)))

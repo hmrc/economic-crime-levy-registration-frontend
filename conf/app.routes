@@ -205,3 +205,5 @@ POST        /change-answer/what-is-your-self-assessment-utr                     
 GET         /amend-economic-crime-levy-registration/:eclReference               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendRegistrationStartController.onPageLoad(eclReference)
 GET         /amend-economic-crime-levy-registration/success/confirmation        uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendmentRequestedController.onPageLoad()
 
+GET         /previous-financial-year                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onPageLoad()
+POST        /previous-financial-year                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onSubmit()

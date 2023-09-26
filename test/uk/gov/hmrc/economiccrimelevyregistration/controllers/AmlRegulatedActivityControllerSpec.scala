@@ -41,9 +41,8 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   val form: Form[Boolean]                            = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
 
-  val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator(mockAuditConnector) {
+  val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator() {
     override protected def navigateInNormalMode(registration: Registration)(implicit
       request: RequestHeader
     ): Future[Call] =
