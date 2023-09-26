@@ -17,8 +17,10 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
+import play.api.i18n.Lang.logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
+import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -31,13 +33,21 @@ class AmendRegistrationStartController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   authorise: AuthorisedActionWithEnrolmentCheck,
+  errorHandler: ErrorHandler,
   view: AmendRegistrationStartView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(eclReference: String): Action[AnyContent] = authorise { implicit request =>
-    registrationAdditionalInfoService.createOrUpdate(request.internalId, Some(eclReference))
-    Ok(view(eclReference))
+  def onPageLoad(eclReference: String): Action[AnyContent] = authorise.async { implicit request =>
+    registrationAdditionalInfoService
+      .createOrUpdate(request.internalId, Some(eclReference))
+      .map(_ => Ok(view(eclReference)))
+      .recover { case e =>
+        logger.error(
+          s"Failed to create registration additional info for eclReference $eclReference. Error message: ${e.getMessage}"
+        )
+        InternalServerError(errorHandler.internalServerErrorTemplate)
+      }
   }
 }

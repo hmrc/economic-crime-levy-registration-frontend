@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Base64EncodedFields, RegistrationType, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EmailService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
@@ -36,7 +36,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import java.time.LocalDate
 import java.util.Base64
 import javax.inject.Singleton
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject() (
@@ -44,6 +44,7 @@ class CheckYourAnswersController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
+  registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
   validateRegistrationData: ValidatedRegistrationAction,
@@ -155,6 +156,9 @@ class CheckYourAnswersController @Inject() (
                     case None                   => throw new IllegalStateException("Invalid contact details")
                   }
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
+      _         = if (request.registration.registrationType.contains(Amendment)) {
+                    registrationAdditionalInfoService.delete(request.internalId)
+                  } else { Future.successful(()) }
     } yield {
       val session = registration.entityType match {
         case Some(Other) => request.session
