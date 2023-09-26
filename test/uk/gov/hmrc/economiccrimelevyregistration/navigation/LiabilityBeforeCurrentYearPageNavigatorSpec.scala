@@ -50,7 +50,7 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
         reset(mockAuditConnector)
     }
 
-    "return a Call to the not liable page if selected option is 'No' and amount does not meet threshold" in forAll {
+    "return a Call to the not liable page if selected option is 'No' and revenue does not meet threshold" in forAll {
       registration: Registration =>
         val updatedRegistration =
           registration.copy(
@@ -68,7 +68,7 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
         reset(mockAuditConnector)
     }
 
-    "return a Call to the entity type page if selected option is 'No' and amount meets threshold" in forAll {
+    "return a Call to the entity type page if selected option is 'No' and revenue meets threshold" in forAll {
       registration: Registration =>
         val updatedRegistration =
           registration.copy(
