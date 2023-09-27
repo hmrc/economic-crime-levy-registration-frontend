@@ -32,7 +32,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.services.EmailService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EmailService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, OtherRegistrationPdfView}
@@ -47,8 +47,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val amendPdfView               = app.injector.instanceOf[AmendRegistrationPdfView]
   val otherEntity                = app.injector.instanceOf[OtherEntityCheckYourAnswersController]
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val mockEmailService: EmailService                         = mock[EmailService]
+  val mockEclRegistrationConnector: EclRegistrationConnector                   = mock[EclRegistrationConnector]
+  val mockEmailService: EmailService                                           = mock[EmailService]
+  val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
 
   class TestContext(registrationData: Registration) {
     val controller = new CheckYourAnswersController(
@@ -56,6 +57,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
+      mockRegistrationAdditionalInfoService,
       mcc,
       view,
       new FakeValidatedRegistrationAction(registrationData),

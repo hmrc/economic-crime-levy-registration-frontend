@@ -33,6 +33,7 @@ object CachedArbitraries extends EclTestData {
   private def mkArb[T](implicit mkArb: MkArbitrary[T]): Arbitrary[T] = MkArbitrary[T].arbitrary
 
   implicit lazy val arbRegistration: Arbitrary[Registration]                                            = mkArb
+  implicit lazy val arbRegistrationAdditionalInfo: Arbitrary[RegistrationAdditionalInfo]                = mkArb
   implicit lazy val arbBusinessSector: Arbitrary[BusinessSector]                                        = mkArb
   implicit lazy val arbVerificationStatus: Arbitrary[VerificationStatus]                                = mkArb
   implicit lazy val arbRegistrationStatus: Arbitrary[RegistrationStatus]                                = mkArb

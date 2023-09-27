@@ -21,6 +21,7 @@ import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Hmrc, Other}
 import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
@@ -46,7 +47,9 @@ object AmlSupervisorSummary {
           actions = Seq(
             ActionItemViewModel(
               "site.change",
-              routes.AmlSupervisorController.onPageLoad(CheckMode, request.registration.registrationType.get).url
+              routes.AmlSupervisorController
+                .onPageLoad(CheckMode, request.registration.registrationType.getOrElse(Initial))
+                .url
             )
               .withVisuallyHiddenText(
                 messages("checkYourAnswers.amlSupervisor.label")
