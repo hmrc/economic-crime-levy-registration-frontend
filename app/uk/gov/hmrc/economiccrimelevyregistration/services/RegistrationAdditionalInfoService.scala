@@ -32,10 +32,18 @@ class RegistrationAdditionalInfoService @Inject() (
   ec: ExecutionContext
 ) {
   def createOrUpdate(
+    internalId: String,
+    eclReference: Option[String]
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    registrationAdditionalInfoConnector.upsert(RegistrationAdditionalInfo(internalId, None, eclReference))
+
+  def createOrUpdate(
     info: RegistrationAdditionalInfo
   )(implicit hc: HeaderCarrier): Future[Unit] =
-    registrationAdditionalInfoConnector.upsert(info).recover { case e =>
-      println("ERROR from insert: " + e.getMessage)
-      ()
-    }
+    registrationAdditionalInfoConnector.upsert(info)
+
+  def delete(
+    internalId: String
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    registrationAdditionalInfoConnector.delete(internalId)
 }

@@ -14,6 +14,7 @@ trait WireMockStubs
     with GrsStubs
     with AlfStubs
     with EclRegistrationStubs
+    with RegistrationAdditionalInfoStubs
     with EclCalculatorStubs
     with EnrolmentStoreProxyStubs
     with EmailStubs {
