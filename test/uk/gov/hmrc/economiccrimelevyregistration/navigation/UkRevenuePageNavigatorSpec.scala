@@ -26,13 +26,15 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
   val pageNavigator = new UkRevenuePageNavigator()
 
   "nextPage" should {
-    "return a Call to the entity type page in NormalMode when the revenue meets threshold flag is true" in forAll {
+    "return a Call to the liable before current year in NormalMode when the revenue meets threshold flag is true" in forAll {
       (registration: Registration, ukRevenue: Long) =>
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(true))
 
-        await(pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)) shouldBe routes.EntityTypeController
-          .onPageLoad(NormalMode)
+        await(
+          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.LiabilityBeforeCurrentYearController
+          .onPageLoad()
     }
 
     "return a Call to the check your answers page in CheckMode when the revenue meets threshold flag is true" in forAll {

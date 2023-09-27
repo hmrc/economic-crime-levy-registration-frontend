@@ -38,7 +38,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
   s"POST ${routes.UkRevenueController.onSubmit(NormalMode).url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.UkRevenueController.onSubmit(NormalMode))
 
-    "save the UK revenue then redirect to the entity type page if the amount due is more than 0" in {
+    "save the UK revenue then redirect to the liability before current year page if the amount due is more than 0" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
@@ -64,7 +64,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.EntityTypeController.onPageLoad(NormalMode).url)
+      redirectLocation(result) shouldBe Some(routes.LiabilityBeforeCurrentYearController.onPageLoad().url)
     }
 
     "save the UK revenue then redirect to the liable for previous year page if the amount due is 0" in {
