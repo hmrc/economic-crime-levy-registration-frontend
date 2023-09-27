@@ -12,8 +12,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
 
 class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.LiabilityBeforeCurrentYearController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.LiabilityBeforeCurrentYearController.onPageLoad())
+  s"GET ${routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode))
 
     "respond with 200 status and the liability before current year HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -22,7 +22,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.LiabilityBeforeCurrentYearController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -30,8 +30,8 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
     }
   }
 
-  s"POST ${routes.LiabilityBeforeCurrentYearController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.LiabilityBeforeCurrentYearController.onSubmit())
+  s"POST ${routes.LiabilityBeforeCurrentYearController.onSubmit(NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.LiabilityBeforeCurrentYearController.onSubmit(NormalMode))
 
     "save the selected address option then redirect to the address lookup frontend journey" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -44,7 +44,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       stubUpsertRegistration(registration)
 
       val result = callRoute(
-        FakeRequest(routes.LiabilityBeforeCurrentYearController.onSubmit())
+        FakeRequest(routes.LiabilityBeforeCurrentYearController.onSubmit(NormalMode))
           .withFormUrlEncodedBody(("value", liableBeforeCurrentYear.toString))
       )
 

@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.Inject
@@ -28,14 +28,18 @@ import scala.concurrent.{ExecutionContext, Future}
 class LiabilityBeforeCurrentYearPageNavigator @Inject() (auditConnector: AuditConnector)(implicit
   ex: ExecutionContext
 ) extends PageNavigator {
-  def nextPage(liableBeforeCurrentYear: Boolean, registration: Registration): Call =
-    if (liableBeforeCurrentYear) {
-      routes.EntityTypeController.onPageLoad(NormalMode)
-    } else {
-      (registration.relevantApRevenue, registration.revenueMeetsThreshold) match {
-        case (Some(_), Some(true)) => routes.EntityTypeController.onPageLoad(NormalMode)
-        case (_, _)                => sendNotLiableAuditEvent(registration.internalId)
-      }
+  def nextPage(liableBeforeCurrentYear: Boolean, registration: Registration, mode: Mode): Call =
+    mode match {
+      case NormalMode =>
+        if (liableBeforeCurrentYear) {
+          routes.EntityTypeController.onPageLoad(NormalMode)
+        } else {
+          (registration.relevantApRevenue, registration.revenueMeetsThreshold) match {
+            case (Some(_), Some(true)) => routes.EntityTypeController.onPageLoad(NormalMode)
+            case (_, _)                => sendNotLiableAuditEvent(registration.internalId)
+          }
+        }
+      case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
     }
 
   private def sendNotLiableAuditEvent(internalId: String): Call = {

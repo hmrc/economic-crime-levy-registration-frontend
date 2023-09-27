@@ -81,7 +81,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.LiabilityBeforeCurrentYearController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode).url)
     }
   }
 }

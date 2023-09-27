@@ -42,11 +42,11 @@ class UkRevenuePageNavigator @Inject() ()(implicit ec: ExecutionContext)
         registration.revenueMeetsThreshold match {
           case Some(true)                          =>
             mode match {
-              case NormalMode => Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad())
+              case NormalMode => Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad(mode))
               case CheckMode  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
             }
           case Some(revenueMeetsThreshold @ false) =>
-            Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad())
+            Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad(mode))
           case _                                   => Future.successful(routes.NotableErrorController.answersAreInvalid())
         }
       case _                       => Future.successful(routes.NotableErrorController.answersAreInvalid())

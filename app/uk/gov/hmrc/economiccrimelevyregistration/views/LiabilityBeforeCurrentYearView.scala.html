@@ -48,7 +48,7 @@
 
     <p class="govuk-body">@messages("liabilityBeforeCurrentYear.p3")</p>
 
-    @formHelper(action = LiabilityBeforeCurrentYearController.onSubmit()) {
+    @formHelper(action = LiabilityBeforeCurrentYearController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }

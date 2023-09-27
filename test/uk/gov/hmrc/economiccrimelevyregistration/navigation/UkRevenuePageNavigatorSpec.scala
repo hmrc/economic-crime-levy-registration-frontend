@@ -34,7 +34,7 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
         await(
           pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.LiabilityBeforeCurrentYearController
-          .onPageLoad()
+          .onPageLoad(NormalMode)
     }
 
     "return a Call to the check your answers page in CheckMode when the revenue meets threshold flag is true" in forAll {
@@ -55,7 +55,7 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
         await(
           pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.LiabilityBeforeCurrentYearController
-          .onPageLoad()
+          .onPageLoad(mode)
     }
   }
 

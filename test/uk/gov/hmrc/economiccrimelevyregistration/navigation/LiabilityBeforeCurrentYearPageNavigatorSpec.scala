@@ -43,7 +43,8 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
         when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
           .thenReturn(Future.successful(AuditResult.Success))
 
-        pageNavigator.nextPage(false, updatedRegistration) shouldBe routes.NotLiableController.youDoNotNeedToRegister()
+        pageNavigator.nextPage(false, updatedRegistration, NormalMode) shouldBe routes.NotLiableController
+          .youDoNotNeedToRegister()
 
         verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
 
@@ -61,7 +62,8 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
         when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
           .thenReturn(Future.successful(AuditResult.Success))
 
-        pageNavigator.nextPage(false, updatedRegistration) shouldBe routes.NotLiableController.youDoNotNeedToRegister()
+        pageNavigator.nextPage(false, updatedRegistration, NormalMode) shouldBe routes.NotLiableController
+          .youDoNotNeedToRegister()
 
         verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
 
@@ -76,11 +78,13 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
             revenueMeetsThreshold = Some(true)
           )
 
-        pageNavigator.nextPage(false, updatedRegistration) shouldBe routes.EntityTypeController.onPageLoad(NormalMode)
+        pageNavigator.nextPage(false, updatedRegistration, NormalMode) shouldBe routes.EntityTypeController.onPageLoad(
+          NormalMode
+        )
     }
 
     "return a Call to the entity type page if selected option is 'Yes'" in forAll { registration: Registration =>
-      pageNavigator.nextPage(true, registration) shouldBe routes.EntityTypeController.onPageLoad(NormalMode)
+      pageNavigator.nextPage(true, registration, NormalMode) shouldBe routes.EntityTypeController.onPageLoad(NormalMode)
     }
   }
 

@@ -49,14 +49,14 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
     }
 
     "return a Call to the liable in previous year page from the AML regulated activity page in either mode when the 'No' option is selected" in forAll {
-      (registration: Registration, mode: Mode) =>
+      registration: Registration =>
         val updatedRegistration =
           registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false), registrationType = Some(Initial))
 
         await(
-          pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)
+          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.LiabilityBeforeCurrentYearController
-          .onPageLoad()
+          .onPageLoad(NormalMode)
     }
   }
 

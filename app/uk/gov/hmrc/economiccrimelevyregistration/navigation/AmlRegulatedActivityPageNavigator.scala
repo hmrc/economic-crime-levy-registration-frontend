@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
@@ -34,7 +34,7 @@ class AmlRegulatedActivityPageNavigator @Inject() ()(implicit ec: ExecutionConte
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  =>
         Future.successful(routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get))
-      case Some(false) => Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad())
+      case Some(false) => Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode))
       case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
@@ -42,9 +42,8 @@ class AmlRegulatedActivityPageNavigator @Inject() ()(implicit ec: ExecutionConte
     registration: Registration
   )(implicit request: RequestHeader): Future[Call] =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
-      case Some(true)  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
-      case Some(false) => Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad())
-      case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
+      case Some(_) => Future.successful(routes.CheckYourAnswersController.onPageLoad())
+      case _       => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
 }
