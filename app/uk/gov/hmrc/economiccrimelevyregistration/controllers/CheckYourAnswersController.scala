@@ -156,9 +156,7 @@ class CheckYourAnswersController @Inject() (
                     case None                   => throw new IllegalStateException("Invalid contact details")
                   }
       _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
-      _         = if (request.registration.registrationType.contains(Amendment)) {
-                    registrationAdditionalInfoService.delete(request.internalId)
-                  } else { Future.successful(()) }
+      _        <- registrationAdditionalInfoService.delete(request.internalId)
     } yield {
       val session = registration.entityType match {
         case Some(Other) => request.session

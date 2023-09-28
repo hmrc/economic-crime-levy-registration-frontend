@@ -595,7 +595,7 @@ amendRegistration.pdfHtml.submissionDate = Submission date: {0}
 
 liabilityBeforeCurrentYear.title = Were you liable to pay the ECL from 1 April 2022 to 31 March 2023?
 liabilityBeforeCurrentYear.h1 = Were you liable to pay the ECL from 1 April 2022 to 31 March 2023?
-liabilityBeforeCurrentYear.p1 = You were liable to pay the ECL
+liabilityBeforeCurrentYear.p1 = You were liable to pay the ECL if:
 liabilityBeforeCurrentYear.list.b1 = your UK revenue met the threshold, or
 liabilityBeforeCurrentYear.list.b2 = you have carried out anti-money laundering (AML) regulated activity during the financial year
 liabilityBeforeCurrentYear.p2 = The financial year runs from 1 April to 31 March of the following year.
