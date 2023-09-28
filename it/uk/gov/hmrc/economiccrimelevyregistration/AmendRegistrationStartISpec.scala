@@ -16,10 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationAdditionalInfo
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 
 class AmendRegistrationStartISpec extends ISpecBase {
 
@@ -27,6 +30,11 @@ class AmendRegistrationStartISpec extends ISpecBase {
     "respond with 200 status and the start HTML view" in {
 
       stubAuthorisedWithEclEnrolment()
+
+      val registration = random[Registration].copy(registrationType = Some(Amendment))
+
+      stubGetRegistration(registration)
+      stubUpsertRegistration(registration)
 
       stubUpsertRegistrationAdditionalInfo(RegistrationAdditionalInfo(testInternalId, None, None))
 
