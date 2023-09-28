@@ -25,6 +25,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
@@ -51,12 +52,11 @@ trait AuthorisedActionAssistantsAllowed extends AuthorisedAction
 
 class AuthorisedActionWithoutEnrolmentCheckImpl @Inject() (
   override val authConnector: AuthConnector,
-  eclRegistrationService: EclRegistrationService,
   enrolmentStoreProxyService: EnrolmentStoreProxyService,
   config: AppConfig,
   override val parser: BodyParsers.Default
 )(override implicit val executionContext: ExecutionContext)
-    extends BaseAuthorisedAction(authConnector, eclRegistrationService, enrolmentStoreProxyService, config, parser)
+    extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
     with AuthorisedActionWithoutEnrolmentCheck {
   override val checkForEclEnrolment: Boolean = false
   override val agentsAllowed: Boolean        = false
@@ -65,12 +65,11 @@ class AuthorisedActionWithoutEnrolmentCheckImpl @Inject() (
 
 class AuthorisedActionWithEnrolmentCheckImpl @Inject() (
   override val authConnector: AuthConnector,
-  eclRegistrationService: EclRegistrationService,
   enrolmentStoreProxyService: EnrolmentStoreProxyService,
   config: AppConfig,
   override val parser: BodyParsers.Default
 )(override implicit val executionContext: ExecutionContext)
-    extends BaseAuthorisedAction(authConnector, eclRegistrationService, enrolmentStoreProxyService, config, parser)
+    extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
     with AuthorisedActionWithEnrolmentCheck {
   override val checkForEclEnrolment: Boolean = true
   override val agentsAllowed: Boolean        = false
@@ -79,12 +78,11 @@ class AuthorisedActionWithEnrolmentCheckImpl @Inject() (
 
 class AuthorisedActionAgentsAllowedImpl @Inject() (
   override val authConnector: AuthConnector,
-  eclRegistrationService: EclRegistrationService,
   enrolmentStoreProxyService: EnrolmentStoreProxyService,
   config: AppConfig,
   override val parser: BodyParsers.Default
 )(override implicit val executionContext: ExecutionContext)
-    extends BaseAuthorisedAction(authConnector, eclRegistrationService, enrolmentStoreProxyService, config, parser)
+    extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
     with AuthorisedActionAgentsAllowed {
   override val checkForEclEnrolment: Boolean = false
   override val agentsAllowed: Boolean        = true
@@ -93,12 +91,11 @@ class AuthorisedActionAgentsAllowedImpl @Inject() (
 
 class AuthorisedActionAssistantsAllowedImpl @Inject() (
   override val authConnector: AuthConnector,
-  eclRegistrationService: EclRegistrationService,
   enrolmentStoreProxyService: EnrolmentStoreProxyService,
   config: AppConfig,
   override val parser: BodyParsers.Default
 )(override implicit val executionContext: ExecutionContext)
-    extends BaseAuthorisedAction(authConnector, eclRegistrationService, enrolmentStoreProxyService, config, parser)
+    extends BaseAuthorisedAction(authConnector, enrolmentStoreProxyService, config, parser)
     with AuthorisedActionAssistantsAllowed {
   override val checkForEclEnrolment: Boolean = false
   override val agentsAllowed: Boolean        = false
@@ -107,10 +104,10 @@ class AuthorisedActionAssistantsAllowedImpl @Inject() (
 
 abstract class BaseAuthorisedAction @Inject() (
   override val authConnector: AuthConnector,
-  eclRegistrationService: EclRegistrationService,
   enrolmentStoreProxyService: EnrolmentStoreProxyService,
   config: AppConfig,
-  val parser: BodyParsers.Default
+  val parser: BodyParsers.Default,
+  eclRegistrationService: EclRegistrationService
 )(implicit val executionContext: ExecutionContext)
     extends AuthorisedAction
     with FrontendHeaderCarrierProvider
@@ -154,7 +151,17 @@ abstract class BaseAuthorisedAction @Inject() (
                       if (request.uri.toLowerCase.contains("amend")) {
                         block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
                       } else {
-                        Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
+                        eclRegistrationService.getOrCreateRegistration(internalId)(hc(request)).flatMap {
+                          registration =>
+                            registration.registrationType match {
+                              case None            =>
+                                Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
+                              case Some(Amendment) =>
+                                block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
+                              case Some(Initial)   =>
+                                Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
+                            }
+                        }
                       }
                     case None    =>
                       enrolmentStoreProxyService
