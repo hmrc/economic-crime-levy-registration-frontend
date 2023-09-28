@@ -16,17 +16,17 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationStartView, StartView}
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
 
 import scala.concurrent.Future
 
@@ -34,6 +34,8 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
 
   val view: AmendRegistrationStartView                                         = app.injector.instanceOf[AmendRegistrationStartView]
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
+  val mockRegistrationConnector: EclRegistrationConnector                      = mock[EclRegistrationConnector]
+  val mockRegistrationService: EclRegistrationService                          = mock[EclRegistrationService]
   val mockErrorHandler: ErrorHandler                                           = mock[ErrorHandler]
 
   val controller = new AmendRegistrationStartController(
@@ -41,11 +43,13 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
     mockRegistrationAdditionalInfoService,
     fakeAuthorisedActionWithEnrolmentCheck(testInternalId),
     mockErrorHandler,
-    view
+    view,
+    mockRegistrationService,
+    mockRegistrationConnector
   )
 
   "onPageLoad" should {
-    "return OK and the correct view" in {
+    "return OK and the correct view" in forAll { registration: Registration =>
       when(
         mockRegistrationAdditionalInfoService.createOrUpdate(
           anyString(),
@@ -55,6 +59,12 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
         Future.successful(())
       )
 
+      when(mockRegistrationService.getOrCreateRegistration(any())(any()))
+        .thenReturn(Future.successful(registration))
+
+      when(mockRegistrationConnector.upsertRegistration(any())(any()))
+        .thenReturn(Future.successful(registration))
+
       val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
 
       status(result) shouldBe OK
@@ -62,7 +72,13 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
       contentAsString(result) shouldBe view("eclReferenceValue")(fakeRequest, messages).toString
     }
 
-    "return Internal server error and the correct view" in {
+    "return Internal server error and the correct view" in forAll { registration: Registration =>
+      when(mockRegistrationService.getOrCreateRegistration(any())(any()))
+        .thenReturn(Future.successful(registration))
+
+      when(mockRegistrationConnector.upsertRegistration(any())(any()))
+        .thenReturn(Future.successful(registration))
+
       when(
         mockRegistrationAdditionalInfoService.createOrUpdate(
           anyString(),
