@@ -26,14 +26,14 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UkRevenuePageNavigator @Inject() ()(implicit ec: ExecutionContext)
-  extends AsyncPageNavigator
+    extends AsyncPageNavigator
     with FrontendHeaderCarrierProvider {
   override protected def navigateInNormalMode(registration: Registration)(implicit
-                                                                          request: RequestHeader
+    request: RequestHeader
   ): Future[Call] = navigate(NormalMode, registration)
 
   override protected def navigateInCheckMode(registration: Registration)(implicit
-                                                                         request: RequestHeader
+    request: RequestHeader
   ): Future[Call] = navigate(CheckMode, registration)
 
   private def navigate(mode: Mode, registration: Registration)(implicit hc: HeaderCarrier): Future[Call] =
