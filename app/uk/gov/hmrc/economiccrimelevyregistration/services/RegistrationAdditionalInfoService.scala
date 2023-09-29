@@ -37,6 +37,11 @@ class RegistrationAdditionalInfoService @Inject() (
   )(implicit hc: HeaderCarrier): Future[Unit] =
     registrationAdditionalInfoConnector.upsert(RegistrationAdditionalInfo(internalId, None, eclReference))
 
+  def createOrUpdate(
+    info: RegistrationAdditionalInfo
+  )(implicit hc: HeaderCarrier): Future[Unit] =
+    registrationAdditionalInfoConnector.upsert(info)
+
   def delete(
     internalId: String
   )(implicit hc: HeaderCarrier): Future[Unit] =

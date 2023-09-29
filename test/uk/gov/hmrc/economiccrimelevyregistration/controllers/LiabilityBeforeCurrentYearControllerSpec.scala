@@ -16,46 +16,44 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityBeforeCurrentYearPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
 
-class AmlRegulatedActivityControllerSpec extends SpecBase {
+class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
-  val view: AmlRegulatedActivityView                 = app.injector.instanceOf[AmlRegulatedActivityView]
-  val formProvider: AmlRegulatedActivityFormProvider = new AmlRegulatedActivityFormProvider()
-  val form: Form[Boolean]                            = formProvider()
+  val view: LiabilityBeforeCurrentYearView                 = app.injector.instanceOf[LiabilityBeforeCurrentYearView]
+  val formProvider: LiabilityBeforeCurrentYearFormProvider = new LiabilityBeforeCurrentYearFormProvider()
+  val form: Form[Boolean]                                  = formProvider()
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
 
-  val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration)(implicit
-      request: RequestHeader
-    ): Future[Call] =
-      Future.successful(onwardRoute)
+  val pageNavigator: LiabilityBeforeCurrentYearPageNavigator = new LiabilityBeforeCurrentYearPageNavigator(
+    mock[AuditConnector]
+  ) {
+    override def nextPage(answer: Boolean, registration: Registration, mode: Mode): Call =
+      onwardRoute
   }
 
   class TestContext(registrationData: Registration) {
-    val controller = new AmlRegulatedActivityController(
+    val controller = new LiabilityBeforeCurrentYearController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
       formProvider,
+      mockService,
       pageNavigator,
       view
     )
@@ -71,44 +69,33 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
         contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
       }
     }
-
-    "populate the view correctly when the question has previously been answered" in forAll {
-      (registration: Registration, carriedOutAmlRegulatedActivity: Boolean) =>
-        new TestContext(
-          registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity))
-        ) {
-          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
-
-          status(result)          shouldBe OK
-          contentAsString(result) shouldBe view(form.fill(carriedOutAmlRegulatedActivity), NormalMode)(
-            fakeRequest,
-            messages
-          ).toString
-        }
-    }
   }
 
   "onSubmit" should {
     "save the selected answer then redirect to the next page" in forAll {
-      (registration: Registration, carriedOutAmlRegulatedActivity: Boolean) =>
+      (registration: Registration, liableBeforeCurrentYear: Boolean) =>
         new TestContext(registration) {
-          val updatedRegistration: Registration =
-            registration.copy(
-              carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity),
-              registrationType = Some(Initial)
+          val info: RegistrationAdditionalInfo =
+            RegistrationAdditionalInfo(
+              registration.internalId,
+              controller.getLiabilityYear(liableBeforeCurrentYear),
+              None
             )
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockService.createOrUpdate(any())(any())).thenReturn(Future.successful())
 
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(
-              fakeRequest.withFormUrlEncodedBody(("value", carriedOutAmlRegulatedActivity.toString))
+              fakeRequest.withFormUrlEncodedBody(("value", liableBeforeCurrentYear.toString))
             )
 
           status(result) shouldBe SEE_OTHER
 
           redirectLocation(result) shouldBe Some(onwardRoute.url)
+
+          verify(mockService, times(1)).createOrUpdate(any())(any())
+
+          reset(mockService)
         }
     }
 

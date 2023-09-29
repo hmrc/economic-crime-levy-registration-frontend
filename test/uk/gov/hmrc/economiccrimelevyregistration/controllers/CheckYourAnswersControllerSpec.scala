@@ -170,6 +170,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
             .thenReturn(Future.successful(()))
 
+          when(mockRegistrationAdditionalInfoService.delete(any())(any()))
+            .thenReturn(Future.successful())
+
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
           status(result)                                             shouldBe SEE_OTHER
@@ -186,6 +189,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           reset(mockEclRegistrationConnector)
           reset(mockEmailService)
+          reset(mockRegistrationAdditionalInfoService)
         }
     }
 
@@ -227,6 +231,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
             .thenReturn(Future.successful(()))
 
+          when(mockRegistrationAdditionalInfoService.delete(any())(any()))
+            .thenReturn(Future.successful())
+
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
           status(result)                                             shouldBe SEE_OTHER
@@ -248,6 +255,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           reset(mockEclRegistrationConnector)
           reset(mockEmailService)
+          reset(mockRegistrationAdditionalInfoService)
         }
     }
 
@@ -291,6 +299,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
             .thenReturn(Future.successful(()))
 
+          when(mockRegistrationAdditionalInfoService.delete(any())(any()))
+            .thenReturn(Future.successful())
+
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
           status(result)                                             shouldBe SEE_OTHER
@@ -307,6 +318,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           reset(mockEclRegistrationConnector)
           reset(mockEmailService)
+          reset(mockRegistrationAdditionalInfoService)
         }
     }
 
@@ -350,6 +362,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
             .thenReturn(Future.successful(()))
 
+          when(mockRegistrationAdditionalInfoService.delete(any())(any()))
+            .thenReturn(Future.successful())
+
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
           status(result)                                             shouldBe SEE_OTHER
@@ -371,6 +386,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           reset(mockEclRegistrationConnector)
           reset(mockEmailService)
+          reset(mockRegistrationAdditionalInfoService)
         }
     }
 
@@ -406,6 +422,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
             .thenReturn(Future.successful(()))
 
+          when(mockRegistrationAdditionalInfoService.delete(any())(any()))
+            .thenReturn(Future.successful())
+
           val result: IllegalStateException = intercept[IllegalStateException] {
             await(controller.onSubmit()(fakeRequest))
           }
@@ -420,6 +439,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           reset(mockEclRegistrationConnector)
           reset(mockEmailService)
+          reset(mockRegistrationAdditionalInfoService)
         }
     }
   }

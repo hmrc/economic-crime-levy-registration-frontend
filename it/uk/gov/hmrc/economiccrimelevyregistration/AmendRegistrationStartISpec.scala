@@ -24,7 +24,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, Registrat
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 
-
 class AmendRegistrationStartISpec extends ISpecBase {
 
   s"GET ${routes.AmendRegistrationStartController.onPageLoad(testInternalId).url}" should {

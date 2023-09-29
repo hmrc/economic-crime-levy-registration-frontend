@@ -25,7 +25,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}

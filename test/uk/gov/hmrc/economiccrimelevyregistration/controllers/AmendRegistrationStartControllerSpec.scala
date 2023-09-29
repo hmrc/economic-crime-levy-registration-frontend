@@ -64,7 +64,6 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
 
       when(mockRegistrationConnector.upsertRegistration(any())(any()))
         .thenReturn(Future.successful(registration))
-
       val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
 
       status(result) shouldBe OK

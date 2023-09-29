@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
-case class RegistrationAdditionalInfo(
-  internalId: String,
-  liabilityYear: Option[Int],
-  eclReference: Option[String]
-)
-
-object RegistrationAdditionalInfo {
-  implicit val format: OFormat[RegistrationAdditionalInfo] = Json.format[RegistrationAdditionalInfo]
+class LiabilityBeforeCurrentYearFormProvider extends Mappings {
+  def apply(): Form[Boolean] = Form(
+    ("value", boolean("liabilityBeforeCurrentYear.required"))
+  )
 }

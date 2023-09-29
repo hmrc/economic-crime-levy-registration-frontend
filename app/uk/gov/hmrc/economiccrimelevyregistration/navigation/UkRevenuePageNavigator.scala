@@ -18,16 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UkRevenuePageNavigator @Inject() (auditConnector: AuditConnector)(implicit ec: ExecutionContext)
+class UkRevenuePageNavigator @Inject() ()(implicit ec: ExecutionContext)
     extends AsyncPageNavigator
     with FrontendHeaderCarrierProvider {
   override protected def navigateInNormalMode(registration: Registration)(implicit
@@ -44,24 +42,11 @@ class UkRevenuePageNavigator @Inject() (auditConnector: AuditConnector)(implicit
         registration.revenueMeetsThreshold match {
           case Some(true)                          =>
             mode match {
-              case NormalMode => Future.successful(routes.EntityTypeController.onPageLoad(NormalMode))
+              case NormalMode => Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad(mode))
               case CheckMode  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
             }
           case Some(revenueMeetsThreshold @ false) =>
-            auditConnector
-              .sendExtendedEvent(
-                RegistrationNotLiableAuditEvent(
-                  registration.internalId,
-                  NotLiableReason.RevenueDoesNotMeetThreshold(
-                    registration.relevantAp12Months,
-                    registration.relevantApLength,
-                    relevantApRevenue,
-                    revenueMeetsThreshold
-                  )
-                ).extendedDataEvent
-              )
-
-            Future.successful(routes.NotLiableController.notLiable())
+            Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad(mode))
           case _                                   => Future.successful(routes.NotableErrorController.answersAreInvalid())
         }
       case _                       => Future.successful(routes.NotableErrorController.answersAreInvalid())

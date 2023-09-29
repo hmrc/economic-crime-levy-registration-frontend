@@ -16,19 +16,15 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
 
-  val mockAuditConnector: AuditConnector = mock[AuditConnector]
-
-  val pageNavigator = new AmlRegulatedActivityPageNavigator(mockAuditConnector)
+  val pageNavigator = new AmlRegulatedActivityPageNavigator()
 
   "nextPage" should {
     "return a Call to the AML supervisor page from the AML regulated activity page in NormalMode when the 'Yes' option is selected" in forAll {
@@ -52,17 +48,15 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
         ) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
 
-    "return a Call to the not liable page from the AML regulated activity page in either mode when the 'No' option is selected" in forAll {
-      (registration: Registration, mode: Mode) =>
+    "return a Call to the liable in previous year page from the AML regulated activity page in either mode when the 'No' option is selected" in forAll {
+      registration: Registration =>
         val updatedRegistration =
           registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false), registrationType = Some(Initial))
 
-        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe routes.NotLiableController
-          .youDoNotNeedToRegister()
-
-        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
-
-        reset(mockAuditConnector)
+        await(
+          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+        ) shouldBe routes.LiabilityBeforeCurrentYearController
+          .onPageLoad(NormalMode)
     }
   }
 
