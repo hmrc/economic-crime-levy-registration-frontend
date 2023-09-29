@@ -16,21 +16,17 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationStartView, StartView}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
 
 import scala.concurrent.Future
 
