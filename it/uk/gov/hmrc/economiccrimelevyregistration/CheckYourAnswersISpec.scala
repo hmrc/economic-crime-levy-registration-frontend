@@ -11,7 +11,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -28,7 +28,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the Check your answers HTML view when the registration data is valid" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration = random[Registration].copy(registrationType = Some(Amendment))
       val errors       = random[DataValidationErrors]
 
       stubGetRegistration(registration)
@@ -58,7 +58,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.CheckYourAnswersController.onSubmit().url}" should {
+  s"POST ${routes.CheckYourAnswersController.onSubmit().url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onSubmit())
 
     "redirect to the registration submitted page after submitting the registration successfully" in {

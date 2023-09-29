@@ -46,7 +46,9 @@ object AmlSupervisorSummary {
           actions = Seq(
             ActionItemViewModel(
               "site.change",
-              routes.AmlSupervisorController.onPageLoad(CheckMode, request.registration.registrationType.get).url
+              routes.AmlSupervisorController
+                .onPageLoad(CheckMode, request.registration.registrationType.get)
+                .url
             )
               .withVisuallyHiddenText(
                 messages("checkYourAnswers.amlSupervisor.label")
