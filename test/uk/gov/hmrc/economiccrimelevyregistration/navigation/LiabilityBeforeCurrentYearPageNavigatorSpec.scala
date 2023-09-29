@@ -28,7 +28,7 @@ import scala.concurrent.Future
 
 class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
 
-  val mockAuditConnector = mock[AuditConnector]
+  val mockAuditConnector: AuditConnector = mock[AuditConnector]
 
   val pageNavigator = new LiabilityBeforeCurrentYearPageNavigator(mockAuditConnector)
 

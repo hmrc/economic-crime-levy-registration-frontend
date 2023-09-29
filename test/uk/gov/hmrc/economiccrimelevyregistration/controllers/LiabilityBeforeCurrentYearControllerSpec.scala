@@ -38,7 +38,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
   val formProvider: LiabilityBeforeCurrentYearFormProvider = new LiabilityBeforeCurrentYearFormProvider()
   val form: Form[Boolean]                                  = formProvider()
 
-  val mockService = mock[RegistrationAdditionalInfoService]
+  val mockService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
 
   val pageNavigator: LiabilityBeforeCurrentYearPageNavigator = new LiabilityBeforeCurrentYearPageNavigator(
     mock[AuditConnector]

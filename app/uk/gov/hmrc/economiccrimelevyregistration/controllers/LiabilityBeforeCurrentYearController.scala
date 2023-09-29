@@ -20,15 +20,15 @@ import com.google.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, OtherEntityTypeAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityBeforeCurrentYearPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{DoYouHaveCtUtrView, LiabilityBeforeCurrentYearView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import uk.gov.hmrc.time.TaxYear
 
 import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
@@ -74,5 +74,5 @@ class LiabilityBeforeCurrentYearController @Inject() (
     }
 
   def getLiabilityYear(liableBeforeCurrentYear: Boolean) =
-    Some(if (liableBeforeCurrentYear) 2022 else 2023)
+    Some(if (liableBeforeCurrentYear) TaxYear.current.previous.startYear else TaxYear.current.startYear)
 }

@@ -38,18 +38,18 @@ class UkRevenuePageNavigator @Inject() ()(implicit ec: ExecutionContext)
 
   private def navigate(mode: Mode, registration: Registration)(implicit hc: HeaderCarrier): Future[Call] =
     registration.relevantApRevenue match {
-      case Some(relevantApRevenue) =>
+      case Some(_) =>
         registration.revenueMeetsThreshold match {
-          case Some(true)                          =>
+          case Some(true)  =>
             mode match {
               case NormalMode => Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad(mode))
               case CheckMode  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
             }
-          case Some(revenueMeetsThreshold @ false) =>
+          case Some(false) =>
             Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad(mode))
-          case _                                   => Future.successful(routes.NotableErrorController.answersAreInvalid())
+          case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
         }
-      case _                       => Future.successful(routes.NotableErrorController.answersAreInvalid())
+      case _       => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
 }
