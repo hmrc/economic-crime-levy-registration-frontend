@@ -56,7 +56,7 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
         await(
           pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.LiabilityBeforeCurrentYearController
-          .onPageLoad(NormalMode)
+          .onPageLoad(false, NormalMode)
     }
   }
 
