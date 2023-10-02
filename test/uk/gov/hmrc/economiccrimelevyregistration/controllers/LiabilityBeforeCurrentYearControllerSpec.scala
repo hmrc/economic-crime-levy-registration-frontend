@@ -43,7 +43,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
   val pageNavigator: LiabilityBeforeCurrentYearPageNavigator = new LiabilityBeforeCurrentYearPageNavigator(
     mock[AuditConnector]
   ) {
-    override def nextPage(answer: Boolean, registration: Registration, mode: Mode): Call =
+    override def nextPage(answer: Boolean, registration: Registration, mode: Mode, fromRevenuePage: Boolean): Call =
       onwardRoute
   }
 
@@ -62,11 +62,11 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
       new TestContext(registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = None)) {
-        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad(true, NormalMode)(fakeRequest)
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form, NormalMode, true)(fakeRequest, messages).toString
       }
     }
   }
@@ -85,7 +85,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
           when(mockService.createOrUpdate(any())(any())).thenReturn(Future.successful())
 
           val result: Future[Result] =
-            controller.onSubmit(NormalMode)(
+            controller.onSubmit(true, NormalMode)(
               fakeRequest.withFormUrlEncodedBody(("value", liableBeforeCurrentYear.toString))
             )
 
@@ -101,12 +101,13 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
       new TestContext(registration) {
-        val result: Future[Result]        = controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
+        val result: Future[Result]        =
+          controller.onSubmit(true, NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
         val formWithErrors: Form[Boolean] = form.bind(Map("value" -> ""))
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode, true)(fakeRequest, messages).toString
       }
     }
   }

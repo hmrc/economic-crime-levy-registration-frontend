@@ -33,17 +33,12 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
   val pageNavigator = new LiabilityBeforeCurrentYearPageNavigator(mockAuditConnector)
 
   "nextPage" should {
-    "return a Call to the not liable page if selected option is 'No' and no revenue has been entered" in forAll {
+    "return a Call to the not liable page if selected option is 'No' and previous screen was aml activity" in forAll {
       registration: Registration =>
-        val updatedRegistration =
-          registration.copy(
-            relevantApRevenue = None
-          )
-
         when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
           .thenReturn(Future.successful(AuditResult.Success))
 
-        pageNavigator.nextPage(false, updatedRegistration, NormalMode) shouldBe routes.NotLiableController
+        pageNavigator.nextPage(false, registration, NormalMode, false) shouldBe routes.NotLiableController
           .youDoNotNeedToRegister()
 
         verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
@@ -55,14 +50,13 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration =
           registration.copy(
-            relevantApRevenue = Some(random[Long]),
             revenueMeetsThreshold = Some(false)
           )
 
         when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
           .thenReturn(Future.successful(AuditResult.Success))
 
-        pageNavigator.nextPage(false, updatedRegistration, NormalMode) shouldBe routes.NotLiableController
+        pageNavigator.nextPage(false, updatedRegistration, NormalMode, true) shouldBe routes.NotLiableController
           .youDoNotNeedToRegister()
 
         verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
@@ -74,17 +68,19 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration =
           registration.copy(
-            relevantApRevenue = Some(random[Long]),
             revenueMeetsThreshold = Some(true)
           )
 
-        pageNavigator.nextPage(false, updatedRegistration, NormalMode) shouldBe routes.EntityTypeController.onPageLoad(
-          NormalMode
-        )
+        pageNavigator.nextPage(false, updatedRegistration, NormalMode, true) shouldBe routes.EntityTypeController
+          .onPageLoad(
+            NormalMode
+          )
     }
 
-    "return a Call to the entity type page if selected option is 'Yes'" in forAll { registration: Registration =>
-      pageNavigator.nextPage(true, registration, NormalMode) shouldBe routes.EntityTypeController.onPageLoad(NormalMode)
+    "return a Call to the entity type page if selected option is 'Yes'" in forAll {
+      (registration: Registration, fromRevenuePage: Boolean) =>
+        pageNavigator.nextPage(true, registration, NormalMode, fromRevenuePage) shouldBe routes.EntityTypeController
+          .onPageLoad(NormalMode)
     }
   }
 

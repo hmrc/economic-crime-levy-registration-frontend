@@ -11,8 +11,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode))
+  s"GET ${routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode))
 
     "respond with 200 status and the liability before current year HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -21,7 +21,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
 
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode)))
+      val result = callRoute(FakeRequest(routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode)))
 
       status(result) shouldBe OK
 
@@ -29,8 +29,8 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
     }
   }
 
-  s"POST ${routes.LiabilityBeforeCurrentYearController.onSubmit(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.LiabilityBeforeCurrentYearController.onSubmit(NormalMode))
+  s"POST ${routes.LiabilityBeforeCurrentYearController.onSubmit(false, NormalMode).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.LiabilityBeforeCurrentYearController.onSubmit(false, NormalMode))
 
     "save the selected address option then redirect to the address lookup frontend journey" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -43,7 +43,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       stubUpsertRegistration(registration)
 
       val result = callRoute(
-        FakeRequest(routes.LiabilityBeforeCurrentYearController.onSubmit(NormalMode))
+        FakeRequest(routes.LiabilityBeforeCurrentYearController.onSubmit(false, NormalMode))
           .withFormUrlEncodedBody(("value", liableBeforeCurrentYear.toString))
       )
 
@@ -52,10 +52,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       val call: Call = if (liableBeforeCurrentYear) {
         routes.EntityTypeController.onPageLoad(NormalMode)
       } else {
-        (registration.relevantApRevenue, registration.revenueMeetsThreshold) match {
-          case (Some(_), Some(true)) => routes.EntityTypeController.onPageLoad(NormalMode)
-          case (_, _)                => routes.NotLiableController.youDoNotNeedToRegister()
-        }
+        routes.NotLiableController.youDoNotNeedToRegister()
       }
 
       redirectLocation(result) shouldBe Some(call.url)
