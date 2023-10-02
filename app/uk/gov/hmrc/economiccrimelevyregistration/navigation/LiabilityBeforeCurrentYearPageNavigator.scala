@@ -28,16 +28,23 @@ import scala.concurrent.{ExecutionContext, Future}
 class LiabilityBeforeCurrentYearPageNavigator @Inject() (auditConnector: AuditConnector)(implicit
   ex: ExecutionContext
 ) extends PageNavigator {
-  def nextPage(liableBeforeCurrentYear: Boolean, registration: Registration, mode: Mode): Call =
+  def nextPage(
+    liableBeforeCurrentYear: Boolean,
+    registration: Registration,
+    mode: Mode,
+    fromRevenuePage: Boolean
+  ): Call =
     mode match {
       case NormalMode =>
         if (liableBeforeCurrentYear) {
           routes.EntityTypeController.onPageLoad(NormalMode)
-        } else {
-          (registration.relevantApRevenue, registration.revenueMeetsThreshold) match {
-            case (Some(_), Some(true)) => routes.EntityTypeController.onPageLoad(NormalMode)
-            case (_, _)                => sendNotLiableAuditEvent(registration.internalId)
+        } else if (fromRevenuePage) {
+          registration.revenueMeetsThreshold match {
+            case Some(true) => routes.EntityTypeController.onPageLoad(NormalMode)
+            case _          => sendNotLiableAuditEvent(registration.internalId)
           }
+        } else {
+          sendNotLiableAuditEvent(registration.internalId)
         }
       case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
     }

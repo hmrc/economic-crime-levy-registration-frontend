@@ -49,17 +49,17 @@ class LiabilityBeforeCurrentYearController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] =
+  def onPageLoad(fromRevenuePage: Boolean, mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData) { implicit request =>
-      Ok(view(form.prepare(None), mode))
+      Ok(view(form.prepare(None), mode, fromRevenuePage))
     }
 
-  def onSubmit(mode: Mode): Action[AnyContent] =
+  def onSubmit(fromRevenuePage: Boolean, mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fromRevenuePage))),
           liableBeforeCurrentYear => {
             val info = RegistrationAdditionalInfo(
               request.registration.internalId,
@@ -68,7 +68,9 @@ class LiabilityBeforeCurrentYearController @Inject() (
             )
             service
               .createOrUpdate(info)
-              .map(_ => Redirect(pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode)))
+              .map(_ =>
+                Redirect(pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode, fromRevenuePage))
+              )
           }
         )
     }
