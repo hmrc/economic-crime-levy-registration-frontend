@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.{any, contains}
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.scalacheck.Arbitrary
 import play.api.i18n.Messages
@@ -38,6 +38,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, OtherRegistrationPdfView}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
+import java.util.Base64
 import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends SpecBase {
@@ -442,6 +443,33 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           reset(mockEmailService)
           reset(mockRegistrationAdditionalInfoService)
         }
+    }
+  }
+
+  "createAndEncodeHtmlForPdf" should {
+    "show liability year" in forAll { (validRegistration: ValidRegistrationWithRegistrationType, year: Int) =>
+      new TestContext(validRegistration.registration) {
+        implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
+          RegistrationDataRequest(
+            fakeRequest,
+            validRegistration.registration.internalId,
+            validRegistration.registration,
+            Some(
+              RegistrationAdditionalInfo(
+                validRegistration.registration.internalId,
+                Some(year),
+                Some("ECLRefNumber12345")
+              )
+            ),
+            Some("ECLRefNumber12345")
+          )
+
+        val encodedHtml = controller.createAndEncodeHtmlForPdf(None)(registrationDataRequest)
+        val decodedHtml = new String(Base64.getDecoder.decode(encodedHtml))
+
+        decodedHtml.contains(messages("checkYourAnswers.liabilityYear.label")) shouldBe true
+        decodedHtml.contains(year.toString)                                    shouldBe true
+      }
     }
   }
 }

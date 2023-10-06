@@ -190,7 +190,7 @@ class CheckYourAnswersController @Inject() (
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
     .encodeToString(html.getBytes)
 
-  private def createAndEncodeHtmlForPdf(
+  def createAndEncodeHtmlForPdf(
     registrationType: Option[RegistrationType]
   )(implicit request: RegistrationDataRequest[_]): String = {
     val date         = LocalDate.now
