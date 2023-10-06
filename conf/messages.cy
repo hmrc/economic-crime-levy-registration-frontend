@@ -50,18 +50,18 @@ answersAreInvalid.button = Cofrestru ar gyfer yr Ardoll Troseddau Economaidd
 start.title = Cofrestru ar gyfer yr Ardoll Troseddau Economaidd
 start.heading = Cofrestru ar gyfer yr Ardoll Troseddau Economaidd
 start.p1 = Defnyddiwch y gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd (ECL) os ydych yn sefydliad neu’n endid:
-start.b1 = regulated by HMRC for anti-money laundering (AML) supervision
+start.b1 = sy’n cael ei reoleiddio gan CThEF ar gyfer goruchwyliaeth gwrth-wyngalchu arian (AML)
 start.b2 = sy’n cael ei reoleiddio gan un o Oruchwylwyr Corff Proffesiynol (PBS) ar gyfer goruchwyliaeth gwrth-wyngalchu arian (AML)
 start.p2 = Gwiriwch a {0}.
 start.p2.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">oes angen i chi dalu’r ardoll</a>
 start.p3 = Os ydych yn rhan o grŵp busnes, mae’n rhaid i chi gofrestru ar gyfer pob endid yn eich grŵp sy’n bodloni’r gofynion.
-start.p4 = You will be able to submit a return and pay the levy after you have registered. You must pay the levy by 30 September 2023. You will be charged interest if you make a late payment.
+start.p4 = Byddwch yn gallu cyflwyno datganiad a thalu’r ardoll ar ôl i chi gofrestru. Mae’n rhaid i chi dalu’r ardoll erbyn 30 Medi {0}. Codir llog arnoch os ydych yn talu’n hwyr.
 start.beforeYouStart = Cyn i chi ddechrau
 start.provide = Bydd angen i chi roi gwybod i ni am y canlynol:
 start.provide.b1 = unrhyw gyfnodau cyfrifyddu ar gyfer eich sefydliad sy’n dod i ben yn ystod y flwyddyn ariannol berthnasol
 start.provide.b2 = refeniw yn y DU eich sefydliad yn ystod unrhyw gyfnodau cyfrifyddu perthnasol
 start.provide.b3 = a wnaeth eich sefydliad gynnal gweithgaredd a reoleiddir gan reoliadau AML ar gyfer y flwyddyn ariannol lawn
-start.provide.b4 = y manylion y gallwn eu defnyddio i adnabod eich busnes – gweler y rhestr o fanylion sydd eu hangen, <a href="https://www.gov.uk/guidance/register-for-the-economic-crime-levy" class="govuk-link">y sector busnes mae’ch sefydliad yn gweithredu ynddo</a>
+start.provide.b4 = y manylion y gallwn eu defnyddio i adnabod eich busnes – gweler y rhestr o fanylion sydd eu hangen, <a href="https://www.gov.uk/guidance/register-for-the-economic-crime-levy" class="govuk-link">gweler y rhestr o fanylion sydd eu hangen</a>
 start.provide.b5 = y sector busnes mae’ch sefydliad yn gweithredu ynddo
 start.provide.b6 = manylion rhywun yn eich sefydliad a all weithredu fel pwynt cyswllt ar gyfer unrhyw weithgareddau sy’n berthnasol i’r ECL
 start.doNotUse = Peidiwch â defnyddio’r gwasanaeth hwn os yw’r canlynol yn wir:
