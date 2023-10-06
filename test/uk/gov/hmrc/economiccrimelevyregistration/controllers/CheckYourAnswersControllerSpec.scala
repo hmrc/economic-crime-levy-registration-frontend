@@ -458,10 +458,10 @@ class CheckYourAnswersControllerSpec extends SpecBase {
               RegistrationAdditionalInfo(
                 validRegistration.registration.internalId,
                 Some(year),
-                Some("ECLRefNumber12345")
+                None
               )
             ),
-            Some("ECLRefNumber12345")
+            None
           )
 
         val encodedHtml = controller.createAndEncodeHtmlForPdf(None)(registrationDataRequest)
