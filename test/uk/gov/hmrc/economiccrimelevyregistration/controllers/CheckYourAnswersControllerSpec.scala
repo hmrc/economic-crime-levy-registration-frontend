@@ -76,6 +76,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             fakeRequest,
             validRegistration.registration.internalId,
             validRegistration.registration,
+            None,
             Some("ECLRefNumber12345")
           )
         implicit val messages: Messages                                                       = messagesApi.preferred(registrationDataRequest)

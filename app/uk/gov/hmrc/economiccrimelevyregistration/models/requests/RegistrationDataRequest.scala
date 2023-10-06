@@ -17,11 +17,12 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models.requests
 
 import play.api.mvc.{Request, WrappedRequest}
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
 
 case class RegistrationDataRequest[A](
   request: Request[A],
   internalId: String,
   registration: Registration,
+  additionalInfo: Option[RegistrationAdditionalInfo],
   eclRegistrationReference: Option[String]
 ) extends WrappedRequest[A](request)

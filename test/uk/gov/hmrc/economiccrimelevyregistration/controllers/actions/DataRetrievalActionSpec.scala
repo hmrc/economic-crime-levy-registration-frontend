@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsEmpty, Request, Result}
 import play.api.test.Helpers._
@@ -23,18 +24,24 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 
 import scala.concurrent.Future
 
 class DataRetrievalActionSpec extends SpecBase {
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockRegistrationAdditionalInfoService              = mock[RegistrationAdditionalInfoService]
   val mockAppConfig                                      = mock[AppConfig]
 
-  class TestDataRetrievalAction extends RegistrationDataRetrievalAction(mockEclRegistrationService, mockAppConfig) {
+  class TestDataRetrievalAction
+      extends RegistrationDataRetrievalAction(
+        mockEclRegistrationService,
+        mockRegistrationAdditionalInfoService,
+        mockAppConfig
+      ) {
     override def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
       super.refine(request)
   }
@@ -52,11 +59,19 @@ class DataRetrievalActionSpec extends SpecBase {
         when(mockAppConfig.privateBetaEnabled).thenReturn(false)
         when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
 
+        val info = RegistrationAdditionalInfo(
+          registration.internalId,
+          Some(random[Int]),
+          None
+        )
+
+        when(mockRegistrationAdditionalInfoService.get(any())(any())).thenReturn(Future.successful(Some(info)))
+
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
 
         await(result) shouldBe Right(
-          RegistrationDataRequest(fakeRequest, internalId, registration, Some("ECLRefNumber12345"))
+          RegistrationDataRequest(fakeRequest, internalId, registration, Some(info), Some("ECLRefNumber12345"))
         )
     }
 
@@ -68,11 +83,19 @@ class DataRetrievalActionSpec extends SpecBase {
           .thenReturn(Future(updatedRegistration))
         when(mockAppConfig.privateBetaAccessCodes).thenReturn(Seq(privateBetaAccessCode))
 
+        val info = RegistrationAdditionalInfo(
+          registration.internalId,
+          Some(random[Int]),
+          None
+        )
+
+        when(mockRegistrationAdditionalInfoService.get(any())(any())).thenReturn(Future.successful(Some(info)))
+
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
 
         await(result) shouldBe Right(
-          RegistrationDataRequest(fakeRequest, internalId, updatedRegistration, Some("ECLRefNumber12345"))
+          RegistrationDataRequest(fakeRequest, internalId, updatedRegistration, Some(info), Some("ECLRefNumber12345"))
         )
     }
 

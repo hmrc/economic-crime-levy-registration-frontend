@@ -31,6 +31,11 @@ class RegistrationAdditionalInfoService @Inject() (
 )(implicit
   ec: ExecutionContext
 ) {
+  def get(
+    internalId: String
+  )(implicit hc: HeaderCarrier): Future[Option[RegistrationAdditionalInfo]] =
+    registrationAdditionalInfoConnector.get(internalId)
+
   def createOrUpdate(
     internalId: String,
     eclReference: Option[String]

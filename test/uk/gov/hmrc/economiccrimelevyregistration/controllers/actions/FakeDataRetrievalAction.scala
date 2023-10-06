@@ -28,5 +28,5 @@ class FakeDataRetrievalAction(data: Registration) extends DataRetrievalAction {
     scala.concurrent.ExecutionContext.Implicits.global
 
   override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
-    Future(Right(RegistrationDataRequest(request.request, request.internalId, data, Some("ECLRefNumber12345"))))
+    Future(Right(RegistrationDataRequest(request.request, request.internalId, data, None, Some("ECLRefNumber12345"))))
 }
