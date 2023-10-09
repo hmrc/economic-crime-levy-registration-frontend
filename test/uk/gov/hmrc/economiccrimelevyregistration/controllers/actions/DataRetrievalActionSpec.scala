@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
+import scala.util.{Failure, Success, Try}
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsEmpty, Request, Result}
@@ -54,6 +55,24 @@ class DataRetrievalActionSpec extends SpecBase {
   }
 
   "refine" should {
+    "throw ab error if additional info cannot be retrieved" in forAll {
+      (internalId: String, groupId: String, registration: Registration) =>
+        when(mockAppConfig.privateBetaEnabled).thenReturn(false)
+        when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
+
+        val error = "Error"
+        when(mockRegistrationAdditionalInfoService.get(any())(any())).thenReturn(Future.failed(new Exception(error)))
+
+        val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
+          dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
+
+        Try(await(result)) match {
+          case Success(_) => fail
+          case Failure(e) => e.getMessage shouldBe error
+        }
+
+    }
+
     "transform an AuthorisedRequest into a RegistrationDataRequest when private beta is disabled" in forAll {
       (internalId: String, groupId: String, registration: Registration) =>
         when(mockAppConfig.privateBetaEnabled).thenReturn(false)
@@ -72,6 +91,21 @@ class DataRetrievalActionSpec extends SpecBase {
 
         await(result) shouldBe Right(
           RegistrationDataRequest(fakeRequest, internalId, registration, Some(info), Some("ECLRefNumber12345"))
+        )
+    }
+
+    "transform an AuthorisedRequest into a RegistrationDataRequest with no additional info when private beta is disabled" in forAll {
+      (internalId: String, groupId: String, registration: Registration) =>
+        when(mockAppConfig.privateBetaEnabled).thenReturn(false)
+        when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
+
+        when(mockRegistrationAdditionalInfoService.get(any())(any())).thenReturn(Future.successful(None))
+
+        val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
+          dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
+
+        await(result) shouldBe Right(
+          RegistrationDataRequest(fakeRequest, internalId, registration, None, Some("ECLRefNumber12345"))
         )
     }
 
