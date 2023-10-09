@@ -20,18 +20,23 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
+import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+import uk.gov.hmrc.time.TaxYear
+
+import java.time.LocalDate
 
 object LiabilityYearSummary {
 
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
     request.additionalInfo.flatMap(info =>
       info.liabilityYear.map { year =>
-        val value = ValueViewModel(HtmlContent(year.toString))
+        val date  = TaxYear.firstDayOfTaxYear(year)
+        val value = ValueViewModel(HtmlContent(ViewUtils.formatLocalDate(date)))
 
         SummaryListRowViewModel(
-          key = Key("checkYourAnswers.liabilityYear.label"),
+          key = Key("checkYourAnswers.liabilityDate.label"),
           value = value
         )
       }
