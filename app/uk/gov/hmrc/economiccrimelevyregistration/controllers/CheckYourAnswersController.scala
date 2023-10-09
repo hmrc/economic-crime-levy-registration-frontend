@@ -62,12 +62,11 @@ class CheckYourAnswersController @Inject() (
     ).flatten
   ).withCssClass("govuk-!-margin-bottom-9")
 
-  private def organisationDetails(row: Option[SummaryListRow] = None)(implicit
+  private def organisationDetails(liabilityRow: Option[SummaryListRow] = None)(implicit
     request: RegistrationDataRequest[_]
   ): SummaryList =
     SummaryListViewModel(
       rows = Seq(
-        row,
         EntityTypeSummary.row(),
         EntityNameSummary.row(),
         CompanyNumberSummary.row(),
@@ -76,6 +75,7 @@ class CheckYourAnswersController @Inject() (
         NinoSummary.row(),
         DateOfBirthSummary.row(),
         AmlRegulatedActivitySummary.row(),
+        liabilityRow,
         RelevantAp12MonthsSummary.row(),
         RelevantApLengthSummary.row(),
         UkRevenueSummary.row(),
