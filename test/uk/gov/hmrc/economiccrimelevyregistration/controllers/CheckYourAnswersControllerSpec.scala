@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.scalacheck.Arbitrary
+import org.scalacheck.Gen.choose
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
@@ -26,18 +27,21 @@ import uk.gov.hmrc.economiccrimelevyregistration.ValidRegistrationWithRegistrati
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidatedRegistrationAction
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityRegistrationNumberMaxLength, EmailMaxLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EmailService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
+import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, OtherRegistrationPdfView}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.time.TaxYear
 
+import java.util.Base64
 import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends SpecBase {
@@ -76,6 +80,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             fakeRequest,
             validRegistration.registration.internalId,
             validRegistration.registration,
+            None,
             Some("ECLRefNumber12345")
           )
         implicit val messages: Messages                                                       = messagesApi.preferred(registrationDataRequest)
@@ -441,6 +446,37 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           reset(mockEmailService)
           reset(mockRegistrationAdditionalInfoService)
         }
+    }
+  }
+
+  "createAndEncodeHtmlForPdf" should {
+    "show liability start date" in forAll(
+      Arbitrary.arbitrary[ValidRegistrationWithRegistrationType],
+      choose[Int](2022, TaxYear.current.startYear)
+    ) { (valid: ValidRegistrationWithRegistrationType, year: Int) =>
+      new TestContext(valid.registration) {
+        implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
+          RegistrationDataRequest(
+            fakeRequest,
+            valid.registration.internalId,
+            valid.registration,
+            Some(
+              RegistrationAdditionalInfo(
+                valid.registration.internalId,
+                Some(year),
+                None
+              )
+            ),
+            None
+          )
+
+        val date        = TaxYear.firstDayOfTaxYear(year)
+        val encodedHtml = controller.createAndEncodeHtmlForPdf(None)(registrationDataRequest)
+        val decodedHtml = new String(Base64.getDecoder.decode(encodedHtml))
+
+        decodedHtml should include(messages("checkYourAnswers.liabilityDate.label"))
+        decodedHtml should include(ViewUtils.formatLocalDate(date)(messages))
+      }
     }
   }
 }

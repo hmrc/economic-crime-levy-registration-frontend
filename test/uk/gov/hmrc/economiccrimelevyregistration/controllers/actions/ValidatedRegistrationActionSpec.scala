@@ -45,7 +45,7 @@ class ValidatedRegistrationActionSpec extends SpecBase {
 
       val result: Future[Option[Result]] =
         validatedRegistrationAction.filter(
-          RegistrationDataRequest(fakeRequest, internalId, registration, Some("ECLRefNumber12345"))
+          RegistrationDataRequest(fakeRequest, internalId, registration, None, Some("ECLRefNumber12345"))
         )
 
       await(result) shouldBe None
@@ -58,7 +58,7 @@ class ValidatedRegistrationActionSpec extends SpecBase {
 
         val result: Future[Option[Result]] =
           validatedRegistrationAction.filter(
-            RegistrationDataRequest(fakeRequest, internalId, registration, Some("ECLRefNumber12345"))
+            RegistrationDataRequest(fakeRequest, internalId, registration, None, Some("ECLRefNumber12345"))
           )
 
         await(result) shouldBe Some(Redirect(routes.NotableErrorController.answersAreInvalid()))
