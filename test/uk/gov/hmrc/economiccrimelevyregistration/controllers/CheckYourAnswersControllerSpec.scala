@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import org.mockito.ArgumentMatchers.{any, contains}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.scalacheck.Arbitrary
 import play.api.i18n.Messages
@@ -30,8 +30,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.Email
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EmailService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -467,8 +467,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         val encodedHtml = controller.createAndEncodeHtmlForPdf(None)(registrationDataRequest)
         val decodedHtml = new String(Base64.getDecoder.decode(encodedHtml))
 
-        decodedHtml.contains(messages("checkYourAnswers.liabilityYear.label")) shouldBe true
-        decodedHtml.contains(year.toString)                                    shouldBe true
+        decodedHtml should include(messages("checkYourAnswers.liabilityYear.label"))
+        decodedHtml should include(year.toString)
       }
     }
   }
