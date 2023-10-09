@@ -51,7 +51,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
 
   def onPageLoad(fromRevenuePage: Boolean, mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData) { implicit request =>
-      Ok(view(form.prepare(None), mode, fromRevenuePage))
+      Ok(view(form.prepare(getLiabilityAnswer(request.additionalInfo)), mode, fromRevenuePage))
     }
 
   def onSubmit(fromRevenuePage: Boolean, mode: Mode): Action[AnyContent] =
@@ -77,4 +77,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
 
   def getLiabilityYear(liableBeforeCurrentYear: Boolean) =
     Some(if (liableBeforeCurrentYear) TaxYear.current.previous.startYear else TaxYear.current.startYear)
+
+  def getLiabilityAnswer(info: Option[RegistrationAdditionalInfo]) =
+    info.flatMap(info => info.liabilityYear.map(year => year < TaxYear.current.startYear))
 }

@@ -369,6 +369,7 @@ checkYourAnswers.nonUkCrn.label = Non-UK CRN
 checkYourAnswers.overseasTaxIdentifier.label = Overseas Tax Identifier
 checkYourAnswers.eclDetails = ECL details
 checkYourAnswers.eclReferenceNumber.label = ECL reference number
+checkYourAnswers.liabilityDate.label = Liability start date
 
 submitted.title = Registration submitted
 submitted.heading = Registration submitted

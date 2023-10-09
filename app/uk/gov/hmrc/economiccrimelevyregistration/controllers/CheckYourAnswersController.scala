@@ -30,7 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, OtherRegistrationPdfView}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import java.time.LocalDate
@@ -62,7 +62,9 @@ class CheckYourAnswersController @Inject() (
     ).flatten
   ).withCssClass("govuk-!-margin-bottom-9")
 
-  private def organisationDetails()(implicit request: RegistrationDataRequest[_]): SummaryList =
+  private def organisationDetails(liabilityRow: Option[SummaryListRow] = None)(implicit
+    request: RegistrationDataRequest[_]
+  ): SummaryList =
     SummaryListViewModel(
       rows = Seq(
         EntityTypeSummary.row(),
@@ -73,6 +75,7 @@ class CheckYourAnswersController @Inject() (
         NinoSummary.row(),
         DateOfBirthSummary.row(),
         AmlRegulatedActivitySummary.row(),
+        liabilityRow,
         RelevantAp12MonthsSummary.row(),
         RelevantApLengthSummary.row(),
         UkRevenueSummary.row(),
@@ -187,11 +190,11 @@ class CheckYourAnswersController @Inject() (
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
     .encodeToString(html.getBytes)
 
-  private def createAndEncodeHtmlForPdf(
+  def createAndEncodeHtmlForPdf(
     registrationType: Option[RegistrationType]
   )(implicit request: RegistrationDataRequest[_]): String = {
     val date         = LocalDate.now
-    val organisation = organisationDetails()
+    val organisation = organisationDetails(LiabilityYearSummary.row())
     val contact      = contactDetails()
     val otherEntity  = otherEntityController.otherEntityDetails()
 
