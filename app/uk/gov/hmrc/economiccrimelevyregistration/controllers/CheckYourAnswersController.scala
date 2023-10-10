@@ -22,7 +22,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, BeforeCurrentFY, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Base64EncodedFields, RegistrationType, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EmailService, RegistrationAdditionalInfoService}
@@ -148,7 +148,7 @@ class CheckYourAnswersController @Inject() (
       _         = request.registration.registrationType match {
                     case Some(registrationType) =>
                       registrationType match {
-                        case Initial   =>
+                        case Initial | BeforeCurrentFY  =>
                           emailService.sendRegistrationSubmittedEmails(
                             registration.contacts,
                             response.eclReference,

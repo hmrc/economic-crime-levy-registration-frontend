@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.{AmendAmlSupervisorFormProvider, AmlSupervisorFormProvider}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, BeforeCurrentFY, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
@@ -55,7 +55,7 @@ class AmlSupervisorController @Inject() (
   def onPageLoad(mode: Mode, registrationType: RegistrationType = Initial): Action[AnyContent] =
     (authorise andThen getRegistrationData) { implicit request =>
       registrationType match {
-        case Initial   => Ok(view(form.prepare(request.registration.amlSupervisor), mode, registrationType))
+        case Initial | BeforeCurrentFY   => Ok(view(form.prepare(request.registration.amlSupervisor), mode, registrationType))
         case Amendment => Ok(view(amendForm.prepare(request.registration.amlSupervisor), mode, registrationType))
       }
     }

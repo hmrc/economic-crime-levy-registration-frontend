@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.BeforeCurrentFY
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -37,7 +38,10 @@ class LiabilityBeforeCurrentYearPageNavigator @Inject() (auditConnector: AuditCo
     mode match {
       case NormalMode =>
         if (liableBeforeCurrentYear) {
-          routes.EntityTypeController.onPageLoad(NormalMode)
+          fromRevenuePage match {
+            case true => routes.EntityTypeController.onPageLoad(NormalMode)
+            case false => routes.AmlSupervisorController.onPageLoad(NormalMode, BeforeCurrentFY)
+          }
         } else if (fromRevenuePage) {
           registration.revenueMeetsThreshold match {
             case Some(true) => routes.EntityTypeController.onPageLoad(NormalMode)

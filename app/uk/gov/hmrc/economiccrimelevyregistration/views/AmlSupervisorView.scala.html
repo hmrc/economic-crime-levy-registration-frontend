@@ -16,7 +16,7 @@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
-@import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+@import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 
 @this(
         layout: templates.Layout,
@@ -45,7 +45,7 @@
     <p class="govuk-body">@messages("amlSupervisor.p3")</p>
 
     @formHelper(action = AmlSupervisorController.onSubmit(mode, registrationType)) {
-        @if(registrationType == Initial) {
+        @if(registrationType != Amendment) {
             @radios(
                 RadiosViewModel(
                     field = form("value"),
