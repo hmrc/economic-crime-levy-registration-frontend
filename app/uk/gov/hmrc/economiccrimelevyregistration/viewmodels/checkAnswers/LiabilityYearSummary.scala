@@ -23,7 +23,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
-import uk.gov.hmrc.time.TaxYear
 
 import java.time.LocalDate
 
