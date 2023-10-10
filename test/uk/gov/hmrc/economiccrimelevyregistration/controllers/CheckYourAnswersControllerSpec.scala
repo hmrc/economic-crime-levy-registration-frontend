@@ -41,6 +41,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPd
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.time.TaxYear
 
+import java.time.LocalDate
 import java.util.Base64
 import scala.concurrent.Future
 
@@ -470,7 +471,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             None
           )
 
-        val date        = TaxYear.firstDayOfTaxYear(year)
+        val date        = LocalDate.of(year, 4, 1)
         val encodedHtml = controller.createAndEncodeHtmlForPdf(None)(registrationDataRequest)
         val decodedHtml = new String(Base64.getDecoder.decode(encodedHtml))
 
