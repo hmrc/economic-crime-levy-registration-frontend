@@ -32,7 +32,8 @@ trait InputFluency {
     def apply(
       field: Field,
       label: Label,
-      prefix: Option[PrefixOrSuffix] = None
+      prefix: Option[PrefixOrSuffix] = None,
+      attributes: Map[String, String] = Map.empty
     )(implicit messages: Messages): Input =
       Input(
         id = field.id,
@@ -40,7 +41,8 @@ trait InputFluency {
         value = field.value,
         label = label,
         errorMessage = errorMessage(field),
-        prefix = prefix
+        prefix = prefix,
+        attributes = attributes
       )
 
   }
