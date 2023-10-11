@@ -75,6 +75,8 @@ class FirstContactNumberControllerSpec extends SpecBase {
           resultAsString shouldBe view(form, name, NormalMode)(fakeRequest, messages).toString
 
           resultAsString should include("autocomplete=\"tel\"")
+
+          resultAsString should include("type=\"tel\"")
         }
     }
 
