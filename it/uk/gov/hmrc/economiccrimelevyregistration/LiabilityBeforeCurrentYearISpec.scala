@@ -8,6 +8,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import RegistrationType.Initial
 
 class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -36,7 +37,9 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       stubAuthorisedWithNoGroupEnrolment()
 
       val liableBeforeCurrentYear = random[Boolean]
-      val registration       = random[Registration]
+      val registration       = random[Registration].copy(
+        registrationType = Some(Initial)
+      )
 
       stubGetRegistration(registration)
 
@@ -50,7 +53,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       status(result) shouldBe SEE_OTHER
 
       val call: Call = if (liableBeforeCurrentYear) {
-        routes.EntityTypeController.onPageLoad(NormalMode)
+        routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, true)
       } else {
         routes.NotLiableController.youDoNotNeedToRegister()
       }

@@ -38,7 +38,7 @@ class LiabilityBeforeCurrentYearPageNavigator @Inject() (auditConnector: AuditCo
       case NormalMode =>
         if (liableBeforeCurrentYear) {
           fromRevenuePage match {
-            case true => routes.EntityTypeController.onPageLoad(NormalMode)
+            case true  => routes.EntityTypeController.onPageLoad(NormalMode)
             case false => routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get, true)
           }
         } else if (fromRevenuePage) {

@@ -52,20 +52,46 @@ class AmlSupervisorController @Inject() (
 
   val amendForm: Form[AmlSupervisor] = amendFormProvider(appConfig)
 
-  def onPageLoad(mode: Mode, registrationType: RegistrationType = Initial, fromLiableBeforeCurrentYearPage: Boolean = false): Action[AnyContent] =
+  def onPageLoad(
+    mode: Mode,
+    registrationType: RegistrationType = Initial,
+    fromLiableBeforeCurrentYearPage: Boolean = false
+  ): Action[AnyContent] =
     (authorise andThen getRegistrationData) { implicit request =>
       registrationType match {
-        case Initial   => Ok(view(form.prepare(request.registration.amlSupervisor), mode, registrationType, fromLiableBeforeCurrentYearPage))
-        case Amendment => Ok(view(amendForm.prepare(request.registration.amlSupervisor), mode, registrationType, fromLiableBeforeCurrentYearPage))
+        case Initial   =>
+          Ok(
+            view(
+              form.prepare(request.registration.amlSupervisor),
+              mode,
+              registrationType,
+              fromLiableBeforeCurrentYearPage
+            )
+          )
+        case Amendment =>
+          Ok(
+            view(
+              amendForm.prepare(request.registration.amlSupervisor),
+              mode,
+              registrationType,
+              fromLiableBeforeCurrentYearPage
+            )
+          )
       }
     }
 
-  def onSubmit(mode: Mode, registrationType: RegistrationType = Initial, fromLiableBeforeCurrentYearPage: Boolean): Action[AnyContent] =
+  def onSubmit(
+    mode: Mode,
+    registrationType: RegistrationType = Initial,
+    fromLiableBeforeCurrentYearPage: Boolean
+  ): Action[AnyContent] =
     (authorise andThen getRegistrationData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, registrationType, fromLiableBeforeCurrentYearPage))),
+          formWithErrors =>
+            Future
+              .successful(BadRequest(view(formWithErrors, mode, registrationType, fromLiableBeforeCurrentYearPage))),
           amlSupervisor =>
             eclRegistrationConnector
               .upsertRegistration(

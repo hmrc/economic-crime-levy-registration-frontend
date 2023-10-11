@@ -21,33 +21,37 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, Normal
 
 import scala.concurrent.Future
 
+class NavigationException extends Exception("Should never get here!")
+
 trait AsyncPageNavigator {
-  val error = new Exception("Should never get here!")
+  private val error = new NavigationException()
 
   def nextPage(mode: Mode, registration: Registration)(implicit request: RequestHeader): Future[Call] = mode match {
     case NormalMode => navigateInNormalMode(registration)
     case CheckMode  => navigateInCheckMode(registration)
   }
 
-  def nextPage(mode: Mode, registration: Registration, extraFlag: Boolean)(implicit request: RequestHeader): Future[Call] = mode match {
+  def nextPage(mode: Mode, registration: Registration, extraFlag: Boolean)(implicit
+    request: RequestHeader
+  ): Future[Call] = mode match {
     case NormalMode => navigateInNormalMode(registration, extraFlag)
     case CheckMode  => navigateInCheckMode(registration, extraFlag)
   }
 
-  protected def navigateInNormalMode(registration: Registration)(implicit request: RequestHeader): Future[Call] = {
+  protected def navigateInNormalMode(registration: Registration)(implicit request: RequestHeader): Future[Call] =
     throw error
-  }
 
-  protected def navigateInCheckMode(registration: Registration)(implicit request: RequestHeader): Future[Call] = {
+  protected def navigateInCheckMode(registration: Registration)(implicit request: RequestHeader): Future[Call] =
     throw error
-  }
 
-  protected def navigateInNormalMode(registration: Registration, extraFlag: Boolean)(implicit request: RequestHeader): Future[Call] = {
+  protected def navigateInNormalMode(registration: Registration, extraFlag: Boolean)(implicit
+    request: RequestHeader
+  ): Future[Call] =
     throw error
-  }
 
-  protected def navigateInCheckMode(registration: Registration, extraFlag: Boolean)(implicit request: RequestHeader): Future[Call] = {
+  protected def navigateInCheckMode(registration: Registration, extraFlag: Boolean)(implicit
+    request: RequestHeader
+  ): Future[Call] =
     throw error
-  }
 
 }

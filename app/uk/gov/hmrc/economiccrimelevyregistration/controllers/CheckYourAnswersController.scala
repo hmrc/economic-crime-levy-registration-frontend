@@ -148,7 +148,7 @@ class CheckYourAnswersController @Inject() (
       _         = request.registration.registrationType match {
                     case Some(registrationType) =>
                       registrationType match {
-                        case Initial =>
+                        case Initial   =>
                           emailService.sendRegistrationSubmittedEmails(
                             registration.contacts,
                             response.eclReference,

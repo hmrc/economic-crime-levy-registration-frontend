@@ -41,10 +41,11 @@ class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(impl
       case (Some(amlSupervisor), Some(Initial))   =>
         amlSupervisor.supervisorType match {
           case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, registration)
-          case Hmrc | Other                                         => Future.successful(fromLiableBeforeCurrentYearPage match {
-            case true  => routes.EntityTypeController.onPageLoad(NormalMode)
-            case false => routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
-          })
+          case Hmrc | Other                                         =>
+            Future.successful(fromLiableBeforeCurrentYearPage match {
+              case true  => routes.EntityTypeController.onPageLoad(NormalMode)
+              case false => routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
+            })
         }
       case (Some(amlSupervisor), Some(Amendment)) =>
         amlSupervisor.supervisorType match {

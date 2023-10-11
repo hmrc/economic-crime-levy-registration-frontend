@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Gen
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
@@ -41,7 +42,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
         )
 
         await(
-          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+          pageNavigator.nextPage(NormalMode, updatedRegistration, random[Boolean])(fakeRequest)
         ) shouldBe routes.RegisterWithGcController
           .onPageLoad()
 
@@ -58,7 +59,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
         )
 
         await(
-          pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
+          pageNavigator.nextPage(CheckMode, updatedRegistration, random[Boolean])(fakeRequest)
         ) shouldBe routes.RegisterWithGcController
           .onPageLoad()
 
@@ -76,7 +77,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           )
 
         await(
-          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+          pageNavigator.nextPage(NormalMode, updatedRegistration, random[Boolean])(fakeRequest)
         ) shouldBe routes.RegisterWithFcaController
           .onPageLoad()
 
@@ -94,7 +95,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           )
 
         await(
-          pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
+          pageNavigator.nextPage(CheckMode, updatedRegistration, random[Boolean])(fakeRequest)
         ) shouldBe routes.RegisterWithFcaController
           .onPageLoad()
 
@@ -113,7 +114,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
         await(
-          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
+          pageNavigator.nextPage(NormalMode, updatedRegistration, false)(fakeRequest)
         ) shouldBe routes.RelevantAp12MonthsController
           .onPageLoad(NormalMode)
     }
@@ -128,10 +129,25 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
         await(
-          pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
+          pageNavigator.nextPage(CheckMode, updatedRegistration, false)(fakeRequest)
         ) shouldBe routes.CheckYourAnswersController
           .onPageLoad()
     }
+  }
+
+  "return a Call to the entity type page when from is liable before current year page" in forAll {
+    registration: Registration =>
+      val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
+      val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample
+      val amlSupervisor         =
+        AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = otherProfessionalBody)
+      val updatedRegistration   =
+        registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
+
+      await(
+        pageNavigator.nextPage(NormalMode, updatedRegistration, true)(fakeRequest)
+      ) shouldBe routes.EntityTypeController
+        .onPageLoad(NormalMode)
   }
 
 }

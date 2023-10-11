@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
@@ -72,15 +73,15 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(false, updatedRegistration, NormalMode, true) shouldBe routes.EntityTypeController
-          .onPageLoad(
-            NormalMode
-          )
+          .onPageLoad(NormalMode)
     }
 
-    "return a Call to the entity type page if selected option is 'Yes'" in forAll {
-      (registration: Registration, fromRevenuePage: Boolean) =>
-        pageNavigator.nextPage(true, registration, NormalMode, fromRevenuePage) shouldBe routes.EntityTypeController
-          .onPageLoad(NormalMode)
+    "return a Call to the AML supervisor page if selected option is 'Yes'" in forAll { registration: Registration =>
+      val updatedRegistration = registration.copy(
+        registrationType = Some(Initial)
+      )
+      pageNavigator.nextPage(true, updatedRegistration, NormalMode, false) shouldBe routes.AmlSupervisorController
+        .onPageLoad(NormalMode, Initial, true)
     }
   }
 
