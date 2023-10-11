@@ -41,7 +41,8 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text(messages("firstContactNumber.label")))
+                label = LabelViewModel(Text(messages("firstContactNumber.label"))),
+                attributes = Map("autocomplete" -> "tel")
             ).withWidth(Fixed20).withHint(Hint(content = Text(messages("firstContactNumber.hint"))))
         )
 
