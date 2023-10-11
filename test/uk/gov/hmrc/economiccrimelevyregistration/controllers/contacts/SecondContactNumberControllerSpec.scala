@@ -70,7 +70,13 @@ class SecondContactNumberControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form, name, NormalMode)(fakeRequest, messages).toString
+          val resultAsString: String = contentAsString(result)
+
+          resultAsString shouldBe view(form, name, NormalMode)(fakeRequest, messages).toString
+
+          resultAsString should include("autocomplete=\"tel\"")
+
+          resultAsString should include("type=\"tel\"")
         }
     }
 
