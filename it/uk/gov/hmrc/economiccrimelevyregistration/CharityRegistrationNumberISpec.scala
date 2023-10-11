@@ -12,7 +12,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.CharityRegistrationNumberController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.CharityRegistrationNumberController.onPageLoad(NormalMode))
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
+    )
 
     "respond with 200 status and the charity registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -42,7 +44,7 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
       stubGetRegistration(registration)
 
       val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(charityRegistrationNumber = Some(charityNumber))
-      val updatedRegistration = registration.copy(
+      val updatedRegistration    = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
 
@@ -55,7 +57,9 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.CompanyRegistrationNumberController.onPageLoad(mode = NormalMode).url)
+      redirectLocation(result) shouldBe Some(
+        routes.CompanyRegistrationNumberController.onPageLoad(mode = NormalMode).url
+      )
     }
   }
 

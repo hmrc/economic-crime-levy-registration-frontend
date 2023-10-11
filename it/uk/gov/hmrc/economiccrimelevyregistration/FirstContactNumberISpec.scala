@@ -29,11 +29,13 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
           )
         )
       )
-      stubUpsertRegistration(registration.copy(contacts =
-        registration.contacts.copy(firstContactDetails =
-          registration.contacts.firstContactDetails.copy(name = Some(name))
+      stubUpsertRegistration(
+        registration.copy(contacts =
+          registration.contacts.copy(firstContactDetails =
+            registration.contacts.firstContactDetails.copy(name = Some(name))
+          )
         )
-      ))
+      )
       val result = callRoute(FakeRequest(contacts.routes.FirstContactNumberController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK

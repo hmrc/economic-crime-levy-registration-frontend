@@ -37,7 +37,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option then redirect to the relevant AP 12 months page when the answer is either HMRC or another professional body" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration      = random[Registration]
       val validRegistration = registration.copy(registrationType = Some(Initial))
 
       val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
