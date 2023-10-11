@@ -41,8 +41,8 @@
             InputViewModel(
                 field = form("value"),
                 label = LabelViewModel(Text(messages("secondContactNumber.label"))),
-                attributes = Map("autocomplete" -> "tel",
-                    "type" -> "tel")
+                attributes = Map("autocomplete" -> "tel"),
+                inputType = "tel"
             ).withWidth(Fixed20).withHint(Hint(content = Text(messages("secondContactNumber.hint"))))
         )
 
