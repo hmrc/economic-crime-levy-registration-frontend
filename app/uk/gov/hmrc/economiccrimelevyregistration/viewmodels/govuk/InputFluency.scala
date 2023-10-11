@@ -33,7 +33,8 @@ trait InputFluency {
       field: Field,
       label: Label,
       prefix: Option[PrefixOrSuffix] = None,
-      attributes: Map[String, String] = Map.empty
+      attributes: Map[String, String] = Map.empty,
+      inputType: String = "text"
     )(implicit messages: Messages): Input =
       Input(
         id = field.id,
@@ -42,7 +43,8 @@ trait InputFluency {
         label = label,
         errorMessage = errorMessage(field),
         prefix = prefix,
-        attributes = attributes
+        attributes = attributes,
+        inputType = inputType
       )
 
   }

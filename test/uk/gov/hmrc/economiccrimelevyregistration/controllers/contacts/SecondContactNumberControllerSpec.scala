@@ -76,6 +76,7 @@ class SecondContactNumberControllerSpec extends SpecBase {
 
           resultAsString should include("autocomplete=\"tel\"")
 
+          resultAsString should include("type=\"tel\"")
         }
     }
 
