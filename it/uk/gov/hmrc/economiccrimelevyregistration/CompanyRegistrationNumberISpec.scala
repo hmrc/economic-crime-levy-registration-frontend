@@ -12,7 +12,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.CompanyRegistrationNumberController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode))
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
+    )
 
     "respond with 200 status and the company registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -42,7 +44,7 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
       stubGetRegistration(registration)
 
       val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))
-      val updatedRegistration = registration.copy(
+      val updatedRegistration    = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
 

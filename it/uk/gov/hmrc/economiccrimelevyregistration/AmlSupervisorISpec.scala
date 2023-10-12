@@ -14,7 +14,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, false).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, false))
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, false)
+    )
 
     "respond with 200 status and the AML supervisor HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -32,12 +34,14 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${routes.AmlSupervisorController.onSubmit(NormalMode, Initial, false).url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, false))
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, false)
+    )
 
     "save the selected option then redirect to the relevant AP 12 months page when the answer is either HMRC or another professional body" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration      = random[Registration]
       val validRegistration = registration.copy(registrationType = Some(Initial))
 
       val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
@@ -58,7 +62,8 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.AmlSupervisorController.onSubmit(NormalMode, Initial, false)).withFormUrlEncodedBody(formData: _*)
+        FakeRequest(routes.AmlSupervisorController.onSubmit(NormalMode, Initial, false))
+          .withFormUrlEncodedBody(formData: _*)
       )
 
       status(result) shouldBe SEE_OTHER

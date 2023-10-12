@@ -13,7 +13,9 @@ import RegistrationType.Initial
 class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode))
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode)
+    )
 
     "respond with 200 status and the liability before current year HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -30,14 +32,16 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
     }
   }
 
-  s"POST ${routes.LiabilityBeforeCurrentYearController.onSubmit(false, NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.LiabilityBeforeCurrentYearController.onSubmit(false, NormalMode))
+  s"POST ${routes.LiabilityBeforeCurrentYearController.onSubmit(false, NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      routes.LiabilityBeforeCurrentYearController.onSubmit(false, NormalMode)
+    )
 
     "save the selected address option then redirect to the address lookup frontend journey" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val liableBeforeCurrentYear = random[Boolean]
-      val registration       = random[Registration].copy(
+      val registration            = random[Registration].copy(
         registrationType = Some(Initial)
       )
 

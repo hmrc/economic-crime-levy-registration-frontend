@@ -64,7 +64,9 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.LiabilityBeforeCurrentYearController.onPageLoad(true, NormalMode).url)
+      redirectLocation(result) shouldBe Some(
+        routes.LiabilityBeforeCurrentYearController.onPageLoad(true, NormalMode).url
+      )
     }
 
     "save the UK revenue then redirect to the liable for previous year page if the amount due is 0" in {
@@ -95,7 +97,9 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.LiabilityBeforeCurrentYearController.onPageLoad(true, NormalMode).url)
+      redirectLocation(result) shouldBe Some(
+        routes.LiabilityBeforeCurrentYearController.onPageLoad(true, NormalMode).url
+      )
     }
   }
 }

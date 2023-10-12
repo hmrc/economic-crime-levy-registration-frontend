@@ -42,7 +42,7 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistration(registration)
 
       val otherEntityJourneyData = registration.otherEntityJourneyData.copy(businessName = Some("Test"))
-      val updatedRegistration = registration.copy(
+      val updatedRegistration    = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
 
@@ -55,7 +55,9 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.CharityRegistrationNumberController.onPageLoad(mode = NormalMode).url)
+      redirectLocation(result) shouldBe Some(
+        routes.CharityRegistrationNumberController.onPageLoad(mode = NormalMode).url
+      )
     }
   }
 

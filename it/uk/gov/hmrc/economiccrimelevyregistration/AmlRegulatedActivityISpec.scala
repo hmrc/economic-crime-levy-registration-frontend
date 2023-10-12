@@ -41,7 +41,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected AML regulated activity option then redirect to the AML supervisor page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration      = random[Registration]
       val validRegistration = registration.copy(registrationType = Some(Initial))
       stubGetRegistration(validRegistration)
 
@@ -80,7 +80,9 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode).url)
+      redirectLocation(result) shouldBe Some(
+        routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode).url
+      )
     }
   }
 }
