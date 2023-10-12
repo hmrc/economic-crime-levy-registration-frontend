@@ -35,13 +35,11 @@ class DataRetrievalActionSpec extends SpecBase {
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
   val mockRegistrationAdditionalInfoService              = mock[RegistrationAdditionalInfoService]
-  val mockAppConfig                                      = mock[AppConfig]
 
   class TestDataRetrievalAction
       extends RegistrationDataRetrievalAction(
         mockEclRegistrationService,
-        mockRegistrationAdditionalInfoService,
-        mockAppConfig
+        mockRegistrationAdditionalInfoService
       ) {
     override def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
       super.refine(request)
@@ -57,7 +55,6 @@ class DataRetrievalActionSpec extends SpecBase {
   "refine" should {
     "throw ab error if additional info cannot be retrieved" in forAll {
       (internalId: String, groupId: String, registration: Registration) =>
-        when(mockAppConfig.privateBetaEnabled).thenReturn(false)
         when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
 
         val error = "Error"
@@ -75,7 +72,6 @@ class DataRetrievalActionSpec extends SpecBase {
 
     "transform an AuthorisedRequest into a RegistrationDataRequest when private beta is disabled" in forAll {
       (internalId: String, groupId: String, registration: Registration) =>
-        when(mockAppConfig.privateBetaEnabled).thenReturn(false)
         when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
 
         val info = RegistrationAdditionalInfo(
@@ -96,7 +92,6 @@ class DataRetrievalActionSpec extends SpecBase {
 
     "transform an AuthorisedRequest into a RegistrationDataRequest with no additional info when private beta is disabled" in forAll {
       (internalId: String, groupId: String, registration: Registration) =>
-        when(mockAppConfig.privateBetaEnabled).thenReturn(false)
         when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
 
         when(mockRegistrationAdditionalInfoService.get(any())(any())).thenReturn(Future.successful(None))
@@ -111,11 +106,9 @@ class DataRetrievalActionSpec extends SpecBase {
 
     "transform an AuthorisedRequest into a RegistrationDataRequest when private beta is enabled and the access code matches one that is held in config" in forAll {
       (internalId: String, groupId: String, registration: Registration, privateBetaAccessCode: String) =>
-        when(mockAppConfig.privateBetaEnabled).thenReturn(true)
         val updatedRegistration = registration.copy(privateBetaAccessCode = Some(privateBetaAccessCode))
         when(mockEclRegistrationService.getOrCreateRegistration(any())(any()))
           .thenReturn(Future(updatedRegistration))
-        when(mockAppConfig.privateBetaAccessCodes).thenReturn(Seq(privateBetaAccessCode))
 
         val info = RegistrationAdditionalInfo(
           registration.internalId,
@@ -131,22 +124,6 @@ class DataRetrievalActionSpec extends SpecBase {
         await(result) shouldBe Right(
           RegistrationDataRequest(fakeRequest, internalId, updatedRegistration, Some(info), Some("ECLRefNumber12345"))
         )
-    }
-
-    "redirect to the private beta access page when private beta is enabled and the access code does not match one that is held in config" in forAll {
-      (internalId: String, groupId: String, registration: Registration, privateBetaAccessCode: String) =>
-        when(mockAppConfig.privateBetaEnabled).thenReturn(true)
-        when(mockEclRegistrationService.getOrCreateRegistration(any())(any()))
-          .thenReturn(Future(registration.copy(privateBetaAccessCode = None)))
-        when(mockAppConfig.privateBetaAccessCodes).thenReturn(Seq(privateBetaAccessCode))
-
-        val result =
-          Future.successful(
-            await(dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, None))).left.value
-          )
-
-        status(result)           shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.PrivateBetaAccessController.onPageLoad(fakeRequest.uri).url)
     }
   }
 

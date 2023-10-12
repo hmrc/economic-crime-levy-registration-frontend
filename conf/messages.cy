@@ -456,29 +456,6 @@ signedOut.title = Er eich diogelwch, gwnaethom eich allgofnodi
 signedOut.heading = Er eich diogelwch, gwnaethom eich allgofnodi
 signedOut.guidance = Ni wnaethom gadw’ch atebion.
 
-privateBetaAccess.title = Cofrestru ar gyfer yr Ardoll Troseddau Economaidd
-privateBetaAccess.heading = Cofrestru ar gyfer yr Ardoll Troseddau Economaidd
-privateBetaAccess.p1 = Gallwch nawr ddefnyddio’r gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd (ECL).
-privateBetaAccess.p2 = I gofrestru, bydd angen cod mynediad 6 digid arnoch.
-privateBetaAccess.p3 = Rydym yn gofyn i ddefnyddwyr gofrestru gan ddefnyddio cod mynediad er mwyn iddynt allu rhoi adborth ar y gwasanaeth.
-privateBetaAccess.getAccessCode = Cael cod mynediad
-privateBetaAccess.registerInterest = Gallwch fynegi eich diddordeb mewn defnyddio’r gwasanaeth drwy gysylltu â CThEF:
-privateBetaAccess.emailSubject = Yn llinell pwnc yr e-bost, rhowch [Cais am god mynediad / Request for access code].
-privateBetaAccess.respond = Byddwn yn cynnwys cod mynediad yn ein hymateb i’ch e-bost, a gallwch ei ddefnyddio i gofrestru ar gyfer yr Ardoll Troseddau Economaidd.
-privateBetaAccess.receive = Byddwch yn cael cod mynediad cyn pen 24 awr ar ôl i chi anfon eich cais.
-privateBetaAccess.doNotContact = Peidiwch â chysylltu â llinell gymorth yr ECL ar gyfer problemau wrth gofrestru, gan nad yw staff y llinell gymorth yn gallu helpu gyda’r problemau hyn ar hyn o bryd.
-privateBetaAccess.enterAccessCode = Nodwch eich cod mynediad
-privateBetaAccess.toRegister = I gofrestru ar gyfer yr ECL, nodwch eich cod mynediad 6 digid, a dewiswch ‘Yn eich blaen’.
-privateBetaAccess.enterYourCode = Nodwch eich cod mynediad 6 digid
-privateBetaAccess.keepSafe = Cadwch y cod mynediad hwn yn ddiogel. Bydd angen i chi nodi’r cod bob tro y byddwch yn cael mynediad at y beta.
-privateBetaAccess.codeDoesNotWork = <strong>Nid yw fy nghod mynediad yn gweithio</strong>
-privateBetaAccess.codeDoesNotWork.contact = Os na allwch gael mynediad at y gwasanaeth, cysylltwch â CThEF: <a href="mailto:{0}" class="govuk-link">{0}</a>. Yn yr e-bost, bydd angen i chi roi’r canlynol:
-privateBetaAccess.codeDoesNotWork.b1 = eich enw
-privateBetaAccess.codeDoesNotWork.b2 = y dyddiad a’r amser y gwnaethoch geisio defnyddio’r gwasanaeth
-privateBetaAccess.codeDoesNotWork.b3 = eich cod mynediad 6 digid
-privateBetaAccess.error.required = Nodwch god mynediad
-privateBetaAccess.error.invalid = Nodwch god mynediad dilys
-
 date.month.1 = Ionawr
 date.month.2 = Chwefror
 date.month.3 = Mawrth

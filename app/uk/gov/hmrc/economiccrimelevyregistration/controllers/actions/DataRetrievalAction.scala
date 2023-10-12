@@ -29,49 +29,26 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RegistrationDataRetrievalAction @Inject() (
   val eclRegistrationService: EclRegistrationService,
-  val registrationAdditionalInfoService: RegistrationAdditionalInfoService,
-  appConfig: AppConfig
+  val registrationAdditionalInfoService: RegistrationAdditionalInfoService
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction
     with FrontendHeaderCarrierProvider {
 
   override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
     eclRegistrationService.getOrCreateRegistration(request.internalId)(hc(request)).flatMap { registration =>
-      if (appConfig.privateBetaEnabled) {
-        if (registration.privateBetaAccessCode.fold(false)(appConfig.privateBetaAccessCodes.contains(_))) {
-          registrationAdditionalInfoService
-            .get(request.internalId)(hc(request))
-            .map(info =>
-              Right(
-                RegistrationDataRequest(
-                  request.request,
-                  request.internalId,
-                  registration,
-                  info,
-                  request.eclRegistrationReference
-                )
-              )
-            )
-        } else {
-          Future.successful(
-            Left(Redirect(routes.PrivateBetaAccessController.onPageLoad(s"${appConfig.host}${request.uri}")))
-          )
-        }
-      } else {
-        registrationAdditionalInfoService
-          .get(request.internalId)(hc(request))
-          .map(info =>
-            Right(
-              RegistrationDataRequest(
-                request.request,
-                request.internalId,
-                registration,
-                info,
-                request.eclRegistrationReference
-              )
+      registrationAdditionalInfoService
+        .get(request.internalId)(hc(request))
+        .map(info =>
+          Right(
+            RegistrationDataRequest(
+              request.request,
+              request.internalId,
+              registration,
+              info,
+              request.eclRegistrationReference
             )
           )
-      }
+        )
     }
 
 }

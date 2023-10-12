@@ -457,29 +457,6 @@ signedOut.title = For your security, we signed you out
 signedOut.heading = For your security, we signed you out
 signedOut.guidance = We did not save your answers.
 
-privateBetaAccess.title = Register for the Economic Crime Levy
-privateBetaAccess.heading = Register for the Economic Crime Levy
-privateBetaAccess.p1 = You can now use this service to register for the Economic Crime Levy (ECL).
-privateBetaAccess.p2 = To register, you need a 6-digit access code.
-privateBetaAccess.p3 = We are asking users to sign up using an access code so that they can give us feedback on the service.
-privateBetaAccess.getAccessCode = Get an access code
-privateBetaAccess.registerInterest = You can register your interest in using the service by contacting HMRC: <a href="mailto:{0}" class="govuk-link">{0}</a>
-privateBetaAccess.emailSubject = In the subject of the email, put [Request for access code].
-privateBetaAccess.respond = We will respond to your email with an access code you can use to register for the Economic Crime Levy.
-privateBetaAccess.receive = You will receive an access code within 24 hours after you send your request.
-privateBetaAccess.doNotContact = Do not contact the ECL helpline for issues with registering, as they are currently unable to support these issues.
-privateBetaAccess.enterAccessCode = Enter your access code
-privateBetaAccess.toRegister = To register for the ECL, enter your 6-digit access code and select ''continue''.
-privateBetaAccess.enterYourCode = Enter your 6-digit access code
-privateBetaAccess.keepSafe = Keep this access code safe. You will need to enter the code every time you access the beta.
-privateBetaAccess.codeDoesNotWork = <strong>My access code doesn't work</strong>
-privateBetaAccess.codeDoesNotWork.contact = If you cannot access the service, contact HMRC: <a href="mailto:{0}" class="govuk-link">{0}</a>. In the email, you need to provide:
-privateBetaAccess.codeDoesNotWork.b1 = your name
-privateBetaAccess.codeDoesNotWork.b2 = the date and time you tried to use the service
-privateBetaAccess.codeDoesNotWork.b3 = your 6-digit access code
-privateBetaAccess.error.required = Enter an access code
-privateBetaAccess.error.invalid = Enter a valid access code
-
 date.month.1 = January
 date.month.2 = February
 date.month.3 = March
