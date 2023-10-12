@@ -21,14 +21,37 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, Normal
 
 import scala.concurrent.Future
 
+class NavigationException extends Exception("Method not overridden!")
+
 trait AsyncPageNavigator {
+  private val error = new NavigationException()
+
   def nextPage(mode: Mode, registration: Registration)(implicit request: RequestHeader): Future[Call] = mode match {
     case NormalMode => navigateInNormalMode(registration)
     case CheckMode  => navigateInCheckMode(registration)
   }
 
-  protected def navigateInNormalMode(registration: Registration)(implicit request: RequestHeader): Future[Call]
+  def nextPage(mode: Mode, registration: Registration, fromSpecificPage: Boolean)(implicit
+    request: RequestHeader
+  ): Future[Call] = mode match {
+    case NormalMode => navigateInNormalMode(registration, fromSpecificPage)
+    case CheckMode  => navigateInCheckMode(registration, fromSpecificPage)
+  }
 
-  protected def navigateInCheckMode(registration: Registration)(implicit request: RequestHeader): Future[Call]
+  protected def navigateInNormalMode(registration: Registration)(implicit request: RequestHeader): Future[Call] =
+    throw error
+
+  protected def navigateInCheckMode(registration: Registration)(implicit request: RequestHeader): Future[Call] =
+    throw error
+
+  protected def navigateInNormalMode(registration: Registration, fromSpecificPage: Boolean)(implicit
+    request: RequestHeader
+  ): Future[Call] =
+    throw error
+
+  protected def navigateInCheckMode(registration: Registration, fromSpecificPage: Boolean)(implicit
+    request: RequestHeader
+  ): Future[Call] =
+    throw error
 
 }

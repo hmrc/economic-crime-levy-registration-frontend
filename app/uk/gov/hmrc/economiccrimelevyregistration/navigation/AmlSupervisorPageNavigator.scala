@@ -34,13 +34,18 @@ class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(impl
     with FrontendHeaderCarrierProvider {
 
   override protected def navigateInNormalMode(
-    registration: Registration
+    registration: Registration,
+    fromLiableBeforeCurrentYearPage: Boolean
   )(implicit request: RequestHeader): Future[Call] =
     (registration.amlSupervisor, registration.registrationType) match {
       case (Some(amlSupervisor), Some(Initial))   =>
         amlSupervisor.supervisorType match {
           case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, registration)
-          case Hmrc | Other                                         => Future.successful(routes.RelevantAp12MonthsController.onPageLoad(NormalMode))
+          case Hmrc | Other                                         =>
+            Future.successful(fromLiableBeforeCurrentYearPage match {
+              case true  => routes.EntityTypeController.onPageLoad(NormalMode)
+              case false => routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
+            })
         }
       case (Some(amlSupervisor), Some(Amendment)) =>
         amlSupervisor.supervisorType match {
@@ -51,7 +56,8 @@ class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(impl
     }
 
   override protected def navigateInCheckMode(
-    registration: Registration
+    registration: Registration,
+    fromLiableBeforeCurrentYearPage: Boolean
   )(implicit request: RequestHeader): Future[Call] =
     registration.amlSupervisor match {
       case Some(amlSupervisor) =>

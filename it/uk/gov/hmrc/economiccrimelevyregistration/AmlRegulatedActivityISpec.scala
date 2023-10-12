@@ -56,7 +56,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial).url)
+      redirectLocation(result) shouldBe Some(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, false).url)
     }
 
     "save the selected AML regulated activity option then redirect to the liable for previous year page when the No option is selected" in {
