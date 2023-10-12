@@ -14,10 +14,10 @@ POST        /aml-regulated-activity-question                                    
 GET         /change-answer/aml-regulated-activity-question                      uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/aml-regulated-activity-question                      uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onSubmit(mode: Mode = CheckMode)
 
-GET         /your-aml-supervisor/:registrationType                              uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = NormalMode, registrationType: RegistrationType)
-POST        /your-aml-supervisor/:registrationType                              uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = NormalMode, registrationType: RegistrationType)
-GET         /change-answer/your-aml-supervisor/:registrationType                uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = CheckMode, registrationType: RegistrationType)
-POST        /change-answer/your-aml-supervisor/:registrationType                uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = CheckMode, registrationType: RegistrationType)
+GET         /your-aml-supervisor/:registrationType                              uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = NormalMode, registrationType: RegistrationType, fromLiableBeforeCurrentYearPage: Boolean)
+POST        /your-aml-supervisor/:registrationType                              uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = NormalMode, registrationType: RegistrationType, fromLiableBeforeCurrentYearPage: Boolean)
+GET         /change-answer/your-aml-supervisor/:registrationType                uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = CheckMode, registrationType: RegistrationType, fromLiableBeforeCurrentYearPage: Boolean)
+POST        /change-answer/your-aml-supervisor/:registrationType                uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = CheckMode, registrationType: RegistrationType, fromLiableBeforeCurrentYearPage: Boolean)
 
 GET         /accounting-period-question                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onPageLoad(mode: Mode = NormalMode)
 POST        /accounting-period-question                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onSubmit(mode: Mode = NormalMode)

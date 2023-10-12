@@ -43,8 +43,7 @@ class IsUkAddressISpec extends ISpecBase with AuthorisedBehaviour {
       val expectedJourneyConfig: AlfJourneyConfig =
         AlfJourneyConfig(
           options = AlfOptions(
-            continueUrl =
-              "http://localhost:14000/register-for-economic-crime-levy/address-lookup-continue/normalmode",
+            continueUrl = "http://localhost:14000/register-for-economic-crime-levy/address-lookup-continue/normalmode",
             homeNavHref = "/register-for-economic-crime-levy",
             signOutHref = "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
             accessibilityFooterUrl = "/accessibility-statement/economic-crime-levy",

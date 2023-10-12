@@ -33,7 +33,9 @@ class AmlRegulatedActivityPageNavigator @Inject() ()(implicit ec: ExecutionConte
   )(implicit request: RequestHeader): Future[Call] =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  =>
-        Future.successful(routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get))
+        Future.successful(
+          routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get, false)
+        )
       case Some(false) => Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode))
       case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }

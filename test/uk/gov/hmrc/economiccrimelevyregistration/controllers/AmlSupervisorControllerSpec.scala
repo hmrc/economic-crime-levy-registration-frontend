@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
@@ -47,7 +48,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
   val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
 
   val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator(mockAuditConnector) {
-    override protected def navigateInNormalMode(registration: Registration)(implicit
+    override protected def navigateInNormalMode(registration: Registration, extraFlag: Boolean)(implicit
       request: RequestHeader
     ): Future[Call] =
       Future.successful(onwardRoute)
@@ -76,7 +77,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode, RegistrationType.Initial)(
+        contentAsString(result) shouldBe view(form, NormalMode, RegistrationType.Initial, false)(
           fakeRequest,
           messages
         ).toString
@@ -90,7 +91,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(amlSupervisor), NormalMode, RegistrationType.Initial)(
+          contentAsString(result) shouldBe view(form.fill(amlSupervisor), NormalMode, RegistrationType.Initial, false)(
             fakeRequest,
             messages
           ).toString
@@ -115,7 +116,9 @@ class AmlSupervisorControllerSpec extends SpecBase {
           }
 
           val result: Future[Result] =
-            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(formData: _*))
+            controller.onSubmit(NormalMode, RegistrationType.Initial, false)(
+              fakeRequest.withFormUrlEncodedBody(formData: _*)
+            )
 
           status(result) shouldBe SEE_OTHER
 
@@ -125,12 +128,14 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
       new TestContext(registration) {
-        val result: Future[Result]              = controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
+        val result: Future[Result]              = controller.onSubmit(NormalMode, RegistrationType.Initial, false)(
+          fakeRequest.withFormUrlEncodedBody(("value", ""))
+        )
         val formWithErrors: Form[AmlSupervisor] = form.bind(Map("value" -> ""))
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, NormalMode, RegistrationType.Initial)(
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode, RegistrationType.Initial, false)(
           fakeRequest,
           messages
         ).toString

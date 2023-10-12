@@ -32,8 +32,8 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the registration submitted HTML view" in {
       stubAuthorisedWithEclEnrolment()
 
-      val eclReference              = random[String]
-      val firstContactEmailAddress  = emailAddress(EmailMaxLength).sample.get
+      val eclReference             = random[String]
+      val firstContactEmailAddress = emailAddress(EmailMaxLength).sample.get
 
       val result = callRoute(
         FakeRequest(routes.RegistrationSubmittedController.onPageLoad())

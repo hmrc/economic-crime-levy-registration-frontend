@@ -35,7 +35,7 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
         await(
           pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
         ) shouldBe routes.AmlSupervisorController
-          .onPageLoad(NormalMode, Amendment)
+          .onPageLoad(NormalMode, Amendment, false)
     }
 
     "return a Call to the check your answers page from the AML regulated activity page in CheckMode when the 'Yes' option is selected" in forAll {

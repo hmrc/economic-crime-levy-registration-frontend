@@ -10,7 +10,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 
-
 class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.AmlRegulatedActivityController.onPageLoad(NormalMode).url}" should {
@@ -42,7 +41,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected AML regulated activity option then redirect to the AML supervisor page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration      = random[Registration]
       val validRegistration = registration.copy(registrationType = Some(Initial))
       stubGetRegistration(validRegistration)
 
@@ -57,7 +56,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial).url)
+      redirectLocation(result) shouldBe Some(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, false).url)
     }
 
     "save the selected AML regulated activity option then redirect to the liable for previous year page when the No option is selected" in {
@@ -81,7 +80,9 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode).url)
+      redirectLocation(result) shouldBe Some(
+        routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode).url
+      )
     }
   }
 }

@@ -42,7 +42,7 @@ class UtrTypeISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistration(registration)
 
       val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(utrType = Some(utrType))
-      val updatedRegistration = registration.copy(
+      val updatedRegistration    = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
 

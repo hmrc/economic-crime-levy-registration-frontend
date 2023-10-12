@@ -42,7 +42,7 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistration(registration)
 
       val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))
-      val updatedRegistration = registration.copy(
+      val updatedRegistration    = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
 
