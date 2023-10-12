@@ -62,7 +62,7 @@ trait AuthorisedBehaviour {
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
-        status(result)          shouldBe SEE_OTHER
+        status(result)                 shouldBe SEE_OTHER
         redirectLocation(result).value shouldBe routes.NotableErrorController.assistantCannotRegister().url
       }
     }
@@ -92,7 +92,7 @@ trait AuthorisedBehaviour {
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
-        status(result) shouldBe SEE_OTHER
+        status(result)                 shouldBe SEE_OTHER
         redirectLocation(result).value shouldBe routes.NotableErrorController.assistantCannotRegister().url
       }
     }
@@ -113,7 +113,7 @@ trait AuthorisedBehaviour {
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
-        status(result) shouldBe SEE_OTHER
+        status(result)                 shouldBe SEE_OTHER
         redirectLocation(result).value shouldBe routes.NotableErrorController.assistantCannotRegister().url
       }
     }
@@ -125,7 +125,7 @@ trait AuthorisedBehaviour {
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
-        status(result) shouldBe SEE_OTHER
+        status(result)               shouldBe SEE_OTHER
         redirectLocation(result).value should startWith(appConfig.signInUrl)
       }
 
@@ -134,7 +134,7 @@ trait AuthorisedBehaviour {
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 
-        status(result) shouldBe SEE_OTHER
+        status(result)                 shouldBe SEE_OTHER
         redirectLocation(result).value shouldBe routes.NotableErrorController.agentCannotRegister().url
       }
     }
