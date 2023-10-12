@@ -27,14 +27,14 @@ class AsyncPageNavigatorSpec extends SpecBase {
   val pageNavigator = new AsyncPageNavigator {}
 
   "nextPage" should {
-    "throw an exception" in forAll { (registration: Registration, mode: Mode, extraFlag: Boolean) =>
+    "throw an exception" in forAll { (registration: Registration, mode: Mode, fromSpecificPage: Boolean) =>
       Try {
         pageNavigator.nextPage(mode, registration)(fakeRequest)
       } match {
         case Success(_) => fail
         case Failure(_) =>
           Try {
-            pageNavigator.nextPage(mode, registration, extraFlag)(fakeRequest)
+            pageNavigator.nextPage(mode, registration, fromSpecificPage)(fakeRequest)
           } match {
             case Success(_) => fail
             case Failure(_) =>
