@@ -22,7 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 import scala.util.{Failure, Success, Try}
 
-class AsyncNavigatorSpec extends SpecBase {
+class AsyncPageNavigatorSpec extends SpecBase {
 
   val pageNavigator = new AsyncPageNavigator {}
 
@@ -30,10 +30,15 @@ class AsyncNavigatorSpec extends SpecBase {
     "throw an exception" in forAll { (registration: Registration, mode: Mode, extraFlag: Boolean) =>
       Try {
         pageNavigator.nextPage(mode, registration)(fakeRequest)
-        pageNavigator.nextPage(mode, registration, extraFlag)(fakeRequest)
       } match {
         case Success(_) => fail
         case Failure(_) =>
+          Try {
+            pageNavigator.nextPage(mode, registration, extraFlag)(fakeRequest)
+          } match {
+            case Success(_) => fail
+            case Failure(_) =>
+          }
       }
     }
   }
