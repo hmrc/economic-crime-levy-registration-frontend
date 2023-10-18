@@ -33,8 +33,8 @@ import scala.concurrent.Future
 
 class DataRetrievalActionSpec extends SpecBase {
 
-  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  val mockRegistrationAdditionalInfoService              = mock[RegistrationAdditionalInfoService]
+  val mockEclRegistrationService: EclRegistrationService                       = mock[EclRegistrationService]
+  val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
 
   class TestDataRetrievalAction
       extends RegistrationDataRetrievalAction(
@@ -53,7 +53,7 @@ class DataRetrievalActionSpec extends SpecBase {
   }
 
   "refine" should {
-    "throw ab error if additional info cannot be retrieved" in forAll {
+    "return internal server error if additional info cannot be retrieved" in forAll {
       (internalId: String, groupId: String, registration: Registration) =>
         when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
 
@@ -63,14 +63,10 @@ class DataRetrievalActionSpec extends SpecBase {
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
 
-        Try(await(result)) match {
-          case Success(_) => fail
-          case Failure(e) => e.getMessage shouldBe error
-        }
-
+        await(result) shouldBe Left(InternalServerError)
     }
 
-    "transform an AuthorisedRequest into a RegistrationDataRequest when private beta is disabled" in forAll {
+    "transform an AuthorisedRequest into a RegistrationDataRequest when data retrieval succeeds" in forAll {
       (internalId: String, groupId: String, registration: Registration) =>
         when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
 
@@ -87,42 +83,6 @@ class DataRetrievalActionSpec extends SpecBase {
 
         await(result) shouldBe Right(
           RegistrationDataRequest(fakeRequest, internalId, registration, Some(info), Some("ECLRefNumber12345"))
-        )
-    }
-
-    "transform an AuthorisedRequest into a RegistrationDataRequest with no additional info when private beta is disabled" in forAll {
-      (internalId: String, groupId: String, registration: Registration) =>
-        when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
-
-        when(mockRegistrationAdditionalInfoService.get(any())(any())).thenReturn(Future.successful(None))
-
-        val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
-          dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
-
-        await(result) shouldBe Right(
-          RegistrationDataRequest(fakeRequest, internalId, registration, None, Some("ECLRefNumber12345"))
-        )
-    }
-
-    "transform an AuthorisedRequest into a RegistrationDataRequest when private beta is enabled and the access code matches one that is held in config" in forAll {
-      (internalId: String, groupId: String, registration: Registration, privateBetaAccessCode: String) =>
-        val updatedRegistration = registration.copy(privateBetaAccessCode = Some(privateBetaAccessCode))
-        when(mockEclRegistrationService.getOrCreateRegistration(any())(any()))
-          .thenReturn(Future(updatedRegistration))
-
-        val info = RegistrationAdditionalInfo(
-          registration.internalId,
-          Some(random[Int]),
-          None
-        )
-
-        when(mockRegistrationAdditionalInfoService.get(any())(any())).thenReturn(Future.successful(Some(info)))
-
-        val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
-          dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
-
-        await(result) shouldBe Right(
-          RegistrationDataRequest(fakeRequest, internalId, updatedRegistration, Some(info), Some("ECLRefNumber12345"))
         )
     }
   }
