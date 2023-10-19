@@ -17,13 +17,10 @@
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.Logging
-import play.api.http.Status._
-import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationAdditionalInfo
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
