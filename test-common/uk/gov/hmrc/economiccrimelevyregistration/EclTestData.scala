@@ -332,4 +332,12 @@ trait EclTestData {
         registration <- Arbitrary.arbitrary[Registration]
       } yield ValidRegistrationWithRegistrationType(registration.copy(registrationType = Some(Initial)))
     }
+
+  implicit val arbSessionData: Arbitrary[SessionData] =
+    Arbitrary {
+      for {
+        id     <- Gen.uuid
+        values <- Arbitrary.arbitrary[Map[String, String]]
+      } yield SessionData(id.toString, values, None)
+    }
 }

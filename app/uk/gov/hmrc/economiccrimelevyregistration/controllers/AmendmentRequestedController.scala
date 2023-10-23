@@ -16,31 +16,44 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
-import uk.gov.hmrc.economiccrimelevyregistration.utils.SessionCache
+import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendmentRequestedView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class AmendmentRequestedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: AmendmentRequestedView,
-  authorise: AuthorisedActionWithoutEnrolmentCheck,
-  sessionCache: SessionCache
+  authorise: AuthorisedActionWithEnrolmentCheck,
+  sessionService: SessionService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
-    sessionCache.get(SessionKeys.FirstContactEmailAddress, request).map {
-      case Some(firstContactEmailAddress) => Ok(view(firstContactEmailAddress))
-      case None                           => InternalServerError
-    }
+    sessionService
+      .get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress)
+      .map {
+        case Some(firstContactEmailAddress) =>
+          Ok(view(firstContactEmailAddress))
+        case None                           =>
+          logger.error("Failed to retrieve first contact's email from session and database")
+          InternalServerError
+      }
+      .recover { case e =>
+        logger.error(
+          s"Exception thrown during attempt to retrieve first contact's email from the session: ${e.getMessage}"
+        )
+        InternalServerError
+      }
   }
 }

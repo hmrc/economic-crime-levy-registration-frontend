@@ -23,8 +23,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactEmailFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactEmailPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactEmailView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -39,7 +40,8 @@ class FirstContactEmailController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: FirstContactEmailFormProvider,
   pageNavigator: FirstContactEmailPageNavigator,
-  view: FirstContactEmailView
+  view: FirstContactEmailView,
+  sessionService: SessionService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -67,11 +69,15 @@ class FirstContactEmailController @Inject() (
               request.registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
             )
 
-          eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(contacts = updatedContacts))
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
-            }
+          sessionService
+            .update(SessionData(request.internalId, Map(SessionKeys.FirstContactEmailAddress -> email)))
+            .flatMap(_ =>
+              eclRegistrationConnector
+                .upsertRegistration(request.registration.copy(contacts = updatedContacts))
+                .map { updatedRegistration =>
+                  Redirect(pageNavigator.nextPage(mode, updatedRegistration))
+                }
+            )
         }
       )
   }

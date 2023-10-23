@@ -28,8 +28,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactEmailFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactEmailPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactEmailView
 
 import scala.concurrent.Future
@@ -39,6 +40,7 @@ class FirstContactEmailControllerSpec extends SpecBase {
   val view: FirstContactEmailView                 = app.injector.instanceOf[FirstContactEmailView]
   val formProvider: FirstContactEmailFormProvider = new FirstContactEmailFormProvider()
   val form: Form[String]                          = formProvider()
+  val mockSessionService: SessionService          = mock[SessionService]
 
   val pageNavigator: FirstContactEmailPageNavigator = new FirstContactEmailPageNavigator() {
     override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
@@ -54,7 +56,8 @@ class FirstContactEmailControllerSpec extends SpecBase {
       mockEclRegistrationConnector,
       formProvider,
       pageNavigator,
-      view
+      view,
+      mockSessionService
     )
   }
 
@@ -128,6 +131,21 @@ class FirstContactEmailControllerSpec extends SpecBase {
               registration.contacts.firstContactDetails.copy(emailAddress = Some(email.toLowerCase))
             )
           )
+
+        when(
+          mockSessionService.update(
+            ArgumentMatchers.eq(
+              SessionData(
+                updatedRegistration.internalId,
+                Map(
+                  SessionKeys.FirstContactEmailAddress -> updatedRegistration.contacts.firstContactDetails.emailAddress
+                    .getOrElse("")
+                )
+              )
+            )
+          )(any())
+        )
+          .thenReturn(Future.successful(()))
 
         when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
           .thenReturn(Future.successful(updatedRegistration))
