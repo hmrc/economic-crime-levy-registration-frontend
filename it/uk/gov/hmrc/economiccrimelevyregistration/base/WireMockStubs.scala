@@ -17,7 +17,8 @@ trait WireMockStubs
     with RegistrationAdditionalInfoStubs
     with EclCalculatorStubs
     with EnrolmentStoreProxyStubs
-    with EmailStubs {
+    with EmailStubs
+    with SessionDataStubs {
 
   def stubAuthorisedWithNoGroupEnrolment(): StubMapping = {
     stubAuthorised()

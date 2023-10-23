@@ -26,15 +26,15 @@ import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 
 @Singleton
-class SessionRetrievalConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit
+class SessionDataConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
   private val eclRegistrationUrl: String =
     s"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
 
-  def get(internalId: String)(implicit hc: HeaderCarrier): Future[Option[SessionData]] =
-    httpClient.GET[Option[SessionData]](
+  def get(internalId: String)(implicit hc: HeaderCarrier): Future[SessionData] =
+    httpClient.GET[SessionData](
       s"$eclRegistrationUrl/session/$internalId"
     )
 

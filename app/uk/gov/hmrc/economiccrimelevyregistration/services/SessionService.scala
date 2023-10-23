@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import play.api.mvc.Session
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.SessionRetrievalConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.SessionDataConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionData
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -25,7 +25,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
-class SessionService @Inject() (sessionRetrievalConnector: SessionRetrievalConnector)(implicit ec: ExecutionContext) {
+class SessionService @Inject() (sessionRetrievalConnector: SessionDataConnector)(implicit ec: ExecutionContext) {
 
   def get(session: Session, internalId: String, key: String)(implicit
     hc: HeaderCarrier
@@ -39,7 +39,7 @@ class SessionService @Inject() (sessionRetrievalConnector: SessionRetrievalConne
     if (result.isEmpty) {
       sessionRetrievalConnector
         .get(internalId)
-        .map(sessionDataOption => sessionDataOption.flatMap(sessionData => sessionData.values.get(key)))
+        .map(sessionData => sessionData.values.get(key))
     } else {
       Future.successful(result)
     }
