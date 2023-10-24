@@ -36,8 +36,8 @@ trait Formatters {
           case None    => Left(Seq(FormError(key, errorKey, args)))
           case Some(s) =>
             sanitise(s) match {
-              case "" => Left(Seq(FormError(key, errorKey, args)))
-              case ss => Right(ss)
+              case ss if ss.isEmpty => Left(Seq(FormError(key, errorKey, args)))
+              case ss               => Right(ss)
             }
         }
 

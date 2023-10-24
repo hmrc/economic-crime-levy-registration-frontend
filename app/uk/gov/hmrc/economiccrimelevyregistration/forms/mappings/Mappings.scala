@@ -26,7 +26,7 @@ import java.time.LocalDate
 trait Mappings extends Formatters with Constraints {
 
   protected def sanitise(value: String) =
-    value.replaceAll("\\s", "")
+    value.filterNot(_.isWhitespace)
 
   protected def text(
     errorKey: String = "error.required",
