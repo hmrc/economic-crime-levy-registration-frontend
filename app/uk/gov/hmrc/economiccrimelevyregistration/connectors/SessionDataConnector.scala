@@ -18,35 +18,35 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.Logging
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationAdditionalInfo
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.economiccrimelevyregistration.models.{RegistrationAdditionalInfo, SessionData}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 @Singleton
-class RegistrationAdditionalInfoConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit
+class SessionDataConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
   private val eclRegistrationUrl: String =
     s"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
 
-  def get(internalId: String)(implicit hc: HeaderCarrier): Future[Option[RegistrationAdditionalInfo]] =
-    httpClient.GET[Option[RegistrationAdditionalInfo]](
-      s"$eclRegistrationUrl/registration-additional-info/$internalId"
+  def get(internalId: String)(implicit hc: HeaderCarrier): Future[SessionData] =
+    httpClient.GET[SessionData](
+      s"$eclRegistrationUrl/session/$internalId"
     )
 
-  def upsert(registration: RegistrationAdditionalInfo)(implicit hc: HeaderCarrier): Future[Unit] =
-    httpClient.PUT[RegistrationAdditionalInfo, Unit](
-      s"$eclRegistrationUrl/registration-additional-info",
+  def upsert(registration: SessionData)(implicit hc: HeaderCarrier): Future[Unit] =
+    httpClient.PUT[SessionData, Unit](
+      s"$eclRegistrationUrl/session",
       registration
     )
 
   def delete(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
     httpClient
       .DELETE[Unit](
-        s"$eclRegistrationUrl/registration-additional-info/$internalId"
+        s"$eclRegistrationUrl/session/$internalId"
       )
 }
