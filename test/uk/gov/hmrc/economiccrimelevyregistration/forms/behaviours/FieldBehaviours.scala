@@ -50,4 +50,16 @@ trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Genera
         result.errors shouldEqual Seq(requiredError)
       }
     }
+
+  def trimValue(form: Form[_], fieldName: String, validDataGenerator: Gen[String]): Unit =
+    "bind" should {
+      "remove leading and trailing spaces" in {
+
+        forAll(validDataGenerator -> "validDataItem") { dataItem: String =>
+          val result = form.bind(Map(fieldName -> ("  " + dataItem + "  ")))
+          result.value.value shouldBe dataItem
+          result.errors      shouldBe empty
+        }
+      }
+    }
 }

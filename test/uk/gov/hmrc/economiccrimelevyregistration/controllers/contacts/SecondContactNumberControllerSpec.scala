@@ -127,7 +127,7 @@ class SecondContactNumberControllerSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(contacts =
             registration.contacts.copy(secondContactDetails =
-              registration.contacts.secondContactDetails.copy(telephoneNumber = Some(number))
+              registration.contacts.secondContactDetails.copy(telephoneNumber = Some(number.trim))
             )
           )
 

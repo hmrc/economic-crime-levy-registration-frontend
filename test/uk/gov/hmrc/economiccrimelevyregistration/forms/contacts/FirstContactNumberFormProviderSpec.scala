@@ -58,5 +58,11 @@ class FirstContactNumberFormProviderSpec extends StringFieldBehaviours {
 
       result.errors.map(_.message) should contain only "firstContactNumber.error.invalid"
     }
+
+    behave like trimValue(
+      form,
+      fieldName,
+      telephoneNumber(TelephoneNumberMaxLength)
+    )
   }
 }

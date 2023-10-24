@@ -80,7 +80,7 @@ class SecondContactNameControllerSpec extends SpecBase {
         new TestContext(
           registration.copy(contacts =
             registration.contacts
-              .copy(secondContactDetails = registration.contacts.secondContactDetails.copy(name = Some(name)))
+              .copy(secondContactDetails = registration.contacts.secondContactDetails.copy(name = Some(name.trim)))
           )
         ) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)

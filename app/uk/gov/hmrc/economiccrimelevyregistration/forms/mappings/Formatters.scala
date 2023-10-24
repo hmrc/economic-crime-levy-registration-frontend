@@ -37,9 +37,7 @@ trait Formatters {
           case Some(s) =>
             sanitise(s) match {
               case "" => Left(Seq(FormError(key, errorKey, args)))
-              case ss => {
-                Right(ss)
-              }
+              case ss => Right(ss)
             }
         }
 
