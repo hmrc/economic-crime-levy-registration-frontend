@@ -55,8 +55,7 @@ abstract class ISpecBase
     "auditing.enabled"                        -> false,
     "features.grsStubEnabled"                 -> false,
     "features.alfStubEnabled"                 -> false,
-    "features.enrolmentStoreProxyStubEnabled" -> false,
-    "features.privateBeta.enabled"            -> false
+    "features.enrolmentStoreProxyStubEnabled" -> false
   ) ++ setWireMockPort(
     "auth",
     "economic-crime-levy-registration",

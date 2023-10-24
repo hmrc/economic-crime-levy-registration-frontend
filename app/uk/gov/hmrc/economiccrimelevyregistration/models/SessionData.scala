@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
+package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.NameMaxLength
+import play.api.libs.json.{Json, OFormat}
 
-import javax.inject.Inject
+import java.time.Instant
 
-class FirstContactNameFormProvider @Inject() extends Mappings {
+case class SessionData(internalId: String, values: Map[String, String], lastUpdated: Option[Instant] = None)
 
-  override def sanitise(value: String): String = value.trim
-
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("firstContactName.error.required")
-        .verifying(maxLength(NameMaxLength, "firstContactName.error.length"))
-    )
+object SessionData {
+  implicit val format: OFormat[SessionData] = Json.format[SessionData]
 }

@@ -80,7 +80,8 @@ trait Generators {
   def longsOutsideRange(min: Long, max: Long): Gen[Long] =
     arbitrary[Long] suchThat (x => x < min || x > max)
 
-  def nonBlankString: Gen[String] = arbitrary[String] suchThat (!_.isBlank)
+  def nonBlankString: Gen[String] =
+    arbitrary[String] suchThat (!_.isBlank)
 
   def nonBooleans: Gen[String] =
     nonBlankString
@@ -90,13 +91,13 @@ trait Generators {
   def stringsWithMaxLength(maxLength: Int): Gen[String] =
     for {
       length <- choose(1, maxLength)
-      chars  <- listOfN(length, arbitrary[Char])
+      chars  <- listOfN(length, alphaNumChar)
     } yield chars.mkString
 
   def alphaNumStringsWithMaxLength(maxLength: Int): Gen[String] =
     for {
       length <- choose(1, maxLength)
-      chars  <- listOfN(length, Gen.alphaNumChar)
+      chars  <- listOfN(length, alphaNumChar)
     } yield chars.mkString
 
   def numStringsWithConcreteLength(length: Int): Gen[String] =
@@ -106,7 +107,10 @@ trait Generators {
     } yield chars.mkString
 
   def telephoneNumber(maxLength: Int): Gen[String] =
-    RegexpGen.from(s"${Regex.TelephoneNumberRegex}").retryUntil(s => s.length <= maxLength && s.trim.nonEmpty)
+    RegexpGen
+      .from(s"${Regex.TelephoneNumberRegex}")
+      .retryUntil(s => s.length <= maxLength && s.trim.nonEmpty)
+      .map(_.trim)
 
   def emailAddress(maxLength: Int): Gen[String] = {
     val emailPartsLength = maxLength / 5
@@ -121,7 +125,7 @@ trait Generators {
   def stringsLongerThan(minLength: Int): Gen[String] = for {
     maxLength <- (minLength * 2).max(100)
     length    <- Gen.chooseNum(minLength + 1, maxLength)
-    chars     <- listOfN(length, arbitrary[Char])
+    chars     <- listOfN(length, alphaNumChar)
   } yield chars.mkString
 
   def stringsExceptSpecificValues(excluded: Seq[String]): Gen[String] =

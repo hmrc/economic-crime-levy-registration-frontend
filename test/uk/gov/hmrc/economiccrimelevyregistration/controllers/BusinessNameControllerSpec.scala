@@ -108,7 +108,7 @@ class BusinessNameControllerSpec extends SpecBase {
       stringsWithMaxLength(OrganisationNameMaxLength),
       Arbitrary.arbitrary[Mode]
     ) { (registration: Registration, businessName: String, mode: Mode) =>
-      val otherEntityJourneyData = registration.otherEntityJourneyData.copy(businessName = Some(businessName))
+      val otherEntityJourneyData = registration.otherEntityJourneyData.copy(businessName = Some(businessName.trim))
       new TestContext(registration) {
         val updatedRegistration: Registration = registration.copy(
           optOtherEntityJourneyData = Some(otherEntityJourneyData)

@@ -177,7 +177,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(Future.successful(()))
 
           when(mockRegistrationAdditionalInfoService.delete(any())(any()))
-            .thenReturn(Future.successful())
+            .thenReturn(Future.successful(()))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
@@ -238,7 +238,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(Future.successful(()))
 
           when(mockRegistrationAdditionalInfoService.delete(any())(any()))
-            .thenReturn(Future.successful())
+            .thenReturn(Future.successful(()))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
@@ -306,7 +306,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(Future.successful(()))
 
           when(mockRegistrationAdditionalInfoService.delete(any())(any()))
-            .thenReturn(Future.successful())
+            .thenReturn(Future.successful(()))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
@@ -369,7 +369,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(Future.successful(()))
 
           when(mockRegistrationAdditionalInfoService.delete(any())(any()))
-            .thenReturn(Future.successful())
+            .thenReturn(Future.successful(()))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
@@ -429,7 +429,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(Future.successful(()))
 
           when(mockRegistrationAdditionalInfoService.delete(any())(any()))
-            .thenReturn(Future.successful())
+            .thenReturn(Future.successful(()))
 
           val result: IllegalStateException = intercept[IllegalStateException] {
             await(controller.onSubmit()(fakeRequest))

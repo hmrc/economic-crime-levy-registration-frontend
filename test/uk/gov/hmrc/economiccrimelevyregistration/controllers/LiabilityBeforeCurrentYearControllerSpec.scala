@@ -82,7 +82,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
               None
             )
 
-          when(mockService.createOrUpdate(any())(any())).thenReturn(Future.successful())
+          when(mockService.createOrUpdate(any())(any())).thenReturn(Future.successful(()))
 
           val result: Future[Result] =
             controller.onSubmit(true, NormalMode)(

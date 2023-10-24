@@ -172,12 +172,10 @@ registerWith.title.gc = GC
 registerWith.heading = You need to register with the {0} to pay the levy
 registerWith.heading.fca = Financial Conduct Authority (FCA)
 registerWith.heading.gc = Gambling Commission (GC)
-registerWith.body.p1 = The Economic Crime Levy guidance has {0}.
-registerWith.body.p1.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">more information</a>
-registerWith.body.p2 = You need to register to pay the Economic Crime Levy (ECL) with the regulatory body that supervises your Anti-Money Laundering (AML) activity.
-registerWith.body.p3 = {0}.
-registerWith.body.p3.fcaLink = <a href="https://www.fca.org.uk/" class="govuk-link">Go to the FCA website</a>
-registerWith.body.p3.gcLink = <a href="https://www.gamblingcommission.gov.uk/" class="govuk-link">Go to the Gambling Commission website</a>
+registerWith.body.p1 = You need to register to pay the Economic Crime Levy (ECL) with the regulatory body that supervises your Anti-Money Laundering (AML) activity.
+registerWith.body.p2 = {0}.
+registerWith.body.p2.fcaLink = <a href="https://www.fca.org.uk/" class="govuk-link">Go to the FCA website</a>
+registerWith.body.p2.gcLink = <a href="https://www.gamblingcommission.gov.uk/" class="govuk-link">Go to the Gambling Commission website</a>
 
 entityType.title = What is your entity type?
 entityType.GeneralPartnership = General partnership
@@ -456,29 +454,6 @@ exit.survey = {0} (takes 30 seconds) to exit survey.
 signedOut.title = For your security, we signed you out
 signedOut.heading = For your security, we signed you out
 signedOut.guidance = We did not save your answers.
-
-privateBetaAccess.title = Register for the Economic Crime Levy
-privateBetaAccess.heading = Register for the Economic Crime Levy
-privateBetaAccess.p1 = You can now use this service to register for the Economic Crime Levy (ECL).
-privateBetaAccess.p2 = To register, you need a 6-digit access code.
-privateBetaAccess.p3 = We are asking users to sign up using an access code so that they can give us feedback on the service.
-privateBetaAccess.getAccessCode = Get an access code
-privateBetaAccess.registerInterest = You can register your interest in using the service by contacting HMRC: <a href="mailto:{0}" class="govuk-link">{0}</a>
-privateBetaAccess.emailSubject = In the subject of the email, put [Request for access code].
-privateBetaAccess.respond = We will respond to your email with an access code you can use to register for the Economic Crime Levy.
-privateBetaAccess.receive = You will receive an access code within 24 hours after you send your request.
-privateBetaAccess.doNotContact = Do not contact the ECL helpline for issues with registering, as they are currently unable to support these issues.
-privateBetaAccess.enterAccessCode = Enter your access code
-privateBetaAccess.toRegister = To register for the ECL, enter your 6-digit access code and select ''continue''.
-privateBetaAccess.enterYourCode = Enter your 6-digit access code
-privateBetaAccess.keepSafe = Keep this access code safe. You will need to enter the code every time you access the beta.
-privateBetaAccess.codeDoesNotWork = <strong>My access code doesn't work</strong>
-privateBetaAccess.codeDoesNotWork.contact = If you cannot access the service, contact HMRC: <a href="mailto:{0}" class="govuk-link">{0}</a>. In the email, you need to provide:
-privateBetaAccess.codeDoesNotWork.b1 = your name
-privateBetaAccess.codeDoesNotWork.b2 = the date and time you tried to use the service
-privateBetaAccess.codeDoesNotWork.b3 = your 6-digit access code
-privateBetaAccess.error.required = Enter an access code
-privateBetaAccess.error.invalid = Enter a valid access code
 
 date.month.1 = January
 date.month.2 = February

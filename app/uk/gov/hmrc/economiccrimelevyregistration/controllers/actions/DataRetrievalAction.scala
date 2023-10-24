@@ -16,10 +16,8 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
-import play.api.mvc.Results.Redirect
+import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{ActionRefiner, Result}
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
@@ -29,35 +27,15 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RegistrationDataRetrievalAction @Inject() (
   val eclRegistrationService: EclRegistrationService,
-  val registrationAdditionalInfoService: RegistrationAdditionalInfoService,
-  appConfig: AppConfig
+  val registrationAdditionalInfoService: RegistrationAdditionalInfoService
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction
     with FrontendHeaderCarrierProvider {
 
   override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
-    eclRegistrationService.getOrCreateRegistration(request.internalId)(hc(request)).flatMap { registration =>
-      if (appConfig.privateBetaEnabled) {
-        if (registration.privateBetaAccessCode.fold(false)(appConfig.privateBetaAccessCodes.contains(_))) {
-          registrationAdditionalInfoService
-            .get(request.internalId)(hc(request))
-            .map(info =>
-              Right(
-                RegistrationDataRequest(
-                  request.request,
-                  request.internalId,
-                  registration,
-                  info,
-                  request.eclRegistrationReference
-                )
-              )
-            )
-        } else {
-          Future.successful(
-            Left(Redirect(routes.PrivateBetaAccessController.onPageLoad(s"${appConfig.host}${request.uri}")))
-          )
-        }
-      } else {
+    eclRegistrationService
+      .getOrCreateRegistration(request.internalId)(hc(request))
+      .flatMap { registration =>
         registrationAdditionalInfoService
           .get(request.internalId)(hc(request))
           .map(info =>
@@ -72,7 +50,9 @@ class RegistrationDataRetrievalAction @Inject() (
             )
           )
       }
-    }
+      .recover { case _ =>
+        Left(InternalServerError)
+      }
 
 }
 

@@ -95,7 +95,7 @@ class PartnershipNameControllerSpec extends SpecBase {
     ) { (registration: Registration, partnershipName: String) =>
       new TestContext(registration) {
         val updatedRegistration: Registration =
-          registration.copy(partnershipName = Some(partnershipName))
+          registration.copy(partnershipName = Some(partnershipName.trim))
 
         when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
           .thenReturn(Future.successful(updatedRegistration))
