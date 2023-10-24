@@ -125,8 +125,8 @@ trait Generators {
   def stringsLongerThan(minLength: Int): Gen[String] = for {
     maxLength <- (minLength * 2).max(100)
     length    <- Gen.chooseNum(minLength + 1, maxLength)
-    chars     <- listOfN(length, arbitrary[Char])
-  } yield chars.mkString.replaceAll("\\s", "")
+    chars     <- listOfN(length, arbitrary[Char].retryUntil(!_.isWhitespace))
+  } yield chars.mkString
 
   def stringsExceptSpecificValues(excluded: Seq[String]): Gen[String] =
     nonBlankString suchThat (!excluded.contains(_))
