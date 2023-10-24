@@ -20,12 +20,12 @@ import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
 
-class PartnershipNameFormProviderSpec extends StringFieldBehaviours {
+class BusinessNameFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "partnershipName.error.required"
-  val lengthKey   = "partnershipName.error.length"
+  val requiredKey = "businessName.error.required"
+  val lengthKey   = "businessName.error.length"
 
-  val form = new PartnershipNameFormProvider()()
+  val form = new BusinessNameFormProvider()()
 
   "value" should {
 

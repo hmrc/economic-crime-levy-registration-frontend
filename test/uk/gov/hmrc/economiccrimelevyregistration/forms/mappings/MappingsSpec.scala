@@ -37,6 +37,10 @@ object MappingsSpec {
   }
 }
 
+class MyMappings extends Mappings {
+  override def sanitise(value: String): String = value.trim
+}
+
 class MappingsSpec extends AnyWordSpec with Matchers with OptionValues with Mappings {
 
   import MappingsSpec._
@@ -48,8 +52,8 @@ class MappingsSpec extends AnyWordSpec with Matchers with OptionValues with Mapp
         "value" -> text()
       )
 
-    "bind a valid string" in {
-      val result = testForm.bind(Map("value" -> "foobar"))
+    "bind a valid string ignoring all spaces" in {
+      val result = testForm.bind(Map("value" -> "  foo  bar  "))
       result.get shouldEqual "foobar"
     }
 

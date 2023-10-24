@@ -49,5 +49,11 @@ class SecondContactNameFormProviderSpec extends StringFieldBehaviours {
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
     )
+
+    behave like trimValue(
+      form,
+      fieldName,
+      stringsWithMaxLength(NameMaxLength)
+    )
   }
 }
