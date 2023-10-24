@@ -49,5 +49,12 @@ class FirstContactNameFormProviderSpec extends StringFieldBehaviours {
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
     )
+
+    "ignore leading and trailing spaces" in {
+      val dataValue = "  Joe Bloogs  "
+      val result    = form.bind(Map(fieldName -> dataValue)).apply(fieldName)
+      result.value.value shouldBe dataValue.trim
+      result.errors      shouldBe empty
+    }
   }
 }
