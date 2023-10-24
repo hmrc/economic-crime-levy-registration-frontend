@@ -47,7 +47,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text("ukRevenue.heading")).asHiddenPageHeading(),
+                label = LabelViewModel(Empty),
                 prefix = Some(PrefixOrSuffix(content = "£"))
             )
                     .asNumeric()
