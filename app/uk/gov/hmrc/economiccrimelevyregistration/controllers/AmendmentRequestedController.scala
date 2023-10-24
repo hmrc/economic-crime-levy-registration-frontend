@@ -46,12 +46,12 @@ class AmendmentRequestedController @Inject() (
         case Some(firstContactEmailAddress) =>
           Ok(view(firstContactEmailAddress))
         case None                           =>
-          logger.error("Failed to retrieve first contact's email from session and database")
+          logger.error("Failed to retrieve first contact email address from session and database")
           InternalServerError
       }
       .recover { case e =>
         logger.error(
-          s"Exception thrown during attempt to retrieve first contact's email from the session: ${e.getMessage}"
+          s"Unable to retrieve first contact email address from session: ${e.getMessage}"
         )
         InternalServerError
       }
