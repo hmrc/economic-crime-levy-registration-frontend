@@ -172,12 +172,10 @@ registerWith.title.gc = GC
 registerWith.heading = Mae angen i chi gofrestru gyda’r {0} er mwyn talu’r ardoll
 registerWith.heading.fca = Awdurdod Ymddygiad Ariannol (FCA)
 registerWith.heading.gc = Comisiwn Hapchwarae (GC)
-registerWith.body.p1 = Mae gan yr Ardoll Troseddau Economaidd {0}.
-registerWith.body.p1.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">rhagor o wybodaeth</a>
-registerWith.body.p2 = Mae angen i chi gofrestru gyda’r corff rheoleiddio sy’n goruchwylio’ch gweithgaredd Gwrth-wyngalchu Arian (AML) er mwyn talu’r Ardoll Troseddau Economaidd (ECL).
-registerWith.body.p3 = {0}.
-registerWith.body.p3.fcaLink = <a href="https://www.fca.org.uk/" class="govuk-link">Ewch i wefan yr Awdurdod Ymddygiad Ariannol</a>
-registerWith.body.p3.gcLink = <a href="https://www.gamblingcommission.gov.uk/" class="govuk-link">Ewch i wefan y Comisiwn Hapchwarae</a>
+registerWith.body.p1 = Mae angen i chi gofrestru gyda’r corff rheoleiddio sy’n goruchwylio’ch gweithgaredd Gwrth-wyngalchu Arian (AML) er mwyn talu’r Ardoll Troseddau Economaidd (ECL).
+registerWith.body.p2 = {0}.
+registerWith.body.p2.fcaLink = <a href="https://www.fca.org.uk/" class="govuk-link">Ewch i wefan yr Awdurdod Ymddygiad Ariannol</a>
+registerWith.body.p2.gcLink = <a href="https://www.gamblingcommission.gov.uk/" class="govuk-link">Ewch i wefan y Comisiwn Hapchwarae</a>
 
 entityType.title = Pa fath o endid sydd gennych?
 entityType.GeneralPartnership = Partneriaeth gyffredinol
