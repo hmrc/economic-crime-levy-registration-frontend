@@ -110,7 +110,7 @@ trait Generators {
     RegexpGen
       .from(s"${Regex.TelephoneNumberRegex}")
       .retryUntil(s => s.length <= maxLength && s.trim.nonEmpty)
-      .map(_.trim)
+      .map(_.trim.filterNot(_.isWhitespace))
 
   def emailAddress(maxLength: Int): Gen[String] = {
     val emailPartsLength = maxLength / 5
