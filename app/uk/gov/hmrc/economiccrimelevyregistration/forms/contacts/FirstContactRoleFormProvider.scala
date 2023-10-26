@@ -24,6 +24,8 @@ import javax.inject.Inject
 
 class FirstContactRoleFormProvider @Inject() extends Mappings {
 
+  override def sanitise(value: String): String = value.trim
+
   def apply(): Form[String] =
     Form(
       "value" -> text("firstContactRole.error.required")
