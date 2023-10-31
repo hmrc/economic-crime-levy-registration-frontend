@@ -71,7 +71,7 @@ start.doNotUse.b3 = nid ydych yn bodloni gofynion refeniw y DU o ran cofrestru
 
 amlRegulatedActivity.title = A wnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau AML rhwng 1 Ebrill {0} a 31 Mawrth {1}?
 amlRegulatedActivity.heading = A wnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) rhwng 1 Ebrill {0} a 31 Mawrth {1}?
-amlRegulatedActivity.error.required = Dewiswch ateb
+amlRegulatedActivity.error.required = Dewiswch Iawn os gwnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML)
 
 notLiable.title = Does dim angen i chi gofrestru
 notLiable.heading = Does dim angen i chi gofrestru ar gyfer yr Ardoll Troseddau Economaidd
@@ -132,7 +132,7 @@ relevantAp12Months.ex.p5 = Yn seiliedig ar yr enghraifft hon, bydd eich busnes y
 relevantAp12Months.hidden1 = Y rheswm ein bod yn gofyn am hyd eich cyfnod cyfrifyddu perthnasol
 relevantAp12Months.hidden2 = Rydym yn gofyn am hyn oherwydd bod y refeniw yn y DU yr ydych yn ei ennill yn ystod unrhyw gyfnod cyfrifyddu perthnasol yn cael ei ddefnyddio i gyfrifo a ydych yn atebol i dalu’r ECL am y flwyddyn ariannol hon.
 relevantAp12Months.hidden3 = Os yw’ch cyfnod cyfrifyddu perthnasol yn llai na 12 mis, bydd angen i chi roi gwybod i ni hyd y cyfnod hwnnw mewn diwrnodau.
-relevantAp12Months.error.required = Dewiswch ateb
+relevantAp12Months.error.required = Dewiswch Iawn os oes gennych gyfnod cyfrifyddu perthnasol sy’n dod i ben yn ystod y flwyddyn ariannol
 
 ukRevenue.title = Beth oedd cyfanswm eich refeniw yn y DU yn ystod eich cyfnod cyfrifyddu?
 ukRevenue.heading = Beth oedd cyfanswm eich refeniw yn y DU yn ystod eich cyfnod cyfrifyddu?
