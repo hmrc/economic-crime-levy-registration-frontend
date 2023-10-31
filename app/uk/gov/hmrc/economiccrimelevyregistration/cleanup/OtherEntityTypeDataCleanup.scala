@@ -23,7 +23,7 @@ import javax.inject.Inject
 class OtherEntityTypeDataCleanup @Inject() () extends DataCleanup {
   def cleanup(registration: Registration): Registration = {
     val otherEntityJourneyData = registration.otherEntityJourneyData.copy(
-      businessName = None,
+      businessName = registration.otherEntityJourneyData.businessName,
       charityRegistrationNumber = None,
       companyRegistrationNumber = None,
       utrType = None,
