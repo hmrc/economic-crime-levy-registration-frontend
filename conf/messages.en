@@ -71,7 +71,7 @@ start.doNotUse.b3 = you do not meet the UK revenue requirements for registering
 
 amlRegulatedActivity.title = Did you carry out AML-regulated activity between 1 April {0} and 31 March {1}?
 amlRegulatedActivity.heading = Did you carry out anti-money laundering (AML) regulated activity between 1 April {0} and 31 March {1}?
-amlRegulatedActivity.error.required = Select an answer
+amlRegulatedActivity.error.required = Select yes if you carried out anti-money laundering (AML) regulated activity
 
 notLiable.title = You do not need to register
 notLiable.heading = You do not need to register for the Economic Crime Levy
@@ -132,7 +132,7 @@ relevantAp12Months.ex.p5 = Based on this example, your business would be liable 
 relevantAp12Months.hidden1 = Why we ask about the length of your relevant accounting period
 relevantAp12Months.hidden2 = We ask about this because the UK revenue you earn during any relevant accounting period is used to work out if you are liable to pay the ECL for this financial year.
 relevantAp12Months.hidden3 = If your relevant accounting period is less than 12 months, you will need to tell us the length in days.
-relevantAp12Months.error.required = Select an answer
+relevantAp12Months.error.required = Select yes if you have a relevant accounting period that ends in the financial year
 
 ukRevenue.title = What was your total UK revenue in your relevant accounting period?
 ukRevenue.heading = What was your total UK revenue in your relevant accounting period?
