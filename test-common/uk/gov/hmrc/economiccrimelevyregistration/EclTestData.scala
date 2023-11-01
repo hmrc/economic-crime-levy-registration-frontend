@@ -51,8 +51,6 @@ final case class ValidTrustRegistration(registration: Registration)
 
 final case class ValidRegistrationWithRegistrationType(registration: Registration)
 
-final case class ValidRegistrationWithDifferentEntityTypes(registration: Registration)
-
 final case class GroupEnrolmentsResponseWithEcl(
   groupEnrolmentsResponse: GroupEnrolmentsResponse,
   eclReferenceNumber: String
@@ -333,20 +331,6 @@ trait EclTestData {
       for {
         registration <- Arbitrary.arbitrary[Registration]
       } yield ValidRegistrationWithRegistrationType(registration.copy(registrationType = Some(Initial)))
-    }
-
-  implicit val arbValidRegistrationWithDifferentEntityTypes: Arbitrary[ValidRegistrationWithDifferentEntityTypes] =
-    Arbitrary {
-      for {
-        registration           <- Arbitrary.arbitrary[Registration]
-        otherEntityJourneyData <- Arbitrary.arbitrary[OtherEntityJourneyData]
-
-      } yield ValidRegistrationWithDifferentEntityTypes(
-        registration.copy(
-          registrationType = Some(Initial),
-          optOtherEntityJourneyData = Some(otherEntityJourneyData.copy(entityType = Some(NonUKEstablishment)))
-        )
-      )
     }
 
   implicit val arbSessionData: Arbitrary[SessionData] =
