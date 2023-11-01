@@ -37,12 +37,12 @@ class OtherEntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
       val registration = random[Registration]
 
-      stubGetRegistration(registration)
-
       val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(entityType = Some(Charity))
       val updatedRegistration    = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
+
+      stubGetRegistration(updatedRegistration)
 
       stubUpsertRegistration(updatedRegistration)
 
@@ -53,7 +53,8 @@ class OtherEntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.BusinessNameController.onPageLoad(mode = NormalMode).url)
+      println("Redirect:" + redirectLocation(result))
+      redirectLocation(result) shouldBe Some(routes.OtherEntityCheckYourAnswersController.onPageLoad().url)
     }
   }
 
