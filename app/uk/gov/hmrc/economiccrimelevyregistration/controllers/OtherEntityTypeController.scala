@@ -65,17 +65,35 @@ class OtherEntityTypeController @Inject() (
               entityType = Some(entityType)
             )
 
-            eclRegistrationConnector
-              .upsertRegistration(
-                dataCleanup.cleanup(
-                  request.registration.copy(
-                    optOtherEntityJourneyData = Some(otherEntityJourneyData)
+            request.registration.otherEntityJourneyData.entityType match {
+              case None                     =>
+                eclRegistrationConnector
+                  .upsertRegistration(
+                    request.registration.copy(
+                      optOtherEntityJourneyData = Some(otherEntityJourneyData)
+                    )
                   )
-                )
-              )
-              .map { updatedRegistration =>
-                Redirect(pageNavigator.nextPage(mode, updatedRegistration))
-              }
+                  .map { updatedRegistration =>
+                    Redirect(pageNavigator.nextPage(mode, updatedRegistration))
+                  }
+              case Some(previousEntityType) =>
+                if (previousEntityType == entityType) {
+                  Future.successful(Redirect(routes.OtherEntityCheckYourAnswersController.onPageLoad()))
+                } else {
+                  eclRegistrationConnector
+                    .upsertRegistration(
+                      dataCleanup.cleanup(
+                        request.registration.copy(
+                          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+                        )
+                      )
+                    )
+                    .map { updatedRegistration =>
+                      Redirect(pageNavigator.nextPage(mode, updatedRegistration))
+                    }
+                }
+            }
+
           }
         )
     }

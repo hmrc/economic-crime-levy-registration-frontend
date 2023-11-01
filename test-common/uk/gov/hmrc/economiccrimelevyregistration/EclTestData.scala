@@ -22,7 +22,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
 import uk.gov.hmrc.auth.core.{AffinityGroup, EnrolmentIdentifier, Enrolments, Enrolment => AuthEnrolment}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.{Trust, UnincorporatedAssociation}
+import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.{NonUKEstablishment, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
@@ -50,6 +50,8 @@ final case class RegistrationWithUnincorporatedAssociation(registration: Registr
 final case class ValidTrustRegistration(registration: Registration)
 
 final case class ValidRegistrationWithRegistrationType(registration: Registration)
+
+final case class ValidRegistrationWithDifferentEntityTypes(registration: Registration)
 
 final case class GroupEnrolmentsResponseWithEcl(
   groupEnrolmentsResponse: GroupEnrolmentsResponse,
@@ -331,6 +333,20 @@ trait EclTestData {
       for {
         registration <- Arbitrary.arbitrary[Registration]
       } yield ValidRegistrationWithRegistrationType(registration.copy(registrationType = Some(Initial)))
+    }
+
+  implicit val arbValidRegistrationWithDifferentEntityTypes: Arbitrary[ValidRegistrationWithDifferentEntityTypes] =
+    Arbitrary {
+      for {
+        registration           <- Arbitrary.arbitrary[Registration]
+        otherEntityJourneyData <- Arbitrary.arbitrary[OtherEntityJourneyData]
+
+      } yield ValidRegistrationWithDifferentEntityTypes(
+        registration.copy(
+          registrationType = Some(Initial),
+          optOtherEntityJourneyData = Some(otherEntityJourneyData.copy(entityType = Some(NonUKEstablishment)))
+        )
+      )
     }
 
   implicit val arbSessionData: Arbitrary[SessionData] =
