@@ -26,17 +26,17 @@
 @(eclDetails: SummaryList,
         organisationDetails: SummaryList,
         contactDetails: SummaryList,
-        isAmendment: Boolean,
+        registrationType: Option[RegistrationType],
         eclReference: Option[String])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(messages("checkYourAnswers.title")),
-        registrationTypeForTopBanner = if(isAmendment) Some(Amendment) else Some(Initial),
+        registrationTypeForTopBanner = registrationType,
         eclReferenceForStartLink = eclReference
 ) {
     @formHelper(action = CheckYourAnswersController.onSubmit()) {
         <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
-        @if(isAmendment) {
+        @if(registrationType.contains(Amendment)) {
             <h1 class="govuk-heading-m">@messages("checkYourAnswers.eclDetails")</h1>
 
             @govukSummaryList(eclDetails)

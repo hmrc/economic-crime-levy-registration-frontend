@@ -129,7 +129,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         ).withCssClass("govuk-!-margin-bottom-9")
 
         status(result)          shouldBe OK
-        contentAsString(result) shouldBe view(eclDetails, organisationDetails, contactDetails, false, None)(
+        contentAsString(result) shouldBe view(eclDetails, organisationDetails, contactDetails, Some(Initial), None)(
           fakeRequest,
           messages
         ).toString

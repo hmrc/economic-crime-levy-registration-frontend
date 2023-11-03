@@ -22,7 +22,7 @@
         table: GovukTable
 )
 
-@(eclReference: Option[String])(implicit request: Request[_], messages: Messages)
+@(eclReference: String)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = title(messages("start.amend.title")),
@@ -30,7 +30,7 @@
     showBackLink = false,
     showSignOut = false,
     registrationTypeForTopBanner = Some(Amendment),
-    eclReferenceForStartLink = eclReference
+    eclReferenceForStartLink = Some(eclReference)
 ) {
 
     <h1 class="govuk-heading-l">@messages("start.amend.h1")</h1>
@@ -38,7 +38,7 @@
     @table(Table(
         rows = Seq(
             Seq(TableRow(content = Text(messages("start.amend.table.registrationNumber")), classes = "govuk-summary-list__key"),
-                TableRow(content = Text(eclReference.get), classes = "govuk-body"))
+                TableRow(content = Text(eclReference), classes = "govuk-body"))
         ),
         head = None,
         firstCellIsHeader = false,

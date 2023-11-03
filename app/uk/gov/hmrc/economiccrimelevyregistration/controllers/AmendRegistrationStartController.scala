@@ -52,7 +52,7 @@ class AmendRegistrationStartController @Inject() (
     } yield response
 
     createOrUpdateRegistration
-      .map(_ => Ok(view(Some(eclReference))))
+      .map(_ => Ok(view(eclReference)))
       .recover { case e =>
         logger.error(
           s"Failed to create registration additional info for eclReference $eclReference. Error message: ${e.getMessage}"
