@@ -28,6 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactRoleFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactRolePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactRoleView
@@ -62,15 +63,19 @@ class SecondContactRoleControllerSpec extends SpecBase {
     "return OK and the correct view when no answer has already been provided" in forAll {
       (registration: Registration, name: String) =>
         new TestContext(
-          registration.copy(contacts =
-            Contacts.empty.copy(secondContactDetails = ContactDetails(name = Some(name), None, None, None))
+          registration.copy(
+            contacts = Contacts.empty.copy(secondContactDetails = ContactDetails(name = Some(name), None, None, None)),
+            registrationType = Some(Initial)
           )
         ) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form, name, NormalMode)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form, name, NormalMode, None, None)(
+            fakeRequest,
+            messages
+          ).toString
         }
     }
 
@@ -96,18 +101,25 @@ class SecondContactRoleControllerSpec extends SpecBase {
     "populate the view correctly when the question has previously been answered" in forAll {
       (registration: Registration, role: String, name: String) =>
         new TestContext(
-          registration.copy(contacts =
-            registration.contacts
+          registration.copy(
+            contacts = registration.contacts
               .copy(secondContactDetails =
                 registration.contacts.secondContactDetails.copy(name = Some(name), role = Some(role))
-              )
+              ),
+            registrationType = Some(Initial)
           )
         ) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(role), name, NormalMode)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(
+            form.fill(role),
+            name,
+            NormalMode,
+            None,
+            None
+          )(fakeRequest, messages).toString
         }
     }
   }
@@ -140,9 +152,10 @@ class SecondContactRoleControllerSpec extends SpecBase {
     "return a Bad Request with form errors when invalid data is submitted" in forAll {
       (registration: Registration, name: String) =>
         new TestContext(
-          registration.copy(contacts =
-            registration.contacts
-              .copy(secondContactDetails = registration.contacts.secondContactDetails.copy(name = Some(name)))
+          registration.copy(
+            contacts = registration.contacts
+              .copy(secondContactDetails = registration.contacts.secondContactDetails.copy(name = Some(name))),
+            registrationType = Some(Initial)
           )
         ) {
           val result: Future[Result]       =
@@ -151,7 +164,13 @@ class SecondContactRoleControllerSpec extends SpecBase {
 
           status(result) shouldBe BAD_REQUEST
 
-          contentAsString(result) shouldBe view(formWithErrors, name, NormalMode)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(
+            formWithErrors,
+            name,
+            NormalMode,
+            None,
+            None
+          )(fakeRequest, messages).toString
         }
     }
   }

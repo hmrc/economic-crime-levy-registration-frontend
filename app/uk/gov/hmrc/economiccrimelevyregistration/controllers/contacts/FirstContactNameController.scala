@@ -47,14 +47,26 @@ class FirstContactNameController @Inject() (
   val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.contacts.firstContactDetails.name), mode))
+    Ok(
+      view(
+        form.prepare(request.registration.contacts.firstContactDetails.name),
+        mode,
+        request.registration.registrationType,
+        request.eclRegistrationReference
+      )
+    )
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+        formWithErrors =>
+          Future.successful(
+            BadRequest(
+              view(formWithErrors, mode, request.registration.registrationType, request.eclRegistrationReference)
+            )
+          ),
         name => {
           val updatedContacts: Contacts = request.registration.contacts
             .copy(firstContactDetails = request.registration.contacts.firstContactDetails.copy(name = Some(name)))

@@ -51,7 +51,9 @@ class FirstContactNumberController @Inject() (
       view(
         form.prepare(request.registration.contacts.firstContactDetails.telephoneNumber),
         firstContactName(request),
-        mode
+        mode,
+        request.registration.registrationType,
+        request.eclRegistrationReference
       )
     )
   }
@@ -60,7 +62,18 @@ class FirstContactNumberController @Inject() (
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, firstContactName(request), mode))),
+        formWithErrors =>
+          Future.successful(
+            BadRequest(
+              view(
+                formWithErrors,
+                firstContactName(request),
+                mode,
+                request.registration.registrationType,
+                request.eclRegistrationReference
+              )
+            )
+          ),
         telephoneNumber => {
           val updatedContacts: Contacts = request.registration.contacts
             .copy(firstContactDetails =

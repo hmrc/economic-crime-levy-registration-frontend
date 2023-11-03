@@ -28,6 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactEmailFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactEmailPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactEmailView
@@ -62,8 +63,9 @@ class SecondContactEmailControllerSpec extends SpecBase {
     "return OK and the correct view when no answer has already been provided" in forAll {
       (registration: Registration, name: String) =>
         new TestContext(
-          registration.copy(contacts =
-            Contacts.empty.copy(secondContactDetails = ContactDetails(name = Some(name), None, None, None))
+          registration.copy(
+            contacts = Contacts.empty.copy(secondContactDetails = ContactDetails(name = Some(name), None, None, None)),
+            registrationType = Some(Initial)
           )
         ) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
@@ -72,7 +74,10 @@ class SecondContactEmailControllerSpec extends SpecBase {
 
           val resultAsString: String = contentAsString(result)
 
-          resultAsString shouldBe view(form, name, NormalMode)(fakeRequest, messages).toString
+          resultAsString shouldBe view(form, name, NormalMode, None, Some(testEclRegistrationReference))(
+            fakeRequest,
+            messages
+          ).toString
 
           resultAsString should include("autocomplete=\"email\"")
 
@@ -101,18 +106,25 @@ class SecondContactEmailControllerSpec extends SpecBase {
     "populate the view correctly when the question has previously been answered" in forAll {
       (registration: Registration, name: String, email: String) =>
         new TestContext(
-          registration.copy(contacts =
-            registration.contacts
+          registration.copy(
+            contacts = registration.contacts
               .copy(secondContactDetails =
                 registration.contacts.secondContactDetails.copy(name = Some(name), emailAddress = Some(email))
-              )
+              ),
+            registrationType = Some(Initial)
           )
         ) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(email), name, NormalMode)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(
+            form.fill(email),
+            name,
+            NormalMode,
+            None,
+            None
+          )(fakeRequest, messages).toString
         }
     }
   }
@@ -145,9 +157,10 @@ class SecondContactEmailControllerSpec extends SpecBase {
     "return a Bad Request with form errors when invalid data is submitted" in forAll {
       (registration: Registration, name: String) =>
         new TestContext(
-          registration.copy(contacts =
-            registration.contacts
-              .copy(secondContactDetails = registration.contacts.secondContactDetails.copy(name = Some(name)))
+          registration.copy(
+            contacts = registration.contacts
+              .copy(secondContactDetails = registration.contacts.secondContactDetails.copy(name = Some(name))),
+            registrationType = Some(Initial)
           )
         ) {
           val result: Future[Result]       =
@@ -156,7 +169,13 @@ class SecondContactEmailControllerSpec extends SpecBase {
 
           status(result) shouldBe BAD_REQUEST
 
-          contentAsString(result) shouldBe view(formWithErrors, name, NormalMode)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(
+            formWithErrors,
+            name,
+            NormalMode,
+            None,
+            None
+          )(fakeRequest, messages).toString
         }
     }
   }

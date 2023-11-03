@@ -18,6 +18,8 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcAccessibleAutocompleteCss, HmrcAccessibleAutocompleteJavascript}
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.{Banners, HmrcStandardPageParams, ServiceURLs, TemplateOverrides}
 @import views.html.helper.CSPNonce
+@import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType._
+
 
 @this(
         appConfig: AppConfig,
@@ -31,8 +33,29 @@
         autocompleteJavascript: HmrcAccessibleAutocompleteJavascript
 )
 
-@(pageTitle: String, showBackLink: Boolean = true, timeout: Boolean = true, showSignOut: Boolean = true, isWelshTranslationAvailable: Option[Boolean] = None, autoCompleteEnabled: Boolean = false)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(pageTitle: String,
+        showBackLink: Boolean = true,
+        timeout: Boolean = true,
+        showSignOut: Boolean = true,
+        isWelshTranslationAvailable: Option[Boolean] = None,
+        autoCompleteEnabled: Boolean = false,
+        registrationTypeForTopBanner: Option[RegistrationType] = Some(Initial),
+        eclReferenceForStartLink: Option[String] = None
+)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
+@topPageTitle = @{
+    registrationTypeForTopBanner match {
+        case Some(Amendment) => Some(messages("start.amend.title"))
+        case _ => None
+    }
+}
+
+@startServiceUrl = @{
+    (eclReferenceForStartLink, registrationTypeForTopBanner) match {
+        case (Some(reference), Some(Amendment)) => Some(AmendRegistrationStartController.onPageLoad(reference).url)
+        case _ => Some(StartController.onPageLoad.url)
+    }
+}
 @head = {
 @if(autoCompleteEnabled) {
     @autocompleteCss()
@@ -83,7 +106,7 @@
 @hmrcStandardPage(HmrcStandardPageParams(
     pageTitle = Some(pageTitle),
     serviceURLs = ServiceURLs(
-        serviceUrl = Some(StartController.onPageLoad.url),
+        serviceUrl = startServiceUrl,
         signOutUrl = if(showSignOut) Some(SignOutController.signOut.url) else None,
     ),
     banners = Banners(
@@ -94,5 +117,6 @@
         additionalScriptsBlock = Some(additionalScripts),
         additionalHeadBlock = Some(head)
     ),
-    backLink = if(showBackLink) Some(BackLink.mimicsBrowserBackButtonViaJavaScript) else None
+    backLink = if(showBackLink) Some(BackLink.mimicsBrowserBackButtonViaJavaScript) else None,
+    serviceName = topPageTitle
 ))(content)

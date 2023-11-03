@@ -49,14 +49,26 @@ class AddAnotherContactController @Inject() (
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.contacts.secondContact), mode))
+    Ok(
+      view(
+        form.prepare(request.registration.contacts.secondContact),
+        mode,
+        request.registration.registrationType,
+        request.eclRegistrationReference
+      )
+    )
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+        formWithErrors =>
+          Future.successful(
+            BadRequest(
+              view(formWithErrors, mode, request.registration.registrationType, request.eclRegistrationReference)
+            )
+          ),
         secondContact =>
           eclRegistrationConnector
             .upsertRegistration(
