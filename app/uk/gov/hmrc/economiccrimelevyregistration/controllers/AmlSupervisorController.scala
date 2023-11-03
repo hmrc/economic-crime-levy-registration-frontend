@@ -64,8 +64,9 @@ class AmlSupervisorController @Inject() (
             view(
               form.prepare(request.registration.amlSupervisor),
               mode,
-              registrationType,
-              fromLiableBeforeCurrentYearPage
+              Some(registrationType),
+              fromLiableBeforeCurrentYearPage,
+              request.eclRegistrationReference
             )
           )
         case Amendment =>
@@ -73,8 +74,9 @@ class AmlSupervisorController @Inject() (
             view(
               amendForm.prepare(request.registration.amlSupervisor),
               mode,
-              registrationType,
-              fromLiableBeforeCurrentYearPage
+              Some(registrationType),
+              fromLiableBeforeCurrentYearPage,
+              request.eclRegistrationReference
             )
           )
       }
@@ -91,7 +93,17 @@ class AmlSupervisorController @Inject() (
         .fold(
           formWithErrors =>
             Future
-              .successful(BadRequest(view(formWithErrors, mode, registrationType, fromLiableBeforeCurrentYearPage))),
+              .successful(
+                BadRequest(
+                  view(
+                    formWithErrors,
+                    mode,
+                    Some(registrationType),
+                    fromLiableBeforeCurrentYearPage,
+                    request.eclRegistrationReference
+                  )
+                )
+              ),
           amlSupervisor =>
             eclRegistrationConnector
               .upsertRegistration(

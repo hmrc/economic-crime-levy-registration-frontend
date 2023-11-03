@@ -68,7 +68,7 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
 
       status(result) shouldBe OK
 
-      contentAsString(result) shouldBe view("eclReferenceValue")(fakeRequest, messages).toString
+      contentAsString(result) shouldBe view(Some("eclReferenceValue"))(fakeRequest, messages).toString
     }
 
     "return Internal server error and the correct view" in forAll { registration: Registration =>

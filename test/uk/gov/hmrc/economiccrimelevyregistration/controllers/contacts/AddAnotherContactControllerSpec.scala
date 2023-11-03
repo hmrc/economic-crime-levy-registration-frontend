@@ -27,6 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AddAnotherContactDataCl
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContactFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.AddAnotherContactView
@@ -66,22 +67,37 @@ class AddAnotherContactControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(registration.copy(contacts = registration.contacts.copy(secondContact = None))) {
+      new TestContext(
+        registration.copy(contacts = registration.contacts.copy(secondContact = None), registrationType = Some(Initial))
+      ) {
         val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form, NormalMode, None, None)(
+          fakeRequest,
+          messages
+        ).toString
       }
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
       (registration: Registration, secondContact: Boolean) =>
-        new TestContext(registration.copy(contacts = registration.contacts.copy(secondContact = Some(secondContact)))) {
+        new TestContext(
+          registration.copy(
+            contacts = registration.contacts.copy(secondContact = Some(secondContact)),
+            registrationType = Some(Initial)
+          )
+        ) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result)          shouldBe OK
-          contentAsString(result) shouldBe view(form.fill(secondContact), NormalMode)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(
+            form.fill(secondContact),
+            NormalMode,
+            None,
+            None
+          )(fakeRequest, messages).toString
         }
     }
   }
@@ -106,13 +122,17 @@ class AddAnotherContactControllerSpec extends SpecBase {
     }
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
-      new TestContext(registration) {
+      val updatedRegistration = registration.copy(registrationType = Some(Initial))
+      new TestContext(updatedRegistration) {
         val result: Future[Result]        = controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
         val formWithErrors: Form[Boolean] = form.bind(Map("value" -> ""))
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode, None, None)(
+          fakeRequest,
+          messages
+        ).toString
       }
     }
   }

@@ -28,6 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.TelephoneNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactNumberView
@@ -62,8 +63,9 @@ class FirstContactNumberControllerSpec extends SpecBase {
     "return OK and the correct view when no answer has already been provided" in forAll {
       (registration: Registration, name: String) =>
         new TestContext(
-          registration.copy(contacts =
-            Contacts.empty.copy(firstContactDetails = ContactDetails(name = Some(name), None, None, None))
+          registration.copy(
+            contacts = Contacts.empty.copy(firstContactDetails = ContactDetails(name = Some(name), None, None, None)),
+            registrationType = Some(Initial)
           )
         ) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
@@ -72,7 +74,10 @@ class FirstContactNumberControllerSpec extends SpecBase {
 
           val resultAsString: String = contentAsString(result)
 
-          resultAsString shouldBe view(form, name, NormalMode)(fakeRequest, messages).toString
+          resultAsString shouldBe view(form, name, NormalMode, None, None)(
+            fakeRequest,
+            messages
+          ).toString
 
           resultAsString should include("autocomplete=\"tel\"")
 
@@ -102,18 +107,25 @@ class FirstContactNumberControllerSpec extends SpecBase {
     "populate the view correctly when the question has previously been answered" in forAll {
       (registration: Registration, number: String, name: String) =>
         new TestContext(
-          registration.copy(contacts =
-            registration.contacts
+          registration.copy(
+            contacts = registration.contacts
               .copy(firstContactDetails =
                 registration.contacts.firstContactDetails.copy(name = Some(name), telephoneNumber = Some(number))
-              )
+              ),
+            registrationType = Some(Initial)
           )
         ) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(number), name, NormalMode)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(
+            form.fill(number),
+            name,
+            NormalMode,
+            None,
+            None
+          )(fakeRequest, messages).toString
         }
     }
   }
@@ -146,9 +158,10 @@ class FirstContactNumberControllerSpec extends SpecBase {
     "return a Bad Request with form errors when invalid data is submitted" in forAll {
       (registration: Registration, name: String) =>
         new TestContext(
-          registration.copy(contacts =
-            registration.contacts
-              .copy(firstContactDetails = registration.contacts.firstContactDetails.copy(name = Some(name)))
+          registration.copy(
+            contacts = registration.contacts
+              .copy(firstContactDetails = registration.contacts.firstContactDetails.copy(name = Some(name))),
+            registrationType = Some(Initial)
           )
         ) {
           val result: Future[Result]       =
@@ -157,7 +170,13 @@ class FirstContactNumberControllerSpec extends SpecBase {
 
           status(result) shouldBe BAD_REQUEST
 
-          contentAsString(result) shouldBe view(formWithErrors, name, NormalMode)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(
+            formWithErrors,
+            name,
+            NormalMode,
+            None,
+            None
+          )(fakeRequest, messages).toString
         }
     }
   }
