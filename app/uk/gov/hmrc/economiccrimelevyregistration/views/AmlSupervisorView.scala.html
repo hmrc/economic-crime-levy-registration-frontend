@@ -15,7 +15,6 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 @import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 
 @this(
@@ -28,11 +27,18 @@
         appConfig: AppConfig
 )
 
-@(form: Form[AmlSupervisor], mode: Mode, registrationType: RegistrationType, fromLiableBeforeCurrentYearPage: Boolean)(implicit request: Request[_], messages: Messages)
+@(form: Form[AmlSupervisor],
+        mode: Mode,
+        registrationType: Option[RegistrationType],
+        fromLiableBeforeCurrentYearPage: Boolean,
+        eclReference: Option[String]
+)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = titleWithForm(form, messages("amlSupervisor.title")),
-    autoCompleteEnabled = true
+    autoCompleteEnabled = true,
+    registrationTypeForTopBanner = registrationType,
+    eclReferenceForStartLink = eclReference
 ) {
     @if(form.errors.nonEmpty) {
         @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0", "otherProfessionalBody" -> "otherProfessionalBody")))
@@ -46,23 +52,28 @@
 
     <h2 class="govuk-heading-m">@messages("amlSupervisor.h2")</h2>
 
-    @formHelper(action = AmlSupervisorController.onSubmit(mode, registrationType, fromLiableBeforeCurrentYearPage)) {
-        @if(registrationType == Initial) {
-            @radios(
-                RadiosViewModel(
-                    field = form("value"),
-                    legend =  LegendViewModel(Empty),
-                    items = AmlSupervisorType.options(appConfig, select, form)
-                )
-            )
-        } else {
-            @radios(
-                RadiosViewModel(
-                    field = form("value"),
-                    legend =  LegendViewModel(Empty),
-                    items = AmlSupervisorType.optionsAmend(appConfig, select, form)
-                )
-            )
+    @formHelper(action = AmlSupervisorController.onSubmit(mode, registrationType.getOrElse(Initial), fromLiableBeforeCurrentYearPage)) {
+        @{
+            registrationType match {
+                case Some(Initial) => {
+                    radios(
+                        RadiosViewModel(
+                            field = form("value"),
+                            legend = LegendViewModel(Empty),
+                            items = AmlSupervisorType.options(appConfig, select, form)
+                        )
+                    )
+                }
+                case _ => {
+                    radios(
+                        RadiosViewModel(
+                            field = form("value"),
+                            legend = LegendViewModel(Empty),
+                            items = AmlSupervisorType.optionsAmend(appConfig, select, form)
+                        )
+                    )
+                }
+            }
         }
 
         @button(

@@ -50,7 +50,9 @@ class IsUkAddressController @Inject() (
     Ok(
       view(
         form.prepare(request.registration.contactAddressIsUk),
-        mode
+        mode,
+        request.registration.registrationType,
+        request.eclRegistrationReference
       )
     )
   }
@@ -61,7 +63,9 @@ class IsUkAddressController @Inject() (
       .fold(
         formWithErrors =>
           Future.successful(
-            BadRequest(view(formWithErrors, mode))
+            BadRequest(
+              view(formWithErrors, mode, request.registration.registrationType, request.eclRegistrationReference)
+            )
           ),
         contactAddressIsUk =>
           eclRegistrationConnector

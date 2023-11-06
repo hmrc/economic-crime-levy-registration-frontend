@@ -26,6 +26,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
@@ -65,14 +66,14 @@ class IsUkAddressControllerSpec extends SpecBase {
       (
         registration: Registration,
       ) =>
-        val updatedRegistration = registration.copy(contactAddressIsUk = None)
+        val updatedRegistration = registration.copy(contactAddressIsUk = None, registrationType = Some(Initial))
 
         new TestContext(updatedRegistration) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form, NormalMode)(
+          contentAsString(result) shouldBe view(form, NormalMode, None, None)(
             fakeRequest,
             messages
           ).toString
@@ -84,7 +85,8 @@ class IsUkAddressControllerSpec extends SpecBase {
         registration: Registration,
         contactAddressIsUk: Boolean
       ) =>
-        val updatedRegistration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
+        val updatedRegistration =
+          registration.copy(contactAddressIsUk = Some(contactAddressIsUk), registrationType = Some(Initial))
 
         new TestContext(updatedRegistration) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
@@ -92,7 +94,9 @@ class IsUkAddressControllerSpec extends SpecBase {
           status(result)          shouldBe OK
           contentAsString(result) shouldBe view(
             form.fill(contactAddressIsUk),
-            NormalMode
+            NormalMode,
+            None,
+            None
           )(
             fakeRequest,
             messages
@@ -125,7 +129,8 @@ class IsUkAddressControllerSpec extends SpecBase {
         registration: Registration,
         contactAddressIsUk: Boolean
       ) =>
-        val updatedRegistration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
+        val updatedRegistration =
+          registration.copy(contactAddressIsUk = Some(contactAddressIsUk), registrationType = Some(Initial))
 
         new TestContext(updatedRegistration) {
           val result: Future[Result]        =
@@ -134,7 +139,7 @@ class IsUkAddressControllerSpec extends SpecBase {
 
           status(result) shouldBe BAD_REQUEST
 
-          contentAsString(result) shouldBe view(formWithErrors, NormalMode)(
+          contentAsString(result) shouldBe view(formWithErrors, NormalMode, None, None)(
             fakeRequest,
             messages
           ).toString

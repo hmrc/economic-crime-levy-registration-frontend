@@ -107,7 +107,8 @@ class CheckYourAnswersController @Inject() (
           eclDetails(),
           organisationDetails(),
           contactDetails(),
-          request.registration.registrationType.contains(Amendment)
+          request.registration.registrationType,
+          request.eclRegistrationReference
         )
       )
     }
@@ -117,7 +118,8 @@ class CheckYourAnswersController @Inject() (
       eclDetails(),
       organisationDetails(),
       contactDetails(),
-      request.registration.registrationType.contains(Amendment)
+      request.registration.registrationType,
+      request.eclRegistrationReference
     )
 
     val registration = request.registration

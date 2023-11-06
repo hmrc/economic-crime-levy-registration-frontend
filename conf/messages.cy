@@ -71,7 +71,7 @@ start.doNotUse.b3 = nid ydych yn bodloni gofynion refeniw y DU o ran cofrestru
 
 amlRegulatedActivity.title = A wnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau AML rhwng 1 Ebrill {0} a 31 Mawrth {1}?
 amlRegulatedActivity.heading = A wnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) rhwng 1 Ebrill {0} a 31 Mawrth {1}?
-amlRegulatedActivity.error.required = Dewiswch ateb
+amlRegulatedActivity.error.required = Dewiswch Iawn os gwnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML)
 
 notLiable.title = Does dim angen i chi gofrestru
 notLiable.heading = Does dim angen i chi gofrestru ar gyfer yr Ardoll Troseddau Economaidd
@@ -132,7 +132,7 @@ relevantAp12Months.ex.p5 = Yn seiliedig ar yr enghraifft hon, bydd eich busnes y
 relevantAp12Months.hidden1 = Y rheswm ein bod yn gofyn am hyd eich cyfnod cyfrifyddu perthnasol
 relevantAp12Months.hidden2 = Rydym yn gofyn am hyn oherwydd bod y refeniw yn y DU yr ydych yn ei ennill yn ystod unrhyw gyfnod cyfrifyddu perthnasol yn cael ei ddefnyddio i gyfrifo a ydych yn atebol i dalu’r ECL am y flwyddyn ariannol hon.
 relevantAp12Months.hidden3 = Os yw’ch cyfnod cyfrifyddu perthnasol yn llai na 12 mis, bydd angen i chi roi gwybod i ni hyd y cyfnod hwnnw mewn diwrnodau.
-relevantAp12Months.error.required = Dewiswch ateb
+relevantAp12Months.error.required = Dewiswch Iawn os oes gennych gyfnod cyfrifyddu perthnasol sy’n dod i ben yn ystod y flwyddyn ariannol
 
 ukRevenue.title = Beth oedd cyfanswm eich refeniw yn y DU yn ystod eich cyfnod cyfrifyddu?
 ukRevenue.heading = Beth oedd cyfanswm eich refeniw yn y DU yn ystod eich cyfnod cyfrifyddu?
@@ -567,3 +567,12 @@ amendmentRequested.h2 = Yr hyn sy’n digwydd nesaf
 
 amendRegistration.pdfHtml.title = Cais i ddiwygio cofrestriad yr Ardoll Troseddau Economaidd
 amendRegistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad {0}
+
+liabilityBeforeCurrentYear.title =A oeddech yn agored i dalu’r Ardoll Troseddau Economaidd (ECL) o 1 Ebrill 2022 i 31 Mawrth 2023?
+liabilityBeforeCurrentYear.h1 = A oeddech yn agored i dalu’r Ardoll Troseddau Economaidd (ECL) o 1 Ebrill 2022 i 31 Mawrth 2023?
+liabilityBeforeCurrentYear.p1 = Roeddech yn agored i dalu’r ECL os oedd y canlynol yn berthnasol:
+liabilityBeforeCurrentYear.list.b1 = gwnaeth eich refeniw yn y DU gyrraedd y trothwy, neu
+liabilityBeforeCurrentYear.list.b2 = gwnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
+liabilityBeforeCurrentYear.p2 = Mae’r flwyddyn ariannol yn rhedeg o 1 Ebrill i 31 Mawrth y flwyddyn ganlynol.
+liabilityBeforeCurrentYear.p3 = Mae rhagor o wybodaeth ar gael yn yr arweiniad ar yr Ardoll Troseddau Economaidd, gan gynnwys <a href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy">  pwy sydd angen talu’r ardoll</a>.
+liabilityBeforeCurrentYear.required = Dewiswch ateb

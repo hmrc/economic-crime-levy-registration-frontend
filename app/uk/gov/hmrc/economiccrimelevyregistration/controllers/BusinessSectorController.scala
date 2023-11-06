@@ -47,14 +47,26 @@ class BusinessSectorController @Inject() (
   val form: Form[BusinessSector] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.businessSector), mode))
+    Ok(
+      view(
+        form.prepare(request.registration.businessSector),
+        request.registration.registrationType,
+        mode,
+        request.eclRegistrationReference
+      )
+    )
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+        formWithErrors =>
+          Future.successful(
+            BadRequest(
+              view(formWithErrors, request.registration.registrationType, mode, request.eclRegistrationReference)
+            )
+          ),
         businessSector =>
           eclRegistrationConnector
             .upsertRegistration(request.registration.copy(businessSector = Some(businessSector)))

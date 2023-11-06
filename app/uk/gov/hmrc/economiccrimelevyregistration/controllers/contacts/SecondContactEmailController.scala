@@ -51,7 +51,9 @@ class SecondContactEmailController @Inject() (
       view(
         form.prepare(request.registration.contacts.secondContactDetails.emailAddress),
         secondContactName(request),
-        mode
+        mode,
+        request.registration.registrationType,
+        request.eclRegistrationReference
       )
     )
   }
@@ -60,7 +62,18 @@ class SecondContactEmailController @Inject() (
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, secondContactName(request), mode))),
+        formWithErrors =>
+          Future.successful(
+            BadRequest(
+              view(
+                formWithErrors,
+                secondContactName(request),
+                mode,
+                request.registration.registrationType,
+                request.eclRegistrationReference
+              )
+            )
+          ),
         email => {
           val updatedContacts: Contacts = request.registration.contacts
             .copy(secondContactDetails =

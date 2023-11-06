@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
@@ -29,9 +28,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.OtherEntityTypeAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.OtherEntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.{Charity, NonUKEstablishment}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.OtherEntityTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.OtherEntityTypeView
+import uk.gov.hmrc.http.HttpVerbs.GET
 
 import scala.concurrent.Future
 
@@ -40,6 +41,8 @@ class OtherEntityTypeControllerSpec extends SpecBase {
   val view: OtherEntityTypeView                 = app.injector.instanceOf[OtherEntityTypeView]
   val formProvider: OtherEntityTypeFormProvider = new OtherEntityTypeFormProvider()
   val form: Form[OtherEntityType]               = formProvider()
+
+  val checkYourAnswersOnwardRoute: Call = Call(GET, "/register-for-economic-crime-levy/other-entity-check-your-answers")
 
   val pageNavigator: OtherEntityTypePageNavigator = new OtherEntityTypePageNavigator(
   ) {
@@ -107,22 +110,43 @@ class OtherEntityTypeControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "save the selected entity type then redirect to the next page" in forAll {
-      (registration: Registration, entityType: OtherEntityType, mode: Mode) =>
-        val otherEntityJourneyData = registration.otherEntityJourneyData.copy(entityType = Some(entityType))
-        new TestContext(registration) {
-          val updatedRegistration: Registration = registration.copy(
-            optOtherEntityJourneyData = Some(otherEntityJourneyData)
-          )
+      (registration: Registration, mode: Mode) =>
+        val otherEntityJourneyData            = registration.otherEntityJourneyData.copy(entityType = Some(NonUKEstablishment))
+        val updatedRegistration: Registration = registration.copy(
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
+        new TestContext(updatedRegistration) {
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
           val result: Future[Result] =
-            controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
+            controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", Charity.toString)))
 
           status(result) shouldBe SEE_OTHER
 
           redirectLocation(result) shouldBe Some(onwardRoute.url)
+        }
+    }
+
+    "save the selected entity type then redirect to the check your answers page" in forAll {
+      (registration: Registration, mode: Mode) =>
+        val otherEntityJourneyData            = registration.otherEntityJourneyData.copy(entityType = Some(NonUKEstablishment))
+        val updatedRegistration: Registration = registration.copy(
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
+
+        new TestContext(updatedRegistration) {
+
+          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
+            .thenReturn(Future.successful(updatedRegistration))
+
+          val result: Future[Result] =
+            controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", NonUKEstablishment.toString)))
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(checkYourAnswersOnwardRoute.url)
         }
     }
 

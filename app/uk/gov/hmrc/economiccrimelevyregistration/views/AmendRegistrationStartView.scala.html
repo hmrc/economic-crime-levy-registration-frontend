@@ -24,12 +24,13 @@
 
 @(eclReference: String)(implicit request: Request[_], messages: Messages)
 
-
 @layout(
     pageTitle = title(messages("start.amend.title")),
     timeout = false,
     showBackLink = false,
-    showSignOut = false
+    showSignOut = false,
+    registrationTypeForTopBanner = Some(Amendment),
+    eclReferenceForStartLink = Some(eclReference)
 ) {
 
     <h1 class="govuk-heading-l">@messages("start.amend.h1")</h1>
