@@ -21,12 +21,28 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import javax.inject.Inject
 
 class EntityTypeDataCleanup @Inject() () extends DataCleanup {
-  def cleanup(registration: Registration): Registration =
-    registration.copy(
+  def cleanup(registration: Registration, change: Boolean): Registration = {
+    val cleanData = registration.copy(
       incorporatedEntityJourneyData = None,
       soleTraderEntityJourneyData = None,
       partnershipEntityJourneyData = None,
       partnershipName = None
     )
-
+    if (change) {
+      val otherEntityJourneyData = registration.otherEntityJourneyData.copy(
+        charityRegistrationNumber = None,
+        companyRegistrationNumber = None,
+        utrType = None,
+        ctUtr = None,
+        saUtr = None,
+        postcode = None,
+        isCtUtrPresent = None
+      )
+      cleanData.copy(
+        optOtherEntityJourneyData = Some(otherEntityJourneyData)
+      )
+    } else {
+      cleanData
+    }
+  }
 }

@@ -26,5 +26,5 @@ class NonUkCrnPageNavigator extends PageNavigator {
     routes.UtrTypeController.onPageLoad(NormalMode)
 
   override protected def navigateInCheckMode(registration: Registration): Call =
-    routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    routes.CheckYourAnswersController.onPageLoad()
 }

@@ -21,7 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Registr
 import javax.inject.Inject
 
 class AddAnotherContactDataCleanup @Inject() () extends DataCleanup {
-  def cleanup(registration: Registration): Registration =
+  def cleanup(registration: Registration, change: Boolean): Registration =
     registration.contacts.secondContact match {
       case Some(true)  => registration
       case Some(false) =>

@@ -21,7 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import javax.inject.Inject
 
 class RelevantApLengthDataCleanup @Inject() () extends DataCleanup {
-  def cleanup(registration: Registration): Registration =
+  def cleanup(registration: Registration, change: Boolean): Registration =
     registration.copy(revenueMeetsThreshold = None)
 
 }

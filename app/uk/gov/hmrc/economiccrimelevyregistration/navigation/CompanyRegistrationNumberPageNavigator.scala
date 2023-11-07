@@ -18,16 +18,13 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
 class CompanyRegistrationNumberPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
-    navigateInEitherMode()
+    routes.BusinessSectorController.onPageLoad(NormalMode)
 
   override protected def navigateInCheckMode(registration: Registration): Call =
-    navigateInEitherMode()
-
-  private def navigateInEitherMode(): Call =
-    routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    routes.CheckYourAnswersController.onPageLoad()
 }

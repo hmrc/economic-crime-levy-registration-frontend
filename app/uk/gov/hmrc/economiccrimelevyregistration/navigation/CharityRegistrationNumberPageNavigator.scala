@@ -26,5 +26,5 @@ class CharityRegistrationNumberPageNavigator extends PageNavigator {
     routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
 
   override protected def navigateInCheckMode(registration: Registration): Call =
-    routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    routes.CheckYourAnswersController.onPageLoad()
 }

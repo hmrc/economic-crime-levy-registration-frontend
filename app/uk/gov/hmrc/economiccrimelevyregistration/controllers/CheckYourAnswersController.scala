@@ -21,10 +21,9 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Base64EncodedFields, RegistrationType, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Base64EncodedFields, EntityType, RegistrationType, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EmailService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -49,7 +48,6 @@ class CheckYourAnswersController @Inject() (
   view: CheckYourAnswersView,
   validateRegistrationData: ValidatedRegistrationAction,
   emailService: EmailService,
-  otherEntityController: OtherEntityCheckYourAnswersController,
   otherRegistrationPdfView: OtherRegistrationPdfView,
   amendRegistrationPdfView: AmendRegistrationPdfView
 )(implicit ec: ExecutionContext)
@@ -126,9 +124,14 @@ class CheckYourAnswersController @Inject() (
 
     val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
     val base64EncodedHtmlViewForPdf   = (registration.entityType, registration.registrationType) match {
-      case (Some(_), Some(Amendment)) | (Some(Other), _) | (None, Some(Amendment)) =>
+      case (Some(_), Some(Amendment))                    =>
         createAndEncodeHtmlForPdf(registration.registrationType)
-      case _                                                                       => ""
+      case (Some(value), _) if EntityType.isOther(value) =>
+        createAndEncodeHtmlForPdf(registration.registrationType)
+      case (None, Some(Amendment))                       =>
+        createAndEncodeHtmlForPdf(registration.registrationType)
+      case _                                             =>
+        ""
     }
 
     for {
@@ -138,9 +141,14 @@ class CheckYourAnswersController @Inject() (
                         Base64EncodedFields(
                           nrsSubmissionHtml = Some(base64EncodedHtmlView),
                           dmsSubmissionHtml = (registration.entityType, registration.registrationType) match {
-                            case (Some(_), Some(Amendment)) | (Some(Other), _) | (None, Some(Amendment)) =>
+                            case (Some(_), Some(Amendment))                    =>
                               Some(base64EncodedHtmlViewForPdf)
-                            case _                                                                       => None
+                            case (Some(value), _) if EntityType.isOther(value) =>
+                              Some(base64EncodedHtmlViewForPdf)
+                            case (None, Some(Amendment))                       =>
+                              Some(base64EncodedHtmlViewForPdf)
+                            case _                                             =>
+                              None
                           }
                         )
                       )
@@ -164,8 +172,8 @@ class CheckYourAnswersController @Inject() (
       _        <- registrationAdditionalInfoService.delete(request.internalId)
     } yield {
       val session = registration.entityType match {
-        case Some(Other) => request.session
-        case _           =>
+        case Some(value) if EntityType.isOther(value) => request.session
+        case _                                        =>
           request.session ++ Seq(
             SessionKeys.EclReference -> response.eclReference
           )
@@ -177,10 +185,14 @@ class CheckYourAnswersController @Inject() (
       )
 
       Redirect((registration.entityType, registration.registrationType) match {
-        case (Some(Other), Some(Initial)) => routes.RegistrationReceivedController.onPageLoad()
-        case (Some(_), Some(Amendment))   => routes.AmendmentRequestedController.onPageLoad()
-        case (None, Some(Amendment))      => routes.AmendmentRequestedController.onPageLoad()
-        case _                            => routes.RegistrationSubmittedController.onPageLoad()
+        case (Some(value), Some(Initial)) if EntityType.isOther(value) =>
+          routes.RegistrationReceivedController.onPageLoad()
+        case (Some(_), Some(Amendment))                                =>
+          routes.AmendmentRequestedController.onPageLoad()
+        case (None, Some(Amendment))                                   =>
+          routes.AmendmentRequestedController.onPageLoad()
+        case _                                                         =>
+          routes.RegistrationSubmittedController.onPageLoad()
       }).withSession(
         registration.contacts.secondContactDetails.emailAddress.fold(updatedSession)(email =>
           updatedSession ++ Seq(SessionKeys.SecondContactEmailAddress -> email)
@@ -198,7 +210,7 @@ class CheckYourAnswersController @Inject() (
     val date         = LocalDate.now
     val organisation = organisationDetails(LiabilityYearSummary.row())
     val contact      = contactDetails()
-    val otherEntity  = otherEntityController.otherEntityDetails()
+    val otherEntity  = otherEntityDetails()
 
     registrationType match {
       case Some(Amendment) =>
@@ -221,4 +233,18 @@ class CheckYourAnswersController @Inject() (
         )
     }
   }
+
+  def otherEntityDetails()(implicit request: RegistrationDataRequest[_]): SummaryList =
+    SummaryListViewModel(
+      rows = Seq(
+        BusinessNameSummary.row(),
+        CharityRegistrationNumberSummary.row(),
+        CompanyRegistrationNumberSummary.row(),
+        DoYouHaveCtUtrSummary.row(),
+        UtrTypeSummary.row(),
+        OtherEntitySaUtrSummary.row(),
+        OtherEntityCtUtrSummary.row(),
+        OtherEntityPostcodeSummary.row()
+      ).flatten
+    ).withCssClass("govuk-!-margin-bottom-9")
 }

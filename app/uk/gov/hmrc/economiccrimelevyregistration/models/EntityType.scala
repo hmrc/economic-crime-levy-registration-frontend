@@ -34,7 +34,10 @@ object EntityType {
   case object LimitedLiabilityPartnership extends EntityType
   case object UnlimitedCompany extends EntityType
   case object RegisteredSociety extends EntityType
-  case object Other extends EntityType
+  case object Charity extends EntityType
+  case object Trust extends EntityType
+  case object NonUKEstablishment extends EntityType
+  case object UnincorporatedAssociation extends EntityType
 
   val values: Seq[EntityType] = Seq(
     GeneralPartnership,
@@ -46,8 +49,26 @@ object EntityType {
     ScottishPartnership,
     SoleTrader,
     UnlimitedCompany,
-    Other
+    Charity,
+    Trust,
+    NonUKEstablishment,
+    UnincorporatedAssociation
   )
+
+  def isOther(entityType: EntityType): Boolean =
+    isOther(Some(entityType.toString))
+
+  private def isOther(value: Option[String]): Boolean =
+    value match {
+      case Some(value) =>
+        Seq(
+          Charity.toString,
+          Trust.toString,
+          NonUKEstablishment.toString,
+          UnincorporatedAssociation.toString
+        ).contains(value)
+      case None        => false
+    }
 
   def options(appConfig: AppConfig)(implicit messages: Messages): Seq[RadioItem] = {
     val radioItems = values.zipWithIndex.map { case (value, index) =>
@@ -58,7 +79,7 @@ object EntityType {
       )
     }
 
-    if (!appConfig.otherEntityTypeEnabled) radioItems.filterNot(_.value.contains(Other.toString)) else radioItems
+    if (!appConfig.otherEntityTypeEnabled) radioItems.filterNot(o => isOther(o.value)) else radioItems
   }
 
   implicit val enumerable: Enumerable[EntityType] = Enumerable(values.map(v => (v.toString, v)): _*)
@@ -76,7 +97,10 @@ object EntityType {
           case "LimitedLiabilityPartnership" => JsSuccess(LimitedLiabilityPartnership)
           case "UnlimitedCompany"            => JsSuccess(UnlimitedCompany)
           case "RegisteredSociety"           => JsSuccess(RegisteredSociety)
-          case "Other"                       => JsSuccess(Other)
+          case "Charity"                     => JsSuccess(Charity)
+          case "Trust"                       => JsSuccess(Trust)
+          case "NonUKEstablishment"          => JsSuccess(NonUKEstablishment)
+          case "UnincorporatedAssociation"   => JsSuccess(UnincorporatedAssociation)
           case s                             => JsError(s"$s is not a valid EntityType")
         }
       case e: JsError          => e

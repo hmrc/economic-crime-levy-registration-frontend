@@ -60,7 +60,7 @@ class RelevantAp12MonthsController @Inject() (
         relevantAp12Months =>
           eclRegistrationConnector
             .upsertRegistration(
-              dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
+              dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)), false)
             )
             .map { updatedRegistration =>
               Redirect(pageNavigator.nextPage(mode, updatedRegistration))
