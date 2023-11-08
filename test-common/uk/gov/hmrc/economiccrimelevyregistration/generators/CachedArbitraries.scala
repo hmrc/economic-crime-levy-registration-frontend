@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.generators
 
 import org.scalacheck.Arbitrary
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.scalacheck.derive.MkArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.models._

@@ -60,7 +60,7 @@ class RelevantApLengthController @Inject() (
         relevantApLength =>
           eclRegistrationConnector
             .upsertRegistration(
-              dataCleanup.cleanup(request.registration.copy(relevantApLength = Some(relevantApLength)), false)
+              dataCleanup.cleanup(request.registration.copy(relevantApLength = Some(relevantApLength)))
             )
             .map { updatedRegistration =>
               Redirect(pageNavigator.nextPage(mode, updatedRegistration))

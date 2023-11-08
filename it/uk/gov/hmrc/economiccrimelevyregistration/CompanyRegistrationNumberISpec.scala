@@ -57,7 +57,7 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.OtherEntityCheckYourAnswersController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
     }
   }
 

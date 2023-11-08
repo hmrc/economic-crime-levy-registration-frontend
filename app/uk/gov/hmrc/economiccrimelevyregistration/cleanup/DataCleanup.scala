@@ -19,6 +19,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.cleanup
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 trait DataCleanup {
-  def cleanup(registration: Registration, change: Boolean): Registration
+  def cleanup(registration: Registration): Registration
 
 }

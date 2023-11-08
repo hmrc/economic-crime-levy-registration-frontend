@@ -55,7 +55,8 @@ class EntityTypeControllerSpec extends SpecBase {
   }
 
   val dataCleanup: EntityTypeDataCleanup = new EntityTypeDataCleanup {
-    override def cleanup(registration: Registration): Registration = registration
+    override def cleanup(registration: Registration): Registration                = registration
+    override def cleanupOtherEntityData(registration: Registration): Registration = registration
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]

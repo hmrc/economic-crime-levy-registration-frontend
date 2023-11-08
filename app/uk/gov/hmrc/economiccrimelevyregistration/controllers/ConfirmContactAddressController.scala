@@ -84,8 +84,7 @@ class ConfirmContactAddressController @Inject() (
             .upsertRegistration(
               dataCleanup.cleanup(
                 request.registration
-                  .copy(useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress)),
-                false
+                  .copy(useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress))
               )
             )
             .flatMap { updatedRegistration =>

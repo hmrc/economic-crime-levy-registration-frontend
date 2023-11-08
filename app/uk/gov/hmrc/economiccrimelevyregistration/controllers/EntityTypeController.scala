@@ -62,7 +62,7 @@ class EntityTypeController @Inject() (
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType => {
           val previousEntityType = request.registration.entityType
-          if (previousEntityType.isEmpty || entityType != previousEntityType.get) {
+          if (!previousEntityType.contains(entityType)) {
             auditConnector
               .sendExtendedEvent(
                 EntityTypeSelectedEvent(
@@ -73,15 +73,16 @@ class EntityTypeController @Inject() (
           }
 
           eclRegistrationConnector
-            .upsertRegistration(
-              dataCleanup.cleanup(
-                request.registration.copy(entityType = Some(entityType)),
-                previousEntityType match {
-                  case None        => true
-                  case Some(value) => value != entityType
-                }
-              )
-            )
+            .upsertRegistration(previousEntityType match {
+              case Some(value) if value == entityType =>
+                dataCleanup.cleanup(
+                  request.registration.copy(entityType = Some(entityType))
+                )
+              case _                                  =>
+                dataCleanup.cleanupOtherEntityData(
+                  request.registration.copy(entityType = Some(entityType))
+                )
+            })
             .flatMap { updatedRegistration =>
               previousEntityType match {
                 case Some(value) if value == entityType && mode == CheckMode =>

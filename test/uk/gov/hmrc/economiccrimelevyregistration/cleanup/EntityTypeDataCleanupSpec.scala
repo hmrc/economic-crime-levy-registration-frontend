@@ -26,7 +26,7 @@ class EntityTypeDataCleanupSpec extends SpecBase {
 
   "cleanup" should {
     "return a registration with the GRS journey data set to none" in forAll { registration: Registration =>
-      dataCleanup.cleanup(registration, false) shouldBe registration.copy(
+      dataCleanup.cleanup(registration) shouldBe registration.copy(
         incorporatedEntityJourneyData = None,
         partnershipEntityJourneyData = None,
         soleTraderEntityJourneyData = None,
@@ -46,7 +46,7 @@ class EntityTypeDataCleanupSpec extends SpecBase {
           isCtUtrPresent = None
         )
 
-        dataCleanup.cleanup(registration, true) shouldBe registration.copy(
+        dataCleanup.cleanupOtherEntityData(registration) shouldBe registration.copy(
           incorporatedEntityJourneyData = None,
           partnershipEntityJourneyData = None,
           soleTraderEntityJourneyData = None,

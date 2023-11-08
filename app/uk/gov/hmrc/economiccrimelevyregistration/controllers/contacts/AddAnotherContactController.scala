@@ -74,8 +74,7 @@ class AddAnotherContactController @Inject() (
             .upsertRegistration(
               dataCleanup.cleanup(
                 request.registration
-                  .copy(contacts = request.registration.contacts.copy(secondContact = Some(secondContact))),
-                false
+                  .copy(contacts = request.registration.contacts.copy(secondContact = Some(secondContact)))
               )
             )
             .map { updatedRegistration =>
