@@ -26,7 +26,8 @@ class EntityTypeDataCleanup @Inject() () extends DataCleanup {
       incorporatedEntityJourneyData = None,
       soleTraderEntityJourneyData = None,
       partnershipEntityJourneyData = None,
-      partnershipName = None
+      partnershipName = None,
+      optOtherEntityJourneyData = None
     )
 
   def cleanupOtherEntityData(registration: Registration) = {

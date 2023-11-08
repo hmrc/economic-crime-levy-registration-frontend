@@ -71,16 +71,7 @@ class EntityTypeController @Inject() (
             )
 
           eclRegistrationConnector
-            .upsertRegistration(previousEntityType match {
-              case Some(value) if value == entityType =>
-                dataCleanup.cleanup(
-                  request.registration.copy(entityType = Some(entityType))
-                )
-              case _                                  =>
-                dataCleanup.cleanupOtherEntityData(
-                  request.registration.copy(entityType = Some(entityType))
-                )
-            })
+            .upsertRegistration(cleanup(request.registration, entityType, previousEntityType))
             .flatMap { updatedRegistration =>
               previousEntityType match {
                 case Some(value) if value == entityType && EntityType.isOther(entityType) && mode == CheckMode =>
@@ -92,4 +83,24 @@ class EntityTypeController @Inject() (
         }
       )
   }
+
+  private def cleanup(registration: Registration, entityType: EntityType, previousEntityType: Option[EntityType]) =
+    if (!EntityType.isOther(entityType)) {
+      dataCleanup.cleanupOtherEntityData(
+        registration.copy(
+          entityType = Some(entityType)
+        )
+      )
+    } else {
+      previousEntityType match {
+        case Some(value) if value == entityType =>
+          dataCleanup.cleanup(
+            registration.copy(entityType = Some(entityType))
+          )
+        case _                                  =>
+          dataCleanup.cleanupOtherEntityData(
+            registration.copy(entityType = Some(entityType))
+          )
+      }
+    }
 }

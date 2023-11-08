@@ -30,7 +30,8 @@ class EntityTypeDataCleanupSpec extends SpecBase {
         incorporatedEntityJourneyData = None,
         partnershipEntityJourneyData = None,
         soleTraderEntityJourneyData = None,
-        partnershipName = None
+        partnershipName = None,
+        optOtherEntityJourneyData = None
       )
     }
 
