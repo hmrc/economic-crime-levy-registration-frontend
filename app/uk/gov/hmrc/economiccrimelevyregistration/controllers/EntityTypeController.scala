@@ -86,7 +86,7 @@ class EntityTypeController @Inject() (
 
   private def cleanup(registration: Registration, entityType: EntityType, previousEntityType: Option[EntityType]) =
     if (!EntityType.isOther(entityType)) {
-      dataCleanup.cleanupOtherEntityData(
+      dataCleanup.cleanup(
         registration.copy(
           entityType = Some(entityType)
         )
