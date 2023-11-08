@@ -62,15 +62,13 @@ class EntityTypeController @Inject() (
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType => {
           val previousEntityType = request.registration.entityType
-          if (!previousEntityType.contains(entityType)) {
-            auditConnector
-              .sendExtendedEvent(
-                EntityTypeSelectedEvent(
-                  request.internalId,
-                  entityType
-                ).extendedDataEvent
-              )
-          }
+          auditConnector
+            .sendExtendedEvent(
+              EntityTypeSelectedEvent(
+                request.internalId,
+                entityType
+              ).extendedDataEvent
+            )
 
           eclRegistrationConnector
             .upsertRegistration(previousEntityType match {
@@ -85,9 +83,9 @@ class EntityTypeController @Inject() (
             })
             .flatMap { updatedRegistration =>
               previousEntityType match {
-                case Some(value) if value == entityType && mode == CheckMode =>
-                  Future.successful(Redirect(routes.CheckYourAnswersController.onPageLoad()))
-                case _                                                       =>
+                case Some(value) if value == entityType && EntityType.isOther(entityType) && mode == CheckMode =>
+                  pageNavigator.navigateToCheckYourAnswers().map(Redirect)
+                case _                                                                                         =>
                   pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
               }
             }
