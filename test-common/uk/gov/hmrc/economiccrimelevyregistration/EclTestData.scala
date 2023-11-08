@@ -22,7 +22,6 @@ import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
 import uk.gov.hmrc.auth.core.{AffinityGroup, EnrolmentIdentifier, Enrolments, Enrolment => AuthEnrolment}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.{NonUKEstablishment, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
@@ -289,7 +288,6 @@ trait EclTestData {
         postcode              <- Arbitrary.arbitrary[String]
         isCtUtrPresent        <- Arbitrary.arbitrary[Boolean]
         otherEntityJourneyData = OtherEntityJourneyData(
-                                   Some(UnincorporatedAssociation),
                                    Some(businessName),
                                    None,
                                    None,
@@ -300,7 +298,10 @@ trait EclTestData {
                                    Some(postcode)
                                  )
       } yield RegistrationWithUnincorporatedAssociation(registration =
-        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData), entityType = Some(Other))
+        registration.copy(
+          optOtherEntityJourneyData = Some(otherEntityJourneyData),
+          entityType = Some(UnincorporatedAssociation)
+        )
       )
     }
 
@@ -311,7 +312,6 @@ trait EclTestData {
         businessName          <- Arbitrary.arbitrary[String]
         ctutr                 <- Arbitrary.arbitrary[String]
         otherEntityJourneyData = OtherEntityJourneyData(
-                                   Some(Trust),
                                    Some(businessName),
                                    None,
                                    None,
@@ -322,7 +322,10 @@ trait EclTestData {
                                    None
                                  )
       } yield ValidTrustRegistration(registration =
-        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData), entityType = Some(Other))
+        registration.copy(
+          optOtherEntityJourneyData = Some(otherEntityJourneyData),
+          entityType = Some(Trust)
+        )
       )
     }
 

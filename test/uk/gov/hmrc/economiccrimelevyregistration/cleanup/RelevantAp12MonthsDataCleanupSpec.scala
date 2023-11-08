@@ -29,7 +29,7 @@ class RelevantAp12MonthsDataCleanupSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration = registration.copy(relevantAp12Months = Some(true))
 
-        dataCleanup.cleanup(updatedRegistration) shouldBe updatedRegistration.copy(
+        dataCleanup.cleanup(updatedRegistration, false) shouldBe updatedRegistration.copy(
           relevantApLength = None,
           revenueMeetsThreshold = None
         )
@@ -39,7 +39,7 @@ class RelevantAp12MonthsDataCleanupSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration = registration.copy(relevantAp12Months = Some(false))
 
-        dataCleanup.cleanup(updatedRegistration) shouldBe updatedRegistration.copy(
+        dataCleanup.cleanup(updatedRegistration, false) shouldBe updatedRegistration.copy(
           revenueMeetsThreshold = None
         )
     }

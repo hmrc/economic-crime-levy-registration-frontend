@@ -31,7 +31,7 @@ class ConfirmContactAddressDataCleanupSpec extends SpecBase {
           useRegisteredOfficeAddressAsContactAddress = Some(false)
         )
 
-        dataCleanup.cleanup(updatedRegistration) shouldBe updatedRegistration.copy(contactAddress = None)
+        dataCleanup.cleanup(updatedRegistration, false) shouldBe updatedRegistration.copy(contactAddress = None)
     }
 
     "return a registration with address preserved when use registered office address is true" in forAll {
@@ -40,7 +40,7 @@ class ConfirmContactAddressDataCleanupSpec extends SpecBase {
           useRegisteredOfficeAddressAsContactAddress = Some(true)
         )
 
-        dataCleanup.cleanup(updatedRegistration) shouldBe updatedRegistration
+        dataCleanup.cleanup(updatedRegistration, false) shouldBe updatedRegistration
     }
   }
 

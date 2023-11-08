@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Base64EncodedFields, EntityType, RegistrationType, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Base64EncodedFields, EntityType, Registration, RegistrationType, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EmailService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -105,25 +105,17 @@ class CheckYourAnswersController @Inject() (
           eclDetails(),
           organisationDetails(),
           contactDetails(),
+          otherEntityDetails(),
           request.registration.registrationType,
           request.eclRegistrationReference
         )
       )
     }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
-    val htmlView = view(
-      eclDetails(),
-      organisationDetails(),
-      contactDetails(),
-      request.registration.registrationType,
-      request.eclRegistrationReference
-    )
-
-    val registration = request.registration
-
-    val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
-    val base64EncodedHtmlViewForPdf   = (registration.entityType, registration.registrationType) match {
+  private def getBase64EncodedPdf(registration: Registration)(implicit
+    request: RegistrationDataRequest[_]
+  ) =
+    (registration.entityType, registration.registrationType) match {
       case (Some(_), Some(Amendment))                    =>
         createAndEncodeHtmlForPdf(registration.registrationType)
       case (Some(value), _) if EntityType.isOther(value) =>
@@ -133,6 +125,21 @@ class CheckYourAnswersController @Inject() (
       case _                                             =>
         ""
     }
+
+  def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+    val htmlView = view(
+      eclDetails(),
+      organisationDetails(),
+      contactDetails(),
+      organisationDetails(),
+      request.registration.registrationType,
+      request.eclRegistrationReference
+    )
+
+    val registration = request.registration
+
+    val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
+    val base64EncodedHtmlViewForPdf   = getBase64EncodedPdf(registration)
 
     for {
       _        <- eclRegistrationConnector.upsertRegistration(registration =

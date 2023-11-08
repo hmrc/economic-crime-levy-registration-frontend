@@ -26,7 +26,7 @@ class RelevantApLengthDataCleanupSpec extends SpecBase {
 
   "cleanup" should {
     "return a registration with the revenue meets threshold flag set to none" in forAll { registration: Registration =>
-      dataCleanup.cleanup(registration) shouldBe registration.copy(
+      dataCleanup.cleanup(registration, false) shouldBe registration.copy(
         revenueMeetsThreshold = None
       )
     }

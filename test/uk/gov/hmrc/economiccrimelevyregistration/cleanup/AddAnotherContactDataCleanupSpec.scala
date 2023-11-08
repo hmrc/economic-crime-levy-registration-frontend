@@ -31,7 +31,7 @@ class AddAnotherContactDataCleanupSpec extends SpecBase {
           contacts = registration.contacts.copy(secondContact = Some(false))
         )
 
-        dataCleanup.cleanup(updatedRegistration) shouldBe updatedRegistration.copy(contacts =
+        dataCleanup.cleanup(updatedRegistration, false) shouldBe updatedRegistration.copy(contacts =
           updatedRegistration.contacts
             .copy(secondContactDetails = ContactDetails.empty)
         )
@@ -43,7 +43,7 @@ class AddAnotherContactDataCleanupSpec extends SpecBase {
           contacts = registration.contacts.copy(secondContact = Some(true))
         )
 
-        dataCleanup.cleanup(updatedRegistration) shouldBe updatedRegistration
+        dataCleanup.cleanup(updatedRegistration, false) shouldBe updatedRegistration
     }
   }
 

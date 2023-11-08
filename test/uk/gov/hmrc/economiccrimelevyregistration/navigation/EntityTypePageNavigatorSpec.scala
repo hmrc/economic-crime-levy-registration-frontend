@@ -18,14 +18,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Arbitrary
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Other, SoleTrader}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.SoleTrader
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.GrsCreateJourneyResponse
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.{IncorporatedEntityType, PartnershipType}
 import uk.gov.hmrc.http.HttpVerbs.GET
 
@@ -90,16 +91,16 @@ class EntityTypePageNavigatorSpec extends SpecBase {
         await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
     }
 
-    "return a Call to the other entity journey when an other entity option is selected" in forAll {
-      (registration: Registration, mode: Mode) =>
-        val entityType: EntityType = Other
+    "return a Call to the business name page when an other entity option is selected" in forAll(
+      Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther)
+    ) { (registration: Registration, entityType: EntityType) =>
+      val updatedRegistration: Registration = registration.copy(entityType = Some(entityType))
 
-        val updatedRegistration: Registration = registration.copy(entityType = Some(entityType))
-
-        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(
-          GET,
-          routes.OtherEntityTypeController.onPageLoad(mode).url
-        )
+      await(pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)) shouldBe Call(
+        GET,
+        routes.BusinessNameController.onPageLoad(NormalMode).url
+      )
     }
   }
 

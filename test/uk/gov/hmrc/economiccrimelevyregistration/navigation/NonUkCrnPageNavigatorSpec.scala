@@ -31,10 +31,9 @@ class NonUkCrnPageNavigatorSpec extends SpecBase {
         routes.UtrTypeController.onPageLoad(NormalMode)
     }
 
-    "return a call to the other entity check your answers page in Check mode" in forAll {
-      (registration: Registration) =>
-        pageNavigator.nextPage(CheckMode, registration) shouldBe
-          routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    "return a call to the check your answers page in Check mode" in forAll { (registration: Registration) =>
+      pageNavigator.nextPage(CheckMode, registration) shouldBe
+        routes.CheckYourAnswersController.onPageLoad()
     }
   }
 
