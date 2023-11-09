@@ -26,7 +26,6 @@ import play.api.test.Helpers.{contentAsString, redirectLocation, status}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.OtherEntityTypeAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.SaUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.arbRegistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
@@ -43,13 +42,6 @@ class SaUtrControllerSpec extends SpecBase {
   val form: Form[String]                                     = formProvider()
   override val appConfig: AppConfig                          = mock[AppConfig]
   val SAUTR                                                  = "0123456789"
-  when(appConfig.otherEntityTypeEnabled).thenReturn(true)
-
-  val otherEntityTypeAction: OtherEntityTypeAction = new OtherEntityTypeAction(
-    errorHandler = errorHandler,
-    appConfig = appConfig,
-    parser = app.injector.instanceOf[BodyParsers.Default]
-  )
 
   val pageNavigator: SaUtrPageNavigator = new SaUtrPageNavigator() {
     override protected def navigateInNormalMode(registration: Registration): Call =
@@ -65,7 +57,6 @@ class SaUtrControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
-      otherEntityTypeAction,
       formProvider,
       pageNavigator,
       view

@@ -56,31 +56,21 @@ object EntityType {
   )
 
   def isOther(entityType: EntityType): Boolean =
-    isOther(Some(entityType.toString))
+    Seq(
+      Charity,
+      Trust,
+      NonUKEstablishment,
+      UnincorporatedAssociation
+    ).contains(entityType)
 
-  private def isOther(value: Option[String]): Boolean =
-    value match {
-      case Some(value) =>
-        Seq(
-          Charity.toString,
-          Trust.toString,
-          NonUKEstablishment.toString,
-          UnincorporatedAssociation.toString
-        ).contains(value)
-      case None        => false
-    }
-
-  def options(appConfig: AppConfig)(implicit messages: Messages): Seq[RadioItem] = {
-    val radioItems = values.zipWithIndex.map { case (value, index) =>
+  def options(appConfig: AppConfig)(implicit messages: Messages): Seq[RadioItem] =
+    values.zipWithIndex.map { case (value, index) =>
       RadioItem(
         content = Text(messages(s"entityType.${value.toString}")),
         value = Some(value.toString),
         id = Some(s"value_$index")
       )
     }
-
-    if (!appConfig.otherEntityTypeEnabled) radioItems.filterNot(o => isOther(o.value)) else radioItems
-  }
 
   implicit val enumerable: Enumerable[EntityType] = Enumerable(values.map(v => (v.toString, v)): _*)
 

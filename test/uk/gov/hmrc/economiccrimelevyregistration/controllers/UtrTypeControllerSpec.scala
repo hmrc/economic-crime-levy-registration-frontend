@@ -25,7 +25,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.OtherEntityTypeAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UtrTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -53,13 +52,6 @@ class UtrTypeControllerSpec extends SpecBase {
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   override val appConfig: AppConfig                          = mock[AppConfig]
-  when(appConfig.otherEntityTypeEnabled).thenReturn(true)
-
-  val otherEntityTypeAction: OtherEntityTypeAction = new OtherEntityTypeAction(
-    errorHandler = errorHandler,
-    appConfig = appConfig,
-    parser = app.injector.instanceOf[BodyParsers.Default]
-  )
 
   class TestContext(registrationData: Registration) {
     val controller = new UtrTypeController(
@@ -69,7 +61,6 @@ class UtrTypeControllerSpec extends SpecBase {
       mockEclRegistrationConnector,
       formProvider,
       pageNavigator,
-      otherEntityTypeAction,
       view
     )
   }
