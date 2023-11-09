@@ -49,11 +49,11 @@ class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
     }
 
     "(Check Mode) return a call to the check your answers page" in forAll {
-      (registration: Registration, charityRegistrationNumber: String) =>
+      (registration: Registration, number: String) =>
         val otherEntityJourneyData = OtherEntityJourneyData
           .empty()
           .copy(
-            charityRegistrationNumber = Some(charityRegistrationNumber)
+            companyRegistrationNumber = Some(number)
           )
 
         val updatedRegistration: Registration =

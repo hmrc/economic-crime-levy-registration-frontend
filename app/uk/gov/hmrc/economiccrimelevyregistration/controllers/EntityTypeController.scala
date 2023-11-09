@@ -71,7 +71,7 @@ class EntityTypeController @Inject() (
             )
 
           eclRegistrationConnector
-            .upsertRegistration(cleanup(request.registration, entityType, previousEntityType))
+            .upsertRegistration(cleanup(mode, request.registration, entityType, previousEntityType))
             .flatMap { updatedRegistration =>
               previousEntityType match {
                 case Some(value) if value == entityType && EntityType.isOther(entityType) && mode == CheckMode =>
@@ -84,8 +84,16 @@ class EntityTypeController @Inject() (
       )
   }
 
-  private def cleanup(registration: Registration, entityType: EntityType, previousEntityType: Option[EntityType]) =
-    if (!EntityType.isOther(entityType)) {
+  private def cleanup(
+    mode: Mode,
+    registration: Registration,
+    entityType: EntityType,
+    previousEntityType: Option[EntityType]
+  ) = {
+    val isOther = EntityType.isOther(entityType)
+    if (previousEntityType.contains(entityType) && mode == CheckMode && isOther) {
+      registration
+    } else if (!isOther) {
       dataCleanup.cleanup(
         registration.copy(
           entityType = Some(entityType)
@@ -103,4 +111,5 @@ class EntityTypeController @Inject() (
           )
       }
     }
+  }
 }

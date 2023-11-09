@@ -16,9 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import org.scalacheck.Arbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityRegistrationNumberMaxLength, OrganisationNameMaxLength, UtrLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class NonUkCrnPageNavigatorSpec extends SpecBase {
@@ -31,9 +34,21 @@ class NonUkCrnPageNavigatorSpec extends SpecBase {
         routes.UtrTypeController.onPageLoad(NormalMode)
     }
 
-    "return a call to the check your answers page in Check mode" in forAll { (registration: Registration) =>
-      pageNavigator.nextPage(CheckMode, registration) shouldBe
-        routes.CheckYourAnswersController.onPageLoad()
+    "return a call to the check your answers page in Check mode" in forAll {
+      (registration: Registration, utrType: UtrType) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            utrType = Some(utrType)
+          )
+
+        val updatedRegistration: Registration =
+          registration.copy(
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
+
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
     }
   }
 
