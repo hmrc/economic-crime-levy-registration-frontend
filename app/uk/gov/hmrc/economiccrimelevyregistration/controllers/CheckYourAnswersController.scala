@@ -106,7 +106,7 @@ class CheckYourAnswersController @Inject() (
           organisationDetails(),
           contactDetails(),
           otherEntityDetails(),
-          request.registration.otherEntityJourneyData.isDefined(),
+          request.registration.otherEntityJourneyData.isSomeDataDefined(),
           request.registration.registrationType,
           request.eclRegistrationReference
         )
@@ -133,7 +133,7 @@ class CheckYourAnswersController @Inject() (
       organisationDetails(),
       contactDetails(),
       organisationDetails(),
-      request.registration.otherEntityJourneyData.isDefined(),
+      request.registration.otherEntityJourneyData.isSomeDataDefined(),
       request.registration.registrationType,
       request.eclRegistrationReference
     )

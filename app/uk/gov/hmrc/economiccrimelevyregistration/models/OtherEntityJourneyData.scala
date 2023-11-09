@@ -28,8 +28,8 @@ final case class OtherEntityJourneyData(
   saUtr: Option[String],
   postcode: Option[String]
 ) {
-  def isDefined(): Boolean =
-    Seq(
+  def isSomeDataDefined(): Boolean =
+    !Seq(
       businessName,
       charityRegistrationNumber,
       companyRegistrationNumber,
@@ -38,7 +38,7 @@ final case class OtherEntityJourneyData(
       isCtUtrPresent,
       saUtr,
       postcode
-    ).forall(_.isDefined)
+    ).forall(_.isEmpty)
 }
 
 object OtherEntityJourneyData {
