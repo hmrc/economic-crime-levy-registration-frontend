@@ -13,7 +13,7 @@
 
                 // hide the backlink if the referrer is on a different domain or the referrer is not set
                 if (docReferrer === '' || docReferrer.indexOf(window.location.host) === -1) {
-                    $module.classList.add('hmrc-hidden-backlink');
+                    link.classList.add('hmrc-hidden-backlink');
                 } else {
                     // prevent resubmit warning
                     if (window.history.replaceState && typeof window.history.replaceState === 'function') {
