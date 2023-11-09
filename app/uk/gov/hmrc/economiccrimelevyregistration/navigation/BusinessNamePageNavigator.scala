@@ -30,10 +30,10 @@ class BusinessNamePageNavigator extends PageNavigator {
     registration.entityType match {
       case Some(value) =>
         value match {
-          case Charity                   => routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
-          case UnincorporatedAssociation => routes.DoYouHaveCtUtrController.onPageLoad(NormalMode)
-          case Trust                     => routes.CtUtrController.onPageLoad(NormalMode)
-          case NonUKEstablishment        => routes.NonUkCrnController.onPageLoad(NormalMode)
+          case Charity                   => routes.CharityRegistrationNumberController.onPageLoad(mode)
+          case UnincorporatedAssociation => routes.DoYouHaveCtUtrController.onPageLoad(mode)
+          case Trust                     => routes.CtUtrController.onPageLoad(mode)
+          case NonUKEstablishment        => routes.NonUkCrnController.onPageLoad(mode)
           case _                         => error()
         }
       case _           => error()

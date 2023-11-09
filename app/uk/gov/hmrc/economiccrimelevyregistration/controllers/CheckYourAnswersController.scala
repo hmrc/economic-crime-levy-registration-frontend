@@ -106,6 +106,7 @@ class CheckYourAnswersController @Inject() (
           organisationDetails(),
           contactDetails(),
           otherEntityDetails(),
+          !request.registration.otherEntityJourneyData.isBlank(),
           request.registration.registrationType,
           request.eclRegistrationReference
         )
@@ -132,6 +133,7 @@ class CheckYourAnswersController @Inject() (
       organisationDetails(),
       contactDetails(),
       organisationDetails(),
+      !request.registration.otherEntityJourneyData.isBlank(),
       request.registration.registrationType,
       request.eclRegistrationReference
     )

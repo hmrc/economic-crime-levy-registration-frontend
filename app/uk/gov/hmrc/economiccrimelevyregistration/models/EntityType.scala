@@ -63,14 +63,16 @@ object EntityType {
       UnincorporatedAssociation
     ).contains(entityType)
 
-  def options(appConfig: AppConfig)(implicit messages: Messages): Seq[RadioItem] =
-    values.zipWithIndex.map { case (value, index) =>
-      RadioItem(
-        content = Text(messages(s"entityType.${value.toString}")),
-        value = Some(value.toString),
-        id = Some(s"value_$index")
-      )
-    }
+  def options()(implicit messages: Messages): Seq[RadioItem] =
+    values.zipWithIndex
+      .map { case (value, index) =>
+        RadioItem(
+          content = Text(messages(s"entityType.${value.toString}")),
+          value = Some(value.toString),
+          id = Some(s"value_$index")
+        )
+      }
+      .sortBy(_.content.toString)
 
   implicit val enumerable: Enumerable[EntityType] = Enumerable(values.map(v => (v.toString, v)): _*)
 

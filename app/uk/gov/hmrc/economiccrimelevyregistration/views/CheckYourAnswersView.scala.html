@@ -27,6 +27,7 @@
         organisationDetails: SummaryList,
         contactDetails: SummaryList,
         otherEntityDetails: SummaryList,
+        hasOtherEntityData: Boolean,
         registrationType: Option[RegistrationType],
         eclReference: Option[String])(implicit request: Request[_], messages: Messages)
 
@@ -51,9 +52,12 @@
 
         @govukSummaryList(contactDetails)
 
-        <h2>@messages("checkYourAnswers.otherEntityDetails")</h2>
+        @if(hasOtherEntityData) {
 
-        @govukSummaryList(otherEntityDetails)
+            <h2>@messages("checkYourAnswers.otherEntityDetails")</h2>
+
+            @govukSummaryList(otherEntityDetails)
+        }
 
         <h1 class="govuk-heading-m">@messages("checkYourAnswers.nowSend")</h1>
 
