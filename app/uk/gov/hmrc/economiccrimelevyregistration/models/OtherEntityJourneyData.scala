@@ -27,19 +27,7 @@ final case class OtherEntityJourneyData(
   isCtUtrPresent: Option[Boolean],
   saUtr: Option[String],
   postcode: Option[String]
-) {
-  def isSomeDataDefined(): Boolean =
-    !Seq(
-      businessName,
-      charityRegistrationNumber,
-      companyRegistrationNumber,
-      utrType,
-      ctUtr,
-      isCtUtrPresent,
-      saUtr,
-      postcode
-    ).forall(_.isEmpty)
-}
+)
 
 object OtherEntityJourneyData {
   implicit val format: OFormat[OtherEntityJourneyData] = Json.format[OtherEntityJourneyData]
