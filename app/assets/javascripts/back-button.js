@@ -4,7 +4,7 @@
         NodeList.prototype.forEach = Array.prototype.forEach;
     }
 
-    document.querySelectorAll('button[data-backlink]')
+    document.querySelectorAll('button.backButton')
         .forEach(function (link) {
 
             if (window.history) {

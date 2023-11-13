@@ -41,10 +41,10 @@
     <p class="govuk-body">@messages("verificationFailed.body.p4")</p>
     <p class="govuk-body">@messages("verificationFailed.body.p5")</p>
     <p class="govuk-body">@messages("verificationFailed.body.p6")</p>
-
+  
     @button(
         Button(
-            attributes = Map("data-backlink" -> ""),
+            classes = "backButton hmrc-!-js-visible",
             content = Text(messages("verificationFailed.button"))
         )
     )
