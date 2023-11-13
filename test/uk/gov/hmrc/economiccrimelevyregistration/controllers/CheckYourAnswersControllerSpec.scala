@@ -144,7 +144,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           organisationDetails,
           contactDetails,
           otherEntityDetails,
-          validRegistration.registration.otherEntityJourneyData.isSomeDataDefined(),
           Some(Initial),
           None
         )(

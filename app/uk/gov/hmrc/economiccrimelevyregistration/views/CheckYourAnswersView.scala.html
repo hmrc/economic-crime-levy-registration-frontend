@@ -27,7 +27,6 @@
         organisationDetails: SummaryList,
         contactDetails: SummaryList,
         otherEntityDetails: SummaryList,
-        hasOtherEntityData: Boolean,
         registrationType: Option[RegistrationType],
         eclReference: Option[String])(implicit request: Request[_], messages: Messages)
 
@@ -52,7 +51,7 @@
 
         @govukSummaryList(contactDetails)
 
-        @if(hasOtherEntityData) {
+        @if(!otherEntityDetails.rows.isEmpty) {
 
             <h2>@messages("checkYourAnswers.otherEntityDetails")</h2>
 
