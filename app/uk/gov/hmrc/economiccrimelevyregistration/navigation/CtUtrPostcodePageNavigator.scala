@@ -17,14 +17,14 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
 class CtUtrPostcodePageNavigator extends PageNavigator {
-  override protected def navigateInNormalMode(registration: Registration): Call = navigateInEitherMode()
+  override protected def navigateInNormalMode(registration: Registration): Call =
+    routes.BusinessSectorController.onPageLoad(NormalMode)
 
-  override protected def navigateInCheckMode(registration: Registration): Call = navigateInEitherMode()
-
-  private def navigateInEitherMode(): Call = routes.OtherEntityCheckYourAnswersController.onPageLoad()
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    routes.CheckYourAnswersController.onPageLoad()
 
 }

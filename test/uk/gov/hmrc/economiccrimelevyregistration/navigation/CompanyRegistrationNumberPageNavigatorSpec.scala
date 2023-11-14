@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CompanyRegistrationNumberPageNavigatorSpec extends SpecBase {
@@ -32,16 +32,18 @@ class CompanyRegistrationNumberPageNavigatorSpec extends SpecBase {
         val otherEntityJourneyData = OtherEntityJourneyData
           .empty()
           .copy(
-            entityType = Some(Charity),
             charityRegistrationNumber = Some(charityRegistrationNumber),
             companyRegistrationNumber = Some(companyRegistrationNumber)
           )
 
         val updatedRegistration: Registration =
-          registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+          registration.copy(
+            entityType = Some(Charity),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
 
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
-          routes.OtherEntityCheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+          routes.BusinessSectorController.onPageLoad(NormalMode)
     }
   }
 

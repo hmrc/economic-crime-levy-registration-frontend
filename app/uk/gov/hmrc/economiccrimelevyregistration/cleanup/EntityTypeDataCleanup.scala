@@ -26,7 +26,22 @@ class EntityTypeDataCleanup @Inject() () extends DataCleanup {
       incorporatedEntityJourneyData = None,
       soleTraderEntityJourneyData = None,
       partnershipEntityJourneyData = None,
-      partnershipName = None
+      partnershipName = None,
+      optOtherEntityJourneyData = None
     )
 
+  def cleanupOtherEntityData(registration: Registration) = {
+    val otherEntityJourneyData = registration.otherEntityJourneyData.copy(
+      charityRegistrationNumber = None,
+      companyRegistrationNumber = None,
+      utrType = None,
+      ctUtr = None,
+      saUtr = None,
+      postcode = None,
+      isCtUtrPresent = None
+    )
+    cleanup(registration).copy(
+      optOtherEntityJourneyData = Some(otherEntityJourneyData)
+    )
+  }
 }

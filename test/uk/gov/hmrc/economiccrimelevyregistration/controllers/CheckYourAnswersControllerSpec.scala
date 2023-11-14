@@ -27,9 +27,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.ValidRegistrationWithRegistrati
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidatedRegistrationAction
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityRegistrationNumberMaxLength, EmailMaxLength}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
@@ -50,7 +49,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val view: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
   val pdfView                    = app.injector.instanceOf[OtherRegistrationPdfView]
   val amendPdfView               = app.injector.instanceOf[AmendRegistrationPdfView]
-  val otherEntity                = app.injector.instanceOf[OtherEntityCheckYourAnswersController]
 
   val mockEclRegistrationConnector: EclRegistrationConnector                   = mock[EclRegistrationConnector]
   val mockEmailService: EmailService                                           = mock[EmailService]
@@ -67,7 +65,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       view,
       new FakeValidatedRegistrationAction(registrationData),
       mockEmailService,
-      otherEntity,
       pdfView,
       amendPdfView
     )
@@ -128,8 +125,28 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           ).flatten
         ).withCssClass("govuk-!-margin-bottom-9")
 
+        val otherEntityDetails: SummaryList = SummaryListViewModel(
+          rows = Seq(
+            BusinessNameSummary.row(),
+            CharityRegistrationNumberSummary.row(),
+            CompanyRegistrationNumberSummary.row(),
+            DoYouHaveCtUtrSummary.row(),
+            UtrTypeSummary.row(),
+            OtherEntitySaUtrSummary.row(),
+            OtherEntityCtUtrSummary.row(),
+            OtherEntityPostcodeSummary.row()
+          ).flatten
+        ).withCssClass("govuk-!-margin-bottom-9")
+
         status(result)          shouldBe OK
-        contentAsString(result) shouldBe view(eclDetails, organisationDetails, contactDetails, Some(Initial), None)(
+        contentAsString(result) shouldBe view(
+          eclDetails,
+          organisationDetails,
+          contactDetails,
+          otherEntityDetails,
+          Some(Initial),
+          None
+        )(
           fakeRequest,
           messages
         ).toString
@@ -141,7 +158,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "redirect to the registration submitted page after submitting the registration with one contact and sending email successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
-      Arbitrary.arbitrary[EntityType].retryUntil(_ != Other),
+      Arbitrary.arbitrary[EntityType].retryUntil(!EntityType.isOther(_)),
       emailAddress(EmailMaxLength)
     ) {
       (
@@ -202,7 +219,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "redirect to the registration received page after submitting the registration with one contact and sending email successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
-      Arbitrary.arbitrary[EntityType].retryUntil(_ == Other),
+      Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther),
       emailAddress(EmailMaxLength)
     ) {
       (
@@ -268,7 +285,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "redirect to the registration submitted page after submitting the registration with two contacts and sending emails successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
-      Arbitrary.arbitrary[EntityType].retryUntil(_ != Other),
+      Arbitrary.arbitrary[EntityType].retryUntil(!EntityType.isOther(_)),
       emailAddress(EmailMaxLength),
       emailAddress(EmailMaxLength)
     ) {
@@ -331,7 +348,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "redirect to the registration received page after submitting the registration with two contacts and sending emails successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
-      Arbitrary.arbitrary[EntityType].retryUntil(_ == Other),
+      Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther),
       emailAddress(EmailMaxLength),
       emailAddress(EmailMaxLength)
     ) {

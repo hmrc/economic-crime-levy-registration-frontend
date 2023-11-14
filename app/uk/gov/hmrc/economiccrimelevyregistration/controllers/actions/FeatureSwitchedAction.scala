@@ -38,12 +38,3 @@ abstract class FeatureSwitchedAction @Inject() (
     if (featureEnabled) block(request) else Future.successful(NotFound(errorHandler.notFoundTemplate(request)))
 
 }
-
-class OtherEntityTypeAction @Inject() (
-  errorHandler: ErrorHandler,
-  override val parser: BodyParsers.Default,
-  appConfig: AppConfig
-)(implicit override val executionContext: ExecutionContext)
-    extends FeatureSwitchedAction(errorHandler, parser) {
-  override val featureEnabled: Boolean = appConfig.otherEntityTypeEnabled
-}

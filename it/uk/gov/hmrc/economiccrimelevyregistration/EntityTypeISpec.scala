@@ -11,13 +11,18 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
+  private def randomRegistration() =
+    random[Registration].copy(
+      optOtherEntityJourneyData = None
+    )
+
   s"GET ${routes.EntityTypeController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.EntityTypeController.onPageLoad(NormalMode))
 
     "respond with 200 status and the select entity type HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration = randomRegistration()
 
       stubGetRegistration(registration)
 
@@ -35,7 +40,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected entity type then redirect to the GRS Incorporated Entity journey when one of the Incorporated Entity type options is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration = randomRegistration()
 
       val entityType = random[IncorporatedEntityType].entityType
 
@@ -72,7 +77,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected entity type then redirect to the GRS Sole Trader journey when the Sole Trader option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration = randomRegistration()
 
       stubGetRegistration(registration)
       stubCreateGrsJourney("/sole-trader-identification/api/sole-trader-journey")
@@ -100,7 +105,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
   "save the selected entity type then redirect to the GRS Partnership journey when the Partnership option is selected" in {
     stubAuthorisedWithNoGroupEnrolment()
 
-    val registration = random[Registration]
+    val registration = randomRegistration()
     val entityType   = random[PartnershipType].entityType
 
     val urlPartnershipType: String = entityType match {
