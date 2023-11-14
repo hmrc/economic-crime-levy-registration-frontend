@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
+import uk.gov.hmrc.economiccrimelevyregistration.models.{RegistrationAdditionalInfo, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
+import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 
 import scala.concurrent.Future
@@ -30,20 +32,26 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
   val view: RegistrationSubmittedView                                              = app.injector.instanceOf[RegistrationSubmittedView]
   val outOfSessionRegistrationSubmittedView: OutOfSessionRegistrationSubmittedView =
     app.injector.instanceOf[OutOfSessionRegistrationSubmittedView]
+  val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService     = mock[RegistrationAdditionalInfoService]
 
   val controller = new RegistrationSubmittedController(
     mcc,
     fakeAuthorisedActionWithoutEnrolmentCheck("test-internal-id"),
     view,
-    outOfSessionRegistrationSubmittedView
+    outOfSessionRegistrationSubmittedView,
+    mockRegistrationAdditionalInfoService
   )
 
   "onPageLoad" should {
     "return OK and the correct view when there is one contact email address in the session" in forAll {
       (
         eclReference: String,
-        firstContactEmailAddress: String
+        firstContactEmailAddress: String,
+        registrationAdditionalInfo: RegistrationAdditionalInfo
       ) =>
+        when(mockRegistrationAdditionalInfoService.get(anyString())(any()))
+          .thenReturn(Future.successful(Some(registrationAdditionalInfo)))
+
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
             (SessionKeys.EclReference, eclReference),
@@ -56,7 +64,8 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         contentAsString(result) shouldBe view(
           eclReference,
           firstContactEmailAddress,
-          None
+          None,
+          registrationAdditionalInfo.liabilityYear
         )(fakeRequest, messages).toString
     }
 
@@ -64,8 +73,12 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
       (
         eclReference: String,
         firstContactEmailAddress: String,
-        secondContactEmailAddress: String
+        secondContactEmailAddress: String,
+        registrationAdditionalInfo: RegistrationAdditionalInfo
       ) =>
+        when(mockRegistrationAdditionalInfoService.get(anyString())(any()))
+          .thenReturn(Future.successful(Some(registrationAdditionalInfo)))
+
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
             (SessionKeys.EclReference, eclReference),
@@ -79,18 +92,30 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         contentAsString(result) shouldBe view(
           eclReference,
           firstContactEmailAddress,
-          Some(secondContactEmailAddress)
+          Some(secondContactEmailAddress),
+          registrationAdditionalInfo.liabilityYear
         )(fakeRequest, messages).toString
     }
 
     "return OK and the correct view when information is not gathered from session" in {
-      (internalId: String, groupId: String, eclReference: String) =>
+      (
+        internalId: String,
+        groupId: String,
+        eclReference: String,
+        registrationAdditionalInfo: RegistrationAdditionalInfo
+      ) =>
+        when(mockRegistrationAdditionalInfoService.get(anyString())(any()))
+          .thenReturn(Future.successful(Some(registrationAdditionalInfo)))
+
         val result =
           controller.onPageLoad()(AuthorisedRequest(fakeRequest, internalId, groupId, Some(eclReference)))
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe outOfSessionRegistrationSubmittedView("eclReference")(fakeRequest, messages)
+        contentAsString(result) shouldBe outOfSessionRegistrationSubmittedView(
+          "eclReference",
+          registrationAdditionalInfo.liabilityYear
+        )(fakeRequest, messages)
           .toString()
     }
 

@@ -151,6 +151,14 @@ trait EclTestData {
     } yield EnrolmentsWithEcl(enrolments.copy(enrolments.enrolments + eclEnrolment), eclReferenceNumber)
   }
 
+  implicit val arbRegistrationAdditionalInfo: Arbitrary[RegistrationAdditionalInfo] = Arbitrary {
+    for {
+      internalId         <- Arbitrary.arbitrary[String]
+      liabilityYear      <- Arbitrary.arbitrary[Int]
+      eclReferenceNumber <- Arbitrary.arbitrary[String]
+    } yield RegistrationAdditionalInfo(internalId, Some(liabilityYear), Some(eclReferenceNumber))
+  }
+
   implicit val arbEnrolmentsWithoutEcl: Arbitrary[EnrolmentsWithoutEcl] = Arbitrary {
     Arbitrary
       .arbitrary[Enrolments]
