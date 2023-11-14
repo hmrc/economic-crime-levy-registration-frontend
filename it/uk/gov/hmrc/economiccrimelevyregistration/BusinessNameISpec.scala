@@ -6,7 +6,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
@@ -36,7 +36,7 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration: Registration = random[Registration].copy(
-        optOtherEntityJourneyData = Some(OtherEntityJourneyData.empty().copy(entityType = Some(Charity)))
+        entityType = Some(Charity)
       )
 
       stubGetRegistration(registration)

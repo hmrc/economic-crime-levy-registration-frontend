@@ -21,7 +21,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, OtherEntityTypeAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveCtUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
@@ -38,7 +38,6 @@ class DoYouHaveCtUtrController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   formProvider: DoYouHaveCtUtrFormProvider,
-  checkIfOtherEntityTypeEnabled: OtherEntityTypeAction,
   eclRegistrationConnector: EclRegistrationConnector,
   pageNavigator: DoYouHaveCtUtrPageNavigator,
   view: DoYouHaveCtUtrView
@@ -50,12 +49,12 @@ class DoYouHaveCtUtrController @Inject() (
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData) { implicit request =>
+    (authorise andThen getRegistrationData) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.isCtUtrPresent), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
+    (authorise andThen getRegistrationData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

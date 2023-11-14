@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.AmendRegistrationSubmittedEmailParameters.AmendRegistrationTemplateId
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.{NormalEntityTemplateId, OtherEntityTemplateId}
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, AmendRegistrationSubmittedEmailRequest, RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
@@ -48,8 +47,10 @@ class EmailConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(im
         RegistrationSubmittedEmailRequest(
           to = Seq(to),
           templateId = entityType match {
-            case Some(Other) => OtherEntityTemplateId
-            case _           => NormalEntityTemplateId
+            case Some(value) if EntityType.isOther(value) =>
+              OtherEntityTemplateId
+            case _                                        =>
+              NormalEntityTemplateId
           },
           parameters = registrationSubmittedEmailParameters
         )

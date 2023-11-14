@@ -90,6 +90,4 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val emailBaseUrl: String = servicesConfig.baseUrl("email")
 
   val amlProfessionalBodySupervisors: Seq[String] = configuration.get[Seq[String]]("amlProfessionalBodySupervisors")
-
-  val otherEntityTypeEnabled: Boolean = configuration.get[Boolean]("features.otherEntityTypeEnabled")
 }

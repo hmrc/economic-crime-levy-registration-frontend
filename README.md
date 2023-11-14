@@ -53,7 +53,6 @@ To check if there are any scalastyle errors, warnings or infos:
 - enrolmentStoreProxyStubReturnsEclReference: When enabled we stub the response from the Enrolment Store Proxy service for getting enrolments for a group.
 - grsStubEnabled: When enabled we use the stub for the Incorporated Entity Identification, Partnership Identification and Sole Trader Identification services.
 - incorporatedEntityBvEnabled: Controls whether we enable business verification in our request to the Incorporated Entity Identification service.
-- otherEntityTypeEnabled: Controls the other entity journey on registration.
 - partnershipBvEnabled: Controls whether we enable business verification in our request to the Partnership Identification service.
 - soleTraderBvEnabled: Controls whether we enable business verification in our request to the Sole Trader Identification service.
 - welsh-translation: Controls whether the link to view a page in Welsh is displayed on a page.

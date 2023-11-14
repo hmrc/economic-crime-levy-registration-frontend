@@ -52,10 +52,14 @@ class EntityTypeControllerSpec extends SpecBase {
     override protected def navigateInCheckMode(
       registration: Registration
     )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
+
+    override def navigateToCheckYourAnswers()(implicit request: RequestHeader): Future[Call] =
+      Future.successful(onwardRoute)
   }
 
   val dataCleanup: EntityTypeDataCleanup = new EntityTypeDataCleanup {
-    override def cleanup(registration: Registration): Registration = registration
+    override def cleanup(registration: Registration): Registration                = registration
+    override def cleanupOtherEntityData(registration: Registration): Registration = registration
   }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]

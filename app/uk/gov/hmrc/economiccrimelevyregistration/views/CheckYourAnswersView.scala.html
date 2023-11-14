@@ -26,6 +26,7 @@
 @(eclDetails: SummaryList,
         organisationDetails: SummaryList,
         contactDetails: SummaryList,
+        otherEntityDetails: SummaryList,
         registrationType: Option[RegistrationType],
         eclReference: Option[String])(implicit request: Request[_], messages: Messages)
 
@@ -49,6 +50,13 @@
         <h1 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h1>
 
         @govukSummaryList(contactDetails)
+
+        @if(!otherEntityDetails.rows.isEmpty) {
+
+            <h2>@messages("checkYourAnswers.otherEntityDetails")</h2>
+
+            @govukSummaryList(otherEntityDetails)
+        }
 
         <h1 class="govuk-heading-m">@messages("checkYourAnswers.nowSend")</h1>
 

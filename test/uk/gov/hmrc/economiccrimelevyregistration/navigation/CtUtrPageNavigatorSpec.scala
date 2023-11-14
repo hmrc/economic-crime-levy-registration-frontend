@@ -26,12 +26,12 @@ class CtUtrPageNavigatorSpec extends SpecBase {
   val pageNavigator = new CtUtrPageNavigator()
 
   "nextPage" should {
-    "redirect to Other entity check your answer page when Trust registration is valid in NormalMode" in {
+    "redirect to business sector page when Trust registration is valid in NormalMode" in {
       (validTrustRegistration: ValidTrustRegistration) =>
         pageNavigator.nextPage(
           NormalMode,
           validTrustRegistration.registration
-        ) shouldBe routes.OtherEntityCheckYourAnswersController.onPageLoad()
+        ) shouldBe routes.BusinessSectorController.onPageLoad(NormalMode)
     }
 
     "redirect to postcode page when Unincorporated Association registration is valid in NormalMode" in {

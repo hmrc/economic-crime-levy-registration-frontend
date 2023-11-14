@@ -20,7 +20,7 @@ import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.NonUKEstablishment
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.NonUKEstablishment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
@@ -33,7 +33,7 @@ object CompanyRegistrationNumberSummary {
     request.registration.otherEntityJourneyData.companyRegistrationNumber.map { answer =>
       val value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer)))
 
-      val keys = request.registration.otherEntityJourneyData.entityType match {
+      val keys = request.registration.entityType match {
         case Some(NonUKEstablishment) =>
           ("checkYourAnswers.nonUkCrn.label", routes.NonUkCrnController.onPageLoad(CheckMode).url)
         case _                        =>

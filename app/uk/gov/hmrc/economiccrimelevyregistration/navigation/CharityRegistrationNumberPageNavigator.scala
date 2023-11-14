@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 
 class CharityRegistrationNumberPageNavigator extends PageNavigator {
 
@@ -26,5 +26,9 @@ class CharityRegistrationNumberPageNavigator extends PageNavigator {
     routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
 
   override protected def navigateInCheckMode(registration: Registration): Call =
-    routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    if (registration.otherEntityJourneyData.companyRegistrationNumber.isEmpty) {
+      routes.CompanyRegistrationNumberController.onPageLoad(CheckMode)
+    } else {
+      routes.CheckYourAnswersController.onPageLoad()
+    }
 }
