@@ -49,7 +49,7 @@
     <p class="govuk-body">@messages("submitted.p3", formatLocalDate(EclTaxYear.dueDate))</p>
 
     @if(liabilityYearOption.contains(TaxYear.current.previous.startYear)) {
-        <p class="govuk-body">@messages("submitted.liableForPreviousFY.p1", liabilityYearOption.get, liabilityYearOption.get - 1)</p>
+        <p class="govuk-body">@messages("submitted.liableForPreviousFY.p1", (liabilityYearOption.get).toString, (liabilityYearOption.get + 1).toString)</p> //FIX THIS
         <p class="govuk-body">@messages("submitted.liableForPreviousFY.p2")</p>
     }
 

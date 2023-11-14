@@ -38,10 +38,10 @@ class SessionDataConnector @Inject() (appConfig: AppConfig, httpClient: HttpClie
       s"$eclRegistrationUrl/session/$internalId"
     )
 
-  def upsert(registration: SessionData)(implicit hc: HeaderCarrier): Future[Unit] =
+  def upsert(session: SessionData)(implicit hc: HeaderCarrier): Future[Unit] =
     httpClient.PUT[SessionData, Unit](
       s"$eclRegistrationUrl/session",
-      registration
+      session
     )
 
   def delete(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =

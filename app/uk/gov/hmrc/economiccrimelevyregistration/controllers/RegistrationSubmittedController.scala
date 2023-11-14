@@ -20,7 +20,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
-import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
@@ -34,18 +34,17 @@ class RegistrationSubmittedController @Inject() (
   authorise: AuthorisedActionWithoutEnrolmentCheck,
   view: RegistrationSubmittedView,
   outOfSessionRegistrationSubmittedView: OutOfSessionRegistrationSubmittedView,
-  registrationAdditionalInfoService: RegistrationAdditionalInfoService
+  sessionService: SessionService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
-    registrationAdditionalInfoService
-      .get(request.internalId)(hc(request))
-      .map { info =>
-        info.flatMap(_.liabilityYear)
-      }
+    sessionService
+      .get(request.session, request.internalId, SessionKeys.LiabilityYear)
+      .map(liabilityYearStringOption => liabilityYearStringOption.map(_.toInt))
       .map { liabilityYearOption =>
+        println("LIABILITY YEAR: " + liabilityYearOption)
         (request.session.get(SessionKeys.EclReference), request.eclRegistrationReference) match {
           case (Some(eclReference), _) =>
             val secondContactEmailAddress: Option[String] = request.session.get(SessionKeys.SecondContactEmailAddress)

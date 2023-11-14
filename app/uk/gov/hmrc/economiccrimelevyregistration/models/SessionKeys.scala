@@ -21,4 +21,5 @@ object SessionKeys {
   val EclReference: String      = "eclReference"
   val FirstContactEmailAddress  = "firstContactEmailAddress"
   val SecondContactEmailAddress = "secondContactEmailAddress"
+  val LiabilityYear             = "liabilityYear"
 }

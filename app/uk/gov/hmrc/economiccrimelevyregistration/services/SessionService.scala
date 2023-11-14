@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import play.api.http.Status.NOT_FOUND
 import play.api.mvc.Session
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.SessionDataConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionData
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,11 +46,20 @@ class SessionService @Inject() (sessionRetrievalConnector: SessionDataConnector)
     }
   }
 
-  def update(sessionData: SessionData)(implicit
+  def upsert(sessionData: SessionData)(implicit
     hc: HeaderCarrier
   ): Future[Unit] =
     sessionRetrievalConnector
-      .upsert(sessionData)
+      .get(sessionData.internalId)
+      .flatMap { oldSessionData =>
+        val newSessionData = sessionData.copy(values = sessionData.values ++ oldSessionData.values)
+        sessionRetrievalConnector
+          .upsert(newSessionData)
+      }
+      .recoverWith { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+        sessionRetrievalConnector
+          .upsert(sessionData)
+      }
 
   def delete(
     internalId: String
