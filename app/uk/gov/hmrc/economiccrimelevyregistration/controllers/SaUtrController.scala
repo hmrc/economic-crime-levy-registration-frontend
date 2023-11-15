@@ -20,7 +20,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, OtherEntityTypeAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.SaUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
@@ -37,7 +37,6 @@ class SaUtrController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
-  checkIfOtherEntityTypeEnabled: OtherEntityTypeAction,
   formProvider: SaUtrFormProvider,
   pageNavigator: SaUtrPageNavigator,
   view: SaUtrView
@@ -48,12 +47,12 @@ class SaUtrController @Inject() (
   val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData) { implicit request =>
+    (authorise andThen getRegistrationData) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.saUtr), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
+    (authorise andThen getRegistrationData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

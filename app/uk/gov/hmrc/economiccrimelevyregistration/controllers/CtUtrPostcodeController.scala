@@ -20,7 +20,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, OtherEntityTypeAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrPostcodeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, OtherEntityJourneyData}
@@ -36,7 +36,6 @@ class CtUtrPostcodeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  checkIfOtherEntityTypeEnabled: OtherEntityTypeAction,
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: CtUtrPostcodeFormProvider,
   pageNavigator: CtUtrPostcodePageNavigator,
@@ -47,12 +46,12 @@ class CtUtrPostcodeController @Inject() (
 
   val form: Form[String]                         = formProvider()
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData) { implicit request =>
+    (authorise andThen getRegistrationData) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.postcode), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (checkIfOtherEntityTypeEnabled andThen authorise andThen getRegistrationData).async { implicit request =>
+    (authorise andThen getRegistrationData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

@@ -19,9 +19,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import org.scalacheck.Arbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityRegistrationNumberMaxLength, OrganisationNameMaxLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class BusinessNamePageNavigatorSpec extends SpecBase {
@@ -36,33 +36,39 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
-          entityType = Some(Charity),
           businessName = Some(businessName)
         )
 
       val updatedRegistration: Registration =
-        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+        registration.copy(
+          entityType = Some(Charity),
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
 
       pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
         routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
     }
 
-    "(Check Mode) return a call to the charity page if charity selected" in forAll(
+    "(Check Mode) return a call to the check your answers page if charity selected" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength)
-    ) { (registration: Registration, businessName: String) =>
+      stringsWithMaxLength(OrganisationNameMaxLength),
+      stringsWithMaxLength(CharityRegistrationNumberMaxLength)
+    ) { (registration: Registration, businessName: String, number: String) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
-          entityType = Some(Charity),
-          businessName = Some(businessName)
+          businessName = Some(businessName),
+          charityRegistrationNumber = Some(number)
         )
 
       val updatedRegistration: Registration =
-        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+        registration.copy(
+          entityType = Some(Charity),
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
 
       pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
-        routes.OtherEntityCheckYourAnswersController.onPageLoad()
+        routes.CheckYourAnswersController.onPageLoad()
     }
   }
 

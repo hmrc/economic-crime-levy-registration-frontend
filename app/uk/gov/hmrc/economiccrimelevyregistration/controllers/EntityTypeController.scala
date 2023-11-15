@@ -61,6 +61,7 @@ class EntityTypeController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType => {
+          val previousEntityType = request.registration.entityType
           auditConnector
             .sendExtendedEvent(
               EntityTypeSelectedEvent(
@@ -70,17 +71,45 @@ class EntityTypeController @Inject() (
             )
 
           eclRegistrationConnector
-            .upsertRegistration(
-              dataCleanup.cleanup(
-                request.registration.copy(
-                  entityType = Some(entityType)
-                )
-              )
-            )
+            .upsertRegistration(cleanup(mode, request.registration, entityType, previousEntityType))
             .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
+              previousEntityType match {
+                case Some(value) if value == entityType && EntityType.isOther(entityType) && mode == CheckMode =>
+                  pageNavigator.navigateToCheckYourAnswers().map(Redirect)
+                case _                                                                                         =>
+                  pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
+              }
             }
         }
       )
+  }
+
+  private def cleanup(
+    mode: Mode,
+    registration: Registration,
+    entityType: EntityType,
+    previousEntityType: Option[EntityType]
+  ) = {
+    val isOther = EntityType.isOther(entityType)
+    if (previousEntityType.contains(entityType) && mode == CheckMode && isOther) {
+      registration
+    } else if (!isOther) {
+      dataCleanup.cleanup(
+        registration.copy(
+          entityType = Some(entityType)
+        )
+      )
+    } else {
+      previousEntityType match {
+        case Some(value) if value == entityType =>
+          dataCleanup.cleanup(
+            registration.copy(entityType = Some(entityType))
+          )
+        case _                                  =>
+          dataCleanup.cleanupOtherEntityData(
+            registration.copy(entityType = Some(entityType))
+          )
+      }
+    }
   }
 }

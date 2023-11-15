@@ -4,17 +4,16 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import com.github.tomakehurst.wiremock.client.WireMock.{postRequestedFor, urlEqualTo, verify}
 import org.scalacheck.Arbitrary
 import org.scalatest.concurrent.Eventually.eventually
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Other
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
-import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
@@ -62,10 +61,12 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onSubmit())
 
     "redirect to the registration submitted page after submitting the registration successfully" in {
-      Arbitrary.arbitrary[EntityType].retryUntil(_ != Other).map { entityType =>
+      Arbitrary.arbitrary[EntityType].retryUntil(!EntityType.isOther(_)).map { entityType =>
         testOnSubmit(entityType, routes.RegistrationSubmittedController.onPageLoad().url)
       }
-      testOnSubmit(Other, routes.RegistrationReceivedController.onPageLoad().url)
+      Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther).map { entityType =>
+        testOnSubmit(entityType, routes.RegistrationReceivedController.onPageLoad().url)
+      }
     }
   }
 

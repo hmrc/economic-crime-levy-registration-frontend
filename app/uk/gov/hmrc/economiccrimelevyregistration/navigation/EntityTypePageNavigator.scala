@@ -20,7 +20,7 @@ import play.api.mvc.{Call, RequestHeader}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.{IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType, Mode, NormalMode, Registration}
 import uk.gov.hmrc.http.HttpVerbs.GET
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
@@ -48,27 +48,33 @@ class EntityTypePageNavigator @Inject() (
   ): Future[Call] =
     registration.entityType match {
       case Some(entityType) =>
-        entityType match {
-          case UkLimitedCompany | UnlimitedCompany | RegisteredSociety =>
-            incorporatedEntityIdentificationFrontendConnector
-              .createIncorporatedEntityJourney(entityType, mode)
-              .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
+        if (EntityType.isOther(entityType)) {
+          Future.successful(routes.BusinessNameController.onPageLoad(mode))
+        } else {
+          entityType match {
+            case UkLimitedCompany | UnlimitedCompany | RegisteredSociety =>
+              incorporatedEntityIdentificationFrontendConnector
+                .createIncorporatedEntityJourney(entityType, mode)
+                .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
 
-          case SoleTrader =>
-            soleTraderIdentificationFrontendConnector
-              .createSoleTraderJourney(mode)
-              .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
+            case SoleTrader =>
+              soleTraderIdentificationFrontendConnector
+                .createSoleTraderJourney(mode)
+                .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
 
-          case GeneralPartnership | ScottishPartnership | LimitedPartnership | ScottishLimitedPartnership |
-              LimitedLiabilityPartnership =>
-            partnershipIdentificationFrontendConnector
-              .createPartnershipJourney(entityType, mode)
-              .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
+            case GeneralPartnership | ScottishPartnership | LimitedPartnership | ScottishLimitedPartnership |
+                LimitedLiabilityPartnership =>
+              partnershipIdentificationFrontendConnector
+                .createPartnershipJourney(entityType, mode)
+                .map(createJourneyResponse => Call(GET, createJourneyResponse.journeyStartUrl))
 
-          case Other =>
-            Future.successful(routes.OtherEntityTypeController.onPageLoad(mode))
+            case _ => Future.successful(routes.NotableErrorController.answersAreInvalid())
+          }
         }
-      case _                => Future.successful(routes.NotableErrorController.answersAreInvalid())
+      case None             => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
+
+  def navigateToCheckYourAnswers()(implicit request: RequestHeader): Future[Call] =
+    Future.successful(routes.CheckYourAnswersController.onPageLoad())
 
 }

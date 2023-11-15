@@ -20,7 +20,7 @@ import org.scalacheck.Arbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.OtherEntityType.Charity
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
@@ -35,31 +35,35 @@ class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
-          entityType = Some(Charity),
           charityRegistrationNumber = Some(charityRegistrationNumber)
         )
 
       val updatedRegistration: Registration =
-        registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+        registration.copy(
+          entityType = Some(Charity),
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
 
       pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
         routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
     }
 
-    "(Check Mode) return a call to the other entity check your answers page" in forAll {
-      (registration: Registration, charityRegistrationNumber: String) =>
+    "(Check Mode) return a call to the check your answers page" in forAll {
+      (registration: Registration, number: String) =>
         val otherEntityJourneyData = OtherEntityJourneyData
           .empty()
           .copy(
-            entityType = Some(Charity),
-            charityRegistrationNumber = Some(charityRegistrationNumber)
+            companyRegistrationNumber = Some(number)
           )
 
         val updatedRegistration: Registration =
-          registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+          registration.copy(
+            entityType = Some(Charity),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
 
         pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
-          routes.OtherEntityCheckYourAnswersController.onPageLoad()
+          routes.CheckYourAnswersController.onPageLoad()
     }
   }
 

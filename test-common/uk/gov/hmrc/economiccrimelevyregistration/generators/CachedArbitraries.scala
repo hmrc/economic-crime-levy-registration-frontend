@@ -17,16 +17,16 @@
 package uk.gov.hmrc.economiccrimelevyregistration.generators
 
 import org.scalacheck.Arbitrary
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.scalacheck.derive.MkArbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
+import uk.gov.hmrc.economiccrimelevyregistration.models.audit.NotLiableReason.RevenueDoesNotMeetThreshold
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResponse
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailParameters
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
-import uk.gov.hmrc.economiccrimelevyregistration.models.audit.NotLiableReason.RevenueDoesNotMeetThreshold
 
 object CachedArbitraries extends EclTestData {
 
@@ -56,7 +56,6 @@ object CachedArbitraries extends EclTestData {
   implicit lazy val arbContactDetails: Arbitrary[ContactDetails]                                        = mkArb
   implicit lazy val arbMode: Arbitrary[Mode]                                                            = mkArb
   implicit lazy val arbRevenueDoesNotMeetThreshold: Arbitrary[RevenueDoesNotMeetThreshold]              = mkArb
-  implicit lazy val arbEntitySubType: Arbitrary[OtherEntityType]                                        = mkArb
   implicit lazy val arbUtrType: Arbitrary[UtrType]                                                      = mkArb
 
 }

@@ -30,8 +30,30 @@ class EntityTypeDataCleanupSpec extends SpecBase {
         incorporatedEntityJourneyData = None,
         partnershipEntityJourneyData = None,
         soleTraderEntityJourneyData = None,
-        partnershipName = None
+        partnershipName = None,
+        optOtherEntityJourneyData = None
       )
+    }
+
+    "return a registration with the GRS journey data and other entity journey data set to none" in forAll {
+      registration: Registration =>
+        val otherEntityJourneyData = registration.otherEntityJourneyData.copy(
+          charityRegistrationNumber = None,
+          companyRegistrationNumber = None,
+          utrType = None,
+          ctUtr = None,
+          saUtr = None,
+          postcode = None,
+          isCtUtrPresent = None
+        )
+
+        dataCleanup.cleanupOtherEntityData(registration) shouldBe registration.copy(
+          incorporatedEntityJourneyData = None,
+          partnershipEntityJourneyData = None,
+          soleTraderEntityJourneyData = None,
+          partnershipName = None,
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
     }
   }
 

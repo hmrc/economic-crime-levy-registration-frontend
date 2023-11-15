@@ -26,7 +26,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.RegistrationWithUnincorporatedA
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.OtherEntityTypeAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrPostcodeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPostcodePageNavigator
@@ -40,13 +39,6 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
   val formProvider: CtUtrPostcodeFormProvider = new CtUtrPostcodeFormProvider()
   val form: Form[String]                      = formProvider()
   override val appConfig: AppConfig           = mock[AppConfig]
-  when(appConfig.otherEntityTypeEnabled).thenReturn(true)
-
-  val otherEntityTypeAction: OtherEntityTypeAction = new OtherEntityTypeAction(
-    errorHandler = errorHandler,
-    appConfig = appConfig,
-    parser = app.injector.instanceOf[BodyParsers.Default]
-  )
 
   val pageNavigator: CtUtrPostcodePageNavigator = new CtUtrPostcodePageNavigator() {
     override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
@@ -61,7 +53,6 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registration.internalId),
       fakeDataRetrievalAction(registration),
-      otherEntityTypeAction,
       mockEclRegistrationConnector,
       formProvider,
       pageNavigator,

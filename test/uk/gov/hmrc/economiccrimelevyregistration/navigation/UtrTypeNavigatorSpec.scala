@@ -45,7 +45,7 @@ class UtrTypeNavigatorSpec extends SpecBase {
         val call                   = otherEntityJourneyData.utrType match {
           case Some(CtUtr) if otherEntityJourneyData.ctUtr.isEmpty => routes.CtUtrController.onPageLoad(CheckMode)
           case Some(SaUtr) if otherEntityJourneyData.saUtr.isEmpty => routes.SaUtrController.onPageLoad(CheckMode)
-          case _                                                   => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+          case _                                                   => routes.CheckYourAnswersController.onPageLoad()
         }
         pageNavigator.nextPage(CheckMode, registration) shouldBe call
     }

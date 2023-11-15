@@ -23,8 +23,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registratio
 class SaUtrPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(registration: Registration): Call =
-    routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    routes.BusinessSectorController.onPageLoad(NormalMode)
 
   override protected def navigateInCheckMode(registration: Registration): Call =
-    routes.OtherEntityCheckYourAnswersController.onPageLoad()
+    routes.CheckYourAnswersController.onPageLoad()
 }

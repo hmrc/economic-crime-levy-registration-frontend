@@ -43,11 +43,11 @@ class DoYouHaveCtUtrPageNavigator @Inject() (implicit
   private def navigateInEitherMode(postcode: Option[String], isCtUtrPresent: Boolean, mode: Mode): Call =
     if (isCtUtrPresent) {
       (mode, postcode) match {
-        case (CheckMode, Some(_)) => routes.OtherEntityCheckYourAnswersController.onPageLoad()
+        case (CheckMode, Some(_)) => routes.CheckYourAnswersController.onPageLoad()
         case (CheckMode, None)    => routes.CtUtrController.onPageLoad(mode)
         case (NormalMode, _)      => routes.CtUtrController.onPageLoad(mode)
       }
     } else {
-      routes.OtherEntityCheckYourAnswersController.onPageLoad()
+      routes.CheckYourAnswersController.onPageLoad()
     }
 }
