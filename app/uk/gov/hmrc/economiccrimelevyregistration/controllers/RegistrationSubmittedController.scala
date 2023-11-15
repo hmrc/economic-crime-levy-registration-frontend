@@ -42,7 +42,7 @@ class RegistrationSubmittedController @Inject() (
     sessionService
       .get(request.session, request.internalId, SessionKeys.SessionKey_LiabilityYear)
       .map(liabilityYearStringOption => liabilityYearStringOption.map(yearStr => LiabilityYear(yearStr.toInt)))
-      .map { liabilityYearOption =>
+      .map { liabilityYear =>
         (request.session.get(SessionKeys.EclReference), request.eclRegistrationReference) match {
           case (Some(eclReference), _) =>
             val secondContactEmailAddress: Option[String] = request.session.get(SessionKeys.SecondContactEmailAddress)
@@ -52,11 +52,11 @@ class RegistrationSubmittedController @Inject() (
                 eclReference,
                 firstContactEmailAddress,
                 secondContactEmailAddress,
-                liabilityYearOption
+                liabilityYear
               )
             )
           case (_, Some(eclReference)) =>
-            Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYearOption))
+            Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear))
           case _                       => throw new IllegalStateException("ECL reference number not found in session or in enrolment")
         }
       }

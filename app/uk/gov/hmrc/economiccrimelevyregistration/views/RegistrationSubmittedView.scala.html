@@ -24,7 +24,7 @@
         appConfig: AppConfig
 )
 
-@(eclReference: String, firstContactEmailAddress: String, secondContactEmailAddress: Option[String], liabilityYearOption: Option[LiabilityYear])(implicit request: Request[_], messages: Messages)
+@(eclReference: String, firstContactEmailAddress: String, secondContactEmailAddress: Option[String], liabilityYear: Option[LiabilityYear])(implicit request: Request[_], messages: Messages)
 
 @panelContentHtml = {
     <p class="govuk-label--m">@messages("submitted.reference", eclReference)</p>
@@ -48,8 +48,8 @@
 
     <p class="govuk-body">@messages("submitted.p3", formatLocalDate(EclTaxYear.dueDate))</p>
 
-    @if(liabilityYearOption.contains(TaxYear.current.previous.startYear)) {
-        <p class="govuk-body">@messages("submitted.liableForPreviousFY.p1", liabilityYearOption.get.asString, liabilityYearOption.get.priorYearString)</p>
+    @if(liabilityYear.contains(TaxYear.current.previous.startYear)) {
+        <p class="govuk-body">@messages("submitted.liableForPreviousFY.p1", liabilityYear.get.asString, liabilityYear.get.priorYearString)</p>
         <p class="govuk-body">@messages("submitted.liableForPreviousFY.p2")</p>
     }
 
