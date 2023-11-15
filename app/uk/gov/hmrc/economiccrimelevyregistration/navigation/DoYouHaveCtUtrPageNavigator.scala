@@ -48,6 +48,9 @@ class DoYouHaveCtUtrPageNavigator @Inject() (implicit
         case (NormalMode, _)      => routes.CtUtrController.onPageLoad(mode)
       }
     } else {
-      routes.CheckYourAnswersController.onPageLoad()
+      mode match {
+        case NormalMode => routes.BusinessSectorController.onPageLoad(NormalMode)
+        case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
+      }
     }
 }
