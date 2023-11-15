@@ -20,9 +20,9 @@ import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.{RegistrationAdditionalInfo, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, RegistrationAdditionalInfo, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 
 import scala.concurrent.Future
@@ -32,14 +32,14 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
   val view: RegistrationSubmittedView                                              = app.injector.instanceOf[RegistrationSubmittedView]
   val outOfSessionRegistrationSubmittedView: OutOfSessionRegistrationSubmittedView =
     app.injector.instanceOf[OutOfSessionRegistrationSubmittedView]
-  val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService     = mock[RegistrationAdditionalInfoService]
+  val mockSessionService: SessionService                                           = mock[SessionService]
 
   val controller = new RegistrationSubmittedController(
     mcc,
     fakeAuthorisedActionWithoutEnrolmentCheck("test-internal-id"),
     view,
     outOfSessionRegistrationSubmittedView,
-    mockRegistrationAdditionalInfoService
+    mockSessionService
   )
 
   "onPageLoad" should {
@@ -47,10 +47,10 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
       (
         eclReference: String,
         firstContactEmailAddress: String,
-        registrationAdditionalInfo: RegistrationAdditionalInfo
+        liabilityYear: LiabilityYear
       ) =>
-        when(mockRegistrationAdditionalInfoService.get(anyString())(any()))
-          .thenReturn(Future.successful(Some(registrationAdditionalInfo)))
+        when(mockSessionService.get(any(), anyString(), anyString())(any()))
+          .thenReturn(Future.successful(Some(liabilityYear.asString)))
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
@@ -65,7 +65,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           eclReference,
           firstContactEmailAddress,
           None,
-          registrationAdditionalInfo.liabilityYear
+          Some(liabilityYear)
         )(fakeRequest, messages).toString
     }
 
@@ -74,10 +74,10 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         eclReference: String,
         firstContactEmailAddress: String,
         secondContactEmailAddress: String,
-        registrationAdditionalInfo: RegistrationAdditionalInfo
+        liabilityYear: LiabilityYear
       ) =>
-        when(mockRegistrationAdditionalInfoService.get(anyString())(any()))
-          .thenReturn(Future.successful(Some(registrationAdditionalInfo)))
+        when(mockSessionService.get(any(), anyString(), anyString())(any()))
+          .thenReturn(Future.successful(Some(liabilityYear.asString)))
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
@@ -93,7 +93,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           eclReference,
           firstContactEmailAddress,
           Some(secondContactEmailAddress),
-          registrationAdditionalInfo.liabilityYear
+          Some(liabilityYear)
         )(fakeRequest, messages).toString
     }
 
@@ -102,10 +102,10 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         internalId: String,
         groupId: String,
         eclReference: String,
-        registrationAdditionalInfo: RegistrationAdditionalInfo
+        liabilityYear: LiabilityYear
       ) =>
-        when(mockRegistrationAdditionalInfoService.get(anyString())(any()))
-          .thenReturn(Future.successful(Some(registrationAdditionalInfo)))
+        when(mockSessionService.get(any(), anyString(), anyString())(any()))
+          .thenReturn(Future.successful(Some(liabilityYear.asString)))
 
         val result =
           controller.onPageLoad()(AuthorisedRequest(fakeRequest, internalId, groupId, Some(eclReference)))
@@ -114,7 +114,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
         contentAsString(result) shouldBe outOfSessionRegistrationSubmittedView(
           "eclReference",
-          registrationAdditionalInfo.liabilityYear
+          Some(liabilityYear)
         )(fakeRequest, messages)
           .toString()
     }

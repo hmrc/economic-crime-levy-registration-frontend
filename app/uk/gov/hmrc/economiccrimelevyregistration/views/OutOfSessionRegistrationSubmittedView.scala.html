@@ -23,7 +23,7 @@
         appConfig: AppConfig
 )
 
-@(eclReference: String, liabilityYearOption: Option[Int])(implicit request: Request[_], messages: Messages)
+@(eclReference: String, liabilityYearOption: Option[LiabilityYear])(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = title(messages("submitted.title")),
@@ -41,7 +41,7 @@
     <p class="govuk-body">@messages("submitted.p3", formatLocalDate(EclTaxYear.dueDate))</p>
 
     @if(liabilityYearOption.contains(TaxYear.current.previous.startYear)) {
-        <p class="govuk-body">@messages("submitted.liableForPreviousFY.p1", liabilityYearOption.get, liabilityYearOption.get - 1)</p>
+        <p class="govuk-body">@messages("submitted.liableForPreviousFY.p1", liabilityYearOption.get.asString, liabilityYearOption.get.priorYearString)</p>
         <p class="govuk-body">@messages("submitted.liableForPreviousFY.p2")</p>
     }
 

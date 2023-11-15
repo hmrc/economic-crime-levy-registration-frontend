@@ -17,20 +17,23 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
-import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
+import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionData, SessionKeys}
 
 class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.RegistrationSubmittedController.onPageLoad().url}" should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(routes.RegistrationSubmittedController.onPageLoad())
 
-    "respond with 200 status and the registration submitted HTML view" in {
+    "respond with 200 status and the registration submitted HTML view" in forAll { sessionData: SessionData =>
       stubAuthorisedWithEclEnrolment()
+
+      stubGetSession(sessionData)
 
       val eclReference             = random[String]
       val firstContactEmailAddress = emailAddress(EmailMaxLength).sample.get

@@ -23,7 +23,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, RegistrationAdditionalInfo, SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Mode, RegistrationAdditionalInfo, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityBeforeCurrentYearPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
@@ -67,7 +67,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
 
             val info = RegistrationAdditionalInfo(
               request.registration.internalId,
-              Some(liabilityYear),
+              Some(LiabilityYear(liabilityYear)),
               request.eclRegistrationReference
             )
 
@@ -75,7 +75,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
               .upsert(
                 SessionData(
                   request.internalId,
-                  Map(SessionKeys.LiabilityYear -> liabilityYear.toString)
+                  Map(SessionKeys.SessionKey_LiabilityYear -> liabilityYear.toString)
                 )
               )
 
@@ -89,5 +89,5 @@ class LiabilityBeforeCurrentYearController @Inject() (
     }
 
   def getLiabilityAnswer(info: Option[RegistrationAdditionalInfo]) =
-    info.flatMap(info => info.liabilityYear.map(year => year < TaxYear.current.startYear))
+    info.flatMap(info => info.liabilityYear.map(year => year.value < TaxYear.current.startYear))
 }

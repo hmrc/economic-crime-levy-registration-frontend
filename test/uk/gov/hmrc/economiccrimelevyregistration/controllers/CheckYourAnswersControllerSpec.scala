@@ -464,7 +464,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             Some(
               RegistrationAdditionalInfo(
                 valid.registration.internalId,
-                Some(year),
+                Some(LiabilityYear(year)),
                 None
               )
             ),

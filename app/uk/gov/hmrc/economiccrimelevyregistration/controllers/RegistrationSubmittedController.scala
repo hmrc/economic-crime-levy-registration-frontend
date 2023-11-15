@@ -19,11 +19,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
-import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.time.TaxYear
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -41,15 +40,21 @@ class RegistrationSubmittedController @Inject() (
 
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     sessionService
-      .get(request.session, request.internalId, SessionKeys.LiabilityYear)
-      .map(liabilityYearStringOption => liabilityYearStringOption.map(_.toInt))
+      .get(request.session, request.internalId, SessionKeys.SessionKey_LiabilityYear)
+      .map(liabilityYearStringOption => liabilityYearStringOption.map(yearStr => LiabilityYear(yearStr.toInt)))
       .map { liabilityYearOption =>
-        println("LIABILITY YEAR: " + liabilityYearOption)
         (request.session.get(SessionKeys.EclReference), request.eclRegistrationReference) match {
           case (Some(eclReference), _) =>
             val secondContactEmailAddress: Option[String] = request.session.get(SessionKeys.SecondContactEmailAddress)
             val firstContactEmailAddress                  = request.session(SessionKeys.FirstContactEmailAddress)
-            Ok(view(eclReference, firstContactEmailAddress, secondContactEmailAddress, liabilityYearOption))
+            Ok(
+              view(
+                eclReference,
+                firstContactEmailAddress,
+                secondContactEmailAddress,
+                liabilityYearOption
+              )
+            )
           case (_, Some(eclReference)) =>
             Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYearOption))
           case _                       => throw new IllegalStateException("ECL reference number not found in session or in enrolment")
