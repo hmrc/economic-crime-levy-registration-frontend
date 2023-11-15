@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
-case class RegistrationAdditionalInfo(
-  internalId: String,
-  liabilityYear: Option[LiabilityYear],
-  eclReference: Option[String]
-)
+case class LiabilityYear(value: Int) {
+  val priorYearString: String = (value - 1).toString
+  val asString: String        = value.toString
+}
 
-object RegistrationAdditionalInfo {
-  implicit val format: OFormat[RegistrationAdditionalInfo] = Json.format[RegistrationAdditionalInfo]
+object LiabilityYear {
+  implicit val format: Format[LiabilityYear] = Json.valueFormat[LiabilityYear]
 }

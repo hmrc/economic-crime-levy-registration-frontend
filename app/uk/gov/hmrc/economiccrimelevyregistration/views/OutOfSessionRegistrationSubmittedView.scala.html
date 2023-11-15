@@ -16,13 +16,14 @@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 @import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+@import uk.gov.hmrc.time.TaxYear
 
 @this(
         layout: templates.Layout,
         appConfig: AppConfig
 )
 
-@(eclReference: String)(implicit request: Request[_], messages: Messages)
+@(eclReference: String, liabilityYear: Option[LiabilityYear])(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = title(messages("submitted.title")),
@@ -38,6 +39,11 @@
     <p class="govuk-body">@messages("submitted.p2")</p>
 
     <p class="govuk-body">@messages("submitted.p3", formatLocalDate(EclTaxYear.dueDate))</p>
+
+    @if(liabilityYear.contains(TaxYear.current.previous.startYear)) {
+        <p class="govuk-body">@messages("submitted.liableForPreviousFY.p1", liabilityYear.get.asString, liabilityYear.get.priorYearString)</p>
+        <p class="govuk-body">@messages("submitted.liableForPreviousFY.p2")</p>
+    }
 
     <p class="govuk-body">@messages("submitted.p4")</p>
 

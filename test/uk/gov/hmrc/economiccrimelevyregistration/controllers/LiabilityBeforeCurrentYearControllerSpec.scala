@@ -24,9 +24,9 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Mode, NormalMode, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityBeforeCurrentYearPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -39,6 +39,8 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
   val form: Form[Boolean]                                  = formProvider()
 
   val mockService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
+
+  val mockSessionService: SessionService = mock[SessionService]
 
   val pageNavigator: LiabilityBeforeCurrentYearPageNavigator = new LiabilityBeforeCurrentYearPageNavigator(
     mock[AuditConnector]
@@ -54,6 +56,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       formProvider,
       mockService,
+      mockSessionService,
       pageNavigator,
       view
     )
@@ -73,12 +76,12 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "save the selected answer then redirect to the next page" in forAll {
-      (registration: Registration, liableBeforeCurrentYear: Boolean) =>
+      (registration: Registration, liableBeforeCurrentYear: Boolean, liabilityYear: LiabilityYear) =>
         new TestContext(registration) {
           val info: RegistrationAdditionalInfo =
             RegistrationAdditionalInfo(
               registration.internalId,
-              controller.getLiabilityYear(liableBeforeCurrentYear),
+              Some(liabilityYear),
               None
             )
 

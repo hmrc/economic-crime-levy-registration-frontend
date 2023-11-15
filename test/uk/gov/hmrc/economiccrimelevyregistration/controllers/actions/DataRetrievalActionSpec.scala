@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 
@@ -67,12 +67,12 @@ class DataRetrievalActionSpec extends SpecBase {
     }
 
     "transform an AuthorisedRequest into a RegistrationDataRequest when data retrieval succeeds" in forAll {
-      (internalId: String, groupId: String, registration: Registration) =>
+      (internalId: String, groupId: String, registration: Registration, liabilityYear: LiabilityYear) =>
         when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
 
         val info = RegistrationAdditionalInfo(
           registration.internalId,
-          Some(random[Int]),
+          Some(liabilityYear),
           None
         )
 

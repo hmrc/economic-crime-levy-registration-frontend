@@ -83,7 +83,12 @@ class FirstContactEmailController @Inject() (
             )
 
           sessionService
-            .update(SessionData(request.internalId, Map(SessionKeys.FirstContactEmailAddress -> email)))
+            .upsert(
+              SessionData(
+                request.internalId,
+                Map(SessionKeys.FirstContactEmailAddress -> email)
+              )
+            )
             .flatMap(_ =>
               eclRegistrationConnector
                 .upsertRegistration(request.registration.copy(contacts = updatedContacts))

@@ -31,7 +31,7 @@ object LiabilityYearSummary {
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
     request.additionalInfo.flatMap(info =>
       info.liabilityYear.map { year =>
-        val date  = LocalDate.of(year, 4, 1)
+        val date  = LocalDate.of(year.value, 4, 1)
         val value = ValueViewModel(HtmlContent(ViewUtils.formatLocalDate(date)))
 
         SummaryListRowViewModel(
