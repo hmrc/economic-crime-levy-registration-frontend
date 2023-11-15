@@ -145,7 +145,7 @@ class FirstContactEmailControllerSpec extends SpecBase {
           )
 
         when(
-          mockSessionService.update(
+          mockSessionService.upsert(
             ArgumentMatchers.eq(
               SessionData(
                 updatedRegistration.internalId,

@@ -23,9 +23,9 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Mode, RegistrationAdditionalInfo, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityBeforeCurrentYearPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
@@ -40,6 +40,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
   getRegistrationData: DataRetrievalAction,
   formProvider: LiabilityBeforeCurrentYearFormProvider,
   service: RegistrationAdditionalInfoService,
+  sessionService: SessionService,
   pageNavigator: LiabilityBeforeCurrentYearPageNavigator,
   view: LiabilityBeforeCurrentYearView
 )(implicit
@@ -61,11 +62,23 @@ class LiabilityBeforeCurrentYearController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fromRevenuePage))),
           liableBeforeCurrentYear => {
+            val liabilityYear =
+              if (liableBeforeCurrentYear) TaxYear.current.previous.startYear else TaxYear.current.startYear
+
             val info = RegistrationAdditionalInfo(
               request.registration.internalId,
-              getLiabilityYear(liableBeforeCurrentYear),
+              Some(LiabilityYear(liabilityYear)),
               request.eclRegistrationReference
             )
+
+            sessionService
+              .upsert(
+                SessionData(
+                  request.internalId,
+                  Map(SessionKeys.SessionKey_LiabilityYear -> liabilityYear.toString)
+                )
+              )
+
             service
               .createOrUpdate(info)
               .map(_ =>
@@ -75,9 +88,6 @@ class LiabilityBeforeCurrentYearController @Inject() (
         )
     }
 
-  def getLiabilityYear(liableBeforeCurrentYear: Boolean) =
-    Some(if (liableBeforeCurrentYear) TaxYear.current.previous.startYear else TaxYear.current.startYear)
-
   def getLiabilityAnswer(info: Option[RegistrationAdditionalInfo]) =
-    info.flatMap(info => info.liabilityYear.map(year => year < TaxYear.current.startYear))
+    info.flatMap(info => info.liabilityYear.map(year => year.value < TaxYear.current.startYear))
 }
