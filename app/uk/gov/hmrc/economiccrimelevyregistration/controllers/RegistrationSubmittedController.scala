@@ -41,7 +41,7 @@ class RegistrationSubmittedController @Inject() (
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     sessionService
       .get(request.session, request.internalId, SessionKeys.SessionKey_LiabilityYear)
-      .map(liabilityYearStringOption => liabilityYearStringOption.map(yearStr => LiabilityYear(yearStr.toInt)))
+      .map(liabilityYear => liabilityYear.map(year => LiabilityYear(year.toInt)))
       .map { liabilityYear =>
         (request.session.get(SessionKeys.EclReference), request.eclRegistrationReference) match {
           case (Some(eclReference), _) =>
