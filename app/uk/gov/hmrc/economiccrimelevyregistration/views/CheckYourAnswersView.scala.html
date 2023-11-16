@@ -38,27 +38,28 @@
         <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
         @if(registrationType.contains(Amendment)) {
-            <h1 class="govuk-heading-m">@messages("checkYourAnswers.eclDetails")</h1>
+
+            <h2 class="govuk-heading-m">@messages("checkYourAnswers.eclDetails")</h2>
 
             @govukSummaryList(eclDetails)
         }
 
-        <h1 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h1>
+        <h2 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h2>
 
         @govukSummaryList(organisationDetails)
 
-        <h1 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h1>
+        <h2 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h2>
 
         @govukSummaryList(contactDetails)
 
         @if(!otherEntityDetails.rows.isEmpty) {
 
-            <h2>@messages("checkYourAnswers.otherEntityDetails")</h2>
+            <h2 class="govuk-heading-m">@messages("checkYourAnswers.otherEntityDetails")</h2>
 
             @govukSummaryList(otherEntityDetails)
         }
 
-        <h1 class="govuk-heading-m">@messages("checkYourAnswers.nowSend")</h1>
+        <h2 class="govuk-heading-m">@messages("checkYourAnswers.nowSend")</h2>
 
         <div class="govuk-body">@messages("checkYourAnswers.bySubmitting")</div>
 
