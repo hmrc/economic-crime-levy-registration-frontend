@@ -204,7 +204,7 @@ otherEntityType.addCtutr.body = Your Corporation Tax (CT) Unique Taxpayer Refere
 otherEntityType.addCtutr.hint = For example, 0123456789
 otherEntityType.addCtutr.error.required = Enter a Corporation Tax (CT) Unique Taxpayer Reference (UTR)
 otherEntityType.addCtutr.error.length = Corporation Tax (CT) Unique Taxpayer Reference (UTR) must be {0} numbers
-otherEntityType.ctutr.error.required = Select an answer
+otherEntityType.ctutr.error.required = Select yes if you have a Corporation Tax Unique Taxpayer Reference
 otherEntityType.ctutr.postcode.title = What is the postcode you used to register your association?
 otherEntityType.ctutr.postcode.h1 = What is the postcode you used to register your association?
 otherEntityType.ctutr.postcode.hint = For example, AB1 2YZ
@@ -511,7 +511,7 @@ saUtr.error.length = Self Assessment (SA) Unique Taxpayer Reference (UTR) must b
 registration.received.title = Registration received
 registration.received.heading = Registration received
 registration.received.h1 = What happens next
-registration.received.p2 = We will review your answers. We may contact you using the details you provided if we need any more information.
+registration.received.p2 = We will review your answers. We may contact you using the details you provided if we need any more information. This process will take up to 15 working days.
 registration.received.p3 = You will receive a letter with your ECL reference number after we have matched your details to our records.
 registration.received.p4 = You can then add the Economic Crime Levy to your business tax account.
 registration.received.h2 = How to submit a return
@@ -573,5 +573,5 @@ liabilityBeforeCurrentYear.p1 = You were liable to pay the ECL if:
 liabilityBeforeCurrentYear.list.b1 = your UK revenue met the threshold, or
 liabilityBeforeCurrentYear.list.b2 = you have carried out anti-money laundering (AML) regulated activity during the financial year
 liabilityBeforeCurrentYear.p2 = The financial year runs from 1 April to 31 March of the following year.
-liabilityBeforeCurrentYear.p3 = The Economic Crime Levy guidance has more information on <a href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy"> who needs to pay the levy</a>.
+liabilityBeforeCurrentYear.p3 = The Economic Crime Levy guidance has more information on <a class="govuk-link" href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy"> who needs to pay the levy</a>.
 liabilityBeforeCurrentYear.required = Select an option

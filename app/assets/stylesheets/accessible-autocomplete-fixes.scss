@@ -18,3 +18,11 @@
     width: 100% !important;
   }
 }
+
+// CSS to support browser font sizes for auto-complete component
+.autocomplete__hint,
+.autocomplete__input,
+.autocomplete__option {
+  font-size: 1.1875rem;
+  line-height: 1.31579;
+}

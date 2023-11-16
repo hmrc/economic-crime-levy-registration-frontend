@@ -204,7 +204,7 @@ otherEntityType.addCtutr.body = Mae’ch Cyfeirnod Unigryw y Trethdalwr (UTR) ar
 otherEntityType.addCtutr.hint = Er enghraifft, 0123456789
 otherEntityType.addCtutr.error.required = Nodwch Gyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth (CT)
 otherEntityType.addCtutr.error.length = Mae’n rhaid i Gyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth (CT) fod yn {0} digid
-otherEntityType.ctutr.error.required = Dewiswch ateb
+otherEntityType.ctutr.error.required = Dewiswch ‘Iawn’ os oes gennych Gyfeirnod Unigryw y Trethdalwr ar gyfer Treth Gorfforaeth
 otherEntityType.ctutr.postcode.title = Beth yw’r cod post a ddefnyddioch wrth gofrestru’ch cymdeithas?
 otherEntityType.ctutr.postcode.h1 = Beth yw’r cod post a ddefnyddioch wrth gofrestru’ch cymdeithas?
 otherEntityType.ctutr.postcode.hint = Er enghraifft, AB1 2YZ
@@ -510,7 +510,7 @@ saUtr.error.length = Mae’n rhaid i Gyfeirnod Unigryw y Trethdalwr (UTR) ar gyf
 registration.received.title = Cofrestriad wedi dod i law
 registration.received.heading = Cofrestriad wedi dod i law
 registration.received.h1 = Yr hyn sy’n digwydd nesaf
-registration.received.p2 = Byddwn yn adolygu’ch atebion. Efallai y byddwn yn cysylltu â chi gan ddefnyddio’r manylion a roddwyd gennych os bydd angen rhagor o wybodaeth arnom.
+registration.received.p2 = Byddwn yn adolygu’ch atebion. Efallai y byddwn yn cysylltu â chi gan ddefnyddio’r manylion a roddwyd gennych os bydd angen rhagor o wybodaeth arnom. Bydd y broses hon yn cymryd hyd at 15 diwrnod gwaith.
 registration.received.p3 = Byddwch yn cael eich cyfeirnod ECL mewn llythyr ar ôl i ni gyfateb eich manylion i’n cofnodion.
 registration.received.p4 = Gallwch wedyn ychwanegu’r Ardoll Troseddau Economaidd at eich cyfrif treth busnes.
 registration.received.h2 = Sut i gyflwyno datganiad
@@ -572,5 +572,5 @@ liabilityBeforeCurrentYear.p1 = Roeddech yn agored i dalu’r ECL os oedd y canl
 liabilityBeforeCurrentYear.list.b1 = gwnaeth eich refeniw yn y DU gyrraedd y trothwy, neu
 liabilityBeforeCurrentYear.list.b2 = gwnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
 liabilityBeforeCurrentYear.p2 = Mae’r flwyddyn ariannol yn rhedeg o 1 Ebrill i 31 Mawrth y flwyddyn ganlynol.
-liabilityBeforeCurrentYear.p3 = Mae rhagor o wybodaeth ar gael yn yr arweiniad ar yr Ardoll Troseddau Economaidd, gan gynnwys <a href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy">  pwy sydd angen talu’r ardoll</a>.
+liabilityBeforeCurrentYear.p3 = Mae rhagor o wybodaeth ar gael yn yr arweiniad ar yr Ardoll Troseddau Economaidd, gan gynnwys <a class="govuk-link" href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy"> pwy sydd angen talu’r ardoll</a>.
 liabilityBeforeCurrentYear.required = Dewiswch ateb
