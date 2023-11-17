@@ -48,8 +48,8 @@
 
     <p class="govuk-body">@messages("submitted.p3", formatLocalDate(EclTaxYear.dueDate))</p>
 
-    @if(liabilityYear.contains(TaxYear.current.previous.startYear)) {
-        <p class="govuk-body">@messages("submitted.liableForPreviousFY.p1", liabilityYear.get.asString, liabilityYear.get.priorYearString)</p>
+    @if(liabilityYear.exists(_.isPreviousFY)) {
+        <p class="govuk-body">@messages("submitted.liableForPreviousFY.p1", liabilityYear.get.asString, liabilityYear.get.followingYear)</p>
         <p class="govuk-body">@messages("submitted.liableForPreviousFY.p2")</p>
     }
 

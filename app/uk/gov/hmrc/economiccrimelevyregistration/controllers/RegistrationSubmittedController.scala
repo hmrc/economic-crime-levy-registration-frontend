@@ -23,6 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionK
 import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import uk.gov.hmrc.time.TaxYear
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
