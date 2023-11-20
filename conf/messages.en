@@ -575,3 +575,8 @@ liabilityBeforeCurrentYear.list.b2 = you have carried out anti-money laundering 
 liabilityBeforeCurrentYear.p2 = The financial year runs from 1 April to 31 March of the following year.
 liabilityBeforeCurrentYear.p3 = The Economic Crime Levy guidance has more information on <a class="govuk-link" href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy"> who needs to pay the levy</a>.
 liabilityBeforeCurrentYear.required = Select an option
+
+otherEntityType.crn.question.title = Do you have a UK company registration number?
+otherEntityType.crn.question.label = Do you have a UK company registration number?
+otherEntityType.crn.question.h1 = Do you have a UK company registration number?
+otherEntityType.crn.question.error.required = Select yes if you have a UK company registration number
