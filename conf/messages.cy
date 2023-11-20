@@ -363,6 +363,7 @@ checkYourAnswers.nonUkCrn.label = CRN y tu allan i’r DU
 checkYourAnswers.overseasTaxIdentifier.label = Dynodydd treth tramor
 checkYourAnswers.eclDetails = Manylion ECL
 checkYourAnswers.eclReferenceNumber.label = Cyfeirnod ECL
+checkYourAnswers.liabilityDate.label = Dyddiad cychwyn atebolrwydd
 
 submitted.title = Cofrestriad wedi’i gyflwyno
 submitted.heading = Cofrestriad wedi’i gyflwyno
