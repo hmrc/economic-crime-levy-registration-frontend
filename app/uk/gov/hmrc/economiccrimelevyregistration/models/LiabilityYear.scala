@@ -17,10 +17,12 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.time.TaxYear
 
 case class LiabilityYear(value: Int) {
-  val priorYearString: String = (value - 1).toString
-  val asString: String        = value.toString
+  val followingYear: String = (value + 1).toString
+  val asString: String      = value.toString
+  val isPreviousFY: Boolean = value == TaxYear.current.previous.startYear
 }
 
 object LiabilityYear {
