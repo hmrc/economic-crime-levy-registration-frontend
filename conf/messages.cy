@@ -574,4 +574,4 @@ liabilityBeforeCurrentYear.list.b1 = gwnaeth eich refeniw yn y DU gyrraedd y tro
 liabilityBeforeCurrentYear.list.b2 = gwnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
 liabilityBeforeCurrentYear.p2 = Mae’r flwyddyn ariannol yn rhedeg o 1 Ebrill i 31 Mawrth y flwyddyn ganlynol.
 liabilityBeforeCurrentYear.p3 = Mae rhagor o wybodaeth ar gael yn yr arweiniad ar yr Ardoll Troseddau Economaidd, gan gynnwys <a class="govuk-link" href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy"> pwy sydd angen talu’r ardoll</a>.
-liabilityBeforeCurrentYear.required = Dewiswch ateb
+liabilityBeforeCurrentYear.required = Dewiswch ‘Iawn’ os oeddech yn agored i dalu’r Ardoll Troseddau Economaidd
