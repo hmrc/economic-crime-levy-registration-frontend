@@ -77,7 +77,7 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
         val otherEntityJourneyData: OtherEntityJourneyData = OtherEntityJourneyData
           .empty()
           .copy(
-            hasUkCrn = Some(hasUkCrn)
+            isUkCrnPresent = Some(hasUkCrn)
           )
         val updatedRegistration: Registration              =
           registration.copy(
@@ -102,7 +102,7 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
         new TestContext(registration) {
           val otherEntityJourneyData: OtherEntityJourneyData = registration.otherEntityJourneyData
             .copy(
-              hasUkCrn = Some(hasUkCrn)
+              isUkCrnPresent = Some(hasUkCrn)
             )
           val updatedRegistration: Registration              =
             registration.copy(

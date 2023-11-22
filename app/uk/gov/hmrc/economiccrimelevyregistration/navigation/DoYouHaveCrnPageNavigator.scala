@@ -27,7 +27,7 @@ class DoYouHaveCrnPageNavigator @Inject() (implicit
   ex: ExecutionContext
 ) extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.otherEntityJourneyData.hasUkCrn match {
+    registration.otherEntityJourneyData.isUkCrnPresent match {
       case Some(true)  => routes.NonUkCrnController.onPageLoad(NormalMode)
       case Some(false) => routes.UtrTypeController.onPageLoad(NormalMode)
       case None        => routes.NotableErrorController.answersAreInvalid()
@@ -35,7 +35,7 @@ class DoYouHaveCrnPageNavigator @Inject() (implicit
 
   override protected def navigateInCheckMode(registration: Registration): Call =
     (
-      registration.otherEntityJourneyData.hasUkCrn,
+      registration.otherEntityJourneyData.isUkCrnPresent,
       registration.otherEntityJourneyData.companyRegistrationNumber
     ) match {
       case (Some(true), Some(_)) => routes.CheckYourAnswersController.onPageLoad()

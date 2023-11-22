@@ -50,7 +50,7 @@ class DoYouHaveCrnController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData) { implicit request =>
-      Ok(view(form.prepare(request.registration.otherEntityJourneyData.hasUkCrn), mode))
+      Ok(view(form.prepare(request.registration.otherEntityJourneyData.isUkCrnPresent), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
@@ -66,7 +66,7 @@ class DoYouHaveCrnController @Inject() (
             }
             val otherEntityJourneyData    =
               request.registration.otherEntityJourneyData.copy(
-                hasUkCrn = Some(answer),
+                isUkCrnPresent = Some(answer),
                 companyRegistrationNumber = companyRegistrationNumber
               )
             eclRegistrationConnector

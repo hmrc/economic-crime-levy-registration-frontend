@@ -37,7 +37,7 @@ class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
-          hasUkCrn = Some(hasUkCrn)
+          isUkCrnPresent = Some(hasUkCrn)
         )
 
       val updatedRegistration =
@@ -54,7 +54,7 @@ class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
         val otherEntityJourneyData = OtherEntityJourneyData
           .empty()
           .copy(
-            hasUkCrn = Some(hasUkCrn),
+            isUkCrnPresent = Some(hasUkCrn),
             companyRegistrationNumber = Some("")
           )
 
@@ -71,7 +71,7 @@ class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
-          hasUkCrn = Some(true)
+          isUkCrnPresent = Some(true)
         )
 
       val updatedRegistration =
