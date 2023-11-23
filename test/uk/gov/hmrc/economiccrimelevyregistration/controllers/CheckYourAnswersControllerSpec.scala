@@ -129,6 +129,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           rows = Seq(
             BusinessNameSummary.row(),
             CharityRegistrationNumberSummary.row(),
+            DoYouHaveCrnSummary.row(),
             CompanyRegistrationNumberSummary.row(),
             DoYouHaveCtUtrSummary.row(),
             UtrTypeSummary.row(),

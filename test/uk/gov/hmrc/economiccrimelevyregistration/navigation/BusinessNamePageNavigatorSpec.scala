@@ -16,23 +16,32 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import org.scalacheck.Arbitrary
+import org.scalacheck.{Arbitrary, Gen}
+import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityRegistrationNumberMaxLength, OrganisationNameMaxLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class BusinessNamePageNavigatorSpec extends SpecBase {
 
   val pageNavigator = new BusinessNamePageNavigator()
 
+  val nextPage: Map[EntityType, Call] = Map(
+    Charity                   -> routes.CharityRegistrationNumberController.onPageLoad(NormalMode),
+    UnincorporatedAssociation -> routes.DoYouHaveCtUtrController.onPageLoad(NormalMode),
+    Trust                     -> routes.CtUtrController.onPageLoad(NormalMode),
+    NonUKEstablishment        -> routes.DoYouHaveCrnController.onPageLoad(NormalMode)
+  )
+
   "nextPage" should {
     "(Normal Mode) return a call to the charity page if charity selected" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength)
-    ) { (registration: Registration, businessName: String) =>
+      stringsWithMaxLength(OrganisationNameMaxLength),
+      Gen.oneOf[EntityType](Charity, Trust, NonUKEstablishment, UnincorporatedAssociation)
+    ) { (registration: Registration, businessName: String, entityType: EntityType) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
@@ -41,12 +50,12 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
       val updatedRegistration: Registration =
         registration.copy(
-          entityType = Some(Charity),
+          entityType = Some(entityType),
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
       pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
-        routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
+        nextPage(entityType)
     }
 
     "(Check Mode) return a call to the check your answers page if charity selected" in forAll(

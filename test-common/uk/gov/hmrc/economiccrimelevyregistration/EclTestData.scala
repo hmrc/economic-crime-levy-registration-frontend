@@ -309,7 +309,8 @@ trait EclTestData {
                                    Some(ctutr),
                                    Some(isCtUtrPresent),
                                    None,
-                                   Some(postcode)
+                                   Some(postcode),
+                                   None
                                  )
       } yield RegistrationWithUnincorporatedAssociation(registration =
         registration.copy(
@@ -331,6 +332,7 @@ trait EclTestData {
                                    None,
                                    None,
                                    Some(ctutr),
+                                   None,
                                    None,
                                    None,
                                    None

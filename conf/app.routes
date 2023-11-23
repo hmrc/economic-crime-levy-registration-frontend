@@ -196,3 +196,8 @@ GET         /previous-financial-year                                            
 POST        /previous-financial-year                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onSubmit(fromRevenuePage: Boolean, mode: Mode = NormalMode)
 GET         /check-answer/previous-financial-year                               uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onPageLoad(fromRevenuePage: Boolean, mode: Mode = CheckMode)
 POST        /check-answer/previous-financial-year                               uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onSubmit(fromRevenuePage: Boolean, mode: Mode = CheckMode)
+
+GET         /do-you-have-a-crn                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCrnController.onPageLoad(mode: Mode = NormalMode)
+POST        /do-you-have-a-crn                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCrnController.onSubmit(mode: Mode = NormalMode)
+GET         /check-answer/do-you-have-a-crn                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCrnController.onPageLoad(mode: Mode = CheckMode)
+POST        /check-answer/do-you-have-a-crn                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCrnController.onSubmit(mode: Mode = CheckMode)
