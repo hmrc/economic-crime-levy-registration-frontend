@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, RegistrationAdditionalInfo, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 
 import scala.concurrent.Future
@@ -43,20 +44,48 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
   )
 
   "onPageLoad" should {
-    "return OK and the correct view when there is one contact email address in the session" in forAll {
+    "return OK and the correct view when there is one contact email address and aml activity in the session" in forAll {
       (
         eclReference: String,
         firstContactEmailAddress: String,
-        liabilityYear: LiabilityYear
+        liabilityYear: LiabilityYear,
+        amlRegulatedActivity: Option[String]
       ) =>
-        when(mockSessionService.get(any(), anyString(), anyString())(any()))
-          .thenReturn(Future.successful(Some(liabilityYear.asString)))
-
-        val result: Future[Result] = controller.onPageLoad()(
+        val request = if (amlRegulatedActivity.isEmpty) {
           fakeRequest.withSession(
             (SessionKeys.EclReference, eclReference),
             (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
           )
+        } else {
+          fakeRequest.withSession(
+            (SessionKeys.EclReference, eclReference),
+            (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress),
+            (SessionKeys.SessionKey_AmlRegulatedActivity, amlRegulatedActivity.get)
+          )
+        }
+
+        when(
+          mockSessionService.get(
+            ArgumentMatchers.eq(request.session),
+            anyString(),
+            ArgumentMatchers.eq(SessionKeys.SessionKey_LiabilityYear)
+          )(any())
+        )
+          .thenReturn(Future.successful(Some(liabilityYear.asString)))
+
+        when(
+          mockSessionService.get(
+            ArgumentMatchers.eq(request.session),
+            anyString(),
+            ArgumentMatchers.eq(SessionKeys.SessionKey_AmlRegulatedActivity)
+          )(
+            any()
+          )
+        )
+          .thenReturn(Future.successful(amlRegulatedActivity))
+
+        val result: Future[Result] = controller.onPageLoad()(
+          request
         )
 
         status(result) shouldBe OK
@@ -65,7 +94,8 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           eclReference,
           firstContactEmailAddress,
           None,
-          Some(liabilityYear)
+          Some(liabilityYear),
+          amlRegulatedActivity
         )(fakeRequest, messages).toString
     }
 
@@ -74,17 +104,46 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         eclReference: String,
         firstContactEmailAddress: String,
         secondContactEmailAddress: String,
-        liabilityYear: LiabilityYear
+        liabilityYear: LiabilityYear,
+        amlRegulatedActivity: Option[String]
       ) =>
-        when(mockSessionService.get(any(), anyString(), anyString())(any()))
-          .thenReturn(Future.successful(Some(liabilityYear.asString)))
-
-        val result: Future[Result] = controller.onPageLoad()(
+        val request = if (amlRegulatedActivity.isEmpty) {
           fakeRequest.withSession(
             (SessionKeys.EclReference, eclReference),
             (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress),
             (SessionKeys.SecondContactEmailAddress, secondContactEmailAddress)
           )
+        } else {
+          fakeRequest.withSession(
+            (SessionKeys.EclReference, eclReference),
+            (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress),
+            (SessionKeys.SecondContactEmailAddress, secondContactEmailAddress),
+            (SessionKeys.SessionKey_AmlRegulatedActivity, amlRegulatedActivity.get)
+          )
+        }
+
+        when(
+          mockSessionService.get(
+            ArgumentMatchers.eq(request.session),
+            anyString(),
+            ArgumentMatchers.eq(SessionKeys.SessionKey_LiabilityYear)
+          )(any())
+        )
+          .thenReturn(Future.successful(Some(liabilityYear.asString)))
+
+        when(
+          mockSessionService.get(
+            ArgumentMatchers.eq(request.session),
+            anyString(),
+            ArgumentMatchers.eq(SessionKeys.SessionKey_AmlRegulatedActivity)
+          )(
+            any()
+          )
+        )
+          .thenReturn(Future.successful(amlRegulatedActivity))
+
+        val result: Future[Result] = controller.onPageLoad()(
+          request
         )
 
         status(result) shouldBe OK
@@ -93,7 +152,8 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           eclReference,
           firstContactEmailAddress,
           Some(secondContactEmailAddress),
-          Some(liabilityYear)
+          Some(liabilityYear),
+          amlRegulatedActivity
         )(fakeRequest, messages).toString
     }
 
@@ -102,10 +162,28 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         internalId: String,
         groupId: String,
         eclReference: String,
-        liabilityYear: LiabilityYear
+        liabilityYear: LiabilityYear,
+        amlRegulatedActivity: Option[String]
       ) =>
-        when(mockSessionService.get(any(), anyString(), anyString())(any()))
+        when(
+          mockSessionService.get(
+            ArgumentMatchers.eq(fakeRequest.session),
+            anyString(),
+            ArgumentMatchers.eq(SessionKeys.SessionKey_LiabilityYear)
+          )(any())
+        )
           .thenReturn(Future.successful(Some(liabilityYear.asString)))
+
+        when(
+          mockSessionService.get(
+            ArgumentMatchers.eq(fakeRequest.session),
+            anyString(),
+            ArgumentMatchers.eq(SessionKeys.SessionKey_AmlRegulatedActivity)
+          )(
+            any()
+          )
+        )
+          .thenReturn(Future.successful(amlRegulatedActivity))
 
         val result =
           controller.onPageLoad()(AuthorisedRequest(fakeRequest, internalId, groupId, Some(eclReference)))
@@ -114,17 +192,42 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
         contentAsString(result) shouldBe outOfSessionRegistrationSubmittedView(
           "eclReference",
-          Some(liabilityYear)
+          Some(liabilityYear),
+          amlRegulatedActivity
         )(fakeRequest, messages)
           .toString()
     }
 
     "throw an IllegalStateException when the ECL reference is not found in the session or enrolment" in {
-      val result: IllegalStateException = intercept[IllegalStateException] {
-        await(controller.onPageLoad()(fakeRequest))
-      }
+      (
+        liabilityYear: LiabilityYear,
+        amlRegulatedActivity: Option[String]
+      ) =>
+        when(
+          mockSessionService.get(
+            ArgumentMatchers.eq(fakeRequest.session),
+            anyString(),
+            ArgumentMatchers.eq(SessionKeys.SessionKey_LiabilityYear)
+          )(any())
+        )
+          .thenReturn(Future.successful(Some(liabilityYear.asString)))
 
-      result.getMessage shouldBe "ECL reference number not found in session or in enrolment"
+        when(
+          mockSessionService.get(
+            ArgumentMatchers.eq(fakeRequest.session),
+            anyString(),
+            ArgumentMatchers.eq(SessionKeys.SessionKey_AmlRegulatedActivity)
+          )(
+            any()
+          )
+        )
+          .thenReturn(Future.successful(amlRegulatedActivity))
+
+        val result: IllegalStateException = intercept[IllegalStateException] {
+          await(controller.onPageLoad()(fakeRequest))
+        }
+
+        result.getMessage shouldBe "ECL reference number not found in session or in enrolment"
     }
   }
 

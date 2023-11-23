@@ -71,11 +71,13 @@ class LiabilityBeforeCurrentYearController @Inject() (
               request.eclRegistrationReference
             )
 
+            val liabilityYearSessionData = Map(SessionKeys.SessionKey_LiabilityYear -> liabilityYear.toString)
+
             sessionService
               .upsert(
                 SessionData(
                   request.internalId,
-                  Map(SessionKeys.SessionKey_LiabilityYear -> liabilityYear.toString)
+                  liabilityYearSessionData
                 )
               )
 
@@ -83,6 +85,9 @@ class LiabilityBeforeCurrentYearController @Inject() (
               .createOrUpdate(info)
               .map(_ =>
                 Redirect(pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode, fromRevenuePage))
+                  .withSession(
+                    request.session ++ liabilityYearSessionData
+                  )
               )
           }
         )

@@ -43,23 +43,29 @@ class RegistrationSubmittedController @Inject() (
     sessionService
       .get(request.session, request.internalId, SessionKeys.SessionKey_LiabilityYear)
       .map(liabilityYear => liabilityYear.map(year => LiabilityYear(year.toInt)))
-      .map { liabilityYear =>
-        (request.session.get(SessionKeys.EclReference), request.eclRegistrationReference) match {
-          case (Some(eclReference), _) =>
-            val secondContactEmailAddress: Option[String] = request.session.get(SessionKeys.SecondContactEmailAddress)
-            val firstContactEmailAddress                  = request.session(SessionKeys.FirstContactEmailAddress)
-            Ok(
-              view(
-                eclReference,
-                firstContactEmailAddress,
-                secondContactEmailAddress,
-                liabilityYear
-              )
-            )
-          case (_, Some(eclReference)) =>
-            Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear))
-          case _                       => throw new IllegalStateException("ECL reference number not found in session or in enrolment")
-        }
+      .flatMap { liabilityYear =>
+        sessionService
+          .get(request.session, request.internalId, SessionKeys.SessionKey_AmlRegulatedActivity)
+          .map { amlRegulatedActivity =>
+            (request.session.get(SessionKeys.EclReference), request.eclRegistrationReference) match {
+              case (Some(eclReference), _) =>
+                val secondContactEmailAddress: Option[String] =
+                  request.session.get(SessionKeys.SecondContactEmailAddress)
+                val firstContactEmailAddress                  = request.session(SessionKeys.FirstContactEmailAddress)
+                Ok(
+                  view(
+                    eclReference,
+                    firstContactEmailAddress,
+                    secondContactEmailAddress,
+                    liabilityYear,
+                    amlRegulatedActivity
+                  )
+                )
+              case (_, Some(eclReference)) =>
+                Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear, amlRegulatedActivity))
+              case _                       => throw new IllegalStateException("ECL reference number not found in session or in enrolment")
+            }
+          }
       }
 
   }
