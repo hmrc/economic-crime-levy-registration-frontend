@@ -429,17 +429,20 @@ partyTypeMismatch.heading = Nid yw’ch manylion yn cyd-fynd â’n cofnodion
 partyTypeMismatch.body.p1 = Mae’ch cofrestriad wedi methu oherwydd nad yw’ch manylion yn cyd-fynd â’n cofnodion.
 partyTypeMismatch.body.p2 = Gwiriwch eich bod wedi dewis y math cywir o endid a chyflwynwch eich atebion eto.
 
-detailsDoNotMatch.title = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
-detailsDoNotMatch.heading = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+verificationFailed.title = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+verificationFailed.heading = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+verificationFailed.button = Rhowch gynnig arall arni
 
-detailsDoNotMatch.ct.body.p1 = Gwiriwch gofnodion Treth Gorfforaeth eich cwmni a rhowch gynnig arall arni.
-detailsDoNotMatch.ct.body.p2 = Gwiriwch fod cod post cyfeiriad eich swyddfa yn cyd-fynd â’r cod post sydd wedi’i gofrestru gyda Thŷ’r Cwmnïau.
-detailsDoNotMatch.ct.body.p3 = Os ydych yn dal i gael problemau, gallwch ddod o hyd i’ch Cyfeirnod Unigryw y Trethdalwr, manylion Yswiriant Gwladol a gwybodaeth cod treth yn eich cyfrif ar-lein CThEF.
+verificationFailed.body.p1 = Gwiriwch a ydych wedi nodi’r manylion cywir ar gyfer y sefydliad.
+verificationFailed.body.p2 = Mae angen i’r UTR gyd-fynd â’r UTR sydd yn eich cyfrif ar-lein CThEF.
+verificationFailed.body.p3 = Mae angen i’r CRN gyd-fynd â’r CRN sydd yn eich cyfrif ar-lein CThEF a’ch cofnod Tŷ’r Cwmnïau.
+verificationFailed.body.p4 = Mae angen i’r cod post gyd-fynd â’r cod post sydd yn eich cyfrif ar-lein CThEF a’ch cofnod Tŷ’r Cwmnïau.
+verificationFailed.body.p5 = Gwiriwch eich cyfrif ar-lein CThEF a’ch cofnod Tŷ’r Cwmnïau i wneud yn siŵr bod eich codau post yn cyd-fynd â’i gilydd.
+verificationFailed.body.p6 = Os nad ydynt yn cyd-fynd â’i gilydd, bydd angen i chi ddiweddaru’r codau post ac aros am 24 awr cyn cofrestru ar gyfer yr ECL.
 
-detailsDoNotMatch.sa.body.p1 = Gwiriwch eich cofnodion Hunanasesiad a rhowch gynnig arall arni.
-detailsDoNotMatch.sa.body.p2 = Gwiriwch fod y cod post y gwnaethoch ei nodi yn cyd-fynd a’r cod post sydd ar Hunanasesiad eich Partneriaeth.
-detailsDoNotMatch.sa.body.p3 = Os ydych yn dal i gael problemau, gallwch ddod o hyd i’ch Cyfeirnod Unigryw y Trethdalwr, manylion Yswiriant Gwladol a gwybodaeth cod treth yn eich cyfrif ar-lein CThEF.
-
+verificationFailed.subHeading.p1 = Rhowch gynnig arall ar nodi eich Cyfeirnod Unigryw y Trethdalwr (UTR)
+verificationFailed.subHeading.p2 = Rhowch gynnig arall ar nodi eich Rhif Cofrestru’r Cwmni (CRN)
+verificationFailed.subHeading.p3 = Rhowch gynnig arall ar nodi eich cod post
 
 feedback.heading = Rhowch eich barn
 feedback.p1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw’ch barn amdano.

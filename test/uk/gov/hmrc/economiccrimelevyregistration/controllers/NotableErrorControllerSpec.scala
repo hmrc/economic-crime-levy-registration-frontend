@@ -38,8 +38,7 @@ class NotableErrorControllerSpec extends SpecBase {
     app.injector.instanceOf[OrganisationAlreadyRegisteredView]
   val registrationFailedView: RegistrationFailedView                       = app.injector.instanceOf[RegistrationFailedView]
   val partyTypeMismatchView: PartyTypeMismatchView                         = app.injector.instanceOf[PartyTypeMismatchView]
-  val detailsDoNotMatchCtView: DetailsDoNotMatchCtView                     = app.injector.instanceOf[DetailsDoNotMatchCtView]
-  val detailsDoNotMatchSaView: DetailsDoNotMatchSaView                     = app.injector.instanceOf[DetailsDoNotMatchSaView]
+  val verfificationFailedView: VerfificationFailedView                     = app.injector.instanceOf[VerfificationFailedView]
 
   class TestContext(registrationData: Registration, eclRegistrationReference: Option[String] = None) {
     val controller = new NotableErrorController(
@@ -58,8 +57,7 @@ class NotableErrorControllerSpec extends SpecBase {
       organisationAlreadyRegisteredView,
       registrationFailedView,
       partyTypeMismatchView,
-      detailsDoNotMatchCtView,
-      detailsDoNotMatchSaView
+      verfificationFailedView
     )
   }
 
@@ -178,7 +176,7 @@ class NotableErrorControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe detailsDoNotMatchCtView()(
+          contentAsString(result) shouldBe verfificationFailedView()(
             fakeRequest,
             messages
           ).toString
@@ -192,37 +190,7 @@ class NotableErrorControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe detailsDoNotMatchSaView()(
-            fakeRequest,
-            messages
-          ).toString
-        }
-    }
-  }
-
-  "detailsDoNotMatch" should {
-    "return OK and the correct view for an incorporated entity" in forAll {
-      (registration: Registration, incorporatedEntityType: IncorporatedEntityType) =>
-        new TestContext(registration.copy(entityType = Some(incorporatedEntityType.entityType))) {
-          val result: Future[Result] = controller.detailsDoNotMatch()(fakeRequest)
-
-          status(result) shouldBe OK
-
-          contentAsString(result) shouldBe detailsDoNotMatchCtView()(
-            fakeRequest,
-            messages
-          ).toString
-        }
-    }
-
-    "return OK and the correct view for a partnership or sole trader" in forAll {
-      (registration: Registration, selfAssessmentEntityType: SelfAssessmentEntityType) =>
-        new TestContext(registration.copy(entityType = Some(selfAssessmentEntityType.entityType))) {
-          val result: Future[Result] = controller.detailsDoNotMatch()(fakeRequest)
-
-          status(result) shouldBe OK
-
-          contentAsString(result) shouldBe detailsDoNotMatchSaView()(
+          contentAsString(result) shouldBe verfificationFailedView()(
             fakeRequest,
             messages
           ).toString

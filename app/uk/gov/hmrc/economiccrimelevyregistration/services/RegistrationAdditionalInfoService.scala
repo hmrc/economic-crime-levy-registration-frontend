@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, RegistrationAdditionalInfoConnector}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
-import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationStartedEvent
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.RegistrationAdditionalInfoConnector
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationAdditionalInfo
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,8 +26,6 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class RegistrationAdditionalInfoService @Inject() (
   registrationAdditionalInfoConnector: RegistrationAdditionalInfoConnector
-)(implicit
-  ec: ExecutionContext
 ) {
   def get(
     internalId: String

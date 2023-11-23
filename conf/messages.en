@@ -429,17 +429,20 @@ partyTypeMismatch.heading = Your details do not match our records
 partyTypeMismatch.body.p1 = Your registration failed because your details do not match our records.
 partyTypeMismatch.body.p2 = Check that you have chosen the right entity type and submit your answers again.
 
-detailsDoNotMatch.title = The details you have entered do not match our records
-detailsDoNotMatch.heading = The details you have entered do not match our records
+verificationFailed.title = The details you have entered do not match our records
+verificationFailed.heading = The details you have entered do not match our records
+verificationFailed.button = Try again
 
-detailsDoNotMatch.ct.body.p1 = Check your company''s Corporation Tax records and try again.
-detailsDoNotMatch.ct.body.p2 = Check your office address postcode matches the postcode registered with Companies House.
-detailsDoNotMatch.ct.body.p3 = If you are still having problems, you can find your Unique Taxpayer Reference, National Insurance details and tax code information in your HMRC online account.
+verificationFailed.body.p1 = Check if you have entered the correct details of the organisation.
+verificationFailed.body.p2 = The UTR needs to match the UTR on your HMRC online account.
+verificationFailed.body.p3 = The CRN needs to match the CRN on your HMRC online account and your Companies House record.
+verificationFailed.body.p4 = The postcode needs to match the postcode on your HMRC online account and your Companies House record.
+verificationFailed.body.p5 = Check your HMRC online account and your Companies House record and make sure the postcodes match.
+verificationFailed.body.p6 = If they do not match, update the postcodes and wait 24 hours before registering for ECL.
 
-detailsDoNotMatch.sa.body.p1 = Check your Self Assessment records and try again.
-detailsDoNotMatch.sa.body.p2 = Check the postcode you entered matches the postcode on your Partnership Self Assessment.
-detailsDoNotMatch.sa.body.p3 = If you are still having problems, you can find your Unique Taxpayer Reference, National Insurance details and tax code information in your HMRC online account.
-
+verificationFailed.subHeading.p1 = Try entering your Unique Tax Reference (UTR) again
+verificationFailed.subHeading.p2 = Try entering your Company Registration Number (CRN) again
+verificationFailed.subHeading.p3 = Try entering your postcode again
 
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.
