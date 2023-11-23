@@ -33,7 +33,7 @@ class BusinessNamePageNavigator extends PageNavigator {
           case Charity                   => routes.CharityRegistrationNumberController.onPageLoad(mode)
           case UnincorporatedAssociation => routes.DoYouHaveCtUtrController.onPageLoad(mode)
           case Trust                     => routes.CtUtrController.onPageLoad(mode)
-          case NonUKEstablishment        => routes.NonUkCrnController.onPageLoad(mode)
+          case NonUKEstablishment        => routes.DoYouHaveCrnController.onPageLoad(mode)
           case _                         => error()
         }
       case _           => error()
