@@ -43,9 +43,7 @@
     <p class="govuk-body">@messages("verificationFailed.body.p6")</p>
 
     @button(
-        Button(
-            classes = "backButton hmrc-!-js-visible",
-            content = Text(messages("verificationFailed.button"))
-        )
+        ButtonViewModel(messages("verificationFailed.button"))
+        .asLink(EntityTypeController.onPageLoad(NormalMode).url)
     )
 }
