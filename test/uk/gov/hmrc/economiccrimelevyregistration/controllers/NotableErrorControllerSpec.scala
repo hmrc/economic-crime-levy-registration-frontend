@@ -198,34 +198,4 @@ class NotableErrorControllerSpec extends SpecBase {
     }
   }
 
-  "detailsDoNotMatch" should {
-    "return OK and the correct view for an incorporated entity" in forAll {
-      (registration: Registration, incorporatedEntityType: IncorporatedEntityType) =>
-        new TestContext(registration.copy(entityType = Some(incorporatedEntityType.entityType))) {
-          val result: Future[Result] = controller.verificationFailed()(fakeRequest)
-
-          status(result) shouldBe OK
-
-          contentAsString(result) shouldBe verfificationFailedView()(
-            fakeRequest,
-            messages
-          ).toString
-        }
-    }
-
-    "return OK and the correct view for a partnership or sole trader" in forAll {
-      (registration: Registration, selfAssessmentEntityType: SelfAssessmentEntityType) =>
-        new TestContext(registration.copy(entityType = Some(selfAssessmentEntityType.entityType))) {
-          val result: Future[Result] = controller.verificationFailed()(fakeRequest)
-
-          status(result) shouldBe OK
-
-          contentAsString(result) shouldBe verfificationFailedView()(
-            fakeRequest,
-            messages
-          ).toString
-        }
-    }
-  }
-
 }

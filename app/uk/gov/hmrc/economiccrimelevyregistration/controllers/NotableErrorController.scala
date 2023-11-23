@@ -43,7 +43,7 @@ class NotableErrorController @Inject() (
   organisationAlreadyRegisteredView: OrganisationAlreadyRegisteredView,
   registrationFailedView: RegistrationFailedView,
   partyTypeMismatchView: PartyTypeMismatchView,
-  verfificationFailedView: VerfificationFailedView
+  verificationFailedView: VerfificationFailedView
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -96,7 +96,7 @@ class NotableErrorController @Inject() (
   def verificationFailed: Action[AnyContent] = (authoriseWithoutEnrolmentCheck andThen getRegistrationData) {
     implicit request =>
       request.registration.entityType match {
-        case Some(_) => Ok(verfificationFailedView())
+        case Some(_) => Ok(verificationFailedView())
         case _       => throw new IllegalStateException("Entity type not found in registration data")
       }
   }
