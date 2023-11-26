@@ -24,10 +24,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
 
 trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Generators {
 
+  private def removeCommas(value: String) =
+    value.filterNot(_ == ',')
+
   def fieldThatBindsValidData(form: Form[_], fieldName: String, validDataGenerator: Gen[String]): Unit =
     "bind" should {
       "bind valid data" in {
-
         forAll(validDataGenerator -> "validDataItem") { dataItem: String =>
           val result = form.bind(Map(fieldName -> dataItem)).apply(fieldName)
           result.value.value shouldBe dataItem
@@ -39,13 +41,11 @@ trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Genera
   def mandatoryField(form: Form[_], fieldName: String, requiredError: FormError): Unit =
     "bind" should {
       "not bind when key is not present at all" in {
-
         val result = form.bind(emptyForm).apply(fieldName)
         result.errors shouldEqual Seq(requiredError)
       }
 
       "not bind blank values" in {
-
         val result = form.bind(Map(fieldName -> "")).apply(fieldName)
         result.errors shouldEqual Seq(requiredError)
       }
@@ -54,11 +54,12 @@ trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Genera
   def trimValue(form: Form[_], fieldName: String, validDataGenerator: Gen[String]): Unit =
     "bind" should {
       "remove leading and trailing spaces" in {
-
         forAll(validDataGenerator -> "validDataItem") { dataItem: String =>
-          val result = form.bind(Map(fieldName -> ("  " + dataItem + "  ")))
-          result.value.value shouldBe dataItem
-          result.errors      shouldBe empty
+          val expectedValue  = removeCommas(dataItem)
+          val dataWithSpaces = "  " + dataItem.mkString(" ") + "  "
+          val result         = form.bind(Map(fieldName -> dataWithSpaces))
+          result.value.value.toString shouldBe expectedValue
+          result.errors               shouldBe empty
         }
       }
     }

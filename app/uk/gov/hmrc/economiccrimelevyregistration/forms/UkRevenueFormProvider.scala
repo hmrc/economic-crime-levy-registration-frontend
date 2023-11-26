@@ -28,7 +28,10 @@ class UkRevenueFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Long] =
     Form(
-      "value" -> long("ukRevenue.error.required", "ukRevenue.error.wholeNumber", "ukRevenue.error.nonNumeric")
+      "value" -> currency(
+        "ukRevenue.error.required",
+        "ukRevenue.error.nonNumeric"
+      )
         .verifying(inRange(minRevenue, maxRevenue, "ukRevenue.error.outOfRange"))
     )
 

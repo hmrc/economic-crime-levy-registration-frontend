@@ -59,7 +59,6 @@ class UkRevenueController @Inject() (
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         revenue => {
           val updatedRegistration = request.registration.copy(relevantApRevenue = Some(revenue))
-
           eclCalculatorService.checkIfRevenueMeetsThreshold(updatedRegistration).flatMap { revenueMeetsThreshold =>
             eclRegistrationConnector
               .upsertRegistration(updatedRegistration.copy(revenueMeetsThreshold = revenueMeetsThreshold))
