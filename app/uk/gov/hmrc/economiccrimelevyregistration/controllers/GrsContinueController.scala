@@ -99,7 +99,7 @@ class GrsContinueController @Inject() (
     mode: Mode
   )(implicit hc: HeaderCarrier): Future[Result] =
     (identifiersMatch, bvResult, grsResult.registrationStatus, grsResult.registeredBusinessPartnerId) match {
-      case (false, _, _, _)                                  => Future.successful(Redirect(routes.NotableErrorController.detailsDoNotMatch()))
+      case (false, _, _, _)                                  => Future.successful(Redirect(routes.NotableErrorController.verificationFailed()))
       case (_, Some(BusinessVerificationResult(Fail)), _, _) =>
         Future.successful(Redirect(routes.NotableErrorController.verificationFailed()))
       case (_, _, _, Some(businessPartnerId))                =>

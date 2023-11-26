@@ -156,23 +156,4 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
       html(result)     should include("The details you have entered do not match our records")
     }
   }
-
-  s"GET ${routes.NotableErrorController.detailsDoNotMatch().url}"                                         should {
-    behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.detailsDoNotMatch())
-
-    "respond with 200 status and the details do not match HTML view" in {
-      stubAuthorised()
-
-      val registration = random[Registration]
-      val entityType   = random[EntityType]
-
-      stubGetRegistration(registration.copy(entityType = Some(entityType)))
-
-      val result = callRoute(FakeRequest(routes.NotableErrorController.detailsDoNotMatch()))
-
-      status(result) shouldBe OK
-      html(result)     should include("The details you have entered do not match our records")
-    }
-  }
-
 }

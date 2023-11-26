@@ -84,7 +84,7 @@ amlSupervisor.title = Your anti-money laundering (AML) supervisor
 amlSupervisor.heading = Your anti-money laundering (AML) supervisor
 amlSupervisor.p1 = This is the regulatory body who supervises your anti-money laundering (AML) activity.
 amlSupervisor.p2 = If you are supervised by a professional body, you must register for the Economic Crime Levy with HMRC.
-amlSupervisor.p3 = If both HMRC and another professional body supervise your anti-money laundering activities, you must register with that professional body. You do not need to register with HMRC.
+amlSupervisor.p3 = If you are supervised by the GC or the FCA, you need to follow their ECL processes. Do not register for the ECL with HMRC, submit yearly returns to HMRC or pay the ECL to HMRC.
 amlSupervisor.h2 = Who is your AML supervisor?
 amlSupervisor.Hmrc = HMRC
 amlSupervisor.GamblingCommission = Gambling Commission (GC)
@@ -429,17 +429,20 @@ partyTypeMismatch.heading = Your details do not match our records
 partyTypeMismatch.body.p1 = Your registration failed because your details do not match our records.
 partyTypeMismatch.body.p2 = Check that you have chosen the right entity type and submit your answers again.
 
-detailsDoNotMatch.title = The details you have entered do not match our records
-detailsDoNotMatch.heading = The details you have entered do not match our records
+verificationFailed.title = The details you have entered do not match our records
+verificationFailed.heading = The details you have entered do not match our records
+verificationFailed.button = Try again
 
-detailsDoNotMatch.ct.body.p1 = Check your company''s Corporation Tax records and try again.
-detailsDoNotMatch.ct.body.p2 = Check your office address postcode matches the postcode registered with Companies House.
-detailsDoNotMatch.ct.body.p3 = If you are still having problems, you can find your Unique Taxpayer Reference, National Insurance details and tax code information in your HMRC online account.
+verificationFailed.body.p1 = Check if you have entered the correct details of the organisation.
+verificationFailed.body.p2 = The UTR needs to match the UTR on your HMRC online account.
+verificationFailed.body.p3 = The CRN needs to match the CRN on your HMRC online account and your Companies House record.
+verificationFailed.body.p4 = The postcode needs to match the postcode on your HMRC online account and your Companies House record.
+verificationFailed.body.p5 = Check your HMRC online account and your Companies House record and make sure the postcodes match.
+verificationFailed.body.p6 = If they do not match, update the postcodes and wait 24 hours before registering for ECL.
 
-detailsDoNotMatch.sa.body.p1 = Check your Self Assessment records and try again.
-detailsDoNotMatch.sa.body.p2 = Check the postcode you entered matches the postcode on your Partnership Self Assessment.
-detailsDoNotMatch.sa.body.p3 = If you are still having problems, you can find your Unique Taxpayer Reference, National Insurance details and tax code information in your HMRC online account.
-
+verificationFailed.subHeading.p1 = Try entering your Unique Tax Reference (UTR) again
+verificationFailed.subHeading.p2 = Try entering your Company Registration Number (CRN) again
+verificationFailed.subHeading.p3 = Try entering your postcode again
 
 feedback.heading = Tell us what you think
 feedback.p1 = This is a new service and we want to know what you think of it.
@@ -574,4 +577,9 @@ liabilityBeforeCurrentYear.list.b1 = your UK revenue met the threshold, or
 liabilityBeforeCurrentYear.list.b2 = you have carried out anti-money laundering (AML) regulated activity during the financial year
 liabilityBeforeCurrentYear.p2 = The financial year runs from 1 April to 31 March of the following year.
 liabilityBeforeCurrentYear.p3 = The Economic Crime Levy guidance has more information on <a class="govuk-link" href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy"> who needs to pay the levy</a>.
-liabilityBeforeCurrentYear.required = Select an option
+liabilityBeforeCurrentYear.required = Select yes if you were liable to pay the Economic Crime Levy
+
+otherEntityType.crn.question.title = Do you have a UK company registration number?
+otherEntityType.crn.question.label = Do you have a UK company registration number?
+otherEntityType.crn.question.h1 = Do you have a UK company registration number?
+otherEntityType.crn.question.error.required = Select yes if you have a UK company registration number

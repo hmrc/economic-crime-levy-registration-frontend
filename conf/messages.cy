@@ -84,7 +84,7 @@ amlSupervisor.title = Eich goruchwyliwr gwrth-wyngalchu arian (AML)
 amlSupervisor.heading = Eich goruchwyliwr gwrth-wyngalchu arian (AML)
 amlSupervisor.p1 = Dyma’r corff rheoleiddio sy’n goruchwylio’ch gweithgaredd gwrth-wyngalchu arian (AML).
 amlSupervisor.p2 = Os ydych o dan oruchwyliaeth corff rheoleiddio, mae’n rhaid i chi gofrestru ar gyfer yr Ardoll Troseddau Economaidd gyda CThEF.
-amlSupervisor.p3 = Os yw CThEF yn goruchwylio’ch gweithgareddau gwrth-wyngalchu arian ar y cyd â chorff proffesiynol arall, mae’n rhaid i chi gofrestru gyda’r corff proffesiynol hwnnw.
+amlSupervisor.p3 = Os ydych o dan oruchwyliaeth naill ai’r Comisiwn Hapchwarae (GC) neu’r Awdurdod Ymddygiad Ariannol (FCA), mae angen i chi ddilyn y broses ECL a amlinellir ganddynt. Peidiwch â chofrestru ar gyfer yr ECL gyda CThEF, na chyflwyno datganiadau blynyddol i CThEF, na thalu’r ECL i CThEF.
 amlSupervisor.h2 = Pwy yw eich goruchwyliwr AML?
 amlSupervisor.Hmrc = CThEF
 amlSupervisor.GamblingCommission = Y Comisiwn Hapchwarae (GC)
@@ -363,6 +363,7 @@ checkYourAnswers.nonUkCrn.label = CRN y tu allan i’r DU
 checkYourAnswers.overseasTaxIdentifier.label = Dynodydd treth tramor
 checkYourAnswers.eclDetails = Manylion ECL
 checkYourAnswers.eclReferenceNumber.label = Cyfeirnod ECL
+checkYourAnswers.liabilityDate.label = Dyddiad cychwyn atebolrwydd
 
 submitted.title = Cofrestriad wedi’i gyflwyno
 submitted.heading = Cofrestriad wedi’i gyflwyno
@@ -428,17 +429,20 @@ partyTypeMismatch.heading = Nid yw’ch manylion yn cyd-fynd â’n cofnodion
 partyTypeMismatch.body.p1 = Mae’ch cofrestriad wedi methu oherwydd nad yw’ch manylion yn cyd-fynd â’n cofnodion.
 partyTypeMismatch.body.p2 = Gwiriwch eich bod wedi dewis y math cywir o endid a chyflwynwch eich atebion eto.
 
-detailsDoNotMatch.title = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
-detailsDoNotMatch.heading = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+verificationFailed.title = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+verificationFailed.heading = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+verificationFailed.button = Rhowch gynnig arall arni
 
-detailsDoNotMatch.ct.body.p1 = Gwiriwch gofnodion Treth Gorfforaeth eich cwmni a rhowch gynnig arall arni.
-detailsDoNotMatch.ct.body.p2 = Gwiriwch fod cod post cyfeiriad eich swyddfa yn cyd-fynd â’r cod post sydd wedi’i gofrestru gyda Thŷ’r Cwmnïau.
-detailsDoNotMatch.ct.body.p3 = Os ydych yn dal i gael problemau, gallwch ddod o hyd i’ch Cyfeirnod Unigryw y Trethdalwr, manylion Yswiriant Gwladol a gwybodaeth cod treth yn eich cyfrif ar-lein CThEF.
+verificationFailed.body.p1 = Gwiriwch a ydych wedi nodi’r manylion cywir ar gyfer y sefydliad.
+verificationFailed.body.p2 = Mae angen i’r UTR gyd-fynd â’r UTR sydd yn eich cyfrif ar-lein CThEF.
+verificationFailed.body.p3 = Mae angen i’r CRN gyd-fynd â’r CRN sydd yn eich cyfrif ar-lein CThEF a’ch cofnod Tŷ’r Cwmnïau.
+verificationFailed.body.p4 = Mae angen i’r cod post gyd-fynd â’r cod post sydd yn eich cyfrif ar-lein CThEF a’ch cofnod Tŷ’r Cwmnïau.
+verificationFailed.body.p5 = Gwiriwch eich cyfrif ar-lein CThEF a’ch cofnod Tŷ’r Cwmnïau i wneud yn siŵr bod eich codau post yn cyd-fynd â’i gilydd.
+verificationFailed.body.p6 = Os nad ydynt yn cyd-fynd â’i gilydd, bydd angen i chi ddiweddaru’r codau post ac aros am 24 awr cyn cofrestru ar gyfer yr ECL.
 
-detailsDoNotMatch.sa.body.p1 = Gwiriwch eich cofnodion Hunanasesiad a rhowch gynnig arall arni.
-detailsDoNotMatch.sa.body.p2 = Gwiriwch fod y cod post y gwnaethoch ei nodi yn cyd-fynd a’r cod post sydd ar Hunanasesiad eich Partneriaeth.
-detailsDoNotMatch.sa.body.p3 = Os ydych yn dal i gael problemau, gallwch ddod o hyd i’ch Cyfeirnod Unigryw y Trethdalwr, manylion Yswiriant Gwladol a gwybodaeth cod treth yn eich cyfrif ar-lein CThEF.
-
+verificationFailed.subHeading.p1 = Rhowch gynnig arall ar nodi eich Cyfeirnod Unigryw y Trethdalwr (UTR)
+verificationFailed.subHeading.p2 = Rhowch gynnig arall ar nodi eich Rhif Cofrestru’r Cwmni (CRN)
+verificationFailed.subHeading.p3 = Rhowch gynnig arall ar nodi eich cod post
 
 feedback.heading = Rhowch eich barn
 feedback.p1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw’ch barn amdano.
@@ -573,4 +577,9 @@ liabilityBeforeCurrentYear.list.b1 = gwnaeth eich refeniw yn y DU gyrraedd y tro
 liabilityBeforeCurrentYear.list.b2 = gwnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
 liabilityBeforeCurrentYear.p2 = Mae’r flwyddyn ariannol yn rhedeg o 1 Ebrill i 31 Mawrth y flwyddyn ganlynol.
 liabilityBeforeCurrentYear.p3 = Mae rhagor o wybodaeth ar gael yn yr arweiniad ar yr Ardoll Troseddau Economaidd, gan gynnwys <a class="govuk-link" href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy"> pwy sydd angen talu’r ardoll</a>.
-liabilityBeforeCurrentYear.required = Dewiswch ateb
+liabilityBeforeCurrentYear.required = Dewiswch ‘Iawn’ os oeddech yn agored i dalu’r Ardoll Troseddau Economaidd
+
+otherEntityType.crn.question.title = Oes gennych chi rif cofrestru cwmni'r DU?
+otherEntityType.crn.question.label = Oes gennych chi rif cofrestru cwmni'r DU?
+otherEntityType.crn.question.h1 = Oes gennych chi rif cofrestru cwmni'r DU?
+otherEntityType.crn.question.error.required = Dewiswch ‘Iawn’ os oes gennych rif cofrestru’r cwmni

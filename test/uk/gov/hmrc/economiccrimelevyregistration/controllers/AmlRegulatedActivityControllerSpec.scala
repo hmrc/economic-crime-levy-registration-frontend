@@ -29,8 +29,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
 
@@ -41,6 +41,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   val form: Form[Boolean]                            = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockSessionService: SessionService                     = mock[SessionService]
 
   val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator() {
     override protected def navigateInNormalMode(registration: Registration)(implicit
@@ -55,6 +56,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
+      mockSessionService,
       formProvider,
       pageNavigator,
       view
@@ -89,27 +91,57 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the selected answer then redirect to the next page" in forAll {
-      (registration: Registration, carriedOutAmlRegulatedActivity: Boolean) =>
-        new TestContext(registration) {
-          val updatedRegistration: Registration =
-            registration.copy(
-              carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity),
-              registrationType = Some(Initial)
-            )
+    "save the selected answer then redirect to the next page" should {
+      "and store the result in the session service when user has carried out aml activity" in forAll {
+        (registration: Registration) =>
+          val carriedOutAmlRegulatedActivity = true
+          new TestContext(registration) {
+            val updatedRegistration: Registration =
+              registration.copy(
+                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity),
+                registrationType = Some(Initial)
+              )
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+            when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+              .thenReturn(Future.successful(updatedRegistration))
 
-          val result: Future[Result] =
-            controller.onSubmit(NormalMode)(
-              fakeRequest.withFormUrlEncodedBody(("value", carriedOutAmlRegulatedActivity.toString))
-            )
+            when(mockSessionService.upsert(any())(any()))
+              .thenReturn(Future.successful(()))
 
-          status(result) shouldBe SEE_OTHER
+            val result: Future[Result] =
+              controller.onSubmit(NormalMode)(
+                fakeRequest.withFormUrlEncodedBody(("value", carriedOutAmlRegulatedActivity.toString))
+              )
 
-          redirectLocation(result) shouldBe Some(onwardRoute.url)
-        }
+            status(result) shouldBe SEE_OTHER
+
+            redirectLocation(result) shouldBe Some(onwardRoute.url)
+          }
+      }
+
+      "without storing the result in the session service when user has carried out aml activity" in forAll {
+        (registration: Registration) =>
+          val carriedOutAmlRegulatedActivity = false
+          new TestContext(registration) {
+            val updatedRegistration: Registration =
+              registration.copy(
+                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity),
+                registrationType = Some(Initial)
+              )
+
+            when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+              .thenReturn(Future.successful(updatedRegistration))
+
+            val result: Future[Result] =
+              controller.onSubmit(NormalMode)(
+                fakeRequest.withFormUrlEncodedBody(("value", carriedOutAmlRegulatedActivity.toString))
+              )
+
+            status(result) shouldBe SEE_OTHER
+
+            redirectLocation(result) shouldBe Some(onwardRoute.url)
+          }
+      }
     }
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
