@@ -24,15 +24,16 @@ import scala.util.control.Exception.nonFatalCatch
 
 trait Formatters {
 
-  private lazy val twoDecimalPattern = """(\d*\.[0-9]{1,2})""".r
-  private lazy val decimalRegexp     = """(\d*\.\d*)""".r
+  private lazy val twoDecimalPattern = """^(\d*\.[0-9]{1,2})$""".r
+  private lazy val decimalRegexp     = """^(\d*\.\d*)$""".r
 
   private def removeWhitespace(value: String, removeAllWhitespace: Boolean) =
     if (removeAllWhitespace) value.filterNot(_.isWhitespace) else value.strip()
 
   private def removePoundSign(value: String) =
-    value.filterNot(_ == '£')
-  private def removeCommas(value: String)    =
+    if (value.startsWith("£")) value.replaceFirst("£", "") else value
+
+  private def removeCommas(value: String) =
     value.filterNot(_ == ',')
 
   private[mappings] def stringFormatter(
