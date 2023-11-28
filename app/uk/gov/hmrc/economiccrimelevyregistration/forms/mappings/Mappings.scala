@@ -48,7 +48,7 @@ trait Mappings extends Formatters with Constraints {
   protected def currency(
     requiredKey: String = "error.required",
     nonNumericKey: String = "error.nonNumeric"
-  ): FieldMapping[Long] =
+  ): FieldMapping[Double] =
     of(currencyFormatter(requiredKey, nonNumericKey))
 
   protected def boolean(

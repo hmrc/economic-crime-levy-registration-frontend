@@ -24,8 +24,8 @@ import scala.util.control.Exception.nonFatalCatch
 
 trait Formatters {
 
-  private lazy val twoDecimalPattern = """^(\d*\.[0-9]{1,2})$""".r
-  private lazy val decimalRegexp     = """^(\d*\.\d*)$""".r
+  private lazy val validRevenuePattern = """^(\d*(\.[0-9]{1,2})?)$""".r
+  private lazy val decimalRegexp       = """^(\d*\.\d*)$""".r
 
   private def removeWhitespace(value: String, removeAllWhitespace: Boolean) =
     if (removeAllWhitespace) value.filterNot(_.isWhitespace) else value.strip()
@@ -101,48 +101,37 @@ trait Formatters {
         baseFormatter.unbind(key, value.toString)
     }
 
-  private def currencyFormatter[T](
-    stringToNumber: String => T,
+  def currencyFormatter(
     requiredKey: String,
     nonCurrencyKey: String
-  ): Formatter[T]    =
-    new Formatter[T] {
+  ): Formatter[Double] =
+    new Formatter[Double] {
 
       private val baseFormatter = stringFormatter(requiredKey, removeAllWhitespace = true)
 
-      override def bind(key: String, data: Map[String, String]) =
+      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Double] =
         baseFormatter
           .bind(key, data)
           .map(removeCommas)
           .map(removePoundSign)
           .flatMap { value =>
-            val number = value match {
-              case twoDecimalPattern(d) =>
-                d.split('.')(0)
-              case d                    => d
+            if (validRevenuePattern.matches(value)) {
+              println("in pattern: " + value)
+              Right(value.toDouble)
+            } else {
+              Left(Seq(FormError(key, nonCurrencyKey)))
             }
-
-            nonFatalCatch
-              .either(stringToNumber(number))
-              .left
-              .map(_ => Seq(FormError(key, nonCurrencyKey)))
           }
 
-      override def unbind(key: String, value: T) =
+      override def unbind(key: String, value: Double): Map[String, String] =
         baseFormatter.unbind(key, value.toString)
     }
   private[mappings] def longFormatter(
     requiredKey: String,
     wholeNumberKey: String,
     nonNumericKey: String
-  ): Formatter[Long] =
+  ): Formatter[Long]   =
     numberFormatter[Long](_.toLong, requiredKey, wholeNumberKey, nonNumericKey)
-
-  private[mappings] def currencyFormatter(
-    requiredKey: String,
-    nonNumericKey: String
-  ): Formatter[Long] =
-    currencyFormatter[Long](_.toLong, requiredKey, nonNumericKey)
 
   private[mappings] def intFormatter(
     requiredKey: String,

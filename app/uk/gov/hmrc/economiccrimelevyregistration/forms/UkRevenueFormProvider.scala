@@ -23,10 +23,10 @@ import javax.inject.Inject
 
 class UkRevenueFormProvider @Inject() extends Mappings {
 
-  val minRevenue = 0L
-  val maxRevenue = 99999999999L
+  val minRevenue = 0.0
+  val maxRevenue = 99999999999.99
 
-  def apply(): Form[Long] =
+  def apply(): Form[Double] =
     Form(
       "value" -> currency(
         "ukRevenue.error.required",
