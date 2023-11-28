@@ -24,7 +24,9 @@ final case class RegistrationSubmittedEmailParameters(
   eclRegistrationDate: String,
   dateDue: String,
   isPrimaryContact: String,
-  secondContactEmail: Option[String]
+  secondContactEmail: Option[String],
+  previousFY: Option[String],
+  currentFY: Option[String]
 )
 
 object RegistrationSubmittedEmailParameters {

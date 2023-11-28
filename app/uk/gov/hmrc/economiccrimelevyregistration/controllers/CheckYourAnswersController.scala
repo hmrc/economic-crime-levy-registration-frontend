@@ -169,7 +169,8 @@ class CheckYourAnswersController @Inject() (
                           emailService.sendRegistrationSubmittedEmails(
                             registration.contacts,
                             response.eclReference,
-                            registration.entityType
+                            registration.entityType,
+                            request.additionalInfo
                           )
                         case Amendment => emailService.sendAmendRegistrationSubmitted(registration.contacts)
                       }
