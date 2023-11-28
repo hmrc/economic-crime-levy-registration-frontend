@@ -116,7 +116,6 @@ trait Formatters {
           .map(removePoundSign)
           .flatMap { value =>
             if (validRevenuePattern.matches(value)) {
-              println("in pattern: " + value)
               Right(value.toDouble)
             } else {
               Left(Seq(FormError(key, nonCurrencyKey)))
