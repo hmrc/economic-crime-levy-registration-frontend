@@ -49,5 +49,11 @@ class NonUkCrnFormProviderSpec extends StringFieldBehaviours {
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
     )
+
+    behave like removeAllWhitespace(
+      form,
+      fieldName,
+      stringsWithMaxLength(CompanyRegistrationNumberMaxLength)
+    )
   }
 }

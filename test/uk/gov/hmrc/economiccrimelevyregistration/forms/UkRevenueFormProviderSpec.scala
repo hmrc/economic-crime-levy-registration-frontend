@@ -38,7 +38,7 @@ class UkRevenueFormProviderSpec extends CurrencyFieldBehaviours {
       validDataGenerator
     )
 
-    behave like trimValue(
+    behave like stripValue(
       form,
       fieldName,
       validDataGenerator

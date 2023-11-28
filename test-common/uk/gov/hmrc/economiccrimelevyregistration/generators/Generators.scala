@@ -64,7 +64,8 @@ trait Generators {
 
   def decimals: Gen[String] =
     arbitrary[BigDecimal]
-      .suchThat(_.abs < Int.MaxValue)
+      .map(_.abs)
+      .suchThat(_ < Int.MaxValue)
       .suchThat(!_.isValidInt)
       .map("%f".format(_))
 

@@ -26,7 +26,7 @@ class SecondContactNameFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> text("secondContactName.error.required")
+      "value" -> text("secondContactName.error.required", removeAllWhitespace = false)
         .verifying(maxLength(NameMaxLength, "secondContactName.error.length"))
     )
 

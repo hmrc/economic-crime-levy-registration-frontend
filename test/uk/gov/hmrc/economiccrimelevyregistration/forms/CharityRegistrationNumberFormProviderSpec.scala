@@ -49,5 +49,11 @@ class CharityRegistrationNumberFormProviderSpec extends StringFieldBehaviours {
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
     )
+
+    behave like removeAllWhitespace(
+      form,
+      fieldName,
+      stringsWithMaxLength(CharityRegistrationNumberMaxLength)
+    )
   }
 }

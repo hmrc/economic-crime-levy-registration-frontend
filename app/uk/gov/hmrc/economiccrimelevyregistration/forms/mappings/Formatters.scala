@@ -24,11 +24,11 @@ import scala.util.control.Exception.nonFatalCatch
 
 trait Formatters {
 
-  private lazy val twoDecimalPattern = """^-?(\d*\.[0-9]{0,2})$""".r
-  private lazy val decimalRegexp     = """^-?(\d*\.\d*)$""".r
+  private lazy val twoDecimalPattern = """(\d*\.[0-9]{1,2})""".r
+  private lazy val decimalRegexp     = """(\d*\.\d*)""".r
 
-  private def removeWhitespace(value: String) =
-    value.trim.filterNot(_.isWhitespace)
+  private def removeWhitespace(value: String, removeAllWhitespace: Boolean) =
+    if (removeAllWhitespace) value.filterNot(_.isWhitespace) else value.strip()
 
   private def removePoundSign(value: String) =
     value.filterNot(_ == '£')
@@ -36,12 +36,13 @@ trait Formatters {
     value.filterNot(_ == ',')
 
   private[mappings] def stringFormatter(
-    requiredErrorKey: String
+    requiredErrorKey: String,
+    removeAllWhitespace: Boolean
   ): Formatter[String] =
     new Formatter[String] {
 
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
-        data.get(key).map(removeWhitespace) match {
+        data.get(key).map(s => removeWhitespace(s, removeAllWhitespace)) match {
           case None        => Left(Seq(FormError(key, requiredErrorKey)))
           case Some(value) =>
             if (value.isEmpty) Left(Seq(FormError(key, requiredErrorKey))) else Right(value)
@@ -57,7 +58,7 @@ trait Formatters {
   ): Formatter[Boolean] =
     new Formatter[Boolean] {
 
-      private val baseFormatter = stringFormatter(requiredKey)
+      private val baseFormatter = stringFormatter(requiredKey, removeAllWhitespace = true)
 
       override def bind(key: String, data: Map[String, String]) =
         baseFormatter
@@ -79,7 +80,7 @@ trait Formatters {
   ): Formatter[T] =
     new Formatter[T] {
 
-      private val baseFormatter = stringFormatter(requiredKey)
+      private val baseFormatter = stringFormatter(requiredKey, removeAllWhitespace = true)
 
       override def bind(key: String, data: Map[String, String]) =
         baseFormatter
@@ -106,7 +107,7 @@ trait Formatters {
   ): Formatter[T]    =
     new Formatter[T] {
 
-      private val baseFormatter = stringFormatter(requiredKey)
+      private val baseFormatter = stringFormatter(requiredKey, removeAllWhitespace = true)
 
       override def bind(key: String, data: Map[String, String]) =
         baseFormatter
@@ -157,7 +158,7 @@ trait Formatters {
   ): Formatter[A] =
     new Formatter[A] {
 
-      private val baseFormatter = stringFormatter(requiredKey)
+      private val baseFormatter = stringFormatter(requiredKey, removeAllWhitespace = true)
 
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], A] =
         baseFormatter.bind(key, data).flatMap { str =>

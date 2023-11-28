@@ -25,7 +25,7 @@ import javax.inject.Inject
 class BusinessNameFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
-      "value" -> text("businessName.error.required")
+      "value" -> text("businessName.error.required", removeAllWhitespace = false)
         .verifying(maxLength(OrganisationNameMaxLength, "businessName.error.length"))
     )
 

@@ -26,7 +26,7 @@ class FirstContactRoleFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> text("firstContactRole.error.required")
+      "value" -> text("firstContactRole.error.required", removeAllWhitespace = false)
         .verifying(maxLength(RoleMaxLength, "firstContactRole.error.length"))
     )
 

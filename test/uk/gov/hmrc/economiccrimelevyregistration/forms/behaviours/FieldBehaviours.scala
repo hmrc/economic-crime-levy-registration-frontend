@@ -51,9 +51,22 @@ trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Genera
       }
     }
 
-  def trimValue(form: Form[_], fieldName: String, validDataGenerator: Gen[String]): Unit =
+  def stripValue(form: Form[_], fieldName: String, validDataGenerator: Gen[String]): Unit =
     "bind" should {
       "remove leading and trailing spaces" in {
+        forAll(validDataGenerator -> "validDataItem") { dataItem: String =>
+          val expectedValue  = removeCommas(dataItem)
+          val dataWithSpaces = "  " + dataItem + "  "
+          val result         = form.bind(Map(fieldName -> dataWithSpaces))
+          result.value.value.toString shouldBe expectedValue
+          result.errors               shouldBe empty
+        }
+      }
+    }
+
+  def removeAllWhitespace(form: Form[_], fieldName: String, validDataGenerator: Gen[String]): Unit =
+    "bind" should {
+      "remove all whitespace" in {
         forAll(validDataGenerator -> "validDataItem") { dataItem: String =>
           val expectedValue  = removeCommas(dataItem)
           val dataWithSpaces = "  " + dataItem.mkString(" ") + "  "
