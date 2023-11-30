@@ -40,7 +40,7 @@ class UkRevenueControllerSpec extends SpecBase {
 
   val view: UkRevenueView                 = app.injector.instanceOf[UkRevenueView]
   val formProvider: UkRevenueFormProvider = new UkRevenueFormProvider()
-  val form: Form[Long]                    = formProvider()
+  val form: Form[BigDecimal]              = formProvider()
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   val mockEclCalculatorService: EclCalculatorService         = mock[EclCalculatorService]
@@ -130,9 +130,9 @@ class UkRevenueControllerSpec extends SpecBase {
       Gen.alphaStr
     ) { (registration: Registration, invalidRevenue: String) =>
       new TestContext(registration) {
-        val result: Future[Result]     =
+        val result: Future[Result]           =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", invalidRevenue)))
-        val formWithErrors: Form[Long] = form.bind(Map("value" -> invalidRevenue))
+        val formWithErrors: Form[BigDecimal] = form.bind(Map("value" -> invalidRevenue))
 
         status(result) shouldBe BAD_REQUEST
 

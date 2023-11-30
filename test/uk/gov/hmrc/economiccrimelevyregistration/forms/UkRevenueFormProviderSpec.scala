@@ -27,10 +27,10 @@ class UkRevenueFormProviderSpec extends CurrencyFieldBehaviours {
 
     val fieldName = "value"
 
-    val minimum = 0L
-    val maximum = 99999999999L
+    val minimum: BigDecimal = 0
+    val maximum: BigDecimal = 99999999999.99
 
-    val validDataGenerator = longsInRangeWithCommas(minimum, maximum)
+    val validDataGenerator = bigDecimalInRangeWithCommas(minimum.toDouble, maximum.toDouble)
 
     behave like fieldThatBindsValidData(
       form,
@@ -50,7 +50,7 @@ class UkRevenueFormProviderSpec extends CurrencyFieldBehaviours {
       nonNumericError = FormError(fieldName, "ukRevenue.error.nonNumeric")
     )
 
-    behave like currencyFieldWithRange(
+    behave like currencyFieldOutsideRange(
       form,
       fieldName,
       minimum = minimum,

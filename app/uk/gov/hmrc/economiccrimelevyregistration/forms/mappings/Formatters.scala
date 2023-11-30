@@ -24,7 +24,7 @@ import scala.util.control.Exception.nonFatalCatch
 
 trait Formatters {
 
-  private lazy val validRevenuePattern = """^(\d*(\.[0-9]{1,2})?)$""".r
+  private lazy val validRevenuePattern = """^-?(\d*(\.[0-9]{1,2})?)$""".r
   private lazy val decimalRegexp       = """^(\d*\.\d*)$""".r
 
   private def removeWhitespace(value: String, removeAllWhitespace: Boolean) =
@@ -104,32 +104,32 @@ trait Formatters {
   def currencyFormatter(
     requiredKey: String,
     nonCurrencyKey: String
-  ): Formatter[Double] =
-    new Formatter[Double] {
+  ): Formatter[BigDecimal] =
+    new Formatter[BigDecimal] {
 
       private val baseFormatter = stringFormatter(requiredKey, removeAllWhitespace = true)
 
-      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Double] =
+      override def bind(key: String, data: Map[String, String]) =
         baseFormatter
           .bind(key, data)
           .map(removeCommas)
           .map(removePoundSign)
           .flatMap { value =>
             if (validRevenuePattern.matches(value)) {
-              Right(value.toDouble)
+              Right(BigDecimal(value))
             } else {
               Left(Seq(FormError(key, nonCurrencyKey)))
             }
           }
 
-      override def unbind(key: String, value: Double): Map[String, String] =
+      override def unbind(key: String, value: BigDecimal) =
         baseFormatter.unbind(key, value.toString)
     }
   private[mappings] def longFormatter(
     requiredKey: String,
     wholeNumberKey: String,
     nonNumericKey: String
-  ): Formatter[Long]   =
+  ): Formatter[Long]       =
     numberFormatter[Long](_.toLong, requiredKey, wholeNumberKey, nonNumericKey)
 
   private[mappings] def intFormatter(

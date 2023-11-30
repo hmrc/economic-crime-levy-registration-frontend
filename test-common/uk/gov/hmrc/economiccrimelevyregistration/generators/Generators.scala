@@ -23,6 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Regex
 import wolfendale.scalacheck.regexp.RegexpGen
 
 import java.time.{Instant, LocalDate, ZoneOffset}
+import scala.math.BigDecimal.RoundingMode
 
 trait Generators {
 
@@ -50,6 +51,16 @@ trait Generators {
 
   def longsInRangeWithCommas(min: Long, max: Long): Gen[String] = {
     val numberGen = choose[Long](min, max).map(_.toString)
+    genIntersperseString(numberGen, ",")
+  }
+
+  def bigDecimalInRange(min: Double, max: Double): Gen[BigDecimal] =
+    Gen.chooseNum[Double](min, max).map(BigDecimal.apply(_).setScale(2, RoundingMode.DOWN))
+
+  def bigDecimalOutOfRange(min: BigDecimal, max: BigDecimal): Gen[BigDecimal] =
+    arbitrary[BigDecimal].map(_.setScale(2, RoundingMode.DOWN)) suchThat (x => x < min || x > max)
+  def bigDecimalInRangeWithCommas(min: Double, max: Double): Gen[String] = {
+    val numberGen = bigDecimalInRange(min, max).map(_.toString)
     genIntersperseString(numberGen, ",")
   }
 

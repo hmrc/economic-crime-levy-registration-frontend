@@ -34,7 +34,7 @@ class EclCalculatorServiceSpec extends SpecBase {
     "return true if the amount due is greater than 0 and the relevant AP is 12 months" in forAll {
       (
         registration: Registration,
-        relevantApRevenue: Long,
+        relevantApRevenue: BigDecimal,
         calculatedLiability: CalculatedLiability
       ) =>
         val updatedRegistration =
@@ -56,7 +56,7 @@ class EclCalculatorServiceSpec extends SpecBase {
     "return true if the amount due is greater than 0 and the relevant AP is not 12 months" in forAll {
       (
         registration: Registration,
-        relevantApRevenue: Long,
+        relevantApRevenue: BigDecimal,
         relevantApLength: Int,
         calculatedLiability: CalculatedLiability
       ) =>
@@ -83,7 +83,7 @@ class EclCalculatorServiceSpec extends SpecBase {
     "return false if the amount due is not greater than 0 and the relevant AP is 12 months" in forAll {
       (
         registration: Registration,
-        relevantApRevenue: Long,
+        relevantApRevenue: BigDecimal,
         calculatedLiability: CalculatedLiability
       ) =>
         val updatedRegistration =
@@ -105,7 +105,7 @@ class EclCalculatorServiceSpec extends SpecBase {
     "return false if the amount due is not greater than 0 and the relevant AP is not 12 months" in forAll {
       (
         registration: Registration,
-        relevantApRevenue: Long,
+        relevantApRevenue: BigDecimal,
         relevantApLength: Int,
         calculatedLiability: CalculatedLiability
       ) =>

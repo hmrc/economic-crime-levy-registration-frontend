@@ -44,17 +44,16 @@ trait CurrencyFieldBehaviours extends FieldBehaviours {
       }
     }
 
-  def currencyFieldWithRange(
+  def currencyFieldOutsideRange(
     form: Form[_],
     fieldName: String,
-    minimum: Long,
-    maximum: Long,
+    minimum: BigDecimal,
+    maximum: BigDecimal,
     expectedError: FormError
   ): Unit =
     "bind" should {
-      s"not bind longs outside the range $minimum to $maximum" in {
-
-        forAll(longsOutsideRange(minimum, maximum) -> "longOutsideRange") { number =>
+      s"not bind outside the range $minimum to $maximum" in {
+        forAll(bigDecimalOutOfRange(minimum, maximum) -> "longOutsideRange") { number =>
           val result = form.bind(Map(fieldName -> number.toString)).apply(fieldName)
           result.errors should contain only expectedError
         }

@@ -21,12 +21,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
 import javax.inject.Inject
 
-class UkRevenueFormProvider @Inject() extends Mappings {
+class UkRevenueFormProvider extends Mappings {
 
-  val minRevenue = 0.0
-  val maxRevenue = 99999999999.99
+  val minRevenue: BigDecimal = 0
+  val maxRevenue: BigDecimal = 99999999999.99
 
-  def apply(): Form[Double] =
+  def apply(): Form[BigDecimal] =
     Form(
       "value" -> currency(
         "ukRevenue.error.required",

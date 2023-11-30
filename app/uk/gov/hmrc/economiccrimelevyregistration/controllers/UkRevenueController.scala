@@ -46,7 +46,7 @@ class UkRevenueController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form: Form[Double] = formProvider()
+  val form: Form[BigDecimal] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(view(form.prepare(request.registration.relevantApRevenue), mode))
