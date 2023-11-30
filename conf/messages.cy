@@ -144,9 +144,8 @@ ukRevenue.p2 =Os oes gennych fwy nag un cyfnod cyfrifyddu perthnasol sy’n dod 
 ukRevenue.h1 = Os oes gennych fwy nag un cyfnod cyfrifyddu sy’n dod i ben yn ystod y flwyddyn ariannol
 ukRevenue.p3 = Mae angen i chi gyfuno’r refeniw o bob cyfnod cyfrifyddu. Bydd cyfanswm y symiau hyn yn pennu a oes angen i chi gofrestru ar gyfer yr Ardoll Troseddau Economaidd (ECL).
 ukRevenue.hint = Er enghraifft, £600 neu £193.54.
-ukRevenue.error.required = Nodwch y refeniw yn y DU
-ukRevenue.error.wholeNumber = Mae’n rhaid i’r refeniw yn y DU fod yn rhif wedi’i dalgrynnu i lawr i’r bunt agosaf
-ukRevenue.error.nonNumeric = Mae’n rhaid i’r refeniw yn y DU fod yn rhif wedi’i dalgrynnu i lawr i’r bunt agosaf
+ukRevenue.error.required = Nodwch gyfanswm y refeniw yn y DU
+ukRevenue.error.nonNumeric = Gall cyfanswm y refeniw yn y DU dim ond cynnwys punnoedd a cheiniogau
 ukRevenue.error.outOfRange = Mae’n rhaid i’r refeniw yn y DU fod rhwng {0} a {1}
 
 relevantApLength.title = Pa mor hir yw’ch cyfnod cyfrifyddu perthnasol?

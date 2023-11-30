@@ -19,8 +19,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
-import javax.inject.Inject
-
 class UkRevenueFormProvider extends Mappings {
 
   val minRevenue: BigDecimal = 0
