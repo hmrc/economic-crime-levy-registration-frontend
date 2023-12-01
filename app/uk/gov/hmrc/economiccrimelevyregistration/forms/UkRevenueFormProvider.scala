@@ -19,16 +19,17 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
-import javax.inject.Inject
+class UkRevenueFormProvider extends Mappings {
 
-class UkRevenueFormProvider @Inject() extends Mappings {
+  val minRevenue: BigDecimal = 0
+  val maxRevenue: BigDecimal = 99999999999.99
 
-  val minRevenue = 0L
-  val maxRevenue = 99999999999L
-
-  def apply(): Form[Long] =
+  def apply(): Form[BigDecimal] =
     Form(
-      "value" -> long("ukRevenue.error.required", "ukRevenue.error.wholeNumber", "ukRevenue.error.nonNumeric")
+      "value" -> currency(
+        "ukRevenue.error.required",
+        "ukRevenue.error.nonNumeric"
+      )
         .verifying(inRange(minRevenue, maxRevenue, "ukRevenue.error.outOfRange"))
     )
 

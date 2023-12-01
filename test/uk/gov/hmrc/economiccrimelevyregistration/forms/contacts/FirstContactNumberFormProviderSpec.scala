@@ -51,6 +51,12 @@ class FirstContactNumberFormProviderSpec extends StringFieldBehaviours {
       requiredError = FormError(fieldName, requiredKey)
     )
 
+    behave like removeAllWhitespace(
+      form,
+      fieldName,
+      telephoneNumber(TelephoneNumberMaxLength)
+    )
+
     "fail to bind an invalid telephone number" in forAll(
       stringsWithMaxLength(TelephoneNumberMaxLength).retryUntil(!_.matches(Regex.TelephoneNumberRegex))
     ) { invalidNumber: String =>

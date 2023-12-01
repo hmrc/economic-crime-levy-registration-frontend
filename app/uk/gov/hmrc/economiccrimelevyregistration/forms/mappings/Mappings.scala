@@ -25,44 +25,43 @@ import java.time.LocalDate
 
 trait Mappings extends Formatters with Constraints {
 
-  protected def sanitise(value: String) =
-    value.filterNot(_.isWhitespace)
-
   protected def text(
     errorKey: String = "error.required",
-    args: Seq[String] = Seq.empty
+    removeAllWhitespace: Boolean = true
   ): FieldMapping[String] =
-    of(stringFormatter(errorKey, args, sanitise))
+    of(stringFormatter(errorKey, removeAllWhitespace))
 
   protected def int(
     requiredKey: String = "error.required",
     wholeNumberKey: String = "error.wholeNumber",
-    nonNumericKey: String = "error.nonNumeric",
-    args: Seq[String] = Seq.empty
+    nonNumericKey: String = "error.nonNumeric"
   ): FieldMapping[Int] =
-    of(intFormatter(requiredKey, wholeNumberKey, nonNumericKey, args, sanitise))
+    of(intFormatter(requiredKey, wholeNumberKey, nonNumericKey))
 
   protected def long(
     requiredKey: String = "error.required",
     wholeNumberKey: String = "error.wholeNumber",
-    nonNumericKey: String = "error.nonNumeric",
-    args: Seq[String] = Seq.empty
+    nonNumericKey: String = "error.nonNumeric"
   ): FieldMapping[Long] =
-    of(longFormatter(requiredKey, wholeNumberKey, nonNumericKey, args, sanitise))
+    of(longFormatter(requiredKey, wholeNumberKey, nonNumericKey))
+
+  protected def currency(
+    requiredKey: String = "error.required",
+    nonNumericKey: String = "error.nonNumeric"
+  ): FieldMapping[BigDecimal] =
+    of(currencyFormatter(requiredKey, nonNumericKey))
 
   protected def boolean(
     requiredKey: String = "error.required",
-    invalidKey: String = "error.boolean",
-    args: Seq[String] = Seq.empty
+    invalidKey: String = "error.boolean"
   ): FieldMapping[Boolean] =
-    of(booleanFormatter(requiredKey, invalidKey, args, sanitise))
+    of(booleanFormatter(requiredKey, invalidKey))
 
   protected def enumerable[A](
     requiredKey: String = "error.required",
-    invalidKey: String = "error.invalid",
-    args: Seq[String] = Seq.empty
+    invalidKey: String = "error.invalid"
   )(implicit ev: Enumerable[A]): FieldMapping[A] =
-    of(enumerableFormatter[A](requiredKey, invalidKey, args, sanitise))
+    of(enumerableFormatter[A](requiredKey, invalidKey))
 
   protected def localDate(
     invalidKey: String,

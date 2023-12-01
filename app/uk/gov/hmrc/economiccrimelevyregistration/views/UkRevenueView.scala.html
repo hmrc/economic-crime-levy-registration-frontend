@@ -15,16 +15,18 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcCurrencyInput
 
 @this(
         layout: templates.Layout,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukInput: GovukInput,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        hmrcCurrencyInput: HmrcCurrencyInput
 )
 
-@(form: Form[Long], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleWithForm(form, messages("ukRevenue.title"))) {
     @if(form.errors.nonEmpty) {
@@ -44,17 +46,15 @@
 
 
     @formHelper(action = UkRevenueController.onSubmit(mode)) {
-        @govukInput(
-            InputViewModel(
-                field = form("value"),
-                label = LabelViewModel(Empty),
-                prefix = Some(PrefixOrSuffix(content = "£"))
-            )
-                    .asNumeric()
-                    .withWidth(Fixed10)
-                    .withHint(HintViewModel(messages("ukRevenue.hint")))
-
-        )
+        @hmrcCurrencyInput(CurrencyInput(
+            id = "value",
+            name = "value",
+            value =  form("value").value,
+            classes = "govuk-input--width-10",
+            hint = Some(Hint(content = messages("ukRevenue.hint"))),
+            label =  LabelViewModel(Empty),
+            errorMessage = form("value").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+            ))
 
         @govukButton(
             ButtonViewModel(messages("site.saveAndContinue"))
