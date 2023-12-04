@@ -59,9 +59,7 @@ object AmlSupervisorType {
     messages: Messages
   ): Seq[RadioItem] = {
     val amlProfessionalBodySupervisorOptions: Seq[SelectItem] =
-      SelectItem(
-        text = "&nbsp;"
-      ) +: appConfig.amlProfessionalBodySupervisors.map { opb =>
+      SelectItem() +: appConfig.amlProfessionalBodySupervisors.map { opb =>
         SelectItem(
           value = Some(opb),
           text = messages(s"amlSupervisor.$opb"),
@@ -111,9 +109,7 @@ object AmlSupervisorType {
     messages: Messages
   ): Seq[RadioItem] = {
     val amlProfessionalBodySupervisorOptions: Seq[SelectItem] =
-      SelectItem(
-        text = "&nbsp;"
-      ) +: appConfig.amlProfessionalBodySupervisors.map { opb =>
+      SelectItem() +: appConfig.amlProfessionalBodySupervisors.map { opb =>
         SelectItem(
           value = Some(opb),
           text = messages(s"amlSupervisor.$opb"),
