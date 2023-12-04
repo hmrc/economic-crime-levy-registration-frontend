@@ -75,7 +75,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
 
             liabilityYear
               .map { year =>
-                val liabilityYearSessionData = Map(SessionKeys.SessionKey_LiabilityYear -> year.asString)
+                val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> year.asString)
 
                 sessionService
                   .upsert(
@@ -105,14 +105,14 @@ class LiabilityBeforeCurrentYearController @Inject() (
                     )
                   )
               }
-
           }
         )
     }
+
   private def getFirstLiabilityYear(
     liableForCurrentFY: Option[Boolean],
     liableForPreviousFY: Boolean
-  ): Option[LiabilityYear]                                               =
+  ): Option[LiabilityYear] =
     (liableForCurrentFY, liableForPreviousFY) match {
       case (Some(true), true) | (Some(false), true) => Some(LiabilityYear(TaxYear.current.previous.startYear))
       case (Some(true), false)                      => Some(LiabilityYear(TaxYear.current.currentYear))

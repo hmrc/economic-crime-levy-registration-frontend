@@ -41,11 +41,11 @@ class RegistrationSubmittedController @Inject() (
 
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     sessionService
-      .get(request.session, request.internalId, SessionKeys.SessionKey_LiabilityYear)
+      .get(request.session, request.internalId, SessionKeys.LiabilityYear)
       .map(liabilityYear => liabilityYear.map(year => LiabilityYear(year.toInt)))
       .flatMap { liabilityYear =>
         sessionService
-          .get(request.session, request.internalId, SessionKeys.SessionKey_AmlRegulatedActivity)
+          .get(request.session, request.internalId, SessionKeys.AmlRegulatedActivity)
           .map { amlRegulatedActivity =>
             (request.session.get(SessionKeys.EclReference), request.eclRegistrationReference) match {
               case (Some(eclReference), _) =>

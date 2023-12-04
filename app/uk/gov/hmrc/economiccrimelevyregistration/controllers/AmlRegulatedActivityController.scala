@@ -69,7 +69,7 @@ class AmlRegulatedActivityController @Inject() (
             .flatMap { updatedRegistration =>
               if (amlRegulatedActivity) {
                 val amlActivitySessionData = Map(
-                  SessionKeys.SessionKey_AmlRegulatedActivity -> amlRegulatedActivity.toString
+                  SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString
                 )
 
                 sessionService
