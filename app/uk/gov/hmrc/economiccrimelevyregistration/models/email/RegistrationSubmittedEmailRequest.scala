@@ -25,8 +25,8 @@ final case class RegistrationSubmittedEmailParameters(
   dateDue: String,
   isPrimaryContact: String,
   secondContactEmail: Option[String],
-  previousFY: Option[String],
-  currentFY: Option[String]
+  currentFY: Option[String],
+  previousFY: Option[String]
 )
 
 object RegistrationSubmittedEmailParameters {

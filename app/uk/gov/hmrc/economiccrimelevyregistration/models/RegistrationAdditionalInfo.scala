@@ -24,6 +24,8 @@ case class RegistrationAdditionalInfo(
   eclReference: Option[String]
 )
 
+// - current year (first liability year)
+
 object RegistrationAdditionalInfo {
   implicit val format: OFormat[RegistrationAdditionalInfo] = Json.format[RegistrationAdditionalInfo]
 }

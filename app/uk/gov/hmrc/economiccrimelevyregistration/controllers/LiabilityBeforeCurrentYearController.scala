@@ -52,7 +52,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
 
   def onPageLoad(fromRevenuePage: Boolean, mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData) { implicit request =>
-      Ok(view(form.prepare(getLiabilityAnswer(request.additionalInfo)), mode, fromRevenuePage))
+      Ok(view(form.prepare(isLiableForPreviousFY(request.additionalInfo)), mode, fromRevenuePage))
     }
 
   def onSubmit(fromRevenuePage: Boolean, mode: Mode): Action[AnyContent] =
@@ -62,12 +62,14 @@ class LiabilityBeforeCurrentYearController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fromRevenuePage))),
           liableBeforeCurrentYear => {
-            val liabilityYear =
-              if (liableBeforeCurrentYear) TaxYear.current.previous.startYear else TaxYear.current.startYear
+            val liabilityYear = getFirstLiabilityYear(
+              request.registration.carriedOutAmlRegulatedActivityInCurrentFy,
+              liableBeforeCurrentYear
+            )
 
             val info = RegistrationAdditionalInfo(
               request.registration.internalId,
-              Some(LiabilityYear(liabilityYear)),
+              liabilityYear,
               request.eclRegistrationReference
             )
 
@@ -92,7 +94,16 @@ class LiabilityBeforeCurrentYearController @Inject() (
           }
         )
     }
+  private def getFirstLiabilityYear(
+    liableForCurrentFY: Option[Boolean],
+    liableForPreviousFY: Boolean
+  ): Option[LiabilityYear]                                               =
+    (liableForCurrentFY, liableForPreviousFY) match {
+      case (Some(true), true) | (Some(false), true) => Some(LiabilityYear(TaxYear.current.previous.startYear))
+      case (Some(true), false)                      => Some(LiabilityYear(TaxYear.current.currentYear))
+      case _                                        => None
+    }
 
-  def getLiabilityAnswer(info: Option[RegistrationAdditionalInfo]) =
-    info.flatMap(info => info.liabilityYear.map(year => year.value < TaxYear.current.startYear))
+  private def isLiableForPreviousFY(info: Option[RegistrationAdditionalInfo]) =
+    info.map(_.liabilityYear.exists(_.isNotCurrentFY))
 }

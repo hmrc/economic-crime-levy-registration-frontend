@@ -33,8 +33,8 @@ import scala.concurrent.Future
 class EmailServiceSpec extends SpecBase {
 
   val mockEmailConnector: EmailConnector = mock[EmailConnector]
-  val service                            = new EmailService(mockEmailConnector, appConfig)
-  val entityType                         = Some(random[EntityType])
+  val service                            = new EmailService(mockEmailConnector)
+  private val entityType                 = Some(random[EntityType])
 
   "sendRegistrationSubmittedEmails" should {
     "send an email for the first contact and return unit" in forAll {
@@ -51,6 +51,8 @@ class EmailServiceSpec extends SpecBase {
           ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
           ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages),
           "true",
+          None,
+          None,
           None
         )
 
@@ -69,7 +71,9 @@ class EmailServiceSpec extends SpecBase {
             service.sendRegistrationSubmittedEmails(
               updatedContacts,
               eclRegistrationReference,
-              entityType
+              entityType,
+              None,
+              None
             )(hc, messages)
           )
 
@@ -105,7 +109,9 @@ class EmailServiceSpec extends SpecBase {
           ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
           eclDueDate,
           "true",
-          Some(secondContactEmail)
+          Some(secondContactEmail),
+          None,
+          None
         )
 
         val expectedSecondContactParams = RegistrationSubmittedEmailParameters(
@@ -114,7 +120,9 @@ class EmailServiceSpec extends SpecBase {
           ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
           eclDueDate,
           "false",
-          Some(secondContactEmail)
+          Some(secondContactEmail),
+          None,
+          None
         )
 
         when(
@@ -142,7 +150,9 @@ class EmailServiceSpec extends SpecBase {
             service.sendRegistrationSubmittedEmails(
               updatedContacts,
               eclRegistrationReference,
-              entityType
+              entityType,
+              None,
+              None
             )(hc, messages)
           )
 
@@ -164,7 +174,9 @@ class EmailServiceSpec extends SpecBase {
             service.sendRegistrationSubmittedEmails(
               Contacts.empty,
               eclRegistrationReference,
-              entityType
+              entityType,
+              None,
+              None
             )(hc, messages)
           )
         }
