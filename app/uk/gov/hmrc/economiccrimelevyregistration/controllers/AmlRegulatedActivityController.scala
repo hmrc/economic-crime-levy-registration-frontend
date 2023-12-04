@@ -23,9 +23,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -38,6 +39,7 @@ class AmlRegulatedActivityController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationConnector: EclRegistrationConnector,
+  sessionService: SessionService,
   formProvider: AmlRegulatedActivityFormProvider,
   pageNavigator: AmlRegulatedActivityPageNavigator,
   view: AmlRegulatedActivityView
@@ -65,7 +67,32 @@ class AmlRegulatedActivityController @Inject() (
               )
             )
             .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
+              if (amlRegulatedActivity) {
+                val amlActivitySessionData = Map(
+                  SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString
+                )
+
+                sessionService
+                  .upsert(
+                    SessionData(
+                      request.internalId,
+                      amlActivitySessionData
+                    )
+                  )
+
+                pageNavigator
+                  .nextPage(mode, updatedRegistration)
+                  .map(
+                    Redirect(_).withSession(
+                      request.session ++
+                        amlActivitySessionData
+                    )
+                  )
+              } else {
+                pageNavigator
+                  .nextPage(mode, updatedRegistration)
+                  .map(Redirect)
+              }
             }
       )
   }

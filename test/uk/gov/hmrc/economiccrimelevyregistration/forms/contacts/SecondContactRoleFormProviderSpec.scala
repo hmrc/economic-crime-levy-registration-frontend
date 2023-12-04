@@ -50,7 +50,7 @@ class SecondContactRoleFormProviderSpec extends StringFieldBehaviours {
       requiredError = FormError(fieldName, requiredKey)
     )
 
-    behave like trimValue(
+    behave like stripValue(
       form,
       fieldName,
       telephoneNumber(RoleMaxLength)

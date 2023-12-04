@@ -50,7 +50,7 @@ class FirstContactNameFormProviderSpec extends StringFieldBehaviours {
       requiredError = FormError(fieldName, requiredKey)
     )
 
-    behave like trimValue(
+    behave like stripValue(
       form,
       fieldName,
       stringsWithMaxLength(NameMaxLength)

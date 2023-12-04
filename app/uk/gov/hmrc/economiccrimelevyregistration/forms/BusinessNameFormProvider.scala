@@ -23,12 +23,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.Organ
 import javax.inject.Inject
 
 class BusinessNameFormProvider @Inject() extends Mappings {
-
-  override def sanitise(value: String): String = value.trim
-
   def apply(): Form[String] =
     Form(
-      "value" -> text("businessName.error.required")
+      "value" -> text("businessName.error.required", removeAllWhitespace = false)
         .verifying(maxLength(OrganisationNameMaxLength, "businessName.error.length"))
     )
 

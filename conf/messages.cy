@@ -143,10 +143,9 @@ ukRevenue.b3 = os ydych yn rhan o grŵp busnes, mae’r swm hwn ar gyfer yr endi
 ukRevenue.p2 =Os oes gennych fwy nag un cyfnod cyfrifyddu perthnasol sy’n dod i ben yn ystod y flwyddyn ariannol, mae angen i chi gyfuno’r symiau i gyd.
 ukRevenue.h1 = Os oes gennych fwy nag un cyfnod cyfrifyddu sy’n dod i ben yn ystod y flwyddyn ariannol
 ukRevenue.p3 = Mae angen i chi gyfuno’r refeniw o bob cyfnod cyfrifyddu. Bydd cyfanswm y symiau hyn yn pennu a oes angen i chi gofrestru ar gyfer yr Ardoll Troseddau Economaidd (ECL).
-ukRevenue.hint = Nodwch y swm mewn punnoedd, wedi’i dalgrynnu i lawr i’r bunt agosaf
-ukRevenue.error.required = Nodwch y refeniw yn y DU
-ukRevenue.error.wholeNumber = Mae’n rhaid i’r refeniw yn y DU fod yn rhif wedi’i dalgrynnu i lawr i’r bunt agosaf
-ukRevenue.error.nonNumeric = Mae’n rhaid i’r refeniw yn y DU fod yn rhif wedi’i dalgrynnu i lawr i’r bunt agosaf
+ukRevenue.hint = Er enghraifft, £600 neu £193.54.
+ukRevenue.error.required = Nodwch gyfanswm y refeniw yn y DU
+ukRevenue.error.nonNumeric = Gall cyfanswm y refeniw yn y DU dim ond cynnwys punnoedd a cheiniogau
 ukRevenue.error.outOfRange = Mae’n rhaid i’r refeniw yn y DU fod rhwng {0} a {1}
 
 relevantApLength.title = Pa mor hir yw’ch cyfnod cyfrifyddu perthnasol?
@@ -373,8 +372,8 @@ submitted.p1 = Rydych wedi cofrestru’ch cymhwystra ar gyfer yr Ardoll Trosedda
 submitted.p2 = Bydd angen i chi gyflwyno datganiad a thalu’r ardoll yn flynyddol.
 submitted.p3 = Y dyddiad cau nesaf ar gyfer cyflwyno datganiad a gwneud taliad yw 30 Medi 2023. Codir llog arnoch os ydych yn talu’n hwyr.
 submitted.p4 = Ni fyddwch yn cael e-bost na hysbysiad oddi wrth CThEF i’ch atgoffa i gyflwyno datganiad.
-submitted.liableForPreviousFY.p1 = Bydd angen i chi gyflwyno Ffurflen Dreth ar gyfer blwyddyn ariannol {0} i {1} cyn gynted â phosibl.
-submitted.liableForPreviousFY.p2 = Bydd y Ffurflen Dreth yn ymddangos fel hwyr oherwydd ei bod yn y flwyddyn ariannol flaenorol.
+submitted.previousFY.p1 = Bydd angen i chi gyflwyno Ffurflen Dreth ar gyfer blwyddyn ariannol {0} i {1} cyn gynted â phosibl.
+submitted.previousFY.p2 = Bydd y Ffurflen Dreth yn ymddangos fel hwyr oherwydd ei bod yn y flwyddyn ariannol flaenorol.
 submitted.provide = Pan fyddwch yn llenwi’ch datganiad blynyddol, bydd angen i chi roi gwybod i ni am y canlynol:
 submitted.provide.b1 = y cyfnodau cyfrifyddu perthnasol ar gyfer eich sefydliad
 submitted.provide.b2 = eich refeniw yn y DU ar gyfer y cyfnodau cyfrifyddu perthnasol
@@ -429,17 +428,20 @@ partyTypeMismatch.heading = Nid yw’ch manylion yn cyd-fynd â’n cofnodion
 partyTypeMismatch.body.p1 = Mae’ch cofrestriad wedi methu oherwydd nad yw’ch manylion yn cyd-fynd â’n cofnodion.
 partyTypeMismatch.body.p2 = Gwiriwch eich bod wedi dewis y math cywir o endid a chyflwynwch eich atebion eto.
 
-detailsDoNotMatch.title = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
-detailsDoNotMatch.heading = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+verificationFailed.title = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+verificationFailed.heading = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+verificationFailed.button = Rhowch gynnig arall arni
 
-detailsDoNotMatch.ct.body.p1 = Gwiriwch gofnodion Treth Gorfforaeth eich cwmni a rhowch gynnig arall arni.
-detailsDoNotMatch.ct.body.p2 = Gwiriwch fod cod post cyfeiriad eich swyddfa yn cyd-fynd â’r cod post sydd wedi’i gofrestru gyda Thŷ’r Cwmnïau.
-detailsDoNotMatch.ct.body.p3 = Os ydych yn dal i gael problemau, gallwch ddod o hyd i’ch Cyfeirnod Unigryw y Trethdalwr, manylion Yswiriant Gwladol a gwybodaeth cod treth yn eich cyfrif ar-lein CThEF.
+verificationFailed.body.p1 = Gwiriwch a ydych wedi nodi’r manylion cywir ar gyfer y sefydliad.
+verificationFailed.body.p2 = Mae angen i’r UTR gyd-fynd â’r UTR sydd yn eich cyfrif ar-lein CThEF.
+verificationFailed.body.p3 = Mae angen i’r CRN gyd-fynd â’r CRN sydd yn eich cyfrif ar-lein CThEF a’ch cofnod Tŷ’r Cwmnïau.
+verificationFailed.body.p4 = Mae angen i’r cod post gyd-fynd â’r cod post sydd yn eich cyfrif ar-lein CThEF a’ch cofnod Tŷ’r Cwmnïau.
+verificationFailed.body.p5 = Gwiriwch eich cyfrif ar-lein CThEF a’ch cofnod Tŷ’r Cwmnïau i wneud yn siŵr bod eich codau post yn cyd-fynd â’i gilydd.
+verificationFailed.body.p6 = Os nad ydynt yn cyd-fynd â’i gilydd, bydd angen i chi ddiweddaru’r codau post ac aros am 24 awr cyn cofrestru ar gyfer yr ECL.
 
-detailsDoNotMatch.sa.body.p1 = Gwiriwch eich cofnodion Hunanasesiad a rhowch gynnig arall arni.
-detailsDoNotMatch.sa.body.p2 = Gwiriwch fod y cod post y gwnaethoch ei nodi yn cyd-fynd a’r cod post sydd ar Hunanasesiad eich Partneriaeth.
-detailsDoNotMatch.sa.body.p3 = Os ydych yn dal i gael problemau, gallwch ddod o hyd i’ch Cyfeirnod Unigryw y Trethdalwr, manylion Yswiriant Gwladol a gwybodaeth cod treth yn eich cyfrif ar-lein CThEF.
-
+verificationFailed.subHeading.p1 = Rhowch gynnig arall ar nodi eich Cyfeirnod Unigryw y Trethdalwr (UTR)
+verificationFailed.subHeading.p2 = Rhowch gynnig arall ar nodi eich Rhif Cofrestru’r Cwmni (CRN)
+verificationFailed.subHeading.p3 = Rhowch gynnig arall ar nodi eich cod post
 
 feedback.heading = Rhowch eich barn
 feedback.p1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw’ch barn amdano.

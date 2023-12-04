@@ -24,11 +24,9 @@ import javax.inject.Inject
 
 class FirstContactNameFormProvider @Inject() extends Mappings {
 
-  override def sanitise(value: String): String = value.trim
-
   def apply(): Form[String] =
     Form(
-      "value" -> text("firstContactName.error.required")
+      "value" -> text("firstContactName.error.required", removeAllWhitespace = false)
         .verifying(maxLength(NameMaxLength, "firstContactName.error.length"))
     )
 }

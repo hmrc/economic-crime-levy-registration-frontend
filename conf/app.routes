@@ -137,8 +137,6 @@ GET         /entity-type-does-not-match                                         
 
 GET         /verification-failed                                                uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.verificationFailed()
 
-GET         /details-do-not-match                                               uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.detailsDoNotMatch()
-
 GET         /account/sign-out-survey                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
 GET         /account/sign-out                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()
 GET         /account/signed-out                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signedOut()

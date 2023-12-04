@@ -20,9 +20,10 @@ import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.time.TaxYear
 
 case class LiabilityYear(value: Int) {
-  val followingYear: String = (value + 1).toString
-  val asString: String      = value.toString
-  val isPreviousFY: Boolean = value == TaxYear.current.previous.startYear
+  val followingYear: String   = (value + 1).toString
+  val asString: String        = value.toString
+  val isNotCurrentFY: Boolean = value != TaxYear.current.currentYear
+  val isCurrentFY: Boolean    = value == TaxYear.current.currentYear
 }
 
 object LiabilityYear {

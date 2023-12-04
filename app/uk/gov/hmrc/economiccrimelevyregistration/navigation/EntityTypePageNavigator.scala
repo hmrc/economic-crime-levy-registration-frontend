@@ -74,7 +74,7 @@ class EntityTypePageNavigator @Inject() (
       case None             => Future.successful(routes.NotableErrorController.answersAreInvalid())
     }
 
-  def navigateToCheckYourAnswers()(implicit request: RequestHeader): Future[Call] =
+  def navigateToCheckYourAnswers(): Future[Call] =
     Future.successful(routes.CheckYourAnswersController.onPageLoad())
 
 }

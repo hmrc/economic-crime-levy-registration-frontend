@@ -18,14 +18,11 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
-class DoYouHaveCrnPageNavigator @Inject() (implicit
-  ex: ExecutionContext
-) extends PageNavigator {
+class DoYouHaveCrnPageNavigator @Inject() extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.otherEntityJourneyData.isUkCrnPresent match {
       case Some(true)  => routes.NonUkCrnController.onPageLoad(NormalMode)

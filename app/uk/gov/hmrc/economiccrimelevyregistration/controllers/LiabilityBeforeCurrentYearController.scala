@@ -52,7 +52,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
 
   def onPageLoad(fromRevenuePage: Boolean, mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData) { implicit request =>
-      Ok(view(form.prepare(getLiabilityAnswer(request.additionalInfo)), mode, fromRevenuePage))
+      Ok(view(form.prepare(isLiableForPreviousFY(request.additionalInfo)), mode, fromRevenuePage))
     }
 
   def onSubmit(fromRevenuePage: Boolean, mode: Mode): Action[AnyContent] =
@@ -62,32 +62,63 @@ class LiabilityBeforeCurrentYearController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fromRevenuePage))),
           liableBeforeCurrentYear => {
-            val liabilityYear =
-              if (liableBeforeCurrentYear) TaxYear.current.previous.startYear else TaxYear.current.startYear
+            val liabilityYear = getFirstLiabilityYear(
+              request.registration.carriedOutAmlRegulatedActivityInCurrentFy,
+              liableBeforeCurrentYear
+            )
 
             val info = RegistrationAdditionalInfo(
               request.registration.internalId,
-              Some(LiabilityYear(liabilityYear)),
+              liabilityYear,
               request.eclRegistrationReference
             )
 
-            sessionService
-              .upsert(
-                SessionData(
-                  request.internalId,
-                  Map(SessionKeys.SessionKey_LiabilityYear -> liabilityYear.toString)
-                )
-              )
+            liabilityYear
+              .map { year =>
+                val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> year.asString)
 
-            service
-              .createOrUpdate(info)
-              .map(_ =>
-                Redirect(pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode, fromRevenuePage))
-              )
+                sessionService
+                  .upsert(
+                    SessionData(
+                      request.internalId,
+                      liabilityYearSessionData
+                    )
+                  )
+
+                service
+                  .createOrUpdate(info)
+                  .map(_ =>
+                    Redirect(
+                      pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode, fromRevenuePage)
+                    )
+                      .withSession(
+                        request.session ++ liabilityYearSessionData
+                      )
+                  )
+              }
+              .getOrElse {
+                service
+                  .createOrUpdate(info)
+                  .map(_ =>
+                    Redirect(
+                      pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode, fromRevenuePage)
+                    )
+                  )
+              }
           }
         )
     }
 
-  def getLiabilityAnswer(info: Option[RegistrationAdditionalInfo]) =
-    info.flatMap(info => info.liabilityYear.map(year => year.value < TaxYear.current.startYear))
+  private def getFirstLiabilityYear(
+    liableForCurrentFY: Option[Boolean],
+    liableForPreviousFY: Boolean
+  ): Option[LiabilityYear] =
+    (liableForCurrentFY, liableForPreviousFY) match {
+      case (Some(true), true) | (Some(false), true) => Some(LiabilityYear(TaxYear.current.previous.startYear))
+      case (Some(true), false)                      => Some(LiabilityYear(TaxYear.current.currentYear))
+      case _                                        => None
+    }
+
+  private def isLiableForPreviousFY(info: Option[RegistrationAdditionalInfo]) =
+    info.map(_.liabilityYear.exists(_.isNotCurrentFY))
 }

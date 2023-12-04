@@ -282,7 +282,7 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.NotableErrorController.detailsDoNotMatch().url)
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.verificationFailed().url)
         }
     }
 
@@ -552,7 +552,7 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.NotableErrorController.detailsDoNotMatch().url)
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.verificationFailed().url)
         }
     }
 
@@ -879,7 +879,7 @@ class GrsContinueControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.NotableErrorController.detailsDoNotMatch().url)
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.verificationFailed().url)
         }
     }
 

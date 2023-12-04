@@ -53,7 +53,7 @@ class EntityTypeControllerSpec extends SpecBase {
       registration: Registration
     )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
 
-    override def navigateToCheckYourAnswers()(implicit request: RequestHeader): Future[Call] =
+    override def navigateToCheckYourAnswers(): Future[Call] =
       Future.successful(onwardRoute)
   }
 
