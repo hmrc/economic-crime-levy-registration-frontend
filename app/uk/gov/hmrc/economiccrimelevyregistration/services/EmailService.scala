@@ -18,32 +18,39 @@ package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import play.api.Logging
 import play.api.i18n.Messages
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EntityType}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EntityType, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, RegistrationSubmittedEmailParameters}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.time.TaxYear
 
 import java.time.{LocalDate, ZoneOffset}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmailService @Inject() (emailConnector: EmailConnector, appConfig: AppConfig)(implicit
+class EmailService @Inject() (emailConnector: EmailConnector)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
   def sendRegistrationSubmittedEmails(
     contacts: Contacts,
     eclRegistrationReference: String,
-    entityType: Option[EntityType]
+    entityType: Option[EntityType],
+    additionalInfo: Option[RegistrationAdditionalInfo],
+    liableForCurrentFY: Option[Boolean]
   )(implicit
     hc: HeaderCarrier,
     messages: Messages
   ): Future[Unit] = {
     val eclDueDate       = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)
     val registrationDate = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)
+
+    val previousFY =
+      additionalInfo.flatMap(_.liabilityYear.flatMap(year => if (year.isNotCurrentFY) Some(year.asString) else None))
+    val currentFY  =
+      liableForCurrentFY.map(_ => TaxYear.current.currentYear.toString)
 
     def sendEmail(
       name: String,
@@ -59,7 +66,9 @@ class EmailService @Inject() (emailConnector: EmailConnector, appConfig: AppConf
           eclRegistrationDate = registrationDate,
           eclDueDate,
           isPrimaryContact = isPrimaryContact.toString,
-          secondContactEmail = secondContactEmail
+          secondContactEmail = secondContactEmail,
+          previousFY = previousFY,
+          currentFY = currentFY
         ),
         entityType
       )

@@ -46,13 +46,13 @@
 
     <p class="govuk-body">@messages("submitted.p2")</p>
 
-    @if(amlRegulatedActivity.isDefined) {
+    @if(liabilityYear.exists(_.isCurrentFY)) {
         <p class="govuk-body">@messages("submitted.p3", formatLocalDate(EclTaxYear.dueDate))</p>
     }
 
-    @if(liabilityYear.exists(_.isPreviousFY)) {
-        <p class="govuk-body">@messages("submitted.liableForPreviousFY.p1", liabilityYear.get.asString, liabilityYear.get.followingYear)</p>
-        <p class="govuk-body">@messages("submitted.liableForPreviousFY.p2")</p>
+    @if(liabilityYear.exists(_.isNotCurrentFY)) {
+        <p class="govuk-body">@messages("submitted.previousFY.p1", liabilityYear.get.asString, liabilityYear.get.followingYear)</p>
+        <p class="govuk-body">@messages("submitted.previousFY.p2")</p>
     }
 
     <p class="govuk-body">@messages("submitted.p4")</p>

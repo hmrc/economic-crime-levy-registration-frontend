@@ -109,6 +109,8 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
             messagesApi.preferred(Seq(Languages.english))
           ),
           "true",
+          None,
+          None,
           None
         )
       )

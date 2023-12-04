@@ -208,7 +208,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
             ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference),
-            ArgumentMatchers.eq(updatedRegistration.entityType)
+            ArgumentMatchers.eq(updatedRegistration.entityType),
+            any[Option[RegistrationAdditionalInfo]](),
+            ArgumentMatchers.eq(updatedRegistration.carriedOutAmlRegulatedActivityInCurrentFy)
           )(any(), any())
 
           reset(mockEclRegistrationConnector)
@@ -268,7 +270,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
             ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference),
-            ArgumentMatchers.eq(updatedRegistration.entityType)
+            ArgumentMatchers.eq(updatedRegistration.entityType),
+            any[Option[RegistrationAdditionalInfo]](),
+            ArgumentMatchers.eq(updatedRegistration.carriedOutAmlRegulatedActivityInCurrentFy)
           )(any(), any())
 
           val argCaptor                           = ArgumentCaptor.forClass(classOf[Registration])
@@ -337,7 +341,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
             ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference),
-            ArgumentMatchers.eq(updatedRegistration.entityType)
+            ArgumentMatchers.eq(updatedRegistration.entityType),
+            any[Option[RegistrationAdditionalInfo]](),
+            ArgumentMatchers.eq(updatedRegistration.carriedOutAmlRegulatedActivityInCurrentFy)
           )(any(), any())
 
           reset(mockEclRegistrationConnector)
@@ -399,7 +405,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
             ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference),
-            ArgumentMatchers.eq(updatedRegistration.entityType)
+            ArgumentMatchers.eq(updatedRegistration.entityType),
+            any[Option[RegistrationAdditionalInfo]](),
+            ArgumentMatchers.eq(updatedRegistration.carriedOutAmlRegulatedActivityInCurrentFy)
           )(any(), any())
 
           val argCaptor                           = ArgumentCaptor.forClass(classOf[Registration])
@@ -458,7 +466,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
             ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference),
-            ArgumentMatchers.eq(updatedRegistration.entityType)
+            ArgumentMatchers.eq(updatedRegistration.entityType),
+            any[Option[RegistrationAdditionalInfo]](),
+            ArgumentMatchers.eq(updatedRegistration.carriedOutAmlRegulatedActivityInCurrentFy)
           )(any(), any())
 
           reset(mockEclRegistrationConnector)

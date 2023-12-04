@@ -20,12 +20,9 @@ import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
-class DoYouHaveCtUtrPageNavigator @Inject() (implicit
-  ex: ExecutionContext
-) extends PageNavigator {
+class DoYouHaveCtUtrPageNavigator @Inject() extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.otherEntityJourneyData.isCtUtrPresent match {
       case Some(isCtUtrPresent) =>
