@@ -60,7 +60,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           fakeRequest.withSession(
             (SessionKeys.EclReference, eclReference),
             (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress),
-            (SessionKeys.SessionKey_AmlRegulatedActivity, amlRegulatedActivity.get)
+            (SessionKeys.AmlRegulatedActivity, amlRegulatedActivity.get)
           )
         }
 
@@ -68,7 +68,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           mockSessionService.get(
             ArgumentMatchers.eq(request.session),
             anyString(),
-            ArgumentMatchers.eq(SessionKeys.SessionKey_LiabilityYear)
+            ArgumentMatchers.eq(SessionKeys.LiabilityYear)
           )(any())
         )
           .thenReturn(Future.successful(Some(liabilityYear.asString)))
@@ -77,7 +77,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           mockSessionService.get(
             ArgumentMatchers.eq(request.session),
             anyString(),
-            ArgumentMatchers.eq(SessionKeys.SessionKey_AmlRegulatedActivity)
+            ArgumentMatchers.eq(SessionKeys.AmlRegulatedActivity)
           )(
             any()
           )
@@ -118,7 +118,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             (SessionKeys.EclReference, eclReference),
             (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress),
             (SessionKeys.SecondContactEmailAddress, secondContactEmailAddress),
-            (SessionKeys.SessionKey_AmlRegulatedActivity, amlRegulatedActivity.get)
+            (SessionKeys.AmlRegulatedActivity, amlRegulatedActivity.get)
           )
         }
 
@@ -126,7 +126,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           mockSessionService.get(
             ArgumentMatchers.eq(request.session),
             anyString(),
-            ArgumentMatchers.eq(SessionKeys.SessionKey_LiabilityYear)
+            ArgumentMatchers.eq(SessionKeys.LiabilityYear)
           )(any())
         )
           .thenReturn(Future.successful(Some(liabilityYear.asString)))
@@ -135,7 +135,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           mockSessionService.get(
             ArgumentMatchers.eq(request.session),
             anyString(),
-            ArgumentMatchers.eq(SessionKeys.SessionKey_AmlRegulatedActivity)
+            ArgumentMatchers.eq(SessionKeys.AmlRegulatedActivity)
           )(
             any()
           )
@@ -169,7 +169,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           mockSessionService.get(
             ArgumentMatchers.eq(fakeRequest.session),
             anyString(),
-            ArgumentMatchers.eq(SessionKeys.SessionKey_LiabilityYear)
+            ArgumentMatchers.eq(SessionKeys.LiabilityYear)
           )(any())
         )
           .thenReturn(Future.successful(Some(liabilityYear.asString)))
@@ -178,7 +178,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           mockSessionService.get(
             ArgumentMatchers.eq(fakeRequest.session),
             anyString(),
-            ArgumentMatchers.eq(SessionKeys.SessionKey_AmlRegulatedActivity)
+            ArgumentMatchers.eq(SessionKeys.AmlRegulatedActivity)
           )(
             any()
           )
@@ -207,7 +207,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           mockSessionService.get(
             ArgumentMatchers.eq(fakeRequest.session),
             anyString(),
-            ArgumentMatchers.eq(SessionKeys.SessionKey_LiabilityYear)
+            ArgumentMatchers.eq(SessionKeys.LiabilityYear)
           )(any())
         )
           .thenReturn(Future.successful(Some(liabilityYear.asString)))
@@ -216,7 +216,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           mockSessionService.get(
             ArgumentMatchers.eq(fakeRequest.session),
             anyString(),
-            ArgumentMatchers.eq(SessionKeys.SessionKey_AmlRegulatedActivity)
+            ArgumentMatchers.eq(SessionKeys.AmlRegulatedActivity)
           )(
             any()
           )

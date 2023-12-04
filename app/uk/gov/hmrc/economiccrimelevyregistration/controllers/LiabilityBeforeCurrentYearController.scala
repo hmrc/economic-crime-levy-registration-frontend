@@ -73,31 +73,46 @@ class LiabilityBeforeCurrentYearController @Inject() (
               request.eclRegistrationReference
             )
 
-            val liabilityYearSessionData = Map(SessionKeys.SessionKey_LiabilityYear -> liabilityYear.toString)
+            liabilityYear
+              .map { year =>
+                val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> year.asString)
 
-            sessionService
-              .upsert(
-                SessionData(
-                  request.internalId,
-                  liabilityYearSessionData
-                )
-              )
-
-            service
-              .createOrUpdate(info)
-              .map(_ =>
-                Redirect(pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode, fromRevenuePage))
-                  .withSession(
-                    request.session ++ liabilityYearSessionData
+                sessionService
+                  .upsert(
+                    SessionData(
+                      request.internalId,
+                      liabilityYearSessionData
+                    )
                   )
-              )
+
+                service
+                  .createOrUpdate(info)
+                  .map(_ =>
+                    Redirect(
+                      pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode, fromRevenuePage)
+                    )
+                      .withSession(
+                        request.session ++ liabilityYearSessionData
+                      )
+                  )
+              }
+              .getOrElse {
+                service
+                  .createOrUpdate(info)
+                  .map(_ =>
+                    Redirect(
+                      pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode, fromRevenuePage)
+                    )
+                  )
+              }
           }
         )
     }
+
   private def getFirstLiabilityYear(
     liableForCurrentFY: Option[Boolean],
     liableForPreviousFY: Boolean
-  ): Option[LiabilityYear]                                               =
+  ): Option[LiabilityYear] =
     (liableForCurrentFY, liableForPreviousFY) match {
       case (Some(true), true) | (Some(false), true) => Some(LiabilityYear(TaxYear.current.previous.startYear))
       case (Some(true), false)                      => Some(LiabilityYear(TaxYear.current.currentYear))
