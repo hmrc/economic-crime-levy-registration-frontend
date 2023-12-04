@@ -17,9 +17,9 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.FormError
-import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.LongFieldBehaviours
+import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.CurrencyFieldBehaviours
 
-class UkRevenueFormProviderSpec extends LongFieldBehaviours {
+class UkRevenueFormProviderSpec extends CurrencyFieldBehaviours {
 
   val form = new UkRevenueFormProvider()()
 
@@ -27,10 +27,10 @@ class UkRevenueFormProviderSpec extends LongFieldBehaviours {
 
     val fieldName = "value"
 
-    val minimum = 0L
-    val maximum = 99999999999L
+    val minimum: BigDecimal = 0
+    val maximum: BigDecimal = 99999999999.99
 
-    val validDataGenerator = longsInRangeWithCommas(minimum, maximum)
+    val validDataGenerator = bigDecimalInRangeWithCommas(minimum.toDouble, maximum.toDouble)
 
     behave like fieldThatBindsValidData(
       form,
@@ -38,14 +38,19 @@ class UkRevenueFormProviderSpec extends LongFieldBehaviours {
       validDataGenerator
     )
 
-    behave like longField(
+    behave like stripValue(
       form,
       fieldName,
-      nonNumericError = FormError(fieldName, "ukRevenue.error.nonNumeric"),
-      wholeNumberError = FormError(fieldName, "ukRevenue.error.wholeNumber")
+      validDataGenerator
     )
 
-    behave like longFieldWithRange(
+    behave like currencyField(
+      form,
+      fieldName,
+      nonNumericError = FormError(fieldName, "ukRevenue.error.nonNumeric")
+    )
+
+    behave like currencyFieldOutsideRange(
       form,
       fieldName,
       minimum = minimum,

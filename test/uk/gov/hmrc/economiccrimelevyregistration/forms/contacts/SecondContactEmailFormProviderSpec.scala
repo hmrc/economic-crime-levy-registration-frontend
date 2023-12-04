@@ -51,6 +51,14 @@ class SecondContactEmailFormProviderSpec extends StringFieldBehaviours {
       requiredError = FormError(fieldName, requiredKey)
     )
 
+    "remove all whitespace" in forAll(emailAddress(EmailMaxLength)) { dataItem: String =>
+      val expectedValue  = dataItem.filterNot(_ == ',').toLowerCase
+      val dataWithSpaces = "  " + dataItem.mkString(" ") + "  "
+      val result         = form.bind(Map(fieldName -> dataWithSpaces))
+      result.value.value shouldBe expectedValue
+      result.errors      shouldBe empty
+    }
+
     "fail to bind an invalid email address" in forAll(
       stringsWithMaxLength(EmailMaxLength).retryUntil(!_.matches(Regex.EmailRegex))
     ) { invalidEmail: String =>

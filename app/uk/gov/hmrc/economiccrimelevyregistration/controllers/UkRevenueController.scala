@@ -46,7 +46,7 @@ class UkRevenueController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form: Form[Long] = formProvider()
+  val form: Form[BigDecimal] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(view(form.prepare(request.registration.relevantApRevenue), mode))
@@ -59,7 +59,6 @@ class UkRevenueController @Inject() (
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         revenue => {
           val updatedRegistration = request.registration.copy(relevantApRevenue = Some(revenue))
-
           eclCalculatorService.checkIfRevenueMeetsThreshold(updatedRegistration).flatMap { revenueMeetsThreshold =>
             eclRegistrationConnector
               .upsertRegistration(updatedRegistration.copy(revenueMeetsThreshold = revenueMeetsThreshold))

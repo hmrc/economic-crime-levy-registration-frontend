@@ -37,10 +37,6 @@ object MappingsSpec {
   }
 }
 
-class MyMappings extends Mappings {
-  override def sanitise(value: String): String = value.trim
-}
-
 class MappingsSpec extends AnyWordSpec with Matchers with OptionValues with Mappings {
 
   import MappingsSpec._
