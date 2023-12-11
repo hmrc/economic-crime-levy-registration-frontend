@@ -118,8 +118,8 @@ amlSupervisor.LawSociety = Cymdeithas y Cyfreithwyr
 amlSupervisor.LawSocietyOfNorthernIreland = Cymdeithas Cyfreithwyr Gogledd Iwerddon
 amlSupervisor.LawSocietyOfScotland = Cymdeithas Cyfreithwyr yr Alban
 
-relevantAp12Months.title = A yw’ch cyfnod cyfrifyddu perthnasol yn 12 mis?
-relevantAp12Months.heading = A yw’ch cyfnod cyfrifyddu perthnasol yn 12 mis?
+relevantAp12Months.title = Cyfnod cyfrifyddu perthnasol
+relevantAp12Months.heading = Cyfnod cyfrifyddu perthnasol
 relevantAp12Months.p1 = Eich cyfnod cyfrifyddu perthnasol yw unrhyw gyfnod sy’n dod i ben yn ystod y flwyddyn ariannol. Mae’n seiliedig ar y cyfnod cyfrifyddu rydych yn ei ddefnyddio ar gyfer eich Ffurflen Dreth y Cwmni.
 relevantAp12Months.p2 = Mae’n bosibl bod gennych fwy nag un cyfnod cyfrifyddu perthnasol yn dod i ben yn ystod y flwyddyn ariannol.
 relevantAp12Months.p3 = Mae’r flwyddyn ariannol ar gyfer yr Ardoll Troseddau Economaidd (ECL) yn dechrau ar 1 Ebrill, ac yn dod i ben ar 31 Mawrth y flwyddyn ganlynol.
@@ -133,6 +133,8 @@ relevantAp12Months.hidden1 = Y rheswm ein bod yn gofyn am hyd eich cyfnod cyfrif
 relevantAp12Months.hidden2 = Rydym yn gofyn am hyn oherwydd bod y refeniw yn y DU yr ydych yn ei ennill yn ystod unrhyw gyfnod cyfrifyddu perthnasol yn cael ei ddefnyddio i gyfrifo a ydych yn atebol i dalu’r ECL am y flwyddyn ariannol hon.
 relevantAp12Months.hidden3 = Os yw’ch cyfnod cyfrifyddu perthnasol yn llai na 12 mis, bydd angen i chi roi gwybod i ni hyd y cyfnod hwnnw mewn diwrnodau.
 relevantAp12Months.error.required = Dewiswch Iawn os oes gennych gyfnod cyfrifyddu perthnasol sy’n dod i ben yn ystod y flwyddyn ariannol
+relevantAp12Months.question = A yw’ch cyfnod cyfrifyddu perthnasol yn 12 mis?
+
 
 ukRevenue.title = Cyfanswm refeniw y DU
 ukRevenue.heading = Cyfanswm refeniw y DU
