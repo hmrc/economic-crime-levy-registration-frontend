@@ -134,8 +134,8 @@ relevantAp12Months.hidden2 = Rydym yn gofyn am hyn oherwydd bod y refeniw yn y D
 relevantAp12Months.hidden3 = Os yw’ch cyfnod cyfrifyddu perthnasol yn llai na 12 mis, bydd angen i chi roi gwybod i ni hyd y cyfnod hwnnw mewn diwrnodau.
 relevantAp12Months.error.required = Dewiswch Iawn os oes gennych gyfnod cyfrifyddu perthnasol sy’n dod i ben yn ystod y flwyddyn ariannol
 
-ukRevenue.title = Beth oedd cyfanswm eich refeniw yn y DU yn ystod eich cyfnod cyfrifyddu?
-ukRevenue.heading = Beth oedd cyfanswm eich refeniw yn y DU yn ystod eich cyfnod cyfrifyddu?
+ukRevenue.title = Cyfanswm refeniw y DU
+ukRevenue.heading = Cyfanswm refeniw y DU
 ukRevenue.p1 = At ddiben yr Ardoll Troseddau Economaidd (ECL), diffinnir eich refeniw yn y DU fel a ganlyn:
 ukRevenue.b1 = eich trosiant yn ystod y flwyddyn ariannol
 ukRevenue.b2 = unrhyw symiau eraill sydd heb gael eu cynnwys yn eich trosiant, ond sy’n cael eu hystyried yn refeniw o dan Egwyddorion Cyfrifyddu a Dderbynnir yn Gyffredinol (GAAP)
