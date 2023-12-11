@@ -134,8 +134,8 @@ relevantAp12Months.hidden2 = Rydym yn gofyn am hyn oherwydd bod y refeniw yn y D
 relevantAp12Months.hidden3 = Os yw’ch cyfnod cyfrifyddu perthnasol yn llai na 12 mis, bydd angen i chi roi gwybod i ni hyd y cyfnod hwnnw mewn diwrnodau.
 relevantAp12Months.error.required = Dewiswch Iawn os oes gennych gyfnod cyfrifyddu perthnasol sy’n dod i ben yn ystod y flwyddyn ariannol
 
-ukRevenue.title = Beth oedd cyfanswm eich refeniw yn y DU yn ystod eich cyfnod cyfrifyddu?
-ukRevenue.heading = Beth oedd cyfanswm eich refeniw yn y DU yn ystod eich cyfnod cyfrifyddu?
+ukRevenue.title = Cyfanswm refeniw y DU
+ukRevenue.heading = Cyfanswm refeniw y DU
 ukRevenue.p1 = At ddiben yr Ardoll Troseddau Economaidd (ECL), diffinnir eich refeniw yn y DU fel a ganlyn:
 ukRevenue.b1 = eich trosiant yn ystod y flwyddyn ariannol
 ukRevenue.b2 = unrhyw symiau eraill sydd heb gael eu cynnwys yn eich trosiant, ond sy’n cael eu hystyried yn refeniw o dan Egwyddorion Cyfrifyddu a Dderbynnir yn Gyffredinol (GAAP)
@@ -143,10 +143,16 @@ ukRevenue.b3 = os ydych yn rhan o grŵp busnes, mae’r swm hwn ar gyfer yr endi
 ukRevenue.p2 =Os oes gennych fwy nag un cyfnod cyfrifyddu perthnasol sy’n dod i ben yn ystod y flwyddyn ariannol, mae angen i chi gyfuno’r symiau i gyd.
 ukRevenue.h1 = Os oes gennych fwy nag un cyfnod cyfrifyddu sy’n dod i ben yn ystod y flwyddyn ariannol
 ukRevenue.p3 = Mae angen i chi gyfuno’r refeniw o bob cyfnod cyfrifyddu. Bydd cyfanswm y symiau hyn yn pennu a oes angen i chi gofrestru ar gyfer yr Ardoll Troseddau Economaidd (ECL).
+ukRevenue.h2 = Beth oedd cyfanswm eich refeniw yn y DU yn ystod eich cyfnod cyfrifyddu perthnasol?
 ukRevenue.hint = Er enghraifft, £600 neu £193.54.
 ukRevenue.error.required = Nodwch gyfanswm y refeniw yn y DU
 ukRevenue.error.nonNumeric = Gall cyfanswm y refeniw yn y DU dim ond cynnwys punnoedd a cheiniogau
 ukRevenue.error.outOfRange = Mae’n rhaid i’r refeniw yn y DU fod rhwng {0} a {1}
+ikRevenue.hidden.title = Yr hyn a olygwn wrth ‘trosiant’
+ukRevenue.hidden.p1 = Mae’ch trosiant yn seiliedig ar yr arian a wnewch o ddarparu nwyddau a gwasanaethau, ar ôl i chi ddidynnu’r canlynol:
+ukRevenue.hidden.b1 = gostyngiadau masnachol
+ukRevenue.hidden.b2 = treth ar werth (TAW)
+ukRevenue.hidden.b3 = unrhyw drethi eraill sy’n seiliedig ar eich trosiant
 
 relevantApLength.title = Pa mor hir yw’ch cyfnod cyfrifyddu perthnasol?
 relevantApLength.heading = Pa mor hir yw’ch cyfnod cyfrifyddu perthnasol?
