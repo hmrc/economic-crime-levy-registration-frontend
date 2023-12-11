@@ -22,11 +22,25 @@
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukInput: GovukInput,
+        govukDetails: GovukDetails,
         govukButton: GovukButton,
         hmrcCurrencyInput: HmrcCurrencyInput
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+
+@turnover = {
+    <strong>@messages("ukRevenue.hidden.title")</strong>
+}
+
+@turnoverDetails = {
+    <p class="govuk-body">@messages("ukRevenue.hidden.p1")</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("ukRevenue.hidden.b1")</li>
+        <li>@messages("ukRevenue.hidden.b2")</li>
+        <li>@messages("ukRevenue.hidden.b3")</li>
+    </ul>
+}
 
 @layout(pageTitle = titleWithForm(form, messages("ukRevenue.title"))) {
     @if(form.errors.nonEmpty) {
@@ -44,6 +58,12 @@
     <h3 class="govuk-heading-s">@messages("ukRevenue.h1")</h3>
     <p class="govuk-body">@messages("ukRevenue.p3")</p>
 
+    @govukDetails(Details(
+        summary = HtmlContent(turnover),
+        content = HtmlContent(turnoverDetails)
+    ))
+
+    <h2 class="govuk-heading-m">@messages("ukRevenue.h2")</h2>
 
     @formHelper(action = UkRevenueController.onSubmit(mode)) {
         @hmrcCurrencyInput(CurrencyInput(
