@@ -143,10 +143,16 @@ ukRevenue.b3 = if you are part of a business group, this amount is for the entit
 ukRevenue.p2 = If you have more than one relevant accounting period ending in the financial year, you need to combine all of the amounts.
 ukRevenue.h1 = If you have more than one accounting period ending in the financial year
 ukRevenue.p3 = You need to combine the revenue from each accounting period. The total of the combined amounts will determine if you need to register for the Economic Crime Levy (ECL).
+ukRevenue.h2 = What was your total UK revenue in your relevant accounting period
 ukRevenue.hint = For example, £600 or £193.54.
 ukRevenue.error.required = Enter the total UK revenue
 ukRevenue.error.nonNumeric = The total UK revenue can only include pounds and pence
 ukRevenue.error.outOfRange = UK revenue must be between {0} and {1}
+ukRevenue.hidden.title = What we mean by turnover
+ukRevenue.hidden.p1 = Your turnover is based on the money you make from providing goods and services, after you have deducted:
+ukRevenue.hidden.b1 = trade discounts
+ukRevenue.hidden.b2 = value added tax (VAT)
+ukRevenue.hidden.b3 = any other taxes based on your turnover
 
 relevantApLength.title = How long is your relevant accounting period?
 relevantApLength.heading = How long is your relevant accounting period?
