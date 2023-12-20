@@ -16,31 +16,31 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculateLiabilityRequest, CalculatedLiability}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EclCalculatorConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit ec: ExecutionContext) {
-
-  private val eclCalculatorUrl: String =
-    s"${appConfig.eclCalculatorBaseUrl}/economic-crime-levy-calculator"
+class EclCalculatorConnector @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(implicit ec: ExecutionContext)
+    extends BaseConnector {
 
   def calculateLiability(relevantApLength: Int, relevantApRevenue: BigDecimal)(implicit
     hc: HeaderCarrier
-  ): Future[CalculatedLiability] =
-    httpClient.POST[CalculateLiabilityRequest, CalculatedLiability](
-      s"$eclCalculatorUrl/calculate-liability",
-      CalculateLiabilityRequest(
-        amlRegulatedActivityLength = EclTaxYear.YearInDays,
-        relevantApLength = relevantApLength,
-        ukRevenue = relevantApRevenue.toLong
-      )
+  ): Future[CalculatedLiability] = {
+    val body = CalculateLiabilityRequest(
+      amlRegulatedActivityLength = EclTaxYear.YearInDays,
+      relevantApLength = relevantApLength,
+      ukRevenue = relevantApRevenue.toLong
     )
-
+    httpClient
+      .post(url"${appConfig.eclCalculatorBaseUrl}/economic-crime-levy-calculator/calculate-liability")
+      .withBody(Json.toJson(body))
+      .executeAndDeserialise[CalculatedLiability]
+  }
 }

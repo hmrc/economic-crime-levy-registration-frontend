@@ -17,13 +17,15 @@
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, PartnershipEntityCreateJourneyRequest, PartnershipEntityJourneyData, ServiceNameLabels}
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
+import java.net.URL
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,12 +40,14 @@ trait PartnershipIdentificationFrontendConnector {
 
 class PartnershipIdentificationFrontendConnectorImpl @Inject() (
   appConfig: AppConfig,
-  httpClient: HttpClient
+  httpClient: HttpClientV2
 )(implicit
   val messagesApi: MessagesApi,
   ec: ExecutionContext
-) extends PartnershipIdentificationFrontendConnector {
-  private val apiUrl = s"${appConfig.partnershipEntityIdentificationFrontendBaseUrl}/partnership-identification/api"
+) extends PartnershipIdentificationFrontendConnector
+    with BaseConnector {
+  private val apiUrl: URL =
+    url"${appConfig.partnershipEntityIdentificationFrontendBaseUrl}/partnership-identification/api"
 
   def createPartnershipJourney(
     partnershipType: EntityType,
@@ -51,29 +55,34 @@ class PartnershipIdentificationFrontendConnectorImpl @Inject() (
   )(implicit hc: HeaderCarrier): Future[GrsCreateJourneyResponse] = {
     val serviceNameLabels = ServiceNameLabels()
 
-    val url: String = partnershipType match {
-      case GeneralPartnership          => s"$apiUrl/general-partnership-journey"
-      case ScottishPartnership         => s"$apiUrl/scottish-partnership-journey"
-      case LimitedPartnership          => s"$apiUrl/limited-partnership-journey"
-      case ScottishLimitedPartnership  => s"$apiUrl/scottish-limited-partnership-journey"
-      case LimitedLiabilityPartnership => s"$apiUrl/limited-liability-partnership-journey"
-      case e                           => throw new IllegalArgumentException(s"$e is not a valid partnership type")
+    val url: URL = partnershipType match {
+      case GeneralPartnership          => url"$apiUrl/general-partnership-journey"
+      case ScottishPartnership         => url"$apiUrl/scottish-partnership-journey"
+      case LimitedPartnership          => url"$apiUrl/limited-partnership-journey"
+      case ScottishLimitedPartnership  => url"$apiUrl/scottish-limited-partnership-journey"
+      case LimitedLiabilityPartnership => url"$apiUrl/limited-liability-partnership-journey"
     }
 
-    httpClient.POST[PartnershipEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-      url,
-      PartnershipEntityCreateJourneyRequest(
-        continueUrl = s"${appConfig.grsContinueUrl}/${mode.toString.toLowerCase}",
-        businessVerificationCheck = appConfig.partnershipBvEnabled,
-        optServiceName = Some(serviceNameLabels.en.optServiceName),
-        deskProServiceId = appConfig.appName,
-        signOutUrl = appConfig.eclSignOutUrl,
-        accessibilityUrl = appConfig.accessibilityStatementPath,
-        labels = serviceNameLabels
-      )
-    )
+    httpClient
+      .post(url)
+      .withBody(Json.toJson(toPartnershipEntityCreateJourneyRequest(mode, serviceNameLabels)))
+      .executeAndDeserialise[GrsCreateJourneyResponse]
   }
 
   def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[PartnershipEntityJourneyData] =
-    httpClient.GET[PartnershipEntityJourneyData](s"$apiUrl/journey/$journeyId")
+    httpClient.get(url"$apiUrl/journey/$journeyId").executeAndDeserialise[PartnershipEntityJourneyData]
+
+  private def toPartnershipEntityCreateJourneyRequest(
+    mode: Mode,
+    serviceNameLabels: ServiceNameLabels
+  ): PartnershipEntityCreateJourneyRequest =
+    PartnershipEntityCreateJourneyRequest(
+      continueUrl = s"${appConfig.grsContinueUrl}/${mode.toString.toLowerCase}",
+      businessVerificationCheck = appConfig.partnershipBvEnabled,
+      optServiceName = Some(serviceNameLabels.en.optServiceName),
+      deskProServiceId = appConfig.appName,
+      signOutUrl = appConfig.eclSignOutUrl,
+      accessibilityUrl = appConfig.accessibilityStatementPath,
+      labels = serviceNameLabels
+    )
 }

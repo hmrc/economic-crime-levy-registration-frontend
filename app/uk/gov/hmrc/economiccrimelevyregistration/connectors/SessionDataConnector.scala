@@ -16,37 +16,35 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
-import play.api.Logging
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.{RegistrationAdditionalInfo, SessionData}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.economiccrimelevyregistration.models.SessionData
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
+import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.HttpReads.Implicits._
 
 @Singleton
-class SessionDataConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit
+class SessionDataConnector @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
-) extends Logging {
+) extends BaseConnector {
 
-  private val eclRegistrationUrl: String =
-    s"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
+  private val eclRegistrationUrl: URL =
+    url"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
 
   def get(internalId: String)(implicit hc: HeaderCarrier): Future[SessionData] =
-    httpClient.GET[SessionData](
-      s"$eclRegistrationUrl/session/$internalId"
-    )
+    httpClient
+      .get(url"$eclRegistrationUrl/session/$internalId")
+      .executeAndDeserialise[SessionData]
 
   def upsert(session: SessionData)(implicit hc: HeaderCarrier): Future[Unit] =
-    httpClient.PUT[SessionData, Unit](
-      s"$eclRegistrationUrl/session",
-      session
-    )
+    httpClient
+      .put(url"$eclRegistrationUrl/session")
+      .withBody(Json.toJson(session))
+      .executeAndContinue
 
   def delete(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
-    httpClient
-      .DELETE[Unit](
-        s"$eclRegistrationUrl/session/$internalId"
-      )
+    httpClient.delete(url"$eclRegistrationUrl/session/$internalId").executeAndContinue
 }

@@ -16,23 +16,25 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.AmendRegistrationSubmittedEmailParameters.AmendRegistrationTemplateId
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.{NormalEntityTemplateId, OtherEntityTemplateId}
-import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, AmendRegistrationSubmittedEmailRequest, RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.economiccrimelevyregistration.models.email._
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
+import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EmailConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit
+class EmailConnector @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
-) {
+) extends BaseConnector {
 
-  private val sendEmailUrl: String = s"${appConfig.emailBaseUrl}/hmrc/email"
+  private val sendEmailUrl: URL = url"${appConfig.emailBaseUrl}/hmrc/email"
 
   def sendRegistrationSubmittedEmail(
     to: String,
@@ -42,23 +44,11 @@ class EmailConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(im
     hc: HeaderCarrier
   ): Future[Unit] =
     httpClient
-      .POST[RegistrationSubmittedEmailRequest, Either[UpstreamErrorResponse, HttpResponse]](
-        sendEmailUrl,
-        RegistrationSubmittedEmailRequest(
-          to = Seq(to),
-          templateId = entityType match {
-            case Some(value) if EntityType.isOther(value) =>
-              OtherEntityTemplateId
-            case _                                        =>
-              NormalEntityTemplateId
-          },
-          parameters = registrationSubmittedEmailParameters
-        )
+      .post(sendEmailUrl)
+      .withBody(
+        Json.toJson(toRegistrationSubmittedEmailRequest(to, registrationSubmittedEmailParameters, entityType))
       )
-      .map {
-        case Left(e)  => throw e
-        case Right(_) => ()
-      }
+      .executeAndContinue
 
   def sendAmendRegistrationSubmittedEmail(
     to: String,
@@ -67,16 +57,38 @@ class EmailConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(im
     hc: HeaderCarrier
   ): Future[Unit] =
     httpClient
-      .POST[AmendRegistrationSubmittedEmailRequest, Either[UpstreamErrorResponse, HttpResponse]](
-        sendEmailUrl,
-        AmendRegistrationSubmittedEmailRequest(
-          to = Seq(to),
-          templateId = AmendRegistrationTemplateId,
-          parameters = amendRegistrationSubmittedEmailParameters
-        )
+      .post(sendEmailUrl)
+      .withBody(
+        Json.toJson(toAmendRegistrationSubmittedEmailRequest(to, amendRegistrationSubmittedEmailParameters))
       )
-      .map {
-        case Left(e)  => throw e
-        case Right(_) => ()
-      }
+      .executeAndContinue
+
+  private def toRegistrationSubmittedEmailRequest(
+    to: String,
+    registrationSubmittedEmailParameters: RegistrationSubmittedEmailParameters,
+    entityType: Option[EntityType]
+  ): RegistrationSubmittedEmailRequest =
+    RegistrationSubmittedEmailRequest(
+      to = Seq(to),
+      templateId = templateIdByEntityType(entityType),
+      parameters = registrationSubmittedEmailParameters
+    )
+
+  private def toAmendRegistrationSubmittedEmailRequest(
+    to: String,
+    amendRegistrationSubmittedEmailParameters: AmendRegistrationSubmittedEmailParameters
+  ): AmendRegistrationSubmittedEmailRequest =
+    AmendRegistrationSubmittedEmailRequest(
+      to = Seq(to),
+      templateId = AmendRegistrationTemplateId,
+      parameters = amendRegistrationSubmittedEmailParameters
+    )
+
+  private def templateIdByEntityType(entityType: Option[EntityType]) =
+    entityType match {
+      case Some(value) if EntityType.isOther(value) =>
+        OtherEntityTemplateId
+      case _                                        =>
+        NormalEntityTemplateId
+    }
 }
