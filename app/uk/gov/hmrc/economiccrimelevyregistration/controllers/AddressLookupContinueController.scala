@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector}
+import play.api.mvc._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclAddress, Mode, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.AddressLookupContinuePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupContinueService, EclRegistrationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -31,25 +32,26 @@ class AddressLookupContinueController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  addressLookupFrontendConnector: AddressLookupFrontendConnector,
-  eclRegistrationConnector: EclRegistrationConnector
+  addressLookupFrontendService: AddressLookupContinueService,
+  eclRegistrationService: EclRegistrationService,
+  pageNavigator: AddressLookupContinuePageNavigator
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController {
+    extends FrontendBaseController
+    with BaseController
+    with ErrorHandler {
 
   def continue(mode: Mode, id: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
     implicit request =>
-      addressLookupFrontendConnector.getAddress(id).flatMap { alfAddressData =>
-        eclRegistrationConnector
-          .upsertRegistration(
-            request.registration.copy(contactAddress = alfAddressToEclAddress(alfAddressData))
-          )
-          .map(_ =>
-            mode match {
-              case NormalMode => Redirect(routes.CheckYourAnswersController.onPageLoad())
-              case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad())
-            }
-          )
-      }
+      (for {
+        address              <- addressLookupFrontendService.getAddress(id).asResponseError
+        registration          = request.registration.copy(contactAddress = alfAddressToEclAddress(address))
+        upsertedRegistration <- eclRegistrationService.upsertRegistration(registration).asResponseError
+      } yield upsertedRegistration)
+        .fold(
+          _ => routes.NotableErrorController.answersAreInvalid(), // Todo: Handle this better
+          success => pageNavigator.nextPage(mode, success)
+        )
+        .map(Redirect)
   }
 
   private def alfAddressToEclAddress(alfAddressData: AlfAddressData): Option[EclAddress] =

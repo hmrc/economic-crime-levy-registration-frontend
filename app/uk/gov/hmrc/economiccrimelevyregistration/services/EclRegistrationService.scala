@@ -16,23 +16,27 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import cats.data.EitherT
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationStartedEvent
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.RegistrationError
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 @Singleton
 class EclRegistrationService @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   auditConnector: AuditConnector
 )(implicit
-  ec: ExecutionContext
+  ec: ExecutionContext,
+  hc: HeaderCarrier
 ) {
-  def getOrCreateRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] =
+  def getOrCreateRegistration(internalId: String): Future[Registration] =
     eclRegistrationConnector.getRegistration(internalId).flatMap {
       case Some(registration) => Future.successful(registration)
       case None               =>
@@ -45,4 +49,19 @@ class EclRegistrationService @Inject() (
 
         eclRegistrationConnector.upsertRegistration(Registration.empty(internalId))
     }
+
+  def upsertRegistration(registration: Registration): EitherT[Future, RegistrationError, Registration] =
+    EitherT {
+      eclRegistrationConnector
+        .upsertRegistration(registration)
+        .map(Right(_))
+        .recover {
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse.unapply(error).isDefined ||
+                UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            Left(RegistrationError.BadGateway(message, code))
+          case NonFatal(thr) => Left(RegistrationError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+        }
+    }
+
 }

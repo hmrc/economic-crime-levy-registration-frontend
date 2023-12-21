@@ -26,7 +26,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 trait EnrolmentStoreProxyConnector {
-  def getEnrolmentsForGroup(groupId: String)(implicit hc: HeaderCarrier): Future[Option[GroupEnrolmentsResponse]]
+  def getEnrolmentsForGroup(groupId: String)(implicit hc: HeaderCarrier): Future[GroupEnrolmentsResponse]
 }
 
 class EnrolmentStoreProxyConnectorImpl @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(implicit
@@ -37,8 +37,8 @@ class EnrolmentStoreProxyConnectorImpl @Inject() (appConfig: AppConfig, httpClie
   private val enrolmentStoreUrl: URL =
     url"${appConfig.enrolmentStoreProxyBaseUrl}/enrolment-store-proxy/enrolment-store"
 
-  def getEnrolmentsForGroup(groupId: String)(implicit hc: HeaderCarrier): Future[Option[GroupEnrolmentsResponse]] =
+  def getEnrolmentsForGroup(groupId: String)(implicit hc: HeaderCarrier): Future[GroupEnrolmentsResponse] =
     httpClient
       .get(url"$enrolmentStoreUrl/groups/$groupId/enrolments")
-      .executeAndDeserialiseOption[GroupEnrolmentsResponse]
+      .executeAndDeserialise[GroupEnrolmentsResponse]
 }

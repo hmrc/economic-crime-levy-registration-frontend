@@ -16,22 +16,54 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import cats.data.EitherT
+import play.api.http.Status.BAD_GATEWAY
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EnrolmentStoreProxyConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, GroupEnrolmentsResponse}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.EnrolmentStoreProxyError
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 class EnrolmentStoreProxyService @Inject() (enrolmentStoreProxyConnector: EnrolmentStoreProxyConnector)(implicit
   ec: ExecutionContext
 ) {
+  def getEclReferenceFromGroupEnrolment(
+    groupId: String
+  )(implicit hc: HeaderCarrier): EitherT[Future, EnrolmentStoreProxyError, String] =
+    for {
+      response    <- getEnrolmentsForGroup(groupId)
+      eclReference = getEclReference(response)
+    } yield eclReference
 
-  def getEclReferenceFromGroupEnrolment(groupId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    enrolmentStoreProxyConnector
-      .getEnrolmentsForGroup(groupId)
-      .map(
-        _.flatMap(_.enrolments.find(_.service == EclEnrolment.ServiceName))
-          .flatMap(_.identifiers.find(_.key == EclEnrolment.IdentifierKey).map(_.value))
-      )
+  private def getEnrolmentsForGroup(
+    groupId: String
+  )(implicit hc: HeaderCarrier): EitherT[Future, EnrolmentStoreProxyError, GroupEnrolmentsResponse] =
+    EitherT {
+      enrolmentStoreProxyConnector
+        .getEnrolmentsForGroup(groupId)
+        .map(Right(_))
+        .recover {
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse
+                .unapply(error)
+                .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            Left(EnrolmentStoreProxyError.BadGateway(reason = message, code = code))
+          case NonFatal(thr) => Left(EnrolmentStoreProxyError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+        }
+    }
+
+  private def getEclReference(response: GroupEnrolmentsResponse): EitherT[Future, EnrolmentStoreProxyError, String] =
+    EitherT {
+      response.enrolments
+        .find(_.service == EclEnrolment.ServiceName)
+        .flatMap(_.identifiers.find(_.key == EclEnrolment.IdentifierKey))
+        .map(_.value) match {
+        case Some(value) => Future.successful(Right(value))
+        case None        =>
+          Future.successful(Left(EnrolmentStoreProxyError.BadGateway("Unable to find an ecl reference", BAD_GATEWAY)))
+      }
+    }
 }
