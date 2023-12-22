@@ -18,14 +18,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc._
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AddAnotherContactDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, _}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContactFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.AddAnotherContactView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -37,14 +38,16 @@ class AddAnotherContactController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: AddAnotherContactFormProvider,
   pageNavigator: AddAnotherContactPageNavigator,
   dataCleanup: AddAnotherContactDataCleanup,
   view: AddAnotherContactView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController
+    with ErrorHandler {
 
   val form: Form[Boolean] = formProvider()
 
@@ -69,17 +72,20 @@ class AddAnotherContactController @Inject() (
               view(formWithErrors, mode, request.registration.registrationType, request.eclRegistrationReference)
             )
           ),
-        secondContact =>
-          eclRegistrationConnector
-            .upsertRegistration(
-              dataCleanup.cleanup(
-                request.registration
-                  .copy(contacts = request.registration.contacts.copy(secondContact = Some(secondContact)))
-              )
+        secondContactBoolean => {
+          val secondContact: Contacts = request.registration.contacts.copy(secondContact = Some(secondContactBoolean))
+          val updatedRegistration     = dataCleanup.cleanup(request.registration).copy(contacts = secondContact)
+
+          (for {
+            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield upsertedRegistration)
+            .fold(
+              _ => routes.NotableErrorController.answersAreInvalid(), // Todo: Handle this better
+              registration => pageNavigator.nextPage(mode, registration)
             )
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
-            }
+            .map(Redirect)
+
+        }
       )
   }
 }
