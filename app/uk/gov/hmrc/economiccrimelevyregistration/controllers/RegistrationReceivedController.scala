@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RegistrationReceivedView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -36,6 +36,17 @@ class RegistrationReceivedController @Inject() (
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     val firstContactEmailAddress: Option[String]  = request.session.get(SessionKeys.FirstContactEmailAddress)
     val secondContactEmailAddress: Option[String] = request.session.get(SessionKeys.SecondContactEmailAddress)
-    Ok(view(firstContactEmailAddress.getOrElse(""), secondContactEmailAddress))
+    val amlRegulatedActivity: Option[String]      = request.session.get(SessionKeys.AmlRegulatedActivity)
+    val liabilityYear: Option[String]             = request.session.get(SessionKeys.LiabilityYear)
+    val transformedLiabilityYear                  = liabilityYear.map(value => LiabilityYear(value.toInt))
+
+    Ok(
+      view(
+        firstContactEmailAddress.getOrElse(""),
+        secondContactEmailAddress,
+        transformedLiabilityYear,
+        amlRegulatedActivity
+      )
+    )
   }
 }

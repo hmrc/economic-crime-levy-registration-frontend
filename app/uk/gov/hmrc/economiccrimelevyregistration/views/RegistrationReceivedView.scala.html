@@ -23,8 +23,20 @@
         appConfig: AppConfig
 )
 
-@(firstContactEmailAddress: String, secondContactEmailAddress: Option[String])(implicit request: Request[_], messages: Messages)
+@(firstContactEmailAddress: String, secondContactEmailAddress: Option[String], liabilityYear: Option[LiabilityYear], amlRegulatedActivity: Option[String])(implicit request: Request[_], messages: Messages)
 
+@getPreviousYearContent() = {
+  <p class="govuk-body">@messages("registration.received.p7.previous.p1")</p>
+  <p class="govuk-body">@messages("registration.received.p7.previous.p2")</p>
+}
+@getCurrentYearContent() = {
+    <p class="govuk-body">@messages("registration.received.p7.current")</p>
+}
+@getBothYearsContent() = {
+    <p class="govuk-body">@messages("registration.received.p7.both.years.p1")</p>
+    <p class="govuk-body">@messages("registration.received.p7.both.years.p2")</p>
+    <p class="govuk-body">@messages("registration.received.p7.both.years.p3")</p>
+}
 @layout(
     pageTitle = title(messages("registration.received.title")),
     showBackLink = false
@@ -47,8 +59,13 @@
 
     <p class="govuk-body">@messages("registration.received.p6")</p>
 
-    <p class="govuk-body">@messages("registration.received.p7")</p>
-
+    @{
+        (liabilityYear.exists(_.isNotCurrentFY), amlRegulatedActivity.contains("true")) match {
+            case (true, true) => getBothYearsContent()
+            case (true, false) => getPreviousYearContent()
+            case _ => getCurrentYearContent()
+        }
+    }
 
     <p class="govuk-body">@messages("registration.received.p8")</p>
 
