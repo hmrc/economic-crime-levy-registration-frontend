@@ -595,3 +595,14 @@ otherEntityType.crn.question.title = Oes gennych chi rif cofrestru cwmni'r DU?
 otherEntityType.crn.question.label = Oes gennych chi rif cofrestru cwmni'r DU?
 otherEntityType.crn.question.h1 = Oes gennych chi rif cofrestru cwmni'r DU?
 otherEntityType.crn.question.error.required = Dewiswch ‘Iawn’ os oes gennych rif cofrestru’r cwmni
+
+otherEntityType.utr.question.title = A oes gennych Gyfeirnod Unigryw y Trethdalwr?
+otherEntityType.utr.question.h1 = A oes gennych Gyfeirnod Unigryw y Trethdalwr?
+otherEntityType.utr.error.required = Dewiswch ‘Iawn’ os oes gennych Gyfeirnod Unigryw y Trethdalwr
+
+otherEntityType.addUtr.title =
+otherEntityType.addUtr.h1 =
+otherEntityType.addUtr.body =
+otherEntityType.addUtr.hint =
+otherEntityType.addUtr.error.required =
+otherEntityType.addUtr.error.length =
