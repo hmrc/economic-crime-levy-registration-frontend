@@ -606,3 +606,5 @@ otherEntityType.addUtr.body =
 otherEntityType.addUtr.hint =
 otherEntityType.addUtr.error.required =
 otherEntityType.addUtr.error.length =
+
+otherEntityType.utr.question.label = A oes gennych Gyfeirnod Unigryw y Trethdalwr?

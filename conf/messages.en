@@ -605,3 +605,5 @@ otherEntityType.addUtr.body = Your Unique Taxpayer Reference (UTR) number is 10 
 otherEntityType.addUtr.hint = For example, 0123456789
 otherEntityType.addUtr.error.required = Enter a Unique Taxpayer Reference (UTR)
 otherEntityType.addUtr.error.length = Unique Taxpayer Reference (UTR) must be {0} numbers
+
+otherEntityType.utr.question.label = Do you have a Unique Taxpayer Reference?
