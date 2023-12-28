@@ -33,12 +33,16 @@ object DoYouHaveCtUtrSummary {
         case Some(Charity) => "otherEntityType.utr.question.label"
         case _             => "otherEntityType.ctutr.question.label"
       }
+      val url   = request.registration.entityType match {
+        case Some(Charity) => routes.DoYouHaveUtrController.onPageLoad(CheckMode).url
+        case _             => routes.DoYouHaveCtUtrController.onPageLoad(CheckMode).url
+      }
 
       SummaryListRowViewModel(
         key = Key(key),
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.DoYouHaveCtUtrController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", url)
             .withVisuallyHiddenText(
               messages(key)
             )

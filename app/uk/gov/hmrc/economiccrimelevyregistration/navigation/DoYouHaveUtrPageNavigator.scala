@@ -26,21 +26,25 @@ class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.otherEntityJourneyData.isCtUtrPresent match {
       case Some(isCtUtrPresent) =>
-        navigateInEitherMode(isCtUtrPresent, NormalMode)
+        navigateInEitherMode(isCtUtrPresent, registration.otherEntityJourneyData.ctUtr, NormalMode)
       case None                 => routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call =
     registration.otherEntityJourneyData.isCtUtrPresent match {
       case Some(isCtUtrPresent) =>
-        navigateInEitherMode(isCtUtrPresent, CheckMode)
+        navigateInEitherMode(isCtUtrPresent, registration.otherEntityJourneyData.ctUtr, CheckMode)
       case None                 => routes.NotableErrorController.answersAreInvalid()
     }
 
-  private def navigateInEitherMode(isCtUtrPresent: Boolean, mode: Mode): Call =
+  private def navigateInEitherMode(isCtUtrPresent: Boolean, utr: Option[String], mode: Mode): Call =
     if (isCtUtrPresent) {
       mode match {
-        case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
+        case CheckMode  =>
+          utr match {
+            case Some(_) => routes.CheckYourAnswersController.onPageLoad()
+            case None    => routes.UtrController.onPageLoad(mode)
+          }
         case NormalMode => routes.UtrController.onPageLoad(mode)
       }
     } else {
