@@ -18,13 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import play.api.mvc._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactNameFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactNamePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactNameView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -36,12 +37,14 @@ class FirstContactNameController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: FirstContactNameFormProvider,
   pageNavigator: FirstContactNamePageNavigator,
   view: FirstContactNameView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
+    with BaseController
+    with ErrorHandler
     with I18nSupport {
 
   val form: Form[String] = formProvider()
@@ -71,11 +74,12 @@ class FirstContactNameController @Inject() (
           val updatedContacts: Contacts = request.registration.contacts
             .copy(firstContactDetails = request.registration.contacts.firstContactDetails.copy(name = Some(name)))
 
-          eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(contacts = updatedContacts))
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
-            }
+          (for {
+            updatedRegistration <-
+              eclRegistrationService
+                .upsertRegistration(request.registration.copy(contacts = updatedContacts))
+                .asResponseError
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

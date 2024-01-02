@@ -19,12 +19,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactRoleFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactRolePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.AnswersAreInvalidView
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactRoleView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -39,22 +41,32 @@ class FirstContactRoleController @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: FirstContactRoleFormProvider,
   pageNavigator: FirstContactRolePageNavigator,
+  answersAreInvalidView: AnswersAreInvalidView,
   view: FirstContactRoleView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController
+    with ContactsUtils
+    with ErrorHandler {
 
   val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(
-      view(
-        form.prepare(request.registration.contacts.firstContactDetails.role),
-        firstContactName(request),
-        mode,
-        request.registration.registrationType,
-        request.eclRegistrationReference
-      )
+    (for {
+      firstContactName <- request.firstContactName.asTestResponseError
+    } yield firstContactName).fold(
+      _ => Ok(answersAreInvalidView()),
+      name =>
+        Ok(
+          view(
+            form.prepare(request.registration.contacts.firstContactDetails.role),
+            name,
+            mode,
+            request.registration.registrationType,
+            request.eclRegistrationReference
+          )
+        )
     )
   }
 
