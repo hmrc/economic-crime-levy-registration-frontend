@@ -99,7 +99,8 @@ class FirstContactRoleController @Inject() (
 
           (for {
             upsertedRegistration <- eclRegistrationService
-              .upsertRegistration(request.registration.copy(contacts = updatedContacts)).asResponseError
+                                      .upsertRegistration(request.registration.copy(contacts = updatedContacts))
+                                      .asResponseError
           } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
       )
