@@ -38,7 +38,7 @@ class FirstContactRoleController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: FirstContactRoleFormProvider,
   pageNavigator: FirstContactRolePageNavigator,
   answersAreInvalidView: AnswersAreInvalidView,
@@ -75,26 +75,32 @@ class FirstContactRoleController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors =>
-          Future.successful(
-            BadRequest(
-              view(
-                formWithErrors,
-                firstContactName(request),
-                mode,
-                request.registration.registrationType,
-                request.eclRegistrationReference
-              )
-            )
-          ),
+          (for {
+            firstContactName <- request.firstContactName.asTestResponseError
+          } yield firstContactName)
+            .fold(
+              _ => Future.successful(Ok(answersAreInvalidView())),
+              name =>
+                Future.successful(
+                  BadRequest(
+                    view(
+                      formWithErrors,
+                      name,
+                      mode,
+                      request.registration.registrationType,
+                      request.eclRegistrationReference
+                    )
+                  )
+                )
+            ),
         role => {
           val updatedContacts: Contacts = request.registration.contacts
             .copy(firstContactDetails = request.registration.contacts.firstContactDetails.copy(role = Some(role)))
 
-          eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(contacts = updatedContacts))
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
-            }
+          (for {
+            upsertedRegistration <- eclRegistrationService
+              .upsertRegistration(request.registration.copy(contacts = updatedContacts)).asResponseError
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }
