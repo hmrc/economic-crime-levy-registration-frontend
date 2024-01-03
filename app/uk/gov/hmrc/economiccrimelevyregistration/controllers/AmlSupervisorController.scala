@@ -20,13 +20,13 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.{AmendAmlSupervisorFormProvider, AmlSupervisorFormProvider}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -38,7 +38,7 @@ class AmlSupervisorController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: AmlSupervisorFormProvider,
   amendFormProvider: AmendAmlSupervisorFormProvider,
   appConfig: AppConfig,
@@ -46,11 +46,13 @@ class AmlSupervisorController @Inject() (
   view: AmlSupervisorView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
-  val form: Form[AmlSupervisor] = formProvider(appConfig)
+  private val form: Form[AmlSupervisor] = formProvider(appConfig)
 
-  val amendForm: Form[AmlSupervisor] = amendFormProvider(appConfig)
+  private val amendForm: Form[AmlSupervisor] = amendFormProvider(appConfig)
 
   def onPageLoad(
     mode: Mode,
@@ -104,15 +106,13 @@ class AmlSupervisorController @Inject() (
                   )
                 )
               ),
-          amlSupervisor =>
-            eclRegistrationConnector
-              .upsertRegistration(
-                request.registration
-                  .copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(registrationType))
-              )
-              .flatMap { updatedRegistration =>
-                pageNavigator.nextPage(mode, updatedRegistration, fromLiableBeforeCurrentYearPage).map(Redirect)
-              }
+          amlSupervisor => {
+            val updatedRegistration =
+              request.registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(registrationType))
+            (for {
+              upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            } yield upsertedRegistration).convertToAsyncResult(mode, pageNavigator)
+          }
         )
     }
 }

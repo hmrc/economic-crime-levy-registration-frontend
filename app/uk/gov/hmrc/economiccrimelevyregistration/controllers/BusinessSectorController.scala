@@ -25,6 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.BusinessSectorFormProvide
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.BusinessSectorPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.BusinessSectorView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 

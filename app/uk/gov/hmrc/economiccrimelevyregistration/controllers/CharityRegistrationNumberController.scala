@@ -25,6 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.CharityRegistrationNumber
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.CharityRegistrationNumberPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CharityRegistrationNumberView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -62,15 +63,10 @@ class CharityRegistrationNumberController @Inject() (
               charityRegistrationNumber = Some(charityNumber)
             )
 
-            eclRegistrationConnector
-              .upsertRegistration(
-                request.registration.copy(
-                  optOtherEntityJourneyData = Some(otherEntityJourneyData)
-                )
-              )
-              .map { updatedRegistration =>
-                Redirect(pageNavigator.nextPage(mode, updatedRegistration))
-              }
+            (for {
+              upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+
           }
         )
     }

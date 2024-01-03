@@ -23,11 +23,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -38,13 +40,15 @@ class AmlRegulatedActivityController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   sessionService: SessionService,
   formProvider: AmlRegulatedActivityFormProvider,
   pageNavigator: AmlRegulatedActivityPageNavigator,
   view: AmlRegulatedActivityView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
+    with ErrorHandler
+    with BaseController
     with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
@@ -58,42 +62,61 @@ class AmlRegulatedActivityController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-        amlRegulatedActivity =>
-          eclRegistrationConnector
-            .upsertRegistration(
-              request.registration.copy(
-                carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity),
-                registrationType = Some(Initial)
-              )
-            )
-            .flatMap { updatedRegistration =>
-              if (amlRegulatedActivity) {
-                val amlActivitySessionData = Map(
-                  SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString
-                )
+        amlRegulatedActivity => {
+          val updatedRegistration = request.registration.copy(
+            carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity),
+            registrationType = Some(Initial)
+          )
+          (for {
+            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration)
+            _                     = if (amlRegulatedActivity) upsertSession(amlRegulatedActivity, request.internalId)
 
-                sessionService
-                  .upsert(
-                    SessionData(
-                      request.internalId,
-                      amlActivitySessionData
-                    )
-                  )
+          } yield upsertedRegistration) // TODO: Figure out how to navigate wih session attributes
 
-                pageNavigator
-                  .nextPage(mode, updatedRegistration)
-                  .map(
-                    Redirect(_).withSession(
-                      request.session ++
-                        amlActivitySessionData
-                    )
-                  )
-              } else {
-                pageNavigator
-                  .nextPage(mode, updatedRegistration)
-                  .map(Redirect)
-              }
-            }
+        }
+
+//          eclRegistrationConnector
+//            .upsertRegistration(
+//              request.registration.copy(
+//                carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity),
+//                registrationType = Some(Initial)
+//              )
+//            )
+//            .flatMap { updatedRegistration =>
+//              if (amlRegulatedActivity) {
+//                val amlActivitySessionData = Map(
+//                  SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString
+//                )
+//
+//                sessionService
+//                  .upsert(
+//                    SessionData(
+//                      request.internalId,
+//                      amlActivitySessionData
+//                    )
+//                  )
+//
+//                pageNavigator
+//                  .nextPage(mode, updatedRegistration)
+//                  .map(
+//                    Redirect(_).withSession(
+//                      request.session ++
+//                        amlActivitySessionData
+//                    )
+//                  )
+//              } else {
+//                pageNavigator
+//                  .nextPage(mode, updatedRegistration)
+//                  .map(Redirect)
+//              }
+//            }
       )
+  }
+
+  def upsertSession(amlRegulatedActivity: Boolean, internalId: String)(implicit hc: HeaderCarrier) = {
+    val amlActivitySessionData = Map(SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString)
+    for {
+      _ <- sessionService.upsert(SessionData(internalId, amlActivitySessionData)).asResponseError
+    } yield ()
   }
 }

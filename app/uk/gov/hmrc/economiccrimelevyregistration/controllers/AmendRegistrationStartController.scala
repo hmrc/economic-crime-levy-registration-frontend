@@ -17,61 +17,40 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
-import play.api.i18n.Lang.logger
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import play.api.mvc._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationStartView, AnswersAreInvalidView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class AmendRegistrationStartController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  errorHandler: ErrorHandler,
   view: AmendRegistrationStartView,
   registrationService: EclRegistrationService,
-  registrationConnector: EclRegistrationConnector
+  answersAreInvalidView: AnswersAreInvalidView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   def onPageLoad(eclReference: String): Action[AnyContent] = authorise.async { implicit request =>
-    val createOrUpdateRegistration = for {
-      _        <- getOrCreateRegistration(request.internalId)
-      response <- getOrCreateRegistrationAdditionalInfo(eclReference)
-    } yield response
-
-    createOrUpdateRegistration
-      .map(_ => Ok(view(eclReference)))
-      .recover { case e =>
-        logger.error(
-          s"Failed to create registration additional info for eclReference $eclReference. Error message: ${e.getMessage}"
-        )
-        InternalServerError(errorHandler.internalServerErrorTemplate)
-      }
+    (for {
+      registration               <- registrationService.getOrCreateRegistrationV2(request.internalId).asResponseError
+      _                          <-
+        registrationService.upsertRegistration(registration.copy(registrationType = Some(Amendment))).asResponseError
+      createOrUpdateRegistration <-
+        registrationAdditionalInfoService.createOrUpdate(request.internalId, Some(eclReference)).asResponseError
+    } yield createOrUpdateRegistration).fold(
+      _ => Ok(answersAreInvalidView()),
+      _ => Ok(view(eclReference))
+    )
   }
-
-  private def getOrCreateRegistration(
-    internalId: String
-  )(implicit hc: HeaderCarrier): Future[Unit] =
-    for {
-      registration <- registrationService.getOrCreateRegistration(internalId)
-      _            <- registrationConnector.upsertRegistration(registration.copy(registrationType = Some(Amendment)))
-    } yield ()
-
-  private def getOrCreateRegistrationAdditionalInfo(
-    eclReference: String
-  )(implicit hc: HeaderCarrier, request: AuthorisedRequest[AnyContent]): Future[Unit] =
-    registrationAdditionalInfoService
-      .createOrUpdate(request.internalId, Some(eclReference))
 }

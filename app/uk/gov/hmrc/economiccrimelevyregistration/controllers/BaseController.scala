@@ -47,5 +47,20 @@ trait BaseController {
           registration => pageNavigator.nextPage(mode, registration)
         )
         .map(Redirect)
+
+//    def convertToAsyncResult(mode: Mode, pageNavigator: AsyncPageNavigator, sessionAttributes: Map[String, String])(
+//      implicit
+//      ec: ExecutionContext,
+//      request: RequestHeader
+//    ): Future[Result] =
+//      value
+//        .fold(
+//          _ => Future.successful(routes.NotableErrorController.answersAreInvalid()),
+//          registration =>
+//            pageNavigator
+//              .nextPage(mode, registration)
+//              .map(Redirect(_).withSession(request.session ++ sessionAttributes))
+//        )
+//        .map(Redirect)
   }
 }
