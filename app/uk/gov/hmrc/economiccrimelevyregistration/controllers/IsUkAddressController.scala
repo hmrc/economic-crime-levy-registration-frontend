@@ -25,6 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -36,13 +37,15 @@ class IsUkAddressController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: IsUkAddressFormProvider,
   pageNavigator: IsUkAddressPageNavigator,
   view: IsUkAddressView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[Boolean] = formProvider()
 
@@ -67,14 +70,12 @@ class IsUkAddressController @Inject() (
               view(formWithErrors, mode, request.registration.registrationType, request.eclRegistrationReference)
             )
           ),
-        contactAddressIsUk =>
-          eclRegistrationConnector
-            .upsertRegistration(
-              request.registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
-            )
-            .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
-            }
+        contactAddressIsUk => {
+          val updatedRegistration = request.registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
+          (for {
+            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield upsertedRegistration).convertToAsyncResult(mode, pageNavigator)
+        }
       )
   }
 }

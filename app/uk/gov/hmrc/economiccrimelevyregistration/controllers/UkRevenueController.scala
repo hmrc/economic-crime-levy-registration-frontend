@@ -19,13 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclCalculatorService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclCalculatorService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -37,14 +36,16 @@ class UkRevenueController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   eclCalculatorService: EclCalculatorService,
   formProvider: UkRevenueFormProvider,
   pageNavigator: UkRevenuePageNavigator,
   view: UkRevenueView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[BigDecimal] = formProvider()
 
@@ -60,11 +61,11 @@ class UkRevenueController @Inject() (
         revenue => {
           val updatedRegistration = request.registration.copy(relevantApRevenue = Some(revenue))
           eclCalculatorService.checkIfRevenueMeetsThreshold(updatedRegistration).flatMap { revenueMeetsThreshold =>
-            eclRegistrationConnector
-              .upsertRegistration(updatedRegistration.copy(revenueMeetsThreshold = revenueMeetsThreshold))
-              .flatMap { updatedRegistration =>
-                pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
-              }
+            (for {
+              upsertedRegistration <- eclRegistrationService.upsertRegistration(
+                updatedRegistration
+                  .copy(revenueMeetsThreshold = revenueMeetsThreshold)).asResponseError
+            } yield upsertedRegistration).convertToAsyncResult(mode, pageNavigator)
           }
         }
       )

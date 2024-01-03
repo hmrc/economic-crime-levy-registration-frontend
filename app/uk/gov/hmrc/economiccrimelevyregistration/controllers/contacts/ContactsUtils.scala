@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
+import uk.gov.hmrc.economiccrimelevyregistration.models.EclAddress
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 
@@ -33,6 +34,15 @@ trait ContactsUtils {
       request.registration.contacts.secondContactDetails.name match {
         case Some(value) => Right(value)
         case None        => Left(DataRetrievalError.FieldNotFound("No second contact name found in registration data"))
+      }
+  }
+
+  implicit class ContactAddressHelper(request: RegistrationDataRequest[_]) {
+
+    def contactAddress: Either[DataRetrievalError, EclAddress] =
+      request.registration.grsAddressToEclAddress match {
+        case Some(value)  => Right(value)
+        case None         => Left(DataRetrievalError.FieldNotFound("No registered office address found in registration data"))
       }
   }
 }

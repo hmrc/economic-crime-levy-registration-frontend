@@ -20,12 +20,12 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantAp12MonthsDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantAp12MonthsFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantAp12MonthsPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantAp12MonthsView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -37,14 +37,16 @@ class RelevantAp12MonthsController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: RelevantAp12MonthsFormProvider,
   pageNavigator: RelevantAp12MonthsPageNavigator,
   dataCleanup: RelevantAp12MonthsDataCleanup,
   view: RelevantAp12MonthsView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[Boolean] = formProvider()
 
@@ -57,14 +59,12 @@ class RelevantAp12MonthsController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-        relevantAp12Months =>
-          eclRegistrationConnector
-            .upsertRegistration(
-              dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
-            )
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
-            }
+        relevantAp12Months => {
+          val updatedRegistration = dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
+          (for {
+            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+        }
       )
   }
 

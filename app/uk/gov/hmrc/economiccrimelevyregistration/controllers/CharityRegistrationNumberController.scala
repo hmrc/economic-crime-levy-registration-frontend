@@ -37,13 +37,15 @@ class CharityRegistrationNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: CharityRegistrationNumberFormProvider,
   pageNavigator: CharityRegistrationNumberPageNavigator,
   view: CharityRegistrationNumberView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[String] = formProvider()
 
@@ -62,6 +64,8 @@ class CharityRegistrationNumberController @Inject() (
             val otherEntityJourneyData = request.registration.otherEntityJourneyData.copy(
               charityRegistrationNumber = Some(charityNumber)
             )
+            val updatedRegistration =
+              request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
             (for {
               upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
