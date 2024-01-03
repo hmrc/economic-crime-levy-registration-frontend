@@ -64,11 +64,15 @@ class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
     }
 
     "(Check Mode) return a call to the check your answers page" in forAll {
-      (registration: Registration, isUtrPresent: Boolean) =>
+      (registration: Registration, isUtrPresent: Boolean, utr: String) =>
         val otherEntityJourneyData = OtherEntityJourneyData
           .empty()
           .copy(
-            isCtUtrPresent = Some(isUtrPresent)
+            isCtUtrPresent = Some(isUtrPresent),
+            ctUtr = isUtrPresent match {
+              case true  => Some(utr)
+              case false => None
+            }
           )
 
         val updatedRegistration: Registration =
