@@ -36,6 +36,7 @@ class EclRegistrationService @Inject() (
   ec: ExecutionContext,
   hc: HeaderCarrier
 ) {
+  //TODO: Change V1 and remove V2
   def getOrCreateRegistrationV2(internalId: String): EitherT[Future, RegistrationError, Registration] =
     EitherT {
       eclRegistrationConnector
