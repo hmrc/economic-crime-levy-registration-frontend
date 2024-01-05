@@ -20,6 +20,7 @@ import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
@@ -31,12 +32,16 @@ object OtherEntityCtUtrSummary {
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
     request.registration.otherEntityJourneyData.ctUtr.map { answer =>
       val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(answer))))
+      val url   = request.registration.entityType match {
+        case Some(Charity) => routes.UtrController.onPageLoad(CheckMode).url
+        case _             => routes.CtUtrController.onPageLoad(CheckMode).url
+      }
 
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.ctUtr.label"),
         value = value,
         actions = Seq(
-          ActionItemViewModel("site.change", routes.CtUtrController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", url)
             .withVisuallyHiddenText(
               messages("checkYourAnswers.ctUtr.label")
             )
