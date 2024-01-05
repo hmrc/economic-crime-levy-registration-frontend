@@ -595,3 +595,16 @@ otherEntityType.crn.question.title = Oes gennych chi rif cofrestru cwmni'r DU?
 otherEntityType.crn.question.label = Oes gennych chi rif cofrestru cwmni'r DU?
 otherEntityType.crn.question.h1 = Oes gennych chi rif cofrestru cwmni'r DU?
 otherEntityType.crn.question.error.required = Dewiswch ‘Iawn’ os oes gennych rif cofrestru’r cwmni
+
+otherEntityType.utr.question.title = A oes gennych Gyfeirnod Unigryw y Trethdalwr?
+otherEntityType.utr.question.h1 = A oes gennych Gyfeirnod Unigryw y Trethdalwr?
+otherEntityType.utr.error.required = Dewiswch ‘Iawn’ os oes gennych Gyfeirnod Unigryw y Trethdalwr
+
+otherEntityType.addUtr.title = Beth yw’ch Cyfeirnod Unigryw y Trethdalwr?
+otherEntityType.addUtr.h1 = Beth yw’ch Cyfeirnod Unigryw y Trethdalwr?
+otherEntityType.addUtr.body = Mae’ch Cyfeirnod Unigryw y Trethdalwr (UTR) yn 10 digid o hyd.
+otherEntityType.addUtr.hint = Er enghraifft, 0123456789
+otherEntityType.addUtr.error.required = Nodwch eich Cyfeirnod Unigryw y Trethdalwr
+otherEntityType.addUtr.error.length = Mae’n rhaid i Gyfeirnod Unigryw y Trethdalwr fod yn {0} digid.
+
+otherEntityType.utr.question.label = A oes gennych Gyfeirnod Unigryw y Trethdalwr?

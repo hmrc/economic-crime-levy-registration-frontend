@@ -58,7 +58,7 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(
-        routes.CompanyRegistrationNumberController.onPageLoad(mode = NormalMode).url
+        routes.DoYouHaveUtrController.onPageLoad(mode = NormalMode).url
       )
     }
   }

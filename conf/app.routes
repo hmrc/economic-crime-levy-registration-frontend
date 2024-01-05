@@ -179,10 +179,10 @@ POST        /what-is-your-non-uk-crn                                            
 GET         /change-answer/what-is-your-non-uk-crn                              uk.gov.hmrc.economiccrimelevyregistration.controllers.NonUkCrnController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/what-is-your-non-uk-crn                              uk.gov.hmrc.economiccrimelevyregistration.controllers.NonUkCrnController.onSubmit(mode: Mode = CheckMode)
 
-GET         /what-is-your-utr                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrTypeController.onPageLoad(mode: Mode = NormalMode)
-POST        /what-is-your-utr                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrTypeController.onSubmit(mode: Mode = NormalMode)
-GET         /change-answer/what-is-your-utr                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrTypeController.onPageLoad(mode: Mode = CheckMode)
-POST        /change-answer/what-is-your-utr                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrTypeController.onSubmit(mode: Mode = CheckMode)
+GET         /what-is-your-utr-type                                              uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrTypeController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-utr-type                                              uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrTypeController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/what-is-your-utr-type                                uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrTypeController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/what-is-your-utr-type                                uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrTypeController.onSubmit(mode: Mode = CheckMode)
 
 GET         /what-is-your-self-assessment-utr                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.SaUtrController.onPageLoad(mode: Mode = NormalMode)
 POST        /what-is-your-self-assessment-utr                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.SaUtrController.onSubmit(mode: Mode = NormalMode)
@@ -201,3 +201,13 @@ GET         /do-you-have-a-crn                                                  
 POST        /do-you-have-a-crn                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCrnController.onSubmit(mode: Mode = NormalMode)
 GET         /check-answer/do-you-have-a-crn                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCrnController.onPageLoad(mode: Mode = CheckMode)
 POST        /check-answer/do-you-have-a-crn                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCrnController.onSubmit(mode: Mode = CheckMode)
+
+GET         /do-you-have-a-utr                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveUtrController.onPageLoad(mode: Mode = NormalMode)
+POST        /do-you-have-a-utr                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveUtrController.onSubmit(mode: Mode = NormalMode)
+GET         /check-answer/do-you-have-a-utr                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveUtrController.onPageLoad(mode: Mode = CheckMode)
+POST        /check-answer/do-you-have-a-utr                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveUtrController.onSubmit(mode: Mode = CheckMode)
+
+GET         /what-is-your-utr                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrController.onPageLoad(mode: Mode = NormalMode)
+POST        /what-is-your-utr                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrController.onSubmit(mode: Mode = NormalMode)
+GET         /check-answer/what-is-your-utr                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrController.onPageLoad(mode: Mode = CheckMode)
+POST        /check-answer/what-is-your-utr                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrController.onSubmit(mode: Mode = CheckMode)

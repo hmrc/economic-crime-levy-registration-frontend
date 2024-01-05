@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
@@ -28,14 +29,22 @@ object DoYouHaveCtUtrSummary {
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
     request.registration.otherEntityJourneyData.isCtUtrPresent.map { answer =>
       val value = if (answer) "site.yes" else "site.no"
+      val key   = request.registration.entityType match {
+        case Some(Charity) => "otherEntityType.utr.question.label"
+        case _             => "otherEntityType.ctutr.question.label"
+      }
+      val url   = request.registration.entityType match {
+        case Some(Charity) => routes.DoYouHaveUtrController.onPageLoad(CheckMode).url
+        case _             => routes.DoYouHaveCtUtrController.onPageLoad(CheckMode).url
+      }
 
       SummaryListRowViewModel(
-        key = Key("otherEntityType.ctutr.question.label"),
+        key = Key(key),
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.DoYouHaveCtUtrController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", url)
             .withVisuallyHiddenText(
-              messages("otherEntityType.ctutr.question.label")
+              messages(key)
             )
         )
       )
