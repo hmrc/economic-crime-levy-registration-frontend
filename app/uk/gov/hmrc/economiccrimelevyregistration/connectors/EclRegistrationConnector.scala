@@ -33,8 +33,8 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
   private val eclRegistrationUrl: URL =
     url"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
 
-  def getRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Option[Registration]] =
-    httpClient.get(url"$eclRegistrationUrl/registrations/$internalId").executeAndDeserialiseOption[Registration]
+  def getRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] =
+    httpClient.get(url"$eclRegistrationUrl/registrations/$internalId").executeAndDeserialise[Registration]
 
   def upsertRegistration(registration: Registration)(implicit hc: HeaderCarrier): Future[Registration] =
     httpClient

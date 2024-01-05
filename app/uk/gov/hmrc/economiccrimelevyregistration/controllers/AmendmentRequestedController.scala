@@ -16,13 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.Logging
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendmentRequestedView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendmentRequestedView, AnswersAreInvalidView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -33,27 +32,20 @@ class AmendmentRequestedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: AmendmentRequestedView,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  sessionService: SessionService
+  sessionService: SessionService,
+  answersAreInvalidView: AnswersAreInvalidView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
-    with Logging {
+    with ErrorHandler {
 
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
-    sessionService
-      .get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress)
-      .map {
-        case Some(firstContactEmailAddress) =>
-          Ok(view(firstContactEmailAddress, request.eclRegistrationReference))
-        case None                           =>
-          logger.error("Failed to retrieve first contact email address from session and database")
-          InternalServerError
-      }
-      .recover { case e =>
-        logger.error(
-          s"Unable to retrieve first contact email address from session: ${e.getMessage}"
-        )
-        InternalServerError
-      }
+    (for {
+      firstContactEmailAddress <-
+        sessionService.get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress).asResponseError
+    } yield firstContactEmailAddress).fold(
+      _ => Ok(answersAreInvalidView()),
+      success => Ok(view(success, request.eclRegistrationReference))
+    )
   }
 }

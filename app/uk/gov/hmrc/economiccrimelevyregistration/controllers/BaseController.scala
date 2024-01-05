@@ -17,24 +17,50 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
-import play.api.libs.json.{Json, Writes}
-import play.api.mvc.Result
-import play.api.mvc.Results.Status
+import play.api.mvc.Results.Redirect
+import play.api.mvc.{RequestHeader, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.ResponseError
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{AsyncPageNavigator, PageNavigator}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait BaseController {
 
-  implicit class ResponseHandler[R](value: EitherT[Future, ResponseError, R]) {
+  implicit class ResponseHandler(value: EitherT[Future, ResponseError, Registration]) {
 
-    def convertToResultWithJsonBody(
-      statusCode: Int
-    )(implicit ec: ExecutionContext, writes: Writes[R]): Future[Result] =
-      value.fold(
-        err => Status(err.code.statusCode)(Json.toJson(err)),
-        response => Status(statusCode)(Json.toJson(response))
-      )
+    def convertToResult(mode: Mode, pageNavigator: PageNavigator)(implicit ec: ExecutionContext): Future[Result] =
+      value
+        .fold(
+          _ => Future.successful(routes.NotableErrorController.answersAreInvalid()),
+          registration => pageNavigator.nextPage(mode, registration)
+        )
+        .map(Redirect)
+
+    def convertToAsyncResult(mode: Mode, pageNavigator: AsyncPageNavigator)(implicit
+      ec: ExecutionContext,
+      request: RequestHeader
+    ): Future[Result] =
+      value
+        .fold(
+          _ => Future.successful(routes.NotableErrorController.answersAreInvalid()),
+          registration => pageNavigator.nextPage(mode, registration)
+        )
+        .map(Redirect)
+
+//    def convertToAsyncResult(mode: Mode, pageNavigator: AsyncPageNavigator, sessionAttributes: Map[String, String])(
+//      implicit
+//      ec: ExecutionContext,
+//      request: RequestHeader
+//    ): Future[Result] =
+//      value
+//        .fold(
+//          _ => Future.successful(routes.NotableErrorController.answersAreInvalid()),
+//          registration =>
+//            pageNavigator
+//              .nextPage(mode, registration)
+//              .map(Redirect(_).withSession(request.session ++ sessionAttributes))
+//        )
+//        .map(Redirect)
   }
-
 }

@@ -84,6 +84,7 @@ class EntityTypeController @Inject() (
       )
   }
 
+  //TODO: Ask Patrick about this one
   private def cleanup(
     mode: Mode,
     registration: Registration,

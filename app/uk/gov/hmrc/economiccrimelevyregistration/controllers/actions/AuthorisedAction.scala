@@ -155,7 +155,7 @@ abstract class BaseAuthorisedAction @Inject() (
                       if (request.uri.toLowerCase.contains("amend")) {
                         block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
                       } else {
-                        eclRegistrationService.getOrCreateRegistration(internalId)(hc(request)).flatMap {
+                        eclRegistrationService.getOrCreateRegistration(internalId).flatMap {
                           registration =>
                             registration.registrationType match {
                               case None            =>

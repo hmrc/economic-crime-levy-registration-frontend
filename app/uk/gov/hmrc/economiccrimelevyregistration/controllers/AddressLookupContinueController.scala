@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.mvc._
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, Mode}
@@ -47,11 +47,7 @@ class AddressLookupContinueController @Inject() (
         registration          = request.registration.copy(contactAddress = alfAddressToEclAddress(address))
         upsertedRegistration <- eclRegistrationService.upsertRegistration(registration).asResponseError
       } yield upsertedRegistration)
-        .fold(
-          _ => routes.NotableErrorController.answersAreInvalid(), // Todo: Handle this better
-          success => pageNavigator.nextPage(mode, success)
-        )
-        .map(Redirect)
+        .convertToResult(mode, pageNavigator)
   }
 
   private def alfAddressToEclAddress(alfAddressData: AlfAddressData): Option[EclAddress] =

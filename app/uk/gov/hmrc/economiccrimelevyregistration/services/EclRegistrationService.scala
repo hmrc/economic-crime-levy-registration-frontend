@@ -36,7 +36,25 @@ class EclRegistrationService @Inject() (
   ec: ExecutionContext,
   hc: HeaderCarrier
 ) {
-  def getOrCreateRegistration(internalId: String): Future[Registration] =
+  //TODO: Change V1 and remove V2
+  def getOrCreateRegistrationV2(internalId: String): EitherT[Future, RegistrationError, Registration] =
+    EitherT {
+      eclRegistrationConnector
+        .getRegistration(internalId)
+        .map(Right(_))
+        .recover {
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse.unapply(error).isDefined =>
+            Left(RegistrationError.BadGateway(message, code))
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            auditConnector.sendExtendedEvent(RegistrationStartedEvent(internalId).extendedDataEvent)
+            Right(eclRegistrationConnector.upsertRegistration(Registration.empty(internalId)))
+          case NonFatal(thr) => Left(RegistrationError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+        }
+    }
+
+  def getOrCreateRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] =
     eclRegistrationConnector.getRegistration(internalId).flatMap {
       case Some(registration) => Future.successful(registration)
       case None               =>

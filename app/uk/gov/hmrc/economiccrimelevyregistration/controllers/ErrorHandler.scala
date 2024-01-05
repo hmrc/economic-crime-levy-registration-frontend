@@ -18,13 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
 import play.api.Logging
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AddressLookupContinueError, BadGateway, InternalServiceError, RegistrationError, ResponseError}
+import play.api.http.Status.BAD_GATEWAY
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AddressLookupContinueError, BadGateway, DataRetrievalError, InternalServiceError, RegistrationError, ResponseError, SessionError}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait ErrorHandler extends Logging {
 
-  implicit class ErrorConvertor[E, R](value: EitherT[Future, E, R]) {
+  implicit class AsyncErrorConvertor[E, R](value: EitherT[Future, E, R]) {
 
     def asResponseError(implicit c: Converter[E], ec: ExecutionContext): EitherT[Future, ResponseError, R] =
       value.leftMap(c.convert).leftSemiflatTap {
@@ -53,6 +54,17 @@ trait ErrorHandler extends Logging {
           Future.successful(())
         case _                                       => Future.successful(())
       }
+
+  }
+
+  implicit class ErrorConvertor[E, R](value: Either[E, R]) {
+    def asResponseError(implicit c: Converter[E]): Either[ResponseError, R] =
+      value.left.map(c.convert(_)).left.map {
+        //TODO: Add logging
+        case InternalServiceError(message, _, cause) =>
+          ResponseError.internalServiceError(message = message, cause = cause)
+        case BadGateway(message, _, responseCode)    => ResponseError.badGateway(message, responseCode)
+      }
   }
 
   trait Converter[E] {
@@ -60,21 +72,32 @@ trait ErrorHandler extends Logging {
   }
 
   implicit val enrolmentStoreErrorConverter: Converter[AddressLookupContinueError] =
-    new Converter[AddressLookupContinueError] {
-      override def convert(error: AddressLookupContinueError): ResponseError = error match {
-        case AddressLookupContinueError.BadGateway(cause, statusCode)           => ResponseError.badGateway(cause, statusCode)
-        case AddressLookupContinueError.InternalUnexpectedError(message, cause) =>
-          ResponseError.internalServiceError(message = message, cause = cause)
-      }
+    {
+      case AddressLookupContinueError.BadGateway(cause, statusCode) => ResponseError.badGateway(cause, statusCode)
+      case AddressLookupContinueError.InternalUnexpectedError(message, cause) =>
+        ResponseError.internalServiceError(message = message, cause = cause)
     }
 
   implicit val registrationErrorConverter: Converter[RegistrationError] =
-    new Converter[RegistrationError] {
-      override def convert(error: RegistrationError): ResponseError = error match {
-        case RegistrationError.BadGateway(cause, statusCode)           => ResponseError.badGateway(cause, statusCode)
-        case RegistrationError.InternalUnexpectedError(message, cause) =>
-          ResponseError.internalServiceError(message = message, cause = cause)
-      }
+    {
+      case RegistrationError.BadGateway(cause, statusCode) => ResponseError.badGateway(cause, statusCode)
+      case RegistrationError.InternalUnexpectedError(message, cause) =>
+        ResponseError.internalServiceError(message = message, cause = cause)
+    }
+
+  implicit val dataRetrievalErrorConverter: Converter[DataRetrievalError] =
+    {
+      case DataRetrievalError.BadGateway(cause, statusCode) => ResponseError.badGateway(cause, statusCode)
+      case DataRetrievalError.FieldNotFound(message) => ResponseError.badGateway(message, BAD_GATEWAY)
+      case DataRetrievalError.InternalUnexpectedError(message, cause) =>
+        ResponseError.internalServiceError(message = message, cause = cause)
+    }
+
+  implicit val sessionErrorConverter: Converter[SessionError] =
+    {
+      case DataRetrievalError.BadGateway(cause, statusCode) => ResponseError.badGateway(cause, statusCode)
+      case DataRetrievalError.InternalUnexpectedError(message, cause) =>
+        ResponseError.internalServiceError(message = message, cause = cause)
     }
 
 }

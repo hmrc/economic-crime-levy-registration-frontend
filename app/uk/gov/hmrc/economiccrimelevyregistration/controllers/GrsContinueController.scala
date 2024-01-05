@@ -48,20 +48,30 @@ class GrsContinueController @Inject() (
     implicit request =>
       request.registration.entityType match {
         case Some(e @ (UkLimitedCompany | UnlimitedCompany | RegisteredSociety)) =>
-          incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
-            updateRegistrationWithJourneyData(incorporatedEntityJourneyData = Some(jd))
-              .flatMap(_ =>
-                handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, e, mode)
-              )
-          }
-
-        case Some(e @ SoleTrader) =>
-          soleTraderIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
-            updateRegistrationWithJourneyData(soleTraderEntityJourneyData = Some(jd))
-              .flatMap(_ =>
-                handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, e, mode)
-              )
-          }
+          for {
+            journeyData: IncorporatedEntityJourneyData <-
+              incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId)
+            _                                          <- updateRegistrationWithJourneyData(incorporatedEntityJourneyData = Some(journeyData))
+            result                                     <- handleGrsAndBvResult(
+                                                            journeyData.identifiersMatch,
+                                                            journeyData.businessVerification,
+                                                            journeyData.registration,
+                                                            e,
+                                                            mode
+                                                          )
+          } yield result
+        case Some(e @ SoleTrader)                                                =>
+          for {
+            journeyData <- soleTraderIdentificationFrontendConnector.getJourneyData(journeyId)
+            _           <- updateRegistrationWithJourneyData(soleTraderEntityJourneyData = Some(journeyData))
+            result      <- handleGrsAndBvResult(
+                             journeyData.identifiersMatch,
+                             journeyData.businessVerification,
+                             journeyData.registration,
+                             e,
+                             mode
+                           )
+          } yield result
 
         case Some(
               e @ (GeneralPartnership | ScottishPartnership | LimitedPartnership | ScottishLimitedPartnership |

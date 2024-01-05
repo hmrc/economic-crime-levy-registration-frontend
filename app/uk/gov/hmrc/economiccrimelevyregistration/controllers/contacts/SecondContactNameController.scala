@@ -19,12 +19,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNameFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNamePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.AnswersAreInvalidView
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNameView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -36,13 +38,17 @@ class SecondContactNameController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: SecondContactNameFormProvider,
   pageNavigator: SecondContactNamePageNavigator,
+  answersAreInvalidView: AnswersAreInvalidView,
   view: SecondContactNameView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController
+    with ContactsUtils
+    with ErrorHandler {
 
   val form: Form[String] = formProvider()
 
@@ -69,13 +75,14 @@ class SecondContactNameController @Inject() (
           ),
         name => {
           val updatedContacts: Contacts = request.registration.contacts
-            .copy(secondContactDetails = request.registration.contacts.secondContactDetails.copy(name = Some(name)))
+            .copy(firstContactDetails = request.registration.contacts.firstContactDetails.copy(name = Some(name)))
 
-          eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(contacts = updatedContacts))
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
-            }
+          (for {
+            upsertedRegistration <-
+              eclRegistrationService
+                .upsertRegistration(request.registration.copy(contacts = updatedContacts))
+                .asResponseError
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

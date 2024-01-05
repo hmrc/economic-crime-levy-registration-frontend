@@ -79,12 +79,7 @@ class AddAnotherContactController @Inject() (
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
           } yield upsertedRegistration)
-            .fold(
-              _ => routes.NotableErrorController.answersAreInvalid(), // Todo: Handle this better
-              registration => pageNavigator.nextPage(mode, registration)
-            )
-            .map(Redirect)
-
+            .convertToResult(mode, pageNavigator)
         }
       )
   }

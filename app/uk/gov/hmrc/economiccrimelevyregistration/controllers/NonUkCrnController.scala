@@ -19,12 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.NonUkCrnFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.NonUkCrnPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.NonUkCrnView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -36,13 +36,15 @@ class NonUkCrnController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: NonUkCrnFormProvider,
   pageNavigator: NonUkCrnPageNavigator,
   view: NonUkCrnView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[String] = formProvider()
 
@@ -58,19 +60,17 @@ class NonUkCrnController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           companyNumber => {
-            val otherEntityJourneyData = request.registration.otherEntityJourneyData.copy(
-              companyRegistrationNumber = Some(companyNumber)
-            )
-
-            eclRegistrationConnector
-              .upsertRegistration(
-                request.registration.copy(
-                  optOtherEntityJourneyData = Some(otherEntityJourneyData)
-                )
+            val otherEntityJourneyData = request.registration.otherEntityJourneyData
+              .copy(
+                companyRegistrationNumber = Some(companyNumber)
               )
-              .map { updatedRegistration =>
-                Redirect(pageNavigator.nextPage(mode, updatedRegistration))
-              }
+            val updatedRegistration    = request.registration
+              .copy(
+                optOtherEntityJourneyData = Some(otherEntityJourneyData)
+              )
+            (for {
+              upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            } yield upsertedRegistration).convertToResult(mode, pageNavigator)
           }
         )
     }
