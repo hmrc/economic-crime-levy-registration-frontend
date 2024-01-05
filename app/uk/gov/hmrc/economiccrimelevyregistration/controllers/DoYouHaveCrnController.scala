@@ -48,7 +48,7 @@ class DoYouHaveCrnController @Inject() (
     with ErrorHandler
     with BaseController {
 
-  val form: Form[Boolean] = formProvider()
+  private val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData) { implicit request =>
@@ -61,16 +61,17 @@ class DoYouHaveCrnController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         answer => {
-          val companyRegistrationNumber = answer match {
-            case true => request.registration.otherEntityJourneyData.companyRegistrationNumber
-            case false => None
+          val companyRegistrationNumber = if (answer) {
+            request.registration.otherEntityJourneyData.companyRegistrationNumber
+          } else {
+            None
           }
-          val otherEntityJourneyData = request.registration.otherEntityJourneyData
+          val otherEntityJourneyData    = request.registration.otherEntityJourneyData
             .copy(
               isUkCrnPresent = Some(answer),
               companyRegistrationNumber = companyRegistrationNumber
             )
-          val updatedRegistration = request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+          val updatedRegistration       = request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError

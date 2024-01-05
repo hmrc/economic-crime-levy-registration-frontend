@@ -54,7 +54,7 @@ class SecondContactEmailController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     (for {
-      secondContactName <- request.secondContactName.asTestResponseError
+      secondContactName <- request.secondContactName.asResponseError
     } yield secondContactName).fold(
       _ => Ok(answersAreInvalidView()),
       name =>
@@ -76,7 +76,7 @@ class SecondContactEmailController @Inject() (
       .fold(
         formWithErrors =>
           (for {
-            secondContactName <- request.secondContactName.asTestResponseError
+            secondContactName <- request.secondContactName.asResponseError
           } yield secondContactName)
             .fold(
               _ => Future.successful(Ok(answersAreInvalidView())),

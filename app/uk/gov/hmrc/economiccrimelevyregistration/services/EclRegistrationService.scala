@@ -54,6 +54,20 @@ class EclRegistrationService @Inject() (
         }
     }
 
+  def getOrCreateRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] =
+    eclRegistrationConnector.getRegistration(internalId).flatMap {
+      case Some(registration) => Future.successful(registration)
+      case None               =>
+        auditConnector
+          .sendExtendedEvent(
+            RegistrationStartedEvent(
+              internalId
+            ).extendedDataEvent
+          )
+
+        eclRegistrationConnector.upsertRegistration(Registration.empty(internalId))
+    }
+
   def upsertRegistration(registration: Registration): EitherT[Future, RegistrationError, Registration] =
     EitherT {
       eclRegistrationConnector

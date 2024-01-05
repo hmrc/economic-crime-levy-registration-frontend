@@ -65,16 +65,6 @@ class CtUtrController @Inject() (
             (for {
               upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
             } yield upsertedRegistration).convertToResult(mode, pageNavigator)
-
-//            val otherEntity = request.registration.otherEntityJourneyData.copy(
-//              ctUtr = Some(ctutr),
-//              saUtr = None
-//            );
-//            eclRegistrationConnector
-//              .upsertRegistration(
-//                request.registration.copy(optOtherEntityJourneyData = Some(otherEntity))
-//              )
-//              .map(updatedRegistration => Redirect(pageNavigator.nextPage(mode, updatedRegistration)))
           }
         )
     }

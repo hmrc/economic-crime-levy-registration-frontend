@@ -24,8 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.ContactsUtils
 import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
@@ -53,18 +52,10 @@ class ConfirmContactAddressController @Inject() (
     with BaseController
     with ContactsUtils {
 
-  val form: Form[Boolean] = formProvider()
-
-//  val address: RegistrationDataRequest[_] => EclAddress = r =>
-//    r.registration.grsAddressToEclAddress.getOrElse(
-//      throw new IllegalStateException("No registered office address found in registration data")
-//    )
-
-
-
+  val form: Form[Boolean]                        = formProvider()
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     (for {
-      address <- request.contactAddress.asTestResponseError
+      address <- request.contactAddress.asResponseError
     } yield address).fold(
       _ => Ok(answersAreInvalidView()),
       address =>
@@ -84,7 +75,7 @@ class ConfirmContactAddressController @Inject() (
       .fold(
         formWithErrors =>
           (for {
-            address <- request.contactAddress.asTestResponseError
+            address <- request.contactAddress.asResponseError
           } yield address)
             .fold(
               _ => Future.successful(Ok(answersAreInvalidView())),
@@ -98,29 +89,17 @@ class ConfirmContactAddressController @Inject() (
                     )
                   )
                 )
-          ),
+            ),
         useRegisteredOfficeAddressAsContactAddress => {
-          val updatedRegistration = dataCleanup.cleanup(request.registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress)))
+          val updatedRegistration = request.registration
+            .copy(useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress))
+
+          val cleanUpRegistration = dataCleanup.cleanup(updatedRegistration)
 
           (for {
-            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            upsertedRegistration <- eclRegistrationService.upsertRegistration(cleanUpRegistration).asResponseError
           } yield upsertedRegistration).convertToAsyncResult(mode, pageNavigator)
         }
-
-
-//        val updatedRegistration = dataCleanup.cleanup(request.registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress)))
-
-//        useRegisteredOfficeAddressAsContactAddress =>
-//          eclRegistrationConnector
-//            .upsertRegistration(
-//              dataCleanup.cleanup(
-//                request.registration
-//                  .copy(useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress))
-//              )
-//            )
-//            .flatMap { updatedRegistration =>
-//              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
-//            }
       )
   }
 }

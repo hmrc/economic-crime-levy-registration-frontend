@@ -54,14 +54,16 @@ trait ErrorHandler extends Logging {
           Future.successful(())
         case _                                       => Future.successful(())
       }
+
   }
 
   implicit class ErrorConvertor[E, R](value: Either[E, R]) {
-    def asTestResponseError(implicit c: Converter[E], ec: ExecutionContext): Either[ResponseError, R] =
+    def asResponseError(implicit c: Converter[E]): Either[ResponseError, R] =
       value.left.map(c.convert(_)).left.map {
+        //TODO: Add logging
         case InternalServiceError(message, _, cause) =>
-          ???
-        case BadGateway(message, _, responseCode)    => ???
+          ResponseError.internalServiceError(message = message, cause = cause)
+        case BadGateway(message, _, responseCode)    => ResponseError.badGateway(message, responseCode)
       }
   }
 
@@ -70,40 +72,32 @@ trait ErrorHandler extends Logging {
   }
 
   implicit val enrolmentStoreErrorConverter: Converter[AddressLookupContinueError] =
-    new Converter[AddressLookupContinueError] {
-      override def convert(error: AddressLookupContinueError): ResponseError = error match {
-        case AddressLookupContinueError.BadGateway(cause, statusCode)           => ResponseError.badGateway(cause, statusCode)
-        case AddressLookupContinueError.InternalUnexpectedError(message, cause) =>
-          ResponseError.internalServiceError(message = message, cause = cause)
-      }
+    {
+      case AddressLookupContinueError.BadGateway(cause, statusCode) => ResponseError.badGateway(cause, statusCode)
+      case AddressLookupContinueError.InternalUnexpectedError(message, cause) =>
+        ResponseError.internalServiceError(message = message, cause = cause)
     }
 
   implicit val registrationErrorConverter: Converter[RegistrationError] =
-    new Converter[RegistrationError] {
-      override def convert(error: RegistrationError): ResponseError = error match {
-        case RegistrationError.BadGateway(cause, statusCode)           => ResponseError.badGateway(cause, statusCode)
-        case RegistrationError.InternalUnexpectedError(message, cause) =>
-          ResponseError.internalServiceError(message = message, cause = cause)
-      }
+    {
+      case RegistrationError.BadGateway(cause, statusCode) => ResponseError.badGateway(cause, statusCode)
+      case RegistrationError.InternalUnexpectedError(message, cause) =>
+        ResponseError.internalServiceError(message = message, cause = cause)
     }
 
   implicit val dataRetrievalErrorConverter: Converter[DataRetrievalError] =
-    new Converter[DataRetrievalError] {
-      override def convert(error: DataRetrievalError): ResponseError = error match {
-        case DataRetrievalError.BadGateway(cause, statusCode)           => ResponseError.badGateway(cause, statusCode)
-        case DataRetrievalError.FieldNotFound(message)                  => ResponseError.badGateway(message, BAD_GATEWAY)
-        case DataRetrievalError.InternalUnexpectedError(message, cause) =>
-          ResponseError.internalServiceError(message = message, cause = cause)
-      }
+    {
+      case DataRetrievalError.BadGateway(cause, statusCode) => ResponseError.badGateway(cause, statusCode)
+      case DataRetrievalError.FieldNotFound(message) => ResponseError.badGateway(message, BAD_GATEWAY)
+      case DataRetrievalError.InternalUnexpectedError(message, cause) =>
+        ResponseError.internalServiceError(message = message, cause = cause)
     }
 
   implicit val sessionErrorConverter: Converter[SessionError] =
-    new Converter[SessionError] {
-      override def convert(error: SessionError): ResponseError = error match {
-        case DataRetrievalError.BadGateway(cause, statusCode)           => ResponseError.badGateway(cause, statusCode)
-        case DataRetrievalError.InternalUnexpectedError(message, cause) =>
-          ResponseError.internalServiceError(message = message, cause = cause)
-      }
+    {
+      case DataRetrievalError.BadGateway(cause, statusCode) => ResponseError.badGateway(cause, statusCode)
+      case DataRetrievalError.InternalUnexpectedError(message, cause) =>
+        ResponseError.internalServiceError(message = message, cause = cause)
     }
 
 }
