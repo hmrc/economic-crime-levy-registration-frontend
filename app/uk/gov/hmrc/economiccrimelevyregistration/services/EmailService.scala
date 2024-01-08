@@ -22,7 +22,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EntityType, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, RegistrationSubmittedEmailParameters}
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, DataValidationError}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
@@ -37,6 +37,8 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
+  type EmailServiceSubmissionResult[T] = EitherT[Future, DataRetrievalError, T]
+
   def sendRegistrationSubmittedEmails(
     contacts: Contacts,
     eclRegistrationReference: String,
@@ -49,10 +51,9 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
   ): Future[Unit] = {
     val eclDueDate       = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)
     val registrationDate = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)
-
-    val previousFY =
+    val previousFY       =
       additionalInfo.flatMap(_.liabilityYear.flatMap(year => if (year.isNotCurrentFY) Some(year.asString) else None))
-    val currentFY  =
+    val currentFY        =
       liableForCurrentFY.map(_ => TaxYear.current.currentYear.toString)
 
     def sendEmail(
@@ -114,28 +115,68 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
 
   def sendAmendRegistrationSubmitted(
     contacts: Contacts
-  )(implicit hc: HeaderCarrier, messages: Messages): EitherT[Future, DataRetrievalError, Unit] = {
+  )(implicit hc: HeaderCarrier, messages: Messages): EmailServiceSubmissionResult[Unit] =
     EitherT {
       (contacts.firstContactDetails.emailAddress, contacts.firstContactDetails.name) match {
         case (Some(emailAddress), Some(name)) =>
-          emailConnector.sendAmendRegistrationSubmittedEmail(
-            to = emailAddress,
-            AmendRegistrationSubmittedEmailParameters(
-              name = name,
-              dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now())
+          emailConnector
+            .sendAmendRegistrationSubmittedEmail(
+              to = emailAddress,
+              AmendRegistrationSubmittedEmailParameters(
+                name = name,
+                dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now())
+              )
             )
-          )
             .map(Right(_))
             .recover {
-              case error@UpstreamErrorResponse(message, code, _, _)
-                if UpstreamErrorResponse.Upstream5xxResponse
-                  .unapply(error)
-                  .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+              case error @ UpstreamErrorResponse(message, code, _, _)
+                  if UpstreamErrorResponse.Upstream5xxResponse
+                    .unapply(error)
+                    .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
                 Left(DataRetrievalError.BadGateway(message, code))
               case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
             }
-        case _ => Left(DataRetrievalError.FieldNotFound("Invalid contact details"))
+        case _                                => Left(DataRetrievalError.FieldNotFound("Invalid contact details"))
       }
+
+      def getTuple2(
+        contacts: Contacts
+      ): Either[DataRetrievalError, (String, String)] =
+        (contacts.firstContactDetails.emailAddress, contacts.firstContactDetails.name) match {
+          case (Some(emailAddress), Some(name)) => Right(emailAddress, name)
+          case _                                => Left(DataRetrievalError.FieldNotFound("Invalid contact details"))
+        }
+
+      def sendAmendRegistrationSubmitted2(
+        contacts: Contacts
+      )(implicit hc: HeaderCarrier, messages: Messages): EmailServiceSubmissionResult[Unit] =
+        for {
+          x <- EitherT.fromEither(getTuple2(contacts))
+          y <- testDef(x._1, x._2)
+        } yield y
+
+      def testDef(emailAddress: String, name: String)(implicit
+        hc: HeaderCarrier,
+        messages: Messages
+      ): EmailServiceSubmissionResult[Unit] =
+        EitherT {
+          emailConnector
+            .sendAmendRegistrationSubmittedEmail(
+              to = emailAddress,
+              AmendRegistrationSubmittedEmailParameters(
+                name = name,
+                dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now())
+              )
+            )
+            .map(Right(_))
+            .recover {
+              case error @ UpstreamErrorResponse(message, code, _, _)
+                  if UpstreamErrorResponse.Upstream5xxResponse
+                    .unapply(error)
+                    .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+                Left(DataRetrievalError.BadGateway(message, code))
+              case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+            }
+        }
     }
-  }
 }
