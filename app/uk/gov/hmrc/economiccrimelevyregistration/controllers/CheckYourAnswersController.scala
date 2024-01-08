@@ -145,54 +145,56 @@ class CheckYourAnswersController @Inject() (
     val base64EncodedHtmlViewForPdf   = getBase64EncodedPdf(registration)
 
     (for {
-      _        <- registrationService.upsertRegistration(registration =
-                    registration.copy(
-                      base64EncodedFields = Some(
-                        Base64EncodedFields(
-                          nrsSubmissionHtml = Some(base64EncodedHtmlView),
-                          dmsSubmissionHtml = (registration.entityType, registration.registrationType) match {
-                            case (Some(_), Some(Amendment))                    =>
-                              Some(base64EncodedHtmlViewForPdf)
-                            case (Some(value), _) if EntityType.isOther(value) =>
-                              Some(base64EncodedHtmlViewForPdf)
-                            case (None, Some(Amendment))                       =>
-                              Some(base64EncodedHtmlViewForPdf)
-                            case _                                             =>
-                              None
-                          }
+      _        <- registrationService
+                    .upsertRegistration(registration =
+                      registration.copy(
+                        base64EncodedFields = Some(
+                          Base64EncodedFields(
+                            nrsSubmissionHtml = Some(base64EncodedHtmlView),
+                            dmsSubmissionHtml = (registration.entityType, registration.registrationType) match {
+                              case (Some(_), Some(Amendment))                    =>
+                                Some(base64EncodedHtmlViewForPdf)
+                              case (Some(value), _) if EntityType.isOther(value) =>
+                                Some(base64EncodedHtmlViewForPdf)
+                              case (None, Some(Amendment))                       =>
+                                Some(base64EncodedHtmlViewForPdf)
+                              case _                                             =>
+                                None
+                            }
+                          )
                         )
                       )
                     )
-                  ).asResponseError
+                    .asResponseError
       response <- registrationService.submitRegistration(request.internalId).asResponseError
       _        <- registrationService.deleteRegistration(request.internalId).asResponseError
       _        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
-    } yield response).fold {
-      _        => Future.successful(Ok(answersAreInvalidView())),
-      response => {
-
+    } yield response).fold(
+      _ => Ok(answersAreInvalidView()),
+      response =>
         (for {
           result <- request.registration.registrationType match {
-            case Some(registrationType) =>
-              registrationType match {
-                case Initial =>
-                  emailService.sendRegistrationSubmittedEmails(
-                    registration.contacts,
-                    response.eclReference,
-                    registration.entityType,
-                    request.additionalInfo,
-                    request.registration.carriedOutAmlRegulatedActivityInCurrentFy
-                  )
-                case Amendment => emailService.sendAmendRegistrationSubmitted(registration.contacts).asResponseError
-              }
-            case None => throw new IllegalStateException("Invalid contact details")
-          }
+                      case Some(registrationType) =>
+                        registrationType match {
+                          case Initial   =>
+                            emailService.sendRegistrationSubmittedEmails(
+                              registration.contacts,
+                              response.eclReference,
+                              registration.entityType,
+                              request.additionalInfo,
+                              request.registration.carriedOutAmlRegulatedActivityInCurrentFy
+                            )
+                          case Amendment =>
+                            emailService.sendAmendRegistrationSubmitted(registration.contacts).asResponseError
+                        }
+                      case None                   => throw new IllegalStateException("Invalid contact details")
+                    }
         } yield result).fold(
           _ => Future.successful(Ok(answersAreInvalidView())),
           _ => {
             val session = registration.entityType match {
               case Some(value) if EntityType.isOther(value) => request.session
-              case _ =>
+              case _                                        =>
                 request.session ++ Seq(
                   SessionKeys.EclReference -> response.eclReference
                 )
@@ -200,9 +202,9 @@ class CheckYourAnswersController @Inject() (
 
             (for {
               result <- getField(
-                "First contact email address not found in registration data",
-                registration.contacts.firstContactDetails.emailAddress
-              ).asResponseError
+                          "First contact email address not found in registration data",
+                          registration.contacts.firstContactDetails.emailAddress
+                        ).asResponseError
             } yield result).fold(
               _ => Future.successful(Ok(answersAreInvalidView())),
               emailAddress => {
@@ -213,11 +215,11 @@ class CheckYourAnswersController @Inject() (
                 Redirect((registration.entityType, registration.registrationType) match {
                   case (Some(value), Some(Initial)) if EntityType.isOther(value) =>
                     routes.RegistrationReceivedController.onPageLoad()
-                  case (Some(_), Some(Amendment)) =>
+                  case (Some(_), Some(Amendment))                                =>
                     routes.AmendmentRequestedController.onPageLoad()
-                  case (None, Some(Amendment)) =>
+                  case (None, Some(Amendment))                                   =>
                     routes.AmendmentRequestedController.onPageLoad()
-                  case _ =>
+                  case _                                                         =>
                     routes.RegistrationSubmittedController.onPageLoad()
                 }).withSession(
                   registration.contacts.secondContactDetails.emailAddress.fold(updatedSession)(email =>
@@ -228,8 +230,7 @@ class CheckYourAnswersController @Inject() (
             )
           }
         )
-      }
-    }
+    )
   }
 
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
