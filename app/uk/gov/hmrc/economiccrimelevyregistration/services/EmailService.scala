@@ -16,19 +16,22 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import cats.data.EitherT
 import play.api.Logging
 import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EntityType, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, RegistrationSubmittedEmailParameters}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, DataValidationError}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.time.TaxYear
 
 import java.time.{LocalDate, ZoneOffset}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 class EmailService @Inject() (emailConnector: EmailConnector)(implicit
   ec: ExecutionContext
@@ -109,16 +112,30 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
 
   }
 
-  def sendAmendRegistrationSubmitted(contacts: Contacts)(implicit hc: HeaderCarrier, messages: Messages): Future[Unit] =
-    (contacts.firstContactDetails.emailAddress, contacts.firstContactDetails.name) match {
-      case (Some(emailAddress), Some(name)) =>
-        emailConnector.sendAmendRegistrationSubmittedEmail(
-          to = emailAddress,
-          AmendRegistrationSubmittedEmailParameters(
-            name = name,
-            dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now())
+  def sendAmendRegistrationSubmitted(
+    contacts: Contacts
+  )(implicit hc: HeaderCarrier, messages: Messages): EitherT[Future, DataRetrievalError, Unit] = {
+    EitherT {
+      (contacts.firstContactDetails.emailAddress, contacts.firstContactDetails.name) match {
+        case (Some(emailAddress), Some(name)) =>
+          emailConnector.sendAmendRegistrationSubmittedEmail(
+            to = emailAddress,
+            AmendRegistrationSubmittedEmailParameters(
+              name = name,
+              dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now())
+            )
           )
-        )
-      case _                                => throw new IllegalStateException("Invalid contact details")
+            .map(Right(_))
+            .recover {
+              case error@UpstreamErrorResponse(message, code, _, _)
+                if UpstreamErrorResponse.Upstream5xxResponse
+                  .unapply(error)
+                  .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+                Left(DataRetrievalError.BadGateway(message, code))
+              case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+            }
+        case _ => Left(DataRetrievalError.FieldNotFound("Invalid contact details"))
+      }
     }
+  }
 }

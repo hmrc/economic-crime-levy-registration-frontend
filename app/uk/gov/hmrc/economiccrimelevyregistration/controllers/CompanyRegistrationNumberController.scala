@@ -64,7 +64,8 @@ class CompanyRegistrationNumberController @Inject() (
             val otherEntityJourneyData = request.registration.otherEntityJourneyData.copy(
               companyRegistrationNumber = Some(companyNumber)
             )
-            val updatedRegistration = request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+            val updatedRegistration    =
+              request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
             (for {
               upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError

@@ -60,7 +60,7 @@ class SaUtrController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           saUtr => {
-            val otherEntity = request.registration.otherEntityJourneyData.copy(
+            val otherEntity         = request.registration.otherEntityJourneyData.copy(
               saUtr = Some(saUtr),
               ctUtr = None
             )

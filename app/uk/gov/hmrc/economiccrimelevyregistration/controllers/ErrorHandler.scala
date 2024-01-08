@@ -71,33 +71,29 @@ trait ErrorHandler extends Logging {
     def convert(error: E): ResponseError
   }
 
-  implicit val enrolmentStoreErrorConverter: Converter[AddressLookupContinueError] =
-    {
-      case AddressLookupContinueError.BadGateway(cause, statusCode) => ResponseError.badGateway(cause, statusCode)
-      case AddressLookupContinueError.InternalUnexpectedError(message, cause) =>
-        ResponseError.internalServiceError(message = message, cause = cause)
-    }
+  implicit val enrolmentStoreErrorConverter: Converter[AddressLookupContinueError] = {
+    case AddressLookupContinueError.BadGateway(cause, statusCode)           => ResponseError.badGateway(cause, statusCode)
+    case AddressLookupContinueError.InternalUnexpectedError(message, cause) =>
+      ResponseError.internalServiceError(message = message, cause = cause)
+  }
 
-  implicit val registrationErrorConverter: Converter[RegistrationError] =
-    {
-      case RegistrationError.BadGateway(cause, statusCode) => ResponseError.badGateway(cause, statusCode)
-      case RegistrationError.InternalUnexpectedError(message, cause) =>
-        ResponseError.internalServiceError(message = message, cause = cause)
-    }
+  implicit val registrationErrorConverter: Converter[RegistrationError] = {
+    case RegistrationError.BadGateway(cause, statusCode)           => ResponseError.badGateway(cause, statusCode)
+    case RegistrationError.InternalUnexpectedError(message, cause) =>
+      ResponseError.internalServiceError(message = message, cause = cause)
+  }
 
-  implicit val dataRetrievalErrorConverter: Converter[DataRetrievalError] =
-    {
-      case DataRetrievalError.BadGateway(cause, statusCode) => ResponseError.badGateway(cause, statusCode)
-      case DataRetrievalError.FieldNotFound(message) => ResponseError.badGateway(message, BAD_GATEWAY)
-      case DataRetrievalError.InternalUnexpectedError(message, cause) =>
-        ResponseError.internalServiceError(message = message, cause = cause)
-    }
+  implicit val dataRetrievalErrorConverter: Converter[DataRetrievalError] = {
+    case DataRetrievalError.BadGateway(cause, statusCode)           => ResponseError.badGateway(cause, statusCode)
+    case DataRetrievalError.FieldNotFound(message)                  => ResponseError.badGateway(message, BAD_GATEWAY)
+    case DataRetrievalError.InternalUnexpectedError(message, cause) =>
+      ResponseError.internalServiceError(message = message, cause = cause)
+  }
 
-  implicit val sessionErrorConverter: Converter[SessionError] =
-    {
-      case DataRetrievalError.BadGateway(cause, statusCode) => ResponseError.badGateway(cause, statusCode)
-      case DataRetrievalError.InternalUnexpectedError(message, cause) =>
-        ResponseError.internalServiceError(message = message, cause = cause)
-    }
+  implicit val sessionErrorConverter: Converter[SessionError] = {
+    case DataRetrievalError.BadGateway(cause, statusCode)           => ResponseError.badGateway(cause, statusCode)
+    case DataRetrievalError.InternalUnexpectedError(message, cause) =>
+      ResponseError.internalServiceError(message = message, cause = cause)
+  }
 
 }

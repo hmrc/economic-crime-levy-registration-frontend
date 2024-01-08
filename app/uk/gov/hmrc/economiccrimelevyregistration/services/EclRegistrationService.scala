@@ -20,7 +20,7 @@ import cats.data.EitherT
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationStartedEvent
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.RegistrationError
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, RegistrationError}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -82,4 +82,39 @@ class EclRegistrationService @Inject() (
         }
     }
 
+  def deleteRegistration(
+    internalId: String
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, DataRetrievalError, Unit] = {
+    EitherT {
+      eclRegistrationConnector
+        .deleteRegistration(internalId)
+        .map(Right(_))
+        .recover {
+          case error@UpstreamErrorResponse(message, code, _, _)
+            if UpstreamErrorResponse.Upstream5xxResponse
+              .unapply(error)
+              .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            Left(DataRetrievalError.BadGateway(message, code))
+          case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+        }
+    }
+  }
+
+  def submitRegistration(
+    internalId: String
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, DataRetrievalError, Unit] = {
+    EitherT {
+      eclRegistrationConnector
+        .submitRegistration(internalId)
+        .map(Right(_))
+        .recover {
+          case error@UpstreamErrorResponse(message, code, _, _)
+            if UpstreamErrorResponse.Upstream5xxResponse
+              .unapply(error)
+              .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            Left(DataRetrievalError.BadGateway(message, code))
+          case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+        }
+    }
+  }
 }

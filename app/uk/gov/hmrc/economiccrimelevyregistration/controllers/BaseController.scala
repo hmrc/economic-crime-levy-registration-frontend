@@ -19,13 +19,22 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import cats.data.EitherT
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{RequestHeader, Result}
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.ResponseError
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, ResponseError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{AsyncPageNavigator, PageNavigator}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait BaseController {
+
+  protected def getField[T](
+    message: String,
+    data: Option[T]
+  ): Either[DataRetrievalError, T] =
+    data match {
+      case Some(value) => Right(value)
+      case None        => Left(DataRetrievalError.FieldNotFound(message))
+    }
 
   implicit class ResponseHandler(value: EitherT[Future, ResponseError, Registration]) {
 

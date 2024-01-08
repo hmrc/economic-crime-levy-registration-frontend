@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveUtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveUtrView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -38,13 +39,15 @@ class DoYouHaveUtrController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   formProvider: DoYouHaveUtrFormProvider,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   pageNavigator: DoYouHaveUtrPageNavigator,
   view: DoYouHaveUtrView
 )(implicit
   ec: ExecutionContext
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[Boolean] = formProvider()
 
@@ -68,11 +71,12 @@ class DoYouHaveUtrController @Inject() (
                   case true  => request.registration.otherEntityJourneyData.ctUtr
                 }
               )
-            eclRegistrationConnector
-              .upsertRegistration(
-                request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
-              )
-              .map(updatedRegistration => Redirect(pageNavigator.nextPage(mode, updatedRegistration)))
+            val updatedRegistration    =
+              request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+
+            (for {
+              upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            } yield upsertedRegistration).convertToResult(mode, pageNavigator)
           }
         )
     }

@@ -69,10 +69,11 @@ class DoYouHaveCtUtrController @Inject() (
                 postcode = userChangedIsCtutrPresentAnswer._1,
                 ctUtr = userChangedIsCtutrPresentAnswer._2
               )
-            val updatedRegistration = request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+            val updatedRegistration             =
+              request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
             (for {
-                upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-              } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+              upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            } yield upsertedRegistration).convertToResult(mode, pageNavigator)
           }
         )
     }

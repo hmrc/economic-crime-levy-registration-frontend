@@ -155,16 +155,15 @@ abstract class BaseAuthorisedAction @Inject() (
                       if (request.uri.toLowerCase.contains("amend")) {
                         block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
                       } else {
-                        eclRegistrationService.getOrCreateRegistration(internalId).flatMap {
-                          registration =>
-                            registration.registrationType match {
-                              case None            =>
-                                Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
-                              case Some(Amendment) =>
-                                block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
-                              case Some(Initial)   =>
-                                Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
-                            }
+                        eclRegistrationService.getOrCreateRegistration(internalId).flatMap { registration =>
+                          registration.registrationType match {
+                            case None            =>
+                              Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
+                            case Some(Amendment) =>
+                              block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
+                            case Some(Initial)   =>
+                              Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
+                          }
                         }
                       }
                     case None    =>

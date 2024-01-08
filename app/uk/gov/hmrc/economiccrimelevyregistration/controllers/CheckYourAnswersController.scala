@@ -24,35 +24,38 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Base64EncodedFields, EntityType, Registration, RegistrationType, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EmailService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, OtherRegistrationPdfView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, AnswersAreInvalidView, CheckYourAnswersView, OtherRegistrationPdfView}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import java.time.LocalDate
 import java.util.Base64
 import javax.inject.Singleton
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  registrationService: EclRegistrationService,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
   validateRegistrationData: ValidatedRegistrationAction,
   emailService: EmailService,
+  answersAreInvalidView: AnswersAreInvalidView,
   otherRegistrationPdfView: OtherRegistrationPdfView,
   amendRegistrationPdfView: AmendRegistrationPdfView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController
+    with ErrorHandler {
 
   private def eclDetails()(implicit request: RegistrationDataRequest[_]): SummaryList = SummaryListViewModel(
     rows = Seq(
@@ -141,8 +144,8 @@ class CheckYourAnswersController @Inject() (
     val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
     val base64EncodedHtmlViewForPdf   = getBase64EncodedPdf(registration)
 
-    for {
-      _        <- eclRegistrationConnector.upsertRegistration(registration =
+    (for {
+      _        <- registrationService.upsertRegistration(registration =
                     registration.copy(
                       base64EncodedFields = Some(
                         Base64EncodedFields(
@@ -160,53 +163,72 @@ class CheckYourAnswersController @Inject() (
                         )
                       )
                     )
+                  ).asResponseError
+      response <- registrationService.submitRegistration(request.internalId).asResponseError
+      _        <- registrationService.deleteRegistration(request.internalId).asResponseError
+      _        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
+    } yield response).fold {
+      _ => Future.successful(Ok(answersAreInvalidView())),
+      response => {
+
+        (for {
+          result <- request.registration.registrationType match {
+            case Some(registrationType) =>
+              registrationType match {
+                case Initial =>
+                  emailService.sendRegistrationSubmittedEmails(
+                    registration.contacts,
+                    response.eclReference,
+                    registration.entityType,
+                    request.additionalInfo,
+                    request.registration.carriedOutAmlRegulatedActivityInCurrentFy
                   )
-      response <- eclRegistrationConnector.submitRegistration(request.internalId)
-      _         = request.registration.registrationType match {
-                    case Some(registrationType) =>
-                      registrationType match {
-                        case Initial   =>
-                          emailService.sendRegistrationSubmittedEmails(
-                            registration.contacts,
-                            response.eclReference,
-                            registration.entityType,
-                            request.additionalInfo,
-                            request.registration.carriedOutAmlRegulatedActivityInCurrentFy
-                          )
-                        case Amendment => emailService.sendAmendRegistrationSubmitted(registration.contacts)
-                      }
-                    case None                   => throw new IllegalStateException("Invalid contact details")
-                  }
-      _        <- eclRegistrationConnector.deleteRegistration(request.internalId)
-      _        <- registrationAdditionalInfoService.delete(request.internalId)
-    } yield {
-      val session = registration.entityType match {
-        case Some(value) if EntityType.isOther(value) => request.session
-        case _                                        =>
-          request.session ++ Seq(
-            SessionKeys.EclReference -> response.eclReference
-          )
-      }
+                case Amendment => emailService.sendAmendRegistrationSubmitted(registration.contacts)
+              }
+            case None => throw new IllegalStateException("Invalid contact details")
+          }
+        } yield result).fold(
+          _ => Future.successful(Ok(answersAreInvalidView())),
+          _ => {
+            val session = registration.entityType match {
+              case Some(value) if EntityType.isOther(value) => request.session
+              case _ =>
+                request.session ++ Seq(
+                  SessionKeys.EclReference -> response.eclReference
+                )
+            }
 
-      val updatedSession = session ++ Seq(
-        SessionKeys.FirstContactEmailAddress -> registration.contacts.firstContactDetails.emailAddress
-          .getOrElse(throw new IllegalStateException("First contact email address not found in registration data"))
-      )
+            (for {
+              result <- getField(
+                "First contact email address not found in registration data",
+                registration.contacts.firstContactDetails.emailAddress
+              ).asResponseError
+            } yield result).fold(
+              _ => Future.successful(Ok(answersAreInvalidView())),
+              emailAddress => {
+                val updatedSession = session ++ Seq(
+                  SessionKeys.FirstContactEmailAddress -> emailAddress
+                )
 
-      Redirect((registration.entityType, registration.registrationType) match {
-        case (Some(value), Some(Initial)) if EntityType.isOther(value) =>
-          routes.RegistrationReceivedController.onPageLoad()
-        case (Some(_), Some(Amendment))                                =>
-          routes.AmendmentRequestedController.onPageLoad()
-        case (None, Some(Amendment))                                   =>
-          routes.AmendmentRequestedController.onPageLoad()
-        case _                                                         =>
-          routes.RegistrationSubmittedController.onPageLoad()
-      }).withSession(
-        registration.contacts.secondContactDetails.emailAddress.fold(updatedSession)(email =>
-          updatedSession ++ Seq(SessionKeys.SecondContactEmailAddress -> email)
+                Redirect((registration.entityType, registration.registrationType) match {
+                  case (Some(value), Some(Initial)) if EntityType.isOther(value) =>
+                    routes.RegistrationReceivedController.onPageLoad()
+                  case (Some(_), Some(Amendment)) =>
+                    routes.AmendmentRequestedController.onPageLoad()
+                  case (None, Some(Amendment)) =>
+                    routes.AmendmentRequestedController.onPageLoad()
+                  case _ =>
+                    routes.RegistrationSubmittedController.onPageLoad()
+                }).withSession(
+                  registration.contacts.secondContactDetails.emailAddress.fold(updatedSession)(email =>
+                    updatedSession ++ Seq(SessionKeys.SecondContactEmailAddress -> email)
+                  )
+                )
+              }
+            )
+          }
         )
-      )
+      }
     }
   }
 

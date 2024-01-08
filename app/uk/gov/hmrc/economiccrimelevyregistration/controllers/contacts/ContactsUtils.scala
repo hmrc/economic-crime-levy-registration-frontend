@@ -41,8 +41,8 @@ trait ContactsUtils {
 
     def contactAddress: Either[DataRetrievalError, EclAddress] =
       request.registration.grsAddressToEclAddress match {
-        case Some(value)  => Right(value)
-        case None         => Left(DataRetrievalError.FieldNotFound("No registered office address found in registration data"))
+        case Some(value) => Right(value)
+        case None        => Left(DataRetrievalError.FieldNotFound("No registered office address found in registration data"))
       }
   }
 }

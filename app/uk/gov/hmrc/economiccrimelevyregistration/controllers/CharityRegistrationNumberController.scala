@@ -64,7 +64,7 @@ class CharityRegistrationNumberController @Inject() (
             val otherEntityJourneyData = request.registration.otherEntityJourneyData.copy(
               charityRegistrationNumber = Some(charityNumber)
             )
-            val updatedRegistration =
+            val updatedRegistration    =
               request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
             (for {

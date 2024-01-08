@@ -62,9 +62,12 @@ class UkRevenueController @Inject() (
           val updatedRegistration = request.registration.copy(relevantApRevenue = Some(revenue))
           eclCalculatorService.checkIfRevenueMeetsThreshold(updatedRegistration).flatMap { revenueMeetsThreshold =>
             (for {
-              upsertedRegistration <- eclRegistrationService.upsertRegistration(
-                updatedRegistration
-                  .copy(revenueMeetsThreshold = revenueMeetsThreshold)).asResponseError
+              upsertedRegistration <- eclRegistrationService
+                                        .upsertRegistration(
+                                          updatedRegistration
+                                            .copy(revenueMeetsThreshold = revenueMeetsThreshold)
+                                        )
+                                        .asResponseError
             } yield upsertedRegistration).convertToAsyncResult(mode, pageNavigator)
           }
         }

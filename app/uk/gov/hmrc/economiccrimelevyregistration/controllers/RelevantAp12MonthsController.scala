@@ -60,7 +60,8 @@ class RelevantAp12MonthsController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         relevantAp12Months => {
-          val updatedRegistration = dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
+          val updatedRegistration =
+            dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
           } yield upsertedRegistration).convertToResult(mode, pageNavigator)
