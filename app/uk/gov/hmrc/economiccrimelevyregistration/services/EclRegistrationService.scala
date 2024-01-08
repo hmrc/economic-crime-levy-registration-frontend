@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import cats.data.EitherT
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationStartedEvent
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, RegistrationError}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
@@ -102,7 +102,7 @@ class EclRegistrationService @Inject() (
 
   def submitRegistration(
     internalId: String
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, DataRetrievalError, Unit] = {
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse] = {
     EitherT {
       eclRegistrationConnector
         .submitRegistration(internalId)

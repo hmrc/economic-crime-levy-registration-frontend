@@ -168,7 +168,7 @@ class CheckYourAnswersController @Inject() (
       _        <- registrationService.deleteRegistration(request.internalId).asResponseError
       _        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
     } yield response).fold {
-      _ => Future.successful(Ok(answersAreInvalidView())),
+      _        => Future.successful(Ok(answersAreInvalidView())),
       response => {
 
         (for {
@@ -183,7 +183,7 @@ class CheckYourAnswersController @Inject() (
                     request.additionalInfo,
                     request.registration.carriedOutAmlRegulatedActivityInCurrentFy
                   )
-                case Amendment => emailService.sendAmendRegistrationSubmitted(registration.contacts)
+                case Amendment => emailService.sendAmendRegistrationSubmitted(registration.contacts).asResponseError
               }
             case None => throw new IllegalStateException("Invalid contact details")
           }

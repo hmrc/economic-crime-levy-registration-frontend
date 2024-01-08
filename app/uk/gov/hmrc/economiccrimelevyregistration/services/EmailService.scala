@@ -37,7 +37,7 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
-  type EmailServiceSubmissionResult[T] = EitherT[Future, DataRetrievalError, T]
+  type ServiceResult[T] = EitherT[Future, DataRetrievalError, T]
 
   def sendRegistrationSubmittedEmails(
     contacts: Contacts,
@@ -48,7 +48,7 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
   )(implicit
     hc: HeaderCarrier,
     messages: Messages
-  ): Future[Unit] = {
+  ): ServiceResult[Unit] = {
     val eclDueDate       = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)
     val registrationDate = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)
     val previousFY       =
@@ -61,21 +61,33 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
       email: String,
       isPrimaryContact: Boolean,
       secondContactEmail: Option[String]
-    ): Future[Unit] =
-      emailConnector.sendRegistrationSubmittedEmail(
-        email,
-        RegistrationSubmittedEmailParameters(
-          name = name,
-          eclRegistrationReference = eclRegistrationReference,
-          eclRegistrationDate = registrationDate,
-          eclDueDate,
-          isPrimaryContact = isPrimaryContact.toString,
-          secondContactEmail = secondContactEmail,
-          previousFY = previousFY,
-          currentFY = currentFY
-        ),
-        entityType
-      )
+    ): ServiceResult[Unit] = {
+      EitherT {
+        emailConnector.sendRegistrationSubmittedEmail(
+          email,
+          RegistrationSubmittedEmailParameters(
+            name = name,
+            eclRegistrationReference = eclRegistrationReference,
+            eclRegistrationDate = registrationDate,
+            eclDueDate,
+            isPrimaryContact = isPrimaryContact.toString,
+            secondContactEmail = secondContactEmail,
+            previousFY = previousFY,
+            currentFY = currentFY
+          ),
+          entityType
+        )
+          .map(Right(_))
+          .recover {
+            case error@UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse
+                .unapply(error)
+                .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+              Left(DataRetrievalError.BadGateway(message, code))
+            case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+          }
+      }
+    }
 
     ((
       contacts.firstContactDetails.name,
@@ -106,40 +118,11 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
           secondContactEmail = None
         )
       case _                                                                                                    => throw new IllegalStateException("Invalid contact details")
-    }).recover { case e: Throwable =>
-      logger.error(s"Failed to send email: ${e.getMessage}")
-      throw e
     }
 
   }
 
-  def sendAmendRegistrationSubmitted(
-    contacts: Contacts
-  )(implicit hc: HeaderCarrier, messages: Messages): EmailServiceSubmissionResult[Unit] =
-    EitherT {
-      (contacts.firstContactDetails.emailAddress, contacts.firstContactDetails.name) match {
-        case (Some(emailAddress), Some(name)) =>
-          emailConnector
-            .sendAmendRegistrationSubmittedEmail(
-              to = emailAddress,
-              AmendRegistrationSubmittedEmailParameters(
-                name = name,
-                dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now())
-              )
-            )
-            .map(Right(_))
-            .recover {
-              case error @ UpstreamErrorResponse(message, code, _, _)
-                  if UpstreamErrorResponse.Upstream5xxResponse
-                    .unapply(error)
-                    .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
-                Left(DataRetrievalError.BadGateway(message, code))
-              case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
-            }
-        case _                                => Left(DataRetrievalError.FieldNotFound("Invalid contact details"))
-      }
-    }
-  def getTuple2(
+  private def getContactData(
     contacts: Contacts
   ): Either[DataRetrievalError, (String, String)]                                       =
     (contacts.firstContactDetails.emailAddress, contacts.firstContactDetails.name) match {
@@ -147,18 +130,10 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
       case _                                => Left(DataRetrievalError.FieldNotFound("Invalid contact details"))
     }
 
-  def sendAmendRegistrationSubmitted2(
-    contacts: Contacts
-  )(implicit hc: HeaderCarrier, messages: Messages): EmailServiceSubmissionResult[Unit] =
-    for {
-      x <- EitherT.fromEither[Future](getTuple2(contacts))
-      y <- testDef(x._1, x._2)
-    } yield y
-
-  def testDef(emailAddress: String, name: String)(implicit
+  private def sendEmail(emailAddress: String, name: String)(implicit
     hc: HeaderCarrier,
     messages: Messages
-  ): EmailServiceSubmissionResult[Unit] =
+  ): ServiceResult[Unit] =
     EitherT {
       emailConnector
         .sendAmendRegistrationSubmittedEmail(
@@ -178,4 +153,12 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
           case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
+
+  def sendAmendRegistrationSubmitted(
+    contacts: Contacts
+  )(implicit hc: HeaderCarrier, messages: Messages): ServiceResult[Unit] =
+    for {
+      data   <- EitherT.fromEither[Future](getContactData(contacts))
+      result <- sendEmail(data._1, data._2)
+    } yield result
 }
