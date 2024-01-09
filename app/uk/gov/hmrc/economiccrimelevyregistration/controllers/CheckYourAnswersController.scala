@@ -98,6 +98,12 @@ class CheckYourAnswersController @Inject() (
     ).flatten
   ).withCssClass("govuk-!-margin-bottom-9")
 
+  private def amendReasonDetails()(implicit request: RegistrationDataRequest[_]): SummaryList = SummaryListViewModel(
+    rows = Seq(
+      AmendReasonSummary.row()
+    ).flatten
+  ).withCssClass("govuk-!-margin-bottom-9")
+
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getRegistrationData andThen validateRegistrationData) { implicit request =>
       Ok(
@@ -106,6 +112,7 @@ class CheckYourAnswersController @Inject() (
           organisationDetails(),
           contactDetails(),
           otherEntityDetails(),
+          amendReasonDetails,
           request.registration.registrationType,
           request.eclRegistrationReference
         )
@@ -132,6 +139,7 @@ class CheckYourAnswersController @Inject() (
       organisationDetails(),
       contactDetails(),
       otherEntityDetails(),
+      amendReasonDetails(),
       request.registration.registrationType,
       request.eclRegistrationReference
     )

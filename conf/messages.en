@@ -118,6 +118,11 @@ amlSupervisor.LawSociety = Law Society
 amlSupervisor.LawSocietyOfNorthernIreland = Law Society of Northern Ireland
 amlSupervisor.LawSocietyOfScotland = Law Society of Scotland
 
+amendReason.title = Why are you requesting to amend your registration?
+amendReason.h1 = Why are you requesting to amend your registration?
+amendReason.p1 = Enter any information relating to your request to amend your registration. Do not include personal or financial information, like your National Insurance number or credit card details.
+amendReason.error.required = Enter the reason why you are requesting to amend your registration
+
 relevantAp12Months.title = Relevant accounting period
 relevantAp12Months.heading = Relevant accounting period
 relevantAp12Months.p1 = Your relevant accounting period is any that ends in the financial year. It is based on the accounting period you use for your Company Tax Return.
@@ -370,6 +375,8 @@ checkYourAnswers.overseasTaxIdentifier.label = Overseas Tax Identifier
 checkYourAnswers.eclDetails = ECL details
 checkYourAnswers.eclReferenceNumber.label = ECL reference number
 checkYourAnswers.liabilityDate.label = Liability start date
+checkYourAnswers.amendReason.title = Reason for amending
+checkYourAnswers.amendReason.label = Additional Information
 
 submitted.title = Registration submitted
 submitted.heading = Registration submitted

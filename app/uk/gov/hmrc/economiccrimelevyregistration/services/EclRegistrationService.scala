@@ -45,4 +45,7 @@ class EclRegistrationService @Inject() (
 
         eclRegistrationConnector.upsertRegistration(Registration.empty(internalId))
     }
+
+  def upsertRegistration(registration: Registration)(implicit hc: HeaderCarrier): Future[Registration] =
+    eclRegistrationConnector.upsertRegistration(registration)
 }
