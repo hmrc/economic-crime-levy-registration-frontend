@@ -228,6 +228,7 @@ class CheckYourAnswersController @Inject() (
     val organisation = organisationDetails(LiabilityYearSummary.row())
     val contact      = contactDetails()
     val otherEntity  = otherEntityDetails()
+    val amendReason  = amendReasonDetails()
 
     registrationType match {
       case Some(Amendment) =>
@@ -236,7 +237,11 @@ class CheckYourAnswersController @Inject() (
             ViewUtils.formatLocalDate(date),
             eclDetails(),
             organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
-            contact.copy(rows = contact.rows.map(_.copy(actions = None)))
+            contact.copy(rows = contact.rows.map(_.copy(actions = None))),
+            amendReason.copy(
+              rows = amendReason.rows.map(_.copy(actions = None)),
+              attributes = Map("id" -> "amendReason")
+            )
           ).toString()
         )
       case _               =>
@@ -245,7 +250,9 @@ class CheckYourAnswersController @Inject() (
             ViewUtils.formatLocalDate(date),
             organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
             contact.copy(rows = contact.rows.map(_.copy(actions = None))),
-            otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None)))
+            otherEntity.copy(
+              rows = otherEntity.rows.map(_.copy(actions = None))
+            )
           ).toString()
         )
     }
