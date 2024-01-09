@@ -27,6 +27,7 @@
         organisationDetails: SummaryList,
         contactDetails: SummaryList,
         otherEntityDetails: SummaryList,
+        amendReason: SummaryList,
         registrationType: Option[RegistrationType],
         eclReference: Option[String])(implicit request: Request[_], messages: Messages)
 
@@ -36,6 +37,15 @@
 ) {
     @formHelper(action = CheckYourAnswersController.onSubmit()) {
         <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
+
+        @if(amendReason.rows.nonEmpty) {
+
+            <h2 class="govuk-heading-m">@messages("checkYourAnswers.amendReason.title")</h2>
+
+            @govukSummaryList(amendReason)
+
+        }
+
 
         @if(registrationType.contains(Amendment)) {
 
