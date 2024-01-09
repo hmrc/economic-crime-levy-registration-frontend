@@ -110,15 +110,18 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
                  secondContactEmail = Some(secondContactEmail)
                )
         } yield ()
-      case (Some(firstContactName), Some(firstContactEmail), None, None)                                        =>
+      case (Some(firstContactName), Some(firstContactEmail), None, None) =>
         sendEmail(
           name = firstContactName,
           email = firstContactEmail,
           isPrimaryContact = true,
           secondContactEmail = None
         )
-      case _                                                                                                    => throw new IllegalStateException("Invalid contact details")
-    }
+      case _                                                             =>
+        EitherT(Future.successful(Left(
+          DataRetrievalError.FieldNotFound("Invalid contact details")
+        )))
+    })
 
   }
 
