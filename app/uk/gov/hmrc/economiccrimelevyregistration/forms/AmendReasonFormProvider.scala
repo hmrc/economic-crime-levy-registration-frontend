@@ -22,5 +22,5 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 class AmendReasonFormProvider extends Mappings {
 
   def apply(): Form[String] =
-    Form("value" -> text("amendReason.error", removeAllWhitespace = false))
+    Form("value" -> text("amendReason.error.required", removeAllWhitespace = false))
 }
