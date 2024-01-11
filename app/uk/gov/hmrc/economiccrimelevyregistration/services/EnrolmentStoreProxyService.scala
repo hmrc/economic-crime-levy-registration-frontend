@@ -34,8 +34,8 @@ class EnrolmentStoreProxyService @Inject() (enrolmentStoreProxyConnector: Enrolm
     groupId: String
   )(implicit hc: HeaderCarrier): EitherT[Future, EnrolmentStoreProxyError, String] =
     for {
-      response    <- getEnrolmentsForGroup(groupId)
-      eclReference = getEclReference(response)
+      response     <- getEnrolmentsForGroup(groupId)
+      eclReference <- getEclReference(response)
     } yield eclReference
 
   private def getEnrolmentsForGroup(

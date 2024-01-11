@@ -59,17 +59,21 @@ class UkRevenueController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         revenue => {
-          val updatedRegistration = request.registration.copy(relevantApRevenue = Some(revenue))
-          eclCalculatorService.checkIfRevenueMeetsThreshold(updatedRegistration).flatMap { revenueMeetsThreshold =>
-            (for {
-              upsertedRegistration <- eclRegistrationService
-                                        .upsertRegistration(
-                                          updatedRegistration
-                                            .copy(revenueMeetsThreshold = revenueMeetsThreshold)
-                                        )
-                                        .asResponseError
-            } yield upsertedRegistration).convertToAsyncResult(mode, pageNavigator)
-          }
+          val updatedRegistration = request.registration.copy(
+            relevantApRevenue = Some(revenue)
+          )
+
+          (for {
+            revenueMeetsThreshold <-
+              eclCalculatorService.checkIfRevenueMeetsThreshold(updatedRegistration).asResponseError
+            upsertedRegistration  <- eclRegistrationService
+                                       .upsertRegistration(
+                                         updatedRegistration.copy(
+                                           revenueMeetsThreshold = revenueMeetsThreshold
+                                         )
+                                       )
+                                       .asResponseError
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

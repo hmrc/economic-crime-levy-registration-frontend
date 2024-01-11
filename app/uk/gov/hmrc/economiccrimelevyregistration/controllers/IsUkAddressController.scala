@@ -74,7 +74,8 @@ class IsUkAddressController @Inject() (
           val updatedRegistration = request.registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield upsertedRegistration).convertToAsyncResult(mode, pageNavigator)
+            url                  <- eclRegistrationService.getAddressLookupUrl(upsertedRegistration, mode).asResponseError
+          } yield (upsertedRegistration, url)).convertToResult(mode, pageNavigator)
         }
       )
   }

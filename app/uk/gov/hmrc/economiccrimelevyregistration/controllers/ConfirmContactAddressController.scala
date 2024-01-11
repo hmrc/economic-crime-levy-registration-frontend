@@ -94,11 +94,20 @@ class ConfirmContactAddressController @Inject() (
           val updatedRegistration = request.registration
             .copy(useRegisteredOfficeAddressAsContactAddress = Some(useRegisteredOfficeAddressAsContactAddress))
 
-          val cleanUpRegistration = dataCleanup.cleanup(updatedRegistration)
+          val cleanedUpRegistration = dataCleanup.cleanup(updatedRegistration)
+
+          val modifiedRegistration =
+            if (cleanedUpRegistration.useRegisteredOfficeAddressAsContactAddress.contains(true)) {
+              cleanedUpRegistration.copy(
+                contactAddress = cleanedUpRegistration.grsAddressToEclAddress
+              )
+            } else {
+              cleanedUpRegistration
+            }
 
           (for {
-            upsertedRegistration <- eclRegistrationService.upsertRegistration(cleanUpRegistration).asResponseError
-          } yield upsertedRegistration).convertToAsyncResult(mode, pageNavigator)
+            upsertedRegistration <- eclRegistrationService.upsertRegistration(modifiedRegistration).asResponseError
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

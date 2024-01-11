@@ -61,33 +61,33 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
       email: String,
       isPrimaryContact: Boolean,
       secondContactEmail: Option[String]
-    ): ServiceResult[Unit] = {
+    ): ServiceResult[Unit] =
       EitherT {
-        emailConnector.sendRegistrationSubmittedEmail(
-          email,
-          RegistrationSubmittedEmailParameters(
-            name = name,
-            eclRegistrationReference = eclRegistrationReference,
-            eclRegistrationDate = registrationDate,
-            eclDueDate,
-            isPrimaryContact = isPrimaryContact.toString,
-            secondContactEmail = secondContactEmail,
-            previousFY = previousFY,
-            currentFY = currentFY
-          ),
-          entityType
-        )
+        emailConnector
+          .sendRegistrationSubmittedEmail(
+            email,
+            RegistrationSubmittedEmailParameters(
+              name = name,
+              eclRegistrationReference = eclRegistrationReference,
+              eclRegistrationDate = registrationDate,
+              eclDueDate,
+              isPrimaryContact = isPrimaryContact.toString,
+              secondContactEmail = secondContactEmail,
+              previousFY = previousFY,
+              currentFY = currentFY
+            ),
+            entityType
+          )
           .map(Right(_))
           .recover {
-            case error@UpstreamErrorResponse(message, code, _, _)
-              if UpstreamErrorResponse.Upstream5xxResponse
-                .unapply(error)
-                .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            case error @ UpstreamErrorResponse(message, code, _, _)
+                if UpstreamErrorResponse.Upstream5xxResponse
+                  .unapply(error)
+                  .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
               Left(DataRetrievalError.BadGateway(message, code))
             case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
           }
       }
-    }
 
     ((
       contacts.firstContactDetails.name,
@@ -110,24 +110,24 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
                  secondContactEmail = Some(secondContactEmail)
                )
         } yield ()
-      case (Some(firstContactName), Some(firstContactEmail), None, None) =>
+      case (Some(firstContactName), Some(firstContactEmail), None, None)                                        =>
         sendEmail(
           name = firstContactName,
           email = firstContactEmail,
           isPrimaryContact = true,
           secondContactEmail = None
         )
-      case _                                                             =>
-        EitherT(Future.successful(Left(
-          DataRetrievalError.FieldNotFound("Invalid contact details")
-        )))
+      case _                                                                                                    =>
+        EitherT.fromEither[Future](
+          Left(DataRetrievalError.FieldNotFound("Invalid contact details"))
+        )
     })
 
   }
 
   private def getContactData(
     contacts: Contacts
-  ): Either[DataRetrievalError, (String, String)]                                       =
+  ): Either[DataRetrievalError, (String, String)] =
     (contacts.firstContactDetails.emailAddress, contacts.firstContactDetails.name) match {
       case (Some(emailAddress), Some(name)) => Right(emailAddress, name)
       case _                                => Left(DataRetrievalError.FieldNotFound("Invalid contact details"))

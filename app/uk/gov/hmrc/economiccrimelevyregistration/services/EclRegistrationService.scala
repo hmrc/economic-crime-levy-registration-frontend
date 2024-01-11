@@ -17,10 +17,14 @@
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import cats.data.EitherT
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, Registration}
+import play.api.mvc.Call
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, RegisteredSociety, ScottishLimitedPartnership, ScottishPartnership, SoleTrader, UkLimitedCompany, UnlimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationStartedEvent
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, RegistrationError}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, CreateEclSubscriptionResponse, EntityType, Mode, Registration}
+import uk.gov.hmrc.http.HttpVerbs.GET
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -31,13 +35,16 @@ import scala.util.control.NonFatal
 @Singleton
 class EclRegistrationService @Inject() (
   eclRegistrationConnector: EclRegistrationConnector,
-  auditConnector: AuditConnector
+  incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
+  soleTraderIdentificationFrontendConnector: SoleTraderIdentificationFrontendConnector,
+  partnershipIdentificationFrontendConnector: PartnershipIdentificationFrontendConnector,
+  auditConnector: AuditConnector,
+  addressLookupFrontendConnector: AddressLookupFrontendConnector
 )(implicit
   ec: ExecutionContext,
   hc: HeaderCarrier
 ) {
-  //TODO: Change V1 and remove V2
-  def getOrCreateRegistrationV2(internalId: String): EitherT[Future, RegistrationError, Registration] =
+  def getOrCreateRegistration(internalId: String): EitherT[Future, RegistrationError, Registration] =
     EitherT {
       eclRegistrationConnector
         .getRegistration(internalId)
@@ -49,23 +56,11 @@ class EclRegistrationService @Inject() (
           case error @ UpstreamErrorResponse(message, code, _, _)
               if UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
             auditConnector.sendExtendedEvent(RegistrationStartedEvent(internalId).extendedDataEvent)
-            Right(eclRegistrationConnector.upsertRegistration(Registration.empty(internalId)))
+            val registration = Registration.empty(internalId)
+            eclRegistrationConnector.upsertRegistration(registration)
+            Right(registration)
           case NonFatal(thr) => Left(RegistrationError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
-    }
-
-  def getOrCreateRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] =
-    eclRegistrationConnector.getRegistration(internalId).flatMap {
-      case Some(registration) => Future.successful(registration)
-      case None               =>
-        auditConnector
-          .sendExtendedEvent(
-            RegistrationStartedEvent(
-              internalId
-            ).extendedDataEvent
-          )
-
-        eclRegistrationConnector.upsertRegistration(Registration.empty(internalId))
     }
 
   def upsertRegistration(registration: Registration): EitherT[Future, RegistrationError, Registration] =
@@ -84,37 +79,136 @@ class EclRegistrationService @Inject() (
 
   def deleteRegistration(
     internalId: String
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, DataRetrievalError, Unit] = {
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, DataRetrievalError, Unit] =
     EitherT {
       eclRegistrationConnector
         .deleteRegistration(internalId)
         .map(Right(_))
         .recover {
-          case error@UpstreamErrorResponse(message, code, _, _)
-            if UpstreamErrorResponse.Upstream5xxResponse
-              .unapply(error)
-              .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse
+                .unapply(error)
+                .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
             Left(DataRetrievalError.BadGateway(message, code))
           case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
-  }
 
   def submitRegistration(
     internalId: String
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse] = {
+  )(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse] =
     EitherT {
       eclRegistrationConnector
         .submitRegistration(internalId)
         .map(Right(_))
         .recover {
-          case error@UpstreamErrorResponse(message, code, _, _)
-            if UpstreamErrorResponse.Upstream5xxResponse
-              .unapply(error)
-              .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse
+                .unapply(error)
+                .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
             Left(DataRetrievalError.BadGateway(message, code))
           case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
-  }
+
+  def getRegistrationValidationErrors(
+    internalId: String
+  )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse] =
+    EitherT {
+      eclRegistrationConnector
+        .getRegistrationValidationErrors(internalId)
+        .map(Right(_))
+        .recover {
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse
+                .unapply(error)
+                .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            Left(DataRetrievalError.BadGateway(message, code))
+          case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+        }
+    }
+
+  def registerEntityType(
+    entityType: EntityType,
+    mode: Mode,
+    isSame: Boolean
+  )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, String] =
+    if ((mode == CheckMode) && isSame) {
+      EitherT.fromEither[Future](Right(""))
+    } else {
+      entityType match {
+        case UkLimitedCompany | UnlimitedCompany | RegisteredSociety =>
+          EitherT {
+            incorporatedEntityIdentificationFrontendConnector
+              .createIncorporatedEntityJourney(entityType, mode)
+              .map(response => Right(response.journeyStartUrl))
+              .recover {
+                case error @ UpstreamErrorResponse(message, code, _, _)
+                    if UpstreamErrorResponse.Upstream5xxResponse
+                      .unapply(error)
+                      .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+                  Left(DataRetrievalError.BadGateway(message, code))
+                case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+              }
+          }
+
+        case SoleTrader =>
+          EitherT {
+            soleTraderIdentificationFrontendConnector
+              .createSoleTraderJourney(mode)
+              .map(response => Right(response.journeyStartUrl))
+              .recover {
+                case error @ UpstreamErrorResponse(message, code, _, _)
+                    if UpstreamErrorResponse.Upstream5xxResponse
+                      .unapply(error)
+                      .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+                  Left(DataRetrievalError.BadGateway(message, code))
+                case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+              }
+          }
+
+        case GeneralPartnership | ScottishPartnership | LimitedPartnership | ScottishLimitedPartnership |
+            LimitedLiabilityPartnership =>
+          EitherT {
+            partnershipIdentificationFrontendConnector
+              .createPartnershipJourney(entityType, mode)
+              .map(response => Right(response.journeyStartUrl))
+              .recover {
+                case error @ UpstreamErrorResponse(message, code, _, _)
+                    if UpstreamErrorResponse.Upstream5xxResponse
+                      .unapply(error)
+                      .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+                  Left(DataRetrievalError.BadGateway(message, code))
+                case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+              }
+          }
+
+        case _ => EitherT.fromEither[Future](Right(""))
+      }
+    }
+
+  def getAddressLookupUrl(
+    registration: Registration,
+    mode: Mode
+  )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, String] =
+    registration.contactAddressIsUk match {
+      case Some(ukMode) =>
+        EitherT {
+          addressLookupFrontendConnector
+            .initJourney(ukMode, mode)
+            .map(Right(_))
+            .recover {
+              case error @ UpstreamErrorResponse(message, code, _, _)
+                  if UpstreamErrorResponse.Upstream5xxResponse
+                    .unapply(error)
+                    .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+                Left(DataRetrievalError.BadGateway(message, code))
+              case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+            }
+        }
+      case _            => EitherT.fromEither[Future](Right(""))
+    }
 }

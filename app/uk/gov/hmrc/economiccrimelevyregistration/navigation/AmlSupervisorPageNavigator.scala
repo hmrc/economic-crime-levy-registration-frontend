@@ -29,67 +29,53 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvi
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AmlSupervisorPageNavigator @Inject() (auditConnector: AuditConnector)(implicit ec: ExecutionContext)
-    extends AsyncPageNavigator
-    with FrontendHeaderCarrierProvider {
+class AmlSupervisorPageNavigator @Inject() () extends PageNavigator {
 
   override protected def navigateInNormalMode(
     registration: Registration,
     fromLiableBeforeCurrentYearPage: Boolean
-  )(implicit request: RequestHeader): Future[Call] =
+  ): Call =
     (registration.amlSupervisor, registration.registrationType) match {
       case (Some(amlSupervisor), Some(Initial))   =>
         amlSupervisor.supervisorType match {
           case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, registration)
           case Hmrc | Other                                         =>
-            Future.successful(fromLiableBeforeCurrentYearPage match {
+            fromLiableBeforeCurrentYearPage match {
               case true  => routes.EntityTypeController.onPageLoad(NormalMode)
               case false => routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
-            })
+            }
         }
       case (Some(amlSupervisor), Some(Amendment)) =>
         amlSupervisor.supervisorType match {
           case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, registration)
-          case Hmrc | Other                                         => Future.successful(routes.BusinessSectorController.onPageLoad(NormalMode))
+          case Hmrc | Other                                         => routes.BusinessSectorController.onPageLoad(NormalMode)
         }
-      case _                                      => Future.successful(routes.NotableErrorController.answersAreInvalid())
+      case _                                      => routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(
     registration: Registration,
     fromLiableBeforeCurrentYearPage: Boolean
-  )(implicit request: RequestHeader): Future[Call] =
+  ): Call =
     registration.amlSupervisor match {
       case Some(amlSupervisor) =>
         amlSupervisor.supervisorType match {
-          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, registration)
-          case Hmrc | Other                                         => Future.successful(routes.CheckYourAnswersController.onPageLoad())
+          case t @ (GamblingCommission | FinancialConductAuthority) =>
+            registerWithGcOrFca(t, registration)
+          case Hmrc | Other                                         =>
+            routes.CheckYourAnswersController.onPageLoad()
         }
-      case _                   => Future.successful(routes.NotableErrorController.answersAreInvalid())
+      case _                   => routes.NotableErrorController.answersAreInvalid()
     }
 
-  private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType, registration: Registration)(implicit
-    hc: HeaderCarrier
-  ): Future[Call] =
+  private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType, registration: Registration): Call =
     amlSupervisorType match {
       case GamblingCommission        =>
-        sendNotLiableAuditEvent(registration.internalId, NotLiableReason.SupervisedByGamblingCommission).map(_ =>
-          routes.RegisterWithGcController.onPageLoad()
-        )
+        routes.RegisterWithGcController.onPageLoad()
       case FinancialConductAuthority =>
-        sendNotLiableAuditEvent(registration.internalId, NotLiableReason.SupervisedByFinancialConductAuthority).map(_ =>
-          routes.RegisterWithFcaController.onPageLoad()
-        )
-      case _                         => Future.successful(routes.NotableErrorController.answersAreInvalid())
+        routes.RegisterWithFcaController.onPageLoad()
+      case _                         =>
+        routes.NotableErrorController.answersAreInvalid()
     }
-
-  private def sendNotLiableAuditEvent(internalId: String, notLiableReason: NotLiableReason)(implicit
-    hc: HeaderCarrier
-  ): Future[Unit] = {
-    auditConnector
-      .sendExtendedEvent(RegistrationNotLiableAuditEvent(internalId, notLiableReason).extendedDataEvent)
-
-    Future.unit
-  }
 
 }

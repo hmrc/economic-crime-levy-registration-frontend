@@ -24,28 +24,28 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvi
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AmlRegulatedActivityPageNavigator @Inject() ()(implicit ec: ExecutionContext)
-    extends AsyncPageNavigator
-    with FrontendHeaderCarrierProvider {
+class AmlRegulatedActivityPageNavigator @Inject() () extends PageNavigator {
 
   override protected def navigateInNormalMode(
     registration: Registration
-  )(implicit request: RequestHeader): Future[Call] =
+  ): Call =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  =>
-        Future.successful(
-          routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get, false)
-        )
-      case Some(false) => Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode))
-      case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
+        routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get, false)
+      case Some(false) =>
+        routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode)
+      case _           =>
+        routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(
     registration: Registration
-  )(implicit request: RequestHeader): Future[Call] =
+  ): Call =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
-      case Some(_) => Future.successful(routes.CheckYourAnswersController.onPageLoad())
-      case _       => Future.successful(routes.NotableErrorController.answersAreInvalid())
+      case Some(_) =>
+        routes.CheckYourAnswersController.onPageLoad()
+      case _       =>
+        routes.NotableErrorController.answersAreInvalid()
     }
 
 }

@@ -28,27 +28,34 @@ import scala.concurrent.{ExecutionContext, Future}
 class RegistrationDataRetrievalAction @Inject() (
   val eclRegistrationService: EclRegistrationService,
   val registrationAdditionalInfoService: RegistrationAdditionalInfoService
-)(implicit val executionContext: ExecutionContext)
+)(implicit val ec: ExecutionContext)
     extends DataRetrievalAction
     with FrontendHeaderCarrierProvider {
 
   override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
     eclRegistrationService
-      .getOrCreateRegistration(request.internalId)(hc(request))
+      .getOrCreateRegistration(request.internalId)
       .flatMap { registration =>
         registrationAdditionalInfoService
-          .get(request.internalId)(hc(request))
+          .get(request.internalId)(hc(request), ec)
           .map(info =>
-            Right(
-              RegistrationDataRequest(
-                request.request,
-                request.internalId,
-                registration,
-                info,
-                request.eclRegistrationReference
-              )
-            )
+            Right(RegistrationDataRequest(
+              request.request,
+              request.internalId,
+              registration,
+              Some(info),
+              request.eclRegistrationReference
+            ))
           )
+          .recover { case _ =>
+            Right(RegistrationDataRequest(
+              request.request,
+              request.internalId,
+              registration,
+              None,
+              request.eclRegistrationReference
+            ))
+          }
       }
       .recover { case _ =>
         Left(InternalServerError)

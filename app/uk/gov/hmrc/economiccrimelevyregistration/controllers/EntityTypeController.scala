@@ -27,6 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.EntityTypeSelectedEvent
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -39,7 +40,7 @@ class EntityTypeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: EntityTypeFormProvider,
   pageNavigator: EntityTypePageNavigator,
   dataCleanup: EntityTypeDataCleanup,
@@ -47,7 +48,9 @@ class EntityTypeController @Inject() (
   view: EntityTypeView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController
+    with ErrorHandler {
 
   val form: Form[EntityType] = formProvider()
 
@@ -61,7 +64,11 @@ class EntityTypeController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType => {
-          val previousEntityType = request.registration.entityType
+          val isSame = request.registration.entityType match {
+            case Some(value) => value == entityType
+            case None        => false
+          }
+
           auditConnector
             .sendExtendedEvent(
               EntityTypeSelectedEvent(
@@ -70,28 +77,23 @@ class EntityTypeController @Inject() (
               ).extendedDataEvent
             )
 
-          eclRegistrationConnector
-            .upsertRegistration(cleanup(mode, request.registration, entityType, previousEntityType))
-            .flatMap { updatedRegistration =>
-              previousEntityType match {
-                case Some(value) if value == entityType && EntityType.isOther(entityType) && mode == CheckMode =>
-                  pageNavigator.navigateToCheckYourAnswers().map(Redirect)
-                case _                                                                                         =>
-                  pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
-              }
-            }
+          val updatedRegistration = cleanup(mode, request.registration, entityType)
+
+          (for {
+            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            url                  <- eclRegistrationService.registerEntityType(entityType, mode, isSame).asResponseError
+          } yield (upsertedRegistration, url)).convertToResult(mode, pageNavigator, isSame)
         }
       )
   }
 
-  //TODO: Ask Patrick about this one
   private def cleanup(
     mode: Mode,
     registration: Registration,
-    entityType: EntityType,
-    previousEntityType: Option[EntityType]
+    entityType: EntityType
   ) = {
-    val isOther = EntityType.isOther(entityType)
+    val previousEntityType = registration.entityType
+    val isOther            = EntityType.isOther(entityType)
     if (previousEntityType.contains(entityType) && mode == CheckMode && isOther) {
       registration
     } else if (!isOther) {

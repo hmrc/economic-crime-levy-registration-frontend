@@ -43,7 +43,7 @@ class AmendRegistrationStartController @Inject() (
 
   def onPageLoad(eclReference: String): Action[AnyContent] = authorise.async { implicit request =>
     (for {
-      registration               <- registrationService.getOrCreateRegistrationV2(request.internalId).asResponseError
+      registration               <- registrationService.getOrCreateRegistration(request.internalId).asResponseError
       _                          <-
         registrationService.upsertRegistration(registration.copy(registrationType = Some(Amendment))).asResponseError
       createOrUpdateRegistration <-

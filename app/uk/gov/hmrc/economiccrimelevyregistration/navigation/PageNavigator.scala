@@ -19,14 +19,52 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
+class NavigationException extends Exception("Method not overridden!")
+
 trait PageNavigator {
+  private val error = new NavigationException()
+
   def nextPage(mode: Mode, registration: Registration): Call = mode match {
     case NormalMode => navigateInNormalMode(registration)
     case CheckMode  => navigateInCheckMode(registration)
   }
 
-  protected def navigateInNormalMode(registration: Registration): Call
+  def nextPage(mode: Mode, registration: Registration, fromSpecificPage: Boolean): Call = mode match {
+    case NormalMode => navigateInNormalMode(registration, fromSpecificPage)
+    case CheckMode  => navigateInCheckMode(registration, fromSpecificPage)
+  }
 
-  protected def navigateInCheckMode(registration: Registration): Call
+  def nextPage(mode: Mode, registration: Registration, url: String, isSame: Boolean): Call = mode match {
+    case NormalMode => navigateInNormalMode(registration, url, isSame)
+    case CheckMode  => navigateInCheckMode(registration, url, isSame)
+  }
 
+  def nextPage(mode: Mode, registration: Registration, url: String): Call = mode match {
+    case NormalMode => navigateInNormalMode(registration, url)
+    case CheckMode  => navigateInCheckMode(registration, url)
+  }
+
+  protected def navigateInNormalMode(registration: Registration): Call =
+    throw error
+
+  protected def navigateInCheckMode(registration: Registration): Call =
+    throw error
+
+  protected def navigateInNormalMode(registration: Registration, fromSpecificPage: Boolean): Call =
+    throw error
+
+  protected def navigateInCheckMode(registration: Registration, fromSpecificPage: Boolean): Call =
+    throw error
+
+  protected def navigateInNormalMode(registration: Registration, url: String, IsSame: Boolean): Call =
+    throw error
+
+  protected def navigateInCheckMode(registration: Registration, url: String, IsSame: Boolean): Call =
+    throw error
+
+  protected def navigateInNormalMode(registration: Registration, url: String): Call =
+    throw error
+
+  protected def navigateInCheckMode(registration: Registration, url: String): Call =
+    throw error
 }

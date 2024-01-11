@@ -144,26 +144,35 @@ class CheckYourAnswersController @Inject() (
     val registration = request.registration
 
     val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
-    val base64EncodedHtmlViewForPdf = getBase64EncodedPdf(registration)
+    val base64EncodedHtmlViewForPdf   = getBase64EncodedPdf(registration)
 
     (for {
-      _        <- registrationService.upsertRegistration(getRegistrationWithEncodedFields(registration, base64EncodedHtmlView, base64EncodedHtmlViewForPdf)).asResponseError
+      _        <- registrationService
+                    .upsertRegistration(
+                      getRegistrationWithEncodedFields(registration, base64EncodedHtmlView, base64EncodedHtmlViewForPdf)
+                    )
+                    .asResponseError
       response <- registrationService.submitRegistration(request.internalId).asResponseError
       _        <- registrationService.deleteRegistration(request.internalId).asResponseError
       _        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
       _        <- sendEmail(registration, request.additionalInfo, response.eclReference).asResponseError
-      email    <- EitherT.fromEither[Future](getField(
-                    "First contact email address not found in registration data",
-                    registration.contacts.firstContactDetails.emailAddress
-                  )).asResponseError
+      email    <- EitherT
+                    .fromEither[Future](
+                      getField(
+                        "First contact email address not found in registration data",
+                        registration.contacts.firstContactDetails.emailAddress
+                      )
+                    )
+                    .asResponseError
     } yield (response, email)).fold(
       _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
       data => {
         val session = registration.entityType match {
           case Some(value) if EntityType.isOther(value) => request.session
-          case _ => request.session ++ Seq(
-            SessionKeys.EclReference -> data._1.eclReference
-          )
+          case _                                        =>
+            request.session ++ Seq(
+              SessionKeys.EclReference -> data._1.eclReference
+            )
         }
 
         val updatedSession = session ++ Seq(
@@ -179,26 +188,25 @@ class CheckYourAnswersController @Inject() (
     )
   }
 
-  private def getNextPage(registration: Registration) = {
+  private def getNextPage(registration: Registration) =
     (registration.entityType, registration.registrationType) match {
       case (Some(value), Some(Initial)) if EntityType.isOther(value) =>
         routes.RegistrationReceivedController.onPageLoad()
-      case (Some(_), Some(Amendment)) =>
+      case (Some(_), Some(Amendment))                                =>
         routes.AmendmentRequestedController.onPageLoad()
-      case (None, Some(Amendment)) =>
+      case (None, Some(Amendment))                                   =>
         routes.AmendmentRequestedController.onPageLoad()
-      case _ =>
+      case _                                                         =>
         routes.RegistrationSubmittedController.onPageLoad()
     }
-  }
 
   private def sendEmail(
     registration: Registration,
     additionalInfo: Option[RegistrationAdditionalInfo],
     eclReference: String
-  )(implicit hc: HeaderCarrier, messages: Messages): EitherT[Future, DataRetrievalError, Unit] = {
+  )(implicit hc: HeaderCarrier, messages: Messages): EitherT[Future, DataRetrievalError, Unit] =
     registration.registrationType match {
-      case Some(Initial) =>
+      case Some(Initial)   =>
         emailService.sendRegistrationSubmittedEmails(
           registration.contacts,
           eclReference,
@@ -208,32 +216,38 @@ class CheckYourAnswersController @Inject() (
         )
       case Some(Amendment) =>
         emailService.sendAmendRegistrationSubmitted(registration.contacts)
-      case None =>
-        EitherT(Future.successful(Left(
-          DataRetrievalError.FieldNotFound("Invalid registration type")
-        )))
+      case None            =>
+        EitherT(
+          Future.successful(
+            Left(
+              DataRetrievalError.FieldNotFound("Invalid registration type")
+            )
+          )
+        )
     }
-  }
 
-  private def getRegistrationWithEncodedFields(registration: Registration, base64EncodedHtmlView: String, base64EncodedHtmlViewForPdf: String) = {
+  private def getRegistrationWithEncodedFields(
+    registration: Registration,
+    base64EncodedHtmlView: String,
+    base64EncodedHtmlViewForPdf: String
+  ) =
     registration.copy(
       base64EncodedFields = Some(
         Base64EncodedFields(
           nrsSubmissionHtml = Some(base64EncodedHtmlView),
           dmsSubmissionHtml = (registration.entityType, registration.registrationType) match {
-            case (Some(_), Some(Amendment)) =>
+            case (Some(_), Some(Amendment))                    =>
               Some(base64EncodedHtmlViewForPdf)
             case (Some(value), _) if EntityType.isOther(value) =>
               Some(base64EncodedHtmlViewForPdf)
-            case (None, Some(Amendment)) =>
+            case (None, Some(Amendment))                       =>
               Some(base64EncodedHtmlViewForPdf)
-            case _ =>
+            case _                                             =>
               None
           }
         )
       )
     )
-  }
 
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
     .encodeToString(html.getBytes)

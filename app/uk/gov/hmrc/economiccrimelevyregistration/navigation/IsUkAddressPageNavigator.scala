@@ -16,37 +16,29 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.{Call, RequestHeader}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.AddressLookupFrontendConnector
+import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 import uk.gov.hmrc.http.HttpVerbs.GET
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
-class IsUkAddressPageNavigator @Inject() (
-  addressLookupFrontendConnector: AddressLookupFrontendConnector
-)(implicit ec: ExecutionContext)
-    extends AsyncPageNavigator
-    with FrontendHeaderCarrierProvider {
+class IsUkAddressPageNavigator @Inject() () extends PageNavigator {
 
   override protected def navigateInNormalMode(
-    registration: Registration
-  )(implicit request: RequestHeader): Future[Call] =
-    navigate(registration, NormalMode)
+    registration: Registration,
+    url: String
+  ): Call = navigate(registration, url, NormalMode)
 
   override protected def navigateInCheckMode(
-    registration: Registration
-  )(implicit request: RequestHeader): Future[Call] =
-    navigate(registration, CheckMode)
+    registration: Registration,
+    url: String
+  ): Call = navigate(registration, url, CheckMode)
 
-  private def navigate(registration: Registration, mode: Mode)(implicit request: RequestHeader): Future[Call] =
+  private def navigate(registration: Registration, url: String, mode: Mode): Call =
     registration.contactAddressIsUk match {
-      case Some(ukMode) =>
-        addressLookupFrontendConnector.initJourney(ukMode, mode).map(journeyUrl => Call(GET, journeyUrl))
-      case _            => Future.successful(routes.NotableErrorController.answersAreInvalid())
+      case Some(ukMode) => Call(GET, url)
+      case _            => routes.NotableErrorController.answersAreInvalid()
     }
 
 }

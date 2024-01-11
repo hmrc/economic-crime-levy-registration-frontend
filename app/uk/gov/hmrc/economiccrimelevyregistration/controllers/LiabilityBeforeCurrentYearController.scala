@@ -46,7 +46,9 @@ class LiabilityBeforeCurrentYearController @Inject() (
 )(implicit
   ec: ExecutionContext
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[Boolean] = formProvider()
 
@@ -77,35 +79,20 @@ class LiabilityBeforeCurrentYearController @Inject() (
               .map { year =>
                 val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> year.asString)
 
-                sessionService
-                  .upsert(
-                    SessionData(
-                      request.internalId,
-                      liabilityYearSessionData
-                    )
+                sessionService.upsert(
+                  SessionData(
+                    request.internalId,
+                    liabilityYearSessionData
                   )
+                )
 
-                service
-                  .createOrUpdate(info)
-                  .map(_ =>
-                    Redirect(
-                      pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode, fromRevenuePage)
-                    )
-                      .withSession(
-                        request.session ++ liabilityYearSessionData
-                      )
-                  )
+                (for (_ <- service.createOrUpdate(info).asResponseError)
+                  yield request.registration).convertToResult(mode, pageNavigator, true, liabilityYearSessionData)
               }
-              .getOrElse {
-                service
-                  .createOrUpdate(info)
-                  .map(_ =>
-                    Redirect(
-                      pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode, fromRevenuePage)
-                    )
-                  )
-              }
-          } // TODO: Figure out how to navigate wih session attributes
+              .getOrElse(
+                Redirect(routes.NotableErrorController.answersAreInvalid())
+              )
+          }
         )
     }
 

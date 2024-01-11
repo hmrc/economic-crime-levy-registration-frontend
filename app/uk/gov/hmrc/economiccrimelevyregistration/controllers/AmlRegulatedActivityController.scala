@@ -68,48 +68,10 @@ class AmlRegulatedActivityController @Inject() (
             registrationType = Some(Initial)
           )
           (for {
-            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration)
+            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
             _                     = if (amlRegulatedActivity) upsertSession(amlRegulatedActivity, request.internalId)
-
-          } yield upsertedRegistration) // TODO: Figure out how to navigate wih session attributes
-
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
-
-//          eclRegistrationConnector
-//            .upsertRegistration(
-//              request.registration.copy(
-//                carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity),
-//                registrationType = Some(Initial)
-//              )
-//            )
-//            .flatMap { updatedRegistration =>
-//              if (amlRegulatedActivity) {
-//                val amlActivitySessionData = Map(
-//                  SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString
-//                )
-//
-//                sessionService
-//                  .upsert(
-//                    SessionData(
-//                      request.internalId,
-//                      amlActivitySessionData
-//                    )
-//                  )
-//
-//                pageNavigator
-//                  .nextPage(mode, updatedRegistration)
-//                  .map(
-//                    Redirect(_).withSession(
-//                      request.session ++
-//                        amlActivitySessionData
-//                    )
-//                  )
-//              } else {
-//                pageNavigator
-//                  .nextPage(mode, updatedRegistration)
-//                  .map(Redirect)
-//              }
-//            }
       )
   }
 
