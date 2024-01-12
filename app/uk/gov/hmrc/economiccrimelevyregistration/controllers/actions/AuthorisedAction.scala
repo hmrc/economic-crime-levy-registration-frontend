@@ -24,7 +24,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{ErrorHandler, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
@@ -115,7 +115,8 @@ abstract class BaseAuthorisedAction @Inject() (
 )(implicit val executionContext: ExecutionContext)
     extends AuthorisedAction
     with FrontendHeaderCarrierProvider
-    with AuthorisedFunctions {
+    with AuthorisedFunctions
+    with ErrorHandler {
 
   val checkForEclEnrolment: Boolean
   val agentsAllowed: Boolean
@@ -155,35 +156,42 @@ abstract class BaseAuthorisedAction @Inject() (
                       if (request.uri.toLowerCase.contains("amend")) {
                         block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
                       } else {
-                        eclRegistrationService.getOrCreateRegistration(internalId).flatMap { registration =>
-                          registration.registrationType match {
-                            case None            =>
-                              Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
-                            case Some(Amendment) =>
-                              block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
-                            case Some(Initial)   =>
-                              Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
-                          }
-                        }
+                        (for {
+                          registration <- eclRegistrationService.getOrCreateRegistration(internalId).asResponseError
+                        } yield registration).fold(
+                          _ => Redirect(routes.NotableErrorController.registrationFailed()),
+                          registration =>
+                            registration.registrationType match {
+                              case None            =>
+                                Redirect(routes.NotableErrorController.userAlreadyEnrolled().url)
+                              case Some(Amendment) =>
+                                block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
+                              case Some(Initial)   =>
+                                Redirect(routes.NotableErrorController.userAlreadyEnrolled().url)
+                            }
+                        )
                       }
                     case None    =>
-                      enrolmentStoreProxyService
-                        .getEclReferenceFromGroupEnrolment(groupId)(hc(request))
-                        .flatMap {
-                          case Some(_) =>
-                            Future.successful(Redirect(routes.NotableErrorController.groupAlreadyEnrolled().url))
-                          case None    => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
-                        }
+                      (for {
+                        eclReference <-
+                          enrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(groupId)(hc(request))
+                      } yield eclReference).fold(
+                        _ => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference)),
+                        _ => Redirect(routes.NotableErrorController.groupAlreadyEnrolled())
+                      )
                   }
                 } else {
                   eclRegistrationReference match {
                     case Some(_) => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
                     case None    =>
-                      enrolmentStoreProxyService
-                        .getEclReferenceFromGroupEnrolment(groupId)(hc(request))
-                        .flatMap { eclReferenceFromGroupEnrolment =>
-                          block(AuthorisedRequest(request, internalId, groupId, eclReferenceFromGroupEnrolment))
-                        }
+                      (for {
+                        eclReferenceFromGroupEnrolment <-
+                          enrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(groupId)(hc(request))
+                      } yield eclReferenceFromGroupEnrolment).fold(
+                        _ => Redirect(routes.NotableErrorController.registrationFailed()),
+                        eclReferenceFromGroupEnrolment =>
+                          block(AuthorisedRequest(request, internalId, groupId, Some(eclReferenceFromGroupEnrolment)))
+                      )
                   }
                 }
             }

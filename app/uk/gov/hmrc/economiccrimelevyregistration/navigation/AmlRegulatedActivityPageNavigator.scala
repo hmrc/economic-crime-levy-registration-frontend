@@ -16,13 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.{Call, RequestHeader}
+import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
 class AmlRegulatedActivityPageNavigator @Inject() () extends PageNavigator {
 

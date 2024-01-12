@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.i18n.Messages
 import play.api.libs.json._
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 

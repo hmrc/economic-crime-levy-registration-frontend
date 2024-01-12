@@ -17,14 +17,11 @@
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import cats.data.EitherT
-import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, RegisteredSociety, ScottishLimitedPartnership, ScottishPartnership, SoleTrader, UkLimitedCompany, UnlimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.connectors._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationStartedEvent
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, RegistrationError}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, CreateEclSubscriptionResponse, EntityType, Mode, Registration}
-import uk.gov.hmrc.http.HttpVerbs.GET
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -116,7 +113,7 @@ class EclRegistrationService @Inject() (
 
   def getRegistrationValidationErrors(
     internalId: String
-  )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse] =
+  )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, Unit] =
     EitherT {
       eclRegistrationConnector
         .getRegistrationValidationErrors(internalId)

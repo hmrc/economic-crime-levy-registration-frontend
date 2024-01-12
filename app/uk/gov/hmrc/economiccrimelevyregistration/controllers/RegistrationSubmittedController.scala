@@ -16,17 +16,18 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.time.TaxYear
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 @Singleton
 class RegistrationSubmittedController @Inject() (
@@ -35,15 +36,17 @@ class RegistrationSubmittedController @Inject() (
   view: RegistrationSubmittedView,
   outOfSessionRegistrationSubmittedView: OutOfSessionRegistrationSubmittedView,
   sessionService: SessionService
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport {
+) extends FrontendBaseController
+    with I18nSupport
+    with BaseController
+    with ErrorHandler {
 
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     sessionService
       .get(request.session, request.internalId, SessionKeys.LiabilityYear)
       .map(liabilityYear => liabilityYear.map(year => LiabilityYear(year.toInt)))
-      .flatMap { liabilityYear =>
+      .flatMap { value =>
+        val liabilityYear = value.headOption
         sessionService
           .get(request.session, request.internalId, SessionKeys.AmlRegulatedActivity)
           .map { amlRegulatedActivity =>
@@ -58,12 +61,21 @@ class RegistrationSubmittedController @Inject() (
                     firstContactEmailAddress,
                     secondContactEmailAddress,
                     liabilityYear,
-                    amlRegulatedActivity
+                    Some(amlRegulatedActivity)
                   )
                 )
               case (_, Some(eclReference)) =>
-                Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear, amlRegulatedActivity))
-              case _                       => throw new IllegalStateException("ECL reference number not found in session or in enrolment")
+                Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear, Some(amlRegulatedActivity)))
+              case _                       =>
+                EitherT
+                  .fromEither[Future](
+                    Left(
+                      DataRetrievalError
+                        .InternalUnexpectedError("ECL reference number not found in session or in enrolment", None)
+                    )
+                  )
+                  .asResponseError
+                  .fold(_ => Redirect(routes.NotableErrorController.answersAreInvalid()))
             }
           }
       }

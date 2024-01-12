@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
 import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{ActionRefiner, Result}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
@@ -26,41 +27,30 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegistrationDataRetrievalAction @Inject() (
-  val eclRegistrationService: EclRegistrationService,
-  val registrationAdditionalInfoService: RegistrationAdditionalInfoService
+  eclRegistrationService: EclRegistrationService,
+  registrationAdditionalInfoService: RegistrationAdditionalInfoService
 )(implicit val ec: ExecutionContext)
     extends DataRetrievalAction
-    with FrontendHeaderCarrierProvider {
+    with FrontendHeaderCarrierProvider
+    with ErrorHandler {
 
   override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
-    eclRegistrationService
-      .getOrCreateRegistration(request.internalId)
-      .flatMap { registration =>
-        registrationAdditionalInfoService
-          .get(request.internalId)(hc(request), ec)
-          .map(info =>
-            Right(RegistrationDataRequest(
-              request.request,
-              request.internalId,
-              registration,
-              Some(info),
-              request.eclRegistrationReference
-            ))
+    (for {
+      registration <- eclRegistrationService.getOrCreateRegistration(request.internalId).asResponseError
+      info         <- registrationAdditionalInfoService.get(request.internalId)(hc(request), ec).asResponseError
+    } yield (registration, info)).fold(
+      _ => Left(InternalServerError),
+      data =>
+        Right(
+          RegistrationDataRequest(
+            request.request,
+            request.internalId,
+            data._1,
+            Some(data._2),
+            request.eclRegistrationReference
           )
-          .recover { case _ =>
-            Right(RegistrationDataRequest(
-              request.request,
-              request.internalId,
-              registration,
-              None,
-              request.eclRegistrationReference
-            ))
-          }
-      }
-      .recover { case _ =>
-        Left(InternalServerError)
-      }
-
+        )
+    )
 }
 
 trait DataRetrievalAction extends ActionRefiner[AuthorisedRequest, RegistrationDataRequest]

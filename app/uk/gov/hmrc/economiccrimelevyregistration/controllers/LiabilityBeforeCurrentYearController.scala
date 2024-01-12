@@ -90,7 +90,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
                   yield request.registration).convertToResult(mode, pageNavigator, true, liabilityYearSessionData)
               }
               .getOrElse(
-                Redirect(routes.NotableErrorController.answersAreInvalid())
+                Future.successful(Redirect(routes.NotableErrorController.answersAreInvalid()))
               )
           }
         )

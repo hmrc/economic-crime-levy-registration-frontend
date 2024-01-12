@@ -129,7 +129,7 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
     contacts: Contacts
   ): Either[DataRetrievalError, (String, String)] =
     (contacts.firstContactDetails.emailAddress, contacts.firstContactDetails.name) match {
-      case (Some(emailAddress), Some(name)) => Right(emailAddress, name)
+      case (Some(emailAddress), Some(name)) => Right((emailAddress, name))
       case _                                => Left(DataRetrievalError.FieldNotFound("Invalid contact details"))
     }
 

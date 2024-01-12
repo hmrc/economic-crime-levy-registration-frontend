@@ -17,8 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
 import play.api.mvc.Results.NotFound
-import play.api.mvc.{ActionBuilder, ActionFunction, AnyContent, BodyParsers, Request, Result}
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import play.api.mvc._
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
