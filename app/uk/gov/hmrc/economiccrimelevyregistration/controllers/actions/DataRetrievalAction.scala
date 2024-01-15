@@ -51,6 +51,8 @@ class RegistrationDataRetrievalAction @Inject() (
           )
         )
     )
+
+  override protected def executionContext: ExecutionContext = ec
 }
 
 trait DataRetrievalAction extends ActionRefiner[AuthorisedRequest, RegistrationDataRequest]

@@ -114,9 +114,9 @@ trait ErrorHandler extends Logging {
   }
 
   implicit val sessionErrorConverter: Converter[SessionError] = {
-    case DataRetrievalError.BadGateway(cause, statusCode)           =>
+    case SessionError.BadGateway(cause, statusCode)           =>
       ResponseError.badGateway(cause, statusCode)
-    case DataRetrievalError.InternalUnexpectedError(message, cause) =>
+    case SessionError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
   }
 

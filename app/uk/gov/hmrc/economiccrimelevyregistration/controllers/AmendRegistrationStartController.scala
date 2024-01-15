@@ -17,11 +17,11 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
-import play.api.mvc._
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationStartView, AnswersAreInvalidView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -33,8 +33,7 @@ class AmendRegistrationStartController @Inject() (
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   authorise: AuthorisedActionWithEnrolmentCheck,
   view: AmendRegistrationStartView,
-  registrationService: EclRegistrationService,
-  answersAreInvalidView: AnswersAreInvalidView
+  registrationService: EclRegistrationService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -49,7 +48,7 @@ class AmendRegistrationStartController @Inject() (
       createOrUpdateRegistration <-
         registrationAdditionalInfoService.createOrUpdate(request.internalId, Some(eclReference)).asResponseError
     } yield createOrUpdateRegistration).fold(
-      _ => Ok(answersAreInvalidView()),
+      _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
       _ => Ok(view(eclReference))
     )
   }

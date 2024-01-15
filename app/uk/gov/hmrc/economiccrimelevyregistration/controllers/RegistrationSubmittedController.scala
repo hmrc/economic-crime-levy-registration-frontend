@@ -16,18 +16,16 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import cats.data.EitherT
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class RegistrationSubmittedController @Inject() (
@@ -36,49 +34,34 @@ class RegistrationSubmittedController @Inject() (
   view: RegistrationSubmittedView,
   outOfSessionRegistrationSubmittedView: OutOfSessionRegistrationSubmittedView,
   sessionService: SessionService
-) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport
     with BaseController
     with ErrorHandler {
 
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
-    sessionService
-      .get(request.session, request.internalId, SessionKeys.LiabilityYear)
-      .map(liabilityYear => liabilityYear.map(year => LiabilityYear(year.toInt)))
-      .flatMap { value =>
-        val liabilityYear = value.headOption
-        sessionService
-          .get(request.session, request.internalId, SessionKeys.AmlRegulatedActivity)
-          .map { amlRegulatedActivity =>
-            (request.session.get(SessionKeys.EclReference), request.eclRegistrationReference) match {
-              case (Some(eclReference), _) =>
-                val secondContactEmailAddress: Option[String] =
-                  request.session.get(SessionKeys.SecondContactEmailAddress)
-                val firstContactEmailAddress                  = request.session(SessionKeys.FirstContactEmailAddress)
-                Ok(
-                  view(
-                    eclReference,
-                    firstContactEmailAddress,
-                    secondContactEmailAddress,
-                    liabilityYear,
-                    Some(amlRegulatedActivity)
-                  )
-                )
-              case (_, Some(eclReference)) =>
-                Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear, Some(amlRegulatedActivity)))
-              case _                       =>
-                EitherT
-                  .fromEither[Future](
-                    Left(
-                      DataRetrievalError
-                        .InternalUnexpectedError("ECL reference number not found in session or in enrolment", None)
-                    )
-                  )
-                  .asResponseError
-                  .fold(_ => Redirect(routes.NotableErrorController.answersAreInvalid()))
-            }
-          }
+    (for {
+      liabilityYear        <-
+        sessionService.get(request.session, request.internalId, SessionKeys.LiabilityYear).asResponseError
+      amlRegulatedActivity <-
+        sessionService.get(request.session, request.internalId, SessionKeys.AmlRegulatedActivity).asResponseError
+    } yield (liabilityYear, amlRegulatedActivity)).fold(
+      _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
+      data => {
+        val liabilityYear = Some(LiabilityYear(data._1.toInt))
+        (request.session.get(SessionKeys.EclReference), request.eclRegistrationReference) match {
+          case (Some(eclReference), _) =>
+            val secondContactEmailAddress: Option[String] =
+              request.session.get(SessionKeys.SecondContactEmailAddress)
+            val firstContactEmailAddress                  = request.session(SessionKeys.FirstContactEmailAddress)
+            Ok(view(eclReference, firstContactEmailAddress, secondContactEmailAddress, liabilityYear, Some(data._2)))
+          case (_, Some(eclReference)) =>
+            Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear, Some(data._2)))
+          case _                       =>
+            Redirect(routes.NotableErrorController.answersAreInvalid())
+        }
       }
-
+    )
   }
 }
