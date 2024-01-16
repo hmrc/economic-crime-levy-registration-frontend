@@ -55,6 +55,7 @@ class IncorporatedEntityIdentificationFrontendConnectorImpl @Inject() (
     val url: URL = incorporatedEntityType match {
       case UkLimitedCompany | UnlimitedCompany => url"$apiUrl/limited-company-journey"
       case RegisteredSociety                   => url"$apiUrl/registered-society-journey"
+      case _                                   => url""
     }
 
     httpClient

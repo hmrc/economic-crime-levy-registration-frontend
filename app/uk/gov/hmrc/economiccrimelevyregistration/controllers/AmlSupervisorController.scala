@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.instances.unit
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -124,6 +125,7 @@ class AmlSupervisorController @Inject() (
                     registerWithGcOrFca(t, updatedRegistration)
                   case _                                                    =>
                 }
+              case None                =>
             }
 
             (for {
@@ -141,6 +143,8 @@ class AmlSupervisorController @Inject() (
         sendNotLiableAuditEvent(registration.internalId, NotLiableReason.SupervisedByGamblingCommission)
       case FinancialConductAuthority =>
         sendNotLiableAuditEvent(registration.internalId, NotLiableReason.SupervisedByFinancialConductAuthority)
+      case _                         =>
+        Future.successful(unit)
     }
 
   private def sendNotLiableAuditEvent(internalId: String, notLiableReason: NotLiableReason)(implicit

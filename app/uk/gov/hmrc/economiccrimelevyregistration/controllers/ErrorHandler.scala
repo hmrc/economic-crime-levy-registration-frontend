@@ -83,6 +83,8 @@ trait ErrorHandler extends Logging {
                           |
                           |$causeText""".stripMargin)
           ResponseError.badGateway(message, responseCode)
+        case _                                       =>
+          ResponseError.unknownError
       }
   }
 
@@ -95,6 +97,8 @@ trait ErrorHandler extends Logging {
       ResponseError.badGateway(cause, statusCode)
     case AddressLookupContinueError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
+    case _                                                                  =>
+      ResponseError.unknownError
   }
 
   implicit val registrationErrorConverter: Converter[RegistrationError] = {
@@ -102,6 +106,8 @@ trait ErrorHandler extends Logging {
       ResponseError.badGateway(cause, statusCode)
     case RegistrationError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
+    case _                                                         =>
+      ResponseError.unknownError
   }
 
   implicit val dataRetrievalErrorConverter: Converter[DataRetrievalError] = {
@@ -111,6 +117,8 @@ trait ErrorHandler extends Logging {
       ResponseError.badGateway(message, BAD_GATEWAY)
     case DataRetrievalError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
+    case _                                                          =>
+      ResponseError.unknownError
   }
 
   implicit val sessionErrorConverter: Converter[SessionError] = {
@@ -118,6 +126,8 @@ trait ErrorHandler extends Logging {
       ResponseError.badGateway(cause, statusCode)
     case SessionError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
+    case _                                                    =>
+      ResponseError.unknownError
   }
 
 }

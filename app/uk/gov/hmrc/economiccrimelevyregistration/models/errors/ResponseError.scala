@@ -56,6 +56,9 @@ object ResponseError {
   ): ResponseError =
     InternalServiceError(message, code, cause)
 
+  def unknownError =
+    StandardError("Unknown error", ErrorCode.Unknown)
+
   implicit val errorWrites: OWrites[ResponseError] =
     (
       (__ \ MessageFieldName).write[String] and
