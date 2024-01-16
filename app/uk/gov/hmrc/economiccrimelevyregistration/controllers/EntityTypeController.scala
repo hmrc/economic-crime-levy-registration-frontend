@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.EntityTypeSelectedEvent
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{EntityTypePageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -81,7 +81,7 @@ class EntityTypeController @Inject() (
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
             url                  <- eclRegistrationService.registerEntityType(entityType, mode, isSame).asResponseError
-          } yield (upsertedRegistration, url)).convertToResult(mode, pageNavigator, isSame)
+          } yield NavigationData(upsertedRegistration, url, false, isSame)).convertToResult(mode, pageNavigator)
         }
       )
   }

@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{IsUkAddressPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -74,7 +74,7 @@ class IsUkAddressController @Inject() (
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
             url                  <- eclRegistrationService.getAddressLookupUrl(upsertedRegistration, mode).asResponseError
-          } yield (upsertedRegistration, url)).convertToResult(mode, pageNavigator)
+          } yield NavigationData(upsertedRegistration, url)).convertToResult(mode, pageNavigator)
         }
       )
   }

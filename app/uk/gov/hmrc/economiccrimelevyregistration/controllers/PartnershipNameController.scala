@@ -23,6 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.PartnershipNameFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.PartnershipNamePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.PartnershipNameView
@@ -61,7 +62,7 @@ class PartnershipNameController @Inject() (
           val updatedRegistration = request.registration.copy(partnershipName = Some(partnershipName))
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+          } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

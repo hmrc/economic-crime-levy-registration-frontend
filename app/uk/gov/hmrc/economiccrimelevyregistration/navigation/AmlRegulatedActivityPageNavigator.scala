@@ -25,11 +25,11 @@ import javax.inject.Inject
 class AmlRegulatedActivityPageNavigator @Inject() () extends PageNavigator {
 
   override protected def navigateInNormalMode(
-    registration: Registration
+    navigationData: NavigationData
   ): Call =
-    registration.carriedOutAmlRegulatedActivityInCurrentFy match {
+    navigationData.registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  =>
-        routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get, false)
+        routes.AmlSupervisorController.onPageLoad(NormalMode, navigationData.registration.registrationType.get, false)
       case Some(false) =>
         routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode)
       case _           =>
@@ -37,9 +37,9 @@ class AmlRegulatedActivityPageNavigator @Inject() () extends PageNavigator {
     }
 
   override protected def navigateInCheckMode(
-    registration: Registration
+    navigationData: NavigationData
   ): Call =
-    registration.carriedOutAmlRegulatedActivityInCurrentFy match {
+    navigationData.registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(_) =>
         routes.CheckYourAnswersController.onPageLoad()
       case _       =>

@@ -24,9 +24,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.BusinessSectorFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, Mode}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.BusinessSectorPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{BusinessSectorPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.BusinessSectorView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -73,7 +74,7 @@ class BusinessSectorController @Inject() (
 
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+          } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

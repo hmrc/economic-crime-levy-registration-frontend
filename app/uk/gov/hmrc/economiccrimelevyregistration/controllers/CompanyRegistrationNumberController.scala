@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CompanyRegistrationNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.CompanyRegistrationNumberPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{CompanyRegistrationNumberPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CompanyRegistrationNumberView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -68,7 +68,7 @@ class CompanyRegistrationNumberController @Inject() (
 
             (for {
               upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+            } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
           }
         )
     }

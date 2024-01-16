@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormP
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, SessionData, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{AmlRegulatedActivityPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
 import uk.gov.hmrc.http.HeaderCarrier
@@ -68,7 +68,7 @@ class AmlRegulatedActivityController @Inject() (
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
             _                     = if (amlRegulatedActivity) upsertSession(amlRegulatedActivity, request.internalId)
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+          } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

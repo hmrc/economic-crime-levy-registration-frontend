@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext
 class LiabilityBeforeCurrentYearPageNavigator @Inject() (auditConnector: AuditConnector)(implicit
   ex: ExecutionContext
 ) extends PageNavigator {
-  def nextPage(
+  private def navigate(
     liableBeforeCurrentYear: Boolean,
     registration: Registration,
     mode: Mode,
@@ -53,21 +53,18 @@ class LiabilityBeforeCurrentYearPageNavigator @Inject() (auditConnector: AuditCo
     }
 
   private def sendNotLiableAuditEvent(internalId: String): Call = {
-    auditConnector
-      .sendExtendedEvent(
-        RegistrationNotLiableAuditEvent(
-          internalId,
-          NotLiableReason.DidNotCarryOutAmlRegulatedActivity
-        ).extendedDataEvent
-      )
+    auditConnector.sendExtendedEvent(RegistrationNotLiableAuditEvent(
+      internalId,
+      NotLiableReason.DidNotCarryOutAmlRegulatedActivity
+    ).extendedDataEvent)
 
     routes.NotLiableController.youDoNotNeedToRegister()
   }
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    throw new Exception("Invalid call!")
+  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+    navigate(_, navigationData.registration, NormalMode, navigationData.fromSpecificPage)
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    throw new Exception("Invalid call!")
+  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
+    navigate(_, navigationData.registration, CheckMode, navigationData.fromSpecificPage)
 
 }

@@ -26,14 +26,12 @@ import javax.inject.Inject
 class IsUkAddressPageNavigator @Inject() () extends PageNavigator {
 
   override protected def navigateInNormalMode(
-    registration: Registration,
-    url: String
-  ): Call = navigate(registration, url, NormalMode)
+    navigationData: NavigationData
+  ): Call = navigate(navigationData.registration, navigationData.url, NormalMode)
 
   override protected def navigateInCheckMode(
-    registration: Registration,
-    url: String
-  ): Call = navigate(registration, url, CheckMode)
+    navigationData: NavigationData
+  ): Call = navigate(navigationData.registration, navigationData.url, CheckMode)
 
   private def navigate(registration: Registration, url: String, mode: Mode): Call =
     registration.contactAddressIsUk match {

@@ -23,17 +23,17 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, 
 import javax.inject.Inject
 
 class DoYouHaveCrnPageNavigator @Inject() extends PageNavigator {
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.otherEntityJourneyData.isUkCrnPresent match {
+  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+    navigationData.registration.otherEntityJourneyData.isUkCrnPresent match {
       case Some(true)  => routes.NonUkCrnController.onPageLoad(NormalMode)
       case Some(false) => routes.UtrTypeController.onPageLoad(NormalMode)
       case None        => routes.NotableErrorController.answersAreInvalid()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
+  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
     (
-      registration.otherEntityJourneyData.isUkCrnPresent,
-      registration.otherEntityJourneyData.companyRegistrationNumber
+      navigationData.registration.otherEntityJourneyData.isUkCrnPresent,
+      navigationData.registration.otherEntityJourneyData.companyRegistrationNumber
     ) match {
       case (Some(true), Some(_)) => routes.CheckYourAnswersController.onPageLoad()
       case (Some(true), None)    => routes.NonUkCrnController.onPageLoad(CheckMode)

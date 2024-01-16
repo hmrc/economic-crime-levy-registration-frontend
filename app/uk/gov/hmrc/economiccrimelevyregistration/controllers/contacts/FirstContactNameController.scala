@@ -24,6 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, Er
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactNameFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactNamePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactNameView
@@ -79,7 +80,7 @@ class FirstContactNameController @Inject() (
               eclRegistrationService
                 .upsertRegistration(request.registration.copy(contacts = updatedContacts))
                 .asResponseError
-          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+          } yield NavigationData(updatedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

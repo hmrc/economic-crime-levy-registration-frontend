@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantAp12MonthsFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantAp12MonthsPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, RelevantAp12MonthsPageNavigator}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantAp12MonthsView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -64,7 +64,7 @@ class RelevantAp12MonthsController @Inject() (
             dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+          } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

@@ -21,18 +21,19 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
 import javax.inject.Inject
+import scala.collection.MapView
 
 class ConfirmContactAddressPageNavigator @Inject() () extends PageNavigator {
 
   override protected def navigateInNormalMode(
-    registration: Registration
+    navigationData: NavigationData
   ): Call =
-    navigate(registration, NormalMode)
+    navigate(navigationData.registration, NormalMode)
 
   override protected def navigateInCheckMode(
-    registration: Registration
+    navigationData: NavigationData
   ): Call =
-    navigate(registration, CheckMode)
+    navigate(navigationData.registration, CheckMode)
 
   private def navigate(
     registration: Registration,

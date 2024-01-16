@@ -24,6 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, Er
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactEmailFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactEmailPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AnswersAreInvalidView
@@ -110,7 +111,7 @@ class FirstContactEmailController @Inject() (
               eclRegistrationService
                 .upsertRegistration(updatedRegistration)
                 .asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+          } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

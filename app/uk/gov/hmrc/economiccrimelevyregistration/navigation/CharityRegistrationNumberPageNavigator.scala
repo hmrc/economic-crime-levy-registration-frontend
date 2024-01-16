@@ -22,11 +22,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, 
 
 class CharityRegistrationNumberPageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
+  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
     routes.DoYouHaveUtrController.onPageLoad(NormalMode)
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    if (registration.otherEntityJourneyData.companyRegistrationNumber.isEmpty) {
+  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
+    if (navigationData.registration.otherEntityJourneyData.companyRegistrationNumber.isEmpty) {
       routes.CompanyRegistrationNumberController.onPageLoad(CheckMode)
     } else {
       routes.CheckYourAnswersController.onPageLoad()

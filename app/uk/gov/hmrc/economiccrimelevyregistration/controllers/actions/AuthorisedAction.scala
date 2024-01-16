@@ -177,9 +177,8 @@ abstract class BaseAuthorisedAction @Inject() (
           eclReferenceFromGroupEnrolment <-
             enrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(groupId)(hc(request))
         } yield eclReferenceFromGroupEnrolment).foldF(
-          _ => Future.successful(Redirect(routes.NotableErrorController.registrationFailed())),
-          eclReferenceFromGroupEnrolment =>
-            block(AuthorisedRequest(request, internalId, groupId, Some(eclReferenceFromGroupEnrolment)))
+          _ => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference)),
+          _ => Future.successful(Redirect(routes.NotableErrorController.groupAlreadyEnrolled()))
         )
     }
 

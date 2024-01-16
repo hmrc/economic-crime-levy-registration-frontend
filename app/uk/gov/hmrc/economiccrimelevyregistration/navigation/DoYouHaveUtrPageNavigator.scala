@@ -23,17 +23,17 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, Normal
 import javax.inject.Inject
 
 class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.otherEntityJourneyData.isCtUtrPresent match {
+  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+    navigationData.registration.otherEntityJourneyData.isCtUtrPresent match {
       case Some(isCtUtrPresent) =>
-        navigateInEitherMode(isCtUtrPresent, registration.otherEntityJourneyData.ctUtr, NormalMode)
+        navigateInEitherMode(isCtUtrPresent, navigationData.registration.otherEntityJourneyData.ctUtr, NormalMode)
       case None                 => routes.NotableErrorController.answersAreInvalid()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    registration.otherEntityJourneyData.isCtUtrPresent match {
+  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
+    navigationData.registration.otherEntityJourneyData.isCtUtrPresent match {
       case Some(isCtUtrPresent) =>
-        navigateInEitherMode(isCtUtrPresent, registration.otherEntityJourneyData.ctUtr, CheckMode)
+        navigateInEitherMode(isCtUtrPresent, navigationData.registration.otherEntityJourneyData.ctUtr, CheckMode)
       case None                 => routes.NotableErrorController.answersAreInvalid()
     }
 

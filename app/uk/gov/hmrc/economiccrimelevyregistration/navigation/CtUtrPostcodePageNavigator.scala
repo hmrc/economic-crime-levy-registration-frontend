@@ -21,10 +21,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registratio
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
 class CtUtrPostcodePageNavigator extends PageNavigator {
-  override protected def navigateInNormalMode(registration: Registration): Call =
+  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
     routes.BusinessSectorController.onPageLoad(NormalMode)
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
+  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
     routes.CheckYourAnswersController.onPageLoad()
 
 }

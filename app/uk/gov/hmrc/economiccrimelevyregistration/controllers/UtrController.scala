@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.UtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, UtrPageNavigator}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UtrView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -69,7 +69,7 @@ class UtrController @Inject() (
 
             (for {
               upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+            } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
           }
         )
     }

@@ -23,8 +23,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, Normal
 
 class BusinessNamePageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    navigateInMode(registration, NormalMode)
+  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+    navigateInMode(navigationData.registration, NormalMode)
 
   private def navigateInMode(registration: Registration, mode: Mode) =
     registration.entityType match {
@@ -39,9 +39,9 @@ class BusinessNamePageNavigator extends PageNavigator {
       case _           => error()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call = {
-    val otherEntityJourneyData = registration.otherEntityJourneyData
-    val isNextFieldEmpty       = registration.entityType match {
+  override protected def navigateInCheckMode(navigationData: NavigationData): Call = {
+    val otherEntityJourneyData = navigationData.registration.otherEntityJourneyData
+    val isNextFieldEmpty       = navigationData.registration.entityType match {
       case Some(value) =>
         value match {
           case Charity                   => otherEntityJourneyData.charityRegistrationNumber.isEmpty
@@ -53,7 +53,7 @@ class BusinessNamePageNavigator extends PageNavigator {
       case _           => false
     }
     if (isNextFieldEmpty) {
-      navigateInMode(registration, CheckMode)
+      navigateInMode(navigationData.registration, CheckMode)
     } else {
       routes.CheckYourAnswersController.onPageLoad()
     }

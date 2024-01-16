@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Mode, RegistrationAdditionalInfo, SessionData, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityBeforeCurrentYearPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{LiabilityBeforeCurrentYearPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -86,8 +86,9 @@ class LiabilityBeforeCurrentYearController @Inject() (
                   )
                 )
 
-                (for (_ <- service.createOrUpdate(info).asResponseError)
-                  yield request.registration).convertToResult(mode, pageNavigator, true, liabilityYearSessionData)
+                (for (
+                  _ <- service.createOrUpdate(info).asResponseError
+                ) yield NavigationData(request.registration, "", true)).convertToResult(mode, pageNavigator, liabilityYearSessionData)
               }
               .getOrElse(
                 Future.successful(Redirect(routes.NotableErrorController.answersAreInvalid()))

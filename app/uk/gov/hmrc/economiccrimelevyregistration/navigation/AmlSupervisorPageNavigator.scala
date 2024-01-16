@@ -27,36 +27,34 @@ import javax.inject.Inject
 class AmlSupervisorPageNavigator @Inject() () extends PageNavigator {
 
   override protected def navigateInNormalMode(
-    registration: Registration,
-    fromLiableBeforeCurrentYearPage: Boolean
+    navigationData: NavigationData
   ): Call =
-    (registration.amlSupervisor, registration.registrationType) match {
+    (navigationData.registration.amlSupervisor, navigationData.registration.registrationType) match {
       case (Some(amlSupervisor), Some(Initial))   =>
         amlSupervisor.supervisorType match {
-          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, registration)
+          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, navigationData.registration)
           case Hmrc | Other                                         =>
-            fromLiableBeforeCurrentYearPage match {
+            navigationData.fromSpecificPage match {
               case true  => routes.EntityTypeController.onPageLoad(NormalMode)
               case false => routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
             }
         }
       case (Some(amlSupervisor), Some(Amendment)) =>
         amlSupervisor.supervisorType match {
-          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, registration)
+          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, navigationData.registration)
           case Hmrc | Other                                         => routes.BusinessSectorController.onPageLoad(NormalMode)
         }
       case _                                      => routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(
-    registration: Registration,
-    fromLiableBeforeCurrentYearPage: Boolean
+    navigationData: NavigationData
   ): Call =
-    registration.amlSupervisor match {
+    navigationData.registration.amlSupervisor match {
       case Some(amlSupervisor) =>
         amlSupervisor.supervisorType match {
           case t @ (GamblingCommission | FinancialConductAuthority) =>
-            registerWithGcOrFca(t, registration)
+            registerWithGcOrFca(t, navigationData.registration)
           case Hmrc | Other                                         =>
             routes.CheckYourAnswersController.onPageLoad()
         }

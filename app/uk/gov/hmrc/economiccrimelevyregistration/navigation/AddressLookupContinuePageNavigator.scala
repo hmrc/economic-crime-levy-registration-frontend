@@ -23,10 +23,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 class AddressLookupContinuePageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call = navigateInBothModes
-
-  override protected def navigateInCheckMode(registration: Registration): Call =
+  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
     navigateInBothModes
 
-  private def navigateInBothModes: Call = routes.CheckYourAnswersController.onPageLoad()
+  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
+    navigateInBothModes
+
+  private def navigateInBothModes: Call =
+    routes.CheckYourAnswersController.onPageLoad()
 }

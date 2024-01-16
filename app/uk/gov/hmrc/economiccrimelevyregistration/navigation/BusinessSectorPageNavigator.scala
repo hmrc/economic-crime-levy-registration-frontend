@@ -22,13 +22,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registratio
 
 class BusinessSectorPageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.businessSector match {
+  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+    navigationData.registration.businessSector match {
       case Some(_) => contacts.routes.FirstContactNameController.onPageLoad(NormalMode)
       case _       => routes.NotableErrorController.answersAreInvalid()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
+  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
     routes.CheckYourAnswersController.onPageLoad()
 
 }

@@ -26,16 +26,12 @@ import javax.inject.Inject
 class EntityTypePageNavigator @Inject() () extends PageNavigator {
 
   override protected def navigateInNormalMode(
-    registration: Registration,
-    url: String,
-    isSame: Boolean
-  ): Call = navigate(registration, url, isSame, NormalMode)
+    navigationData: NavigationData
+  ): Call = navigate(navigationData.registration, navigationData.url, navigationData.isSame, NormalMode)
 
   override protected def navigateInCheckMode(
-    registration: Registration,
-    url: String,
-    isSame: Boolean
-  ): Call = navigate(registration, url, isSame, CheckMode)
+    navigationData: NavigationData
+  ): Call = navigate(navigationData.registration, navigationData.url, navigationData.isSame, CheckMode)
 
   private def navigate(
     registration: Registration,
