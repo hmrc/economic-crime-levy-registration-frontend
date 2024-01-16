@@ -32,7 +32,8 @@ class AmlSupervisorPageNavigator @Inject() () extends PageNavigator {
     (navigationData.registration.amlSupervisor, navigationData.registration.registrationType) match {
       case (Some(amlSupervisor), Some(Initial))   =>
         amlSupervisor.supervisorType match {
-          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, navigationData.registration)
+          case t @ (GamblingCommission | FinancialConductAuthority) =>
+            registerWithGcOrFca(t, navigationData.registration)
           case Hmrc | Other                                         =>
             navigationData.fromSpecificPage match {
               case true  => routes.EntityTypeController.onPageLoad(NormalMode)
@@ -41,7 +42,8 @@ class AmlSupervisorPageNavigator @Inject() () extends PageNavigator {
         }
       case (Some(amlSupervisor), Some(Amendment)) =>
         amlSupervisor.supervisorType match {
-          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, navigationData.registration)
+          case t @ (GamblingCommission | FinancialConductAuthority) =>
+            registerWithGcOrFca(t, navigationData.registration)
           case Hmrc | Other                                         => routes.BusinessSectorController.onPageLoad(NormalMode)
         }
       case _                                      => routes.NotableErrorController.answersAreInvalid()

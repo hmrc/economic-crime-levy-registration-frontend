@@ -53,10 +53,12 @@ class LiabilityBeforeCurrentYearPageNavigator @Inject() (auditConnector: AuditCo
     }
 
   private def sendNotLiableAuditEvent(internalId: String): Call = {
-    auditConnector.sendExtendedEvent(RegistrationNotLiableAuditEvent(
-      internalId,
-      NotLiableReason.DidNotCarryOutAmlRegulatedActivity
-    ).extendedDataEvent)
+    auditConnector.sendExtendedEvent(
+      RegistrationNotLiableAuditEvent(
+        internalId,
+        NotLiableReason.DidNotCarryOutAmlRegulatedActivity
+      ).extendedDataEvent
+    )
 
     routes.NotLiableController.youDoNotNeedToRegister()
   }

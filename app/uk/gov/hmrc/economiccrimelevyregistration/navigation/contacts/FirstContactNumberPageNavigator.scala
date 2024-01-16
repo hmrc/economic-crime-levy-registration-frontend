@@ -19,18 +19,18 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, PageNavigator}
 
 class FirstContactNumberPageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.contacts.firstContactDetails.telephoneNumber match {
+  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+    navigationData.registration.contacts.firstContactDetails.telephoneNumber match {
       case Some(_) => contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)
       case _       => routes.NotableErrorController.answersAreInvalid()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    registration.contacts.firstContactDetails.telephoneNumber match {
+  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
+    navigationData.registration.contacts.firstContactDetails.telephoneNumber match {
       case Some(_) => routes.CheckYourAnswersController.onPageLoad()
       case _       => routes.NotableErrorController.answersAreInvalid()
     }
