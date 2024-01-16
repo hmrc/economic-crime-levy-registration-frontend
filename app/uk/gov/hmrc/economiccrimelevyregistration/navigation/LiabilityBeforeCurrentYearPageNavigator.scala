@@ -61,10 +61,14 @@ class LiabilityBeforeCurrentYearPageNavigator @Inject() (auditConnector: AuditCo
     routes.NotLiableController.youDoNotNeedToRegister()
   }
 
-  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
-    navigate(_, navigationData.registration, NormalMode, navigationData.fromSpecificPage)
+  override protected def navigateInNormalMode(navigationData: NavigationData): Call = {
+    val liableBeforeCurrentYear = navigationData.value.toBoolean
+    navigate(liableBeforeCurrentYear, navigationData.registration, NormalMode, navigationData.fromSpecificPage)
+  }
 
-  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
-    navigate(_, navigationData.registration, CheckMode, navigationData.fromSpecificPage)
+  override protected def navigateInCheckMode(navigationData: NavigationData): Call = {
+    val liableBeforeCurrentYear = navigationData.value.toBoolean
+    navigate(liableBeforeCurrentYear, navigationData.registration, CheckMode, navigationData.fromSpecificPage)
+  }
 
 }

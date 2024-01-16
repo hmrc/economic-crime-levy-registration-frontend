@@ -23,7 +23,8 @@ case class NavigationData(
   registration: Registration,
   url: String,
   fromSpecificPage: Boolean,
-  isSame: Boolean
+  isSame: Boolean,
+  value: String
 )
 
 object NavigationData {
@@ -31,8 +32,9 @@ object NavigationData {
     registration: Registration,
     url: String = "",
     fromSpecificPage: Boolean = false,
-    isSame: Boolean = false
-  ) = new NavigationData(registration, url, fromSpecificPage, isSame)
+    isSame: Boolean = false,
+    value: String = ""
+  ) = new NavigationData(registration, url, fromSpecificPage, isSame, value)
 }
 
 trait PageNavigator {

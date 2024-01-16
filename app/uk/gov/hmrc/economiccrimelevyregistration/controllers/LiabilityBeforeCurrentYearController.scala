@@ -88,7 +88,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
 
                 (for (
                   _ <- service.createOrUpdate(info).asResponseError
-                ) yield NavigationData(request.registration, "", true)).convertToResult(mode, pageNavigator, liabilityYearSessionData)
+                ) yield NavigationData(request.registration, "", fromRevenuePage, false, liableBeforeCurrentYear.toString)).convertToResult(mode, pageNavigator, liabilityYearSessionData)
               }
               .getOrElse(
                 Future.successful(Redirect(routes.NotableErrorController.answersAreInvalid()))
