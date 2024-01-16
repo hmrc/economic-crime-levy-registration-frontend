@@ -17,8 +17,8 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 
 class CtUtrPostcodePageNavigator extends PageNavigator {
   override protected def navigateInNormalMode(navigationData: NavigationData): Call =

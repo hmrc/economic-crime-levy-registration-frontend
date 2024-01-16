@@ -19,12 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.UtrType.{CtUtr, SaUtr}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode}
 
 class UtrTypePageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call = {
-    val otherEntityJourneyData = registration.otherEntityJourneyData
+  override protected def navigateInNormalMode(navigationData: NavigationData): Call = {
+    val otherEntityJourneyData = navigationData.registration.otherEntityJourneyData
     otherEntityJourneyData.utrType match {
       case Some(CtUtr) => routes.CtUtrController.onPageLoad(NormalMode)
       case Some(SaUtr) => routes.SaUtrController.onPageLoad(NormalMode)
@@ -32,8 +32,8 @@ class UtrTypePageNavigator extends PageNavigator {
     }
   }
 
-  override protected def navigateInCheckMode(registration: Registration): Call = {
-    val otherEntityJourneyData = registration.otherEntityJourneyData
+  override protected def navigateInCheckMode(navigationData: NavigationData): Call = {
+    val otherEntityJourneyData = navigationData.registration.otherEntityJourneyData
     otherEntityJourneyData.utrType match {
       case Some(CtUtr) if otherEntityJourneyData.ctUtr.isEmpty => routes.CtUtrController.onPageLoad(CheckMode)
       case Some(SaUtr) if otherEntityJourneyData.saUtr.isEmpty => routes.SaUtrController.onPageLoad(CheckMode)

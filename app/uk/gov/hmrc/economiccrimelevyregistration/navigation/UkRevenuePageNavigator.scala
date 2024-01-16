@@ -24,11 +24,11 @@ import javax.inject.Inject
 
 class UkRevenuePageNavigator @Inject() () extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    navigate(NormalMode, registration)
+  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+    navigate(NormalMode, navigationData.registration)
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    navigate(CheckMode, registration)
+  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
+    navigate(CheckMode, navigationData.registration)
 
   private def navigate(mode: Mode, registration: Registration): Call =
     registration.relevantApRevenue match {

@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import cats.data.EitherT
 import play.api.Logging
 import play.api.http.Status.BAD_GATEWAY
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AddressLookupContinueError, BadGateway, DataRetrievalError, InternalServiceError, RegistrationError, ResponseError, SessionError}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors._
 
 import scala.concurrent.{ExecutionContext, Future}
 

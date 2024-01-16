@@ -17,9 +17,9 @@
 package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk
 
 import play.twirl.api.Html
+import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
 import uk.gov.hmrc.govukfrontend.views.viewmodels.fieldset.{Fieldset, Legend}
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 
 object fieldset extends FieldsetFluency
 

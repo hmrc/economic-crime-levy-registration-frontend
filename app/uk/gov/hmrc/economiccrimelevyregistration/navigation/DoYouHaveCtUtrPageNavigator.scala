@@ -17,10 +17,10 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode}
 
 import javax.inject.Inject
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
 class DoYouHaveCtUtrPageNavigator @Inject() extends PageNavigator {
   override protected def navigateInNormalMode(navigationData: NavigationData): Call =

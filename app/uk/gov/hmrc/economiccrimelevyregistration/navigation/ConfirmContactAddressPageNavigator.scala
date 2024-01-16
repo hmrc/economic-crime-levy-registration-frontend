@@ -21,7 +21,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
 import javax.inject.Inject
-import scala.collection.MapView
 
 class ConfirmContactAddressPageNavigator @Inject() () extends PageNavigator {
 
