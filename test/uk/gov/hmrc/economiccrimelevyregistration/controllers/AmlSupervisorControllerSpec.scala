@@ -16,24 +16,23 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.{AmendAmlSupervisorFormProvider, AmlSupervisorFormProvider}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration, RegistrationType}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{AmlSupervisorPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 
 import scala.concurrent.Future
 
@@ -44,14 +43,12 @@ class AmlSupervisorControllerSpec extends SpecBase {
   val amendFormProvider: AmendAmlSupervisorFormProvider = new AmendAmlSupervisorFormProvider()
   val form: Form[AmlSupervisor]                         = formProvider(appConfig)
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockAuditConnector: AuditConnector                 = mock[AuditConnector]
 
-  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator(mockAuditConnector) {
-    override protected def navigateInNormalMode(registration: Registration, extraFlag: Boolean)(implicit
-      request: RequestHeader
-    ): Future[Call] =
-      Future.successful(onwardRoute)
+  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator() {
+    override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+      onwardRoute
   }
 
   implicit val arbAmlSupervisor: Arbitrary[AmlSupervisor] = arbAmlSupervisor(appConfig)
@@ -61,11 +58,12 @@ class AmlSupervisorControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       amendFormProvider,
       appConfig,
       pageNavigator,
+      mockAuditConnector,
       view
     )
   }
@@ -112,8 +110,8 @@ class AmlSupervisorControllerSpec extends SpecBase {
           val updatedRegistration: Registration =
             registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           val formData: Seq[(String, String)] = amlSupervisor match {
             case AmlSupervisor(Other, Some(otherProfessionalBody)) =>

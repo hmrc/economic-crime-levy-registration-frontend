@@ -16,15 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import play.twirl.api.Html
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.RegistrationError
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
 
@@ -34,18 +33,14 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
 
   val view: AmendRegistrationStartView                                         = app.injector.instanceOf[AmendRegistrationStartView]
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
-  val mockRegistrationConnector: EclRegistrationConnector                      = mock[EclRegistrationConnector]
   val mockRegistrationService: EclRegistrationService                          = mock[EclRegistrationService]
-  val mockErrorHandler: ErrorHandler                                           = mock[ErrorHandler]
 
   val controller = new AmendRegistrationStartController(
     mcc,
     mockRegistrationAdditionalInfoService,
     fakeAuthorisedActionWithEnrolmentCheck(testInternalId),
-    mockErrorHandler,
     view,
-    mockRegistrationService,
-    mockRegistrationConnector
+    mockRegistrationService
   )
 
   "onPageLoad" should {
@@ -54,16 +49,14 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
         mockRegistrationAdditionalInfoService.createOrUpdate(
           anyString(),
           any()
-        )(any())
+        )(any(), any())
       ).thenReturn(
-        Future.successful(())
+        EitherT.fromEither[Future](Right())
       )
 
-      when(mockRegistrationService.getOrCreateRegistration(any())(any()))
-        .thenReturn(Future.successful(registration))
+      when(mockRegistrationService.getOrCreateRegistration(any()))
+        .thenReturn(EitherT.fromEither(Right(registration)))
 
-      when(mockRegistrationConnector.upsertRegistration(any())(any()))
-        .thenReturn(Future.successful(registration))
       val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
 
       status(result) shouldBe OK
@@ -72,30 +65,23 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
     }
 
     "return Internal server error and the correct view" in forAll { registration: Registration =>
-      when(mockRegistrationService.getOrCreateRegistration(any())(any()))
-        .thenReturn(Future.successful(registration))
-
-      when(mockRegistrationConnector.upsertRegistration(any())(any()))
-        .thenReturn(Future.successful(registration))
+      when(mockRegistrationService.getOrCreateRegistration(any()))
+        .thenReturn(EitherT.fromEither[Future](Right(registration)))
 
       when(
         mockRegistrationAdditionalInfoService.createOrUpdate(
           anyString(),
           any()
-        )(any())
+        )(any(), any())
       ).thenReturn(
-        Future.failed(new Exception("error"))
-      )
-
-      when(
-        mockErrorHandler.internalServerErrorTemplate(any())
-      ).thenReturn(
-        Html("error page")
+        EitherT.fromEither[Future](Left(RegistrationError.InternalUnexpectedError("", None)))
       )
 
       val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
 
-      status(result) shouldBe INTERNAL_SERVER_ERROR
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.NotableErrorController.answersAreInvalid())
     }
   }
 

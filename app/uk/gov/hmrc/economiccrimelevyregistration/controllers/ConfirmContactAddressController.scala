@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{ConfirmContactAddressPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AnswersAreInvalidView, ConfirmContactAddressView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ConfirmContactAddressView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -43,7 +43,6 @@ class ConfirmContactAddressController @Inject() (
   formProvider: ConfirmContactAddressFormProvider,
   pageNavigator: ConfirmContactAddressPageNavigator,
   dataCleanup: ConfirmContactAddressDataCleanup,
-  answersAreInvalidView: AnswersAreInvalidView,
   view: ConfirmContactAddressView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -57,7 +56,7 @@ class ConfirmContactAddressController @Inject() (
     (for {
       address <- request.contactAddress.asResponseError
     } yield address).fold(
-      _ => Ok(answersAreInvalidView()),
+      _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
       address =>
         Ok(
           view(
@@ -78,7 +77,7 @@ class ConfirmContactAddressController @Inject() (
             address <- request.contactAddress.asResponseError
           } yield address)
             .fold(
-              _ => Future.successful(Ok(answersAreInvalidView())),
+              _ => Future.successful(Redirect(routes.NotableErrorController.answersAreInvalid())),
               address =>
                 Future.successful(
                   BadRequest(

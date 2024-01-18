@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 
 class SecondContactEmailPageNavigatorSpec extends SpecBase {
 
@@ -35,8 +36,8 @@ class SecondContactEmailPageNavigatorSpec extends SpecBase {
             )
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe contacts.routes.SecondContactNumberController
-          .onPageLoad(NormalMode)
+        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+          contacts.routes.SecondContactNumberController.onPageLoad(NormalMode)
     }
 
     "return a Call to the second contact telephone number page in CheckMode when a second contact telephone number does not already exist" in forAll {
@@ -48,8 +49,8 @@ class SecondContactEmailPageNavigatorSpec extends SpecBase {
             )
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe contacts.routes.SecondContactNumberController
-          .onPageLoad(CheckMode)
+        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
+          contacts.routes.SecondContactNumberController.onPageLoad(CheckMode)
     }
 
     "return a Call to the check your answers page in CheckMode when a second contact telephone number already exists" in forAll {
@@ -62,7 +63,8 @@ class SecondContactEmailPageNavigatorSpec extends SpecBase {
             )
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
     }
   }
 

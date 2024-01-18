@@ -20,8 +20,7 @@ import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, OtherEntityJourneyData, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
 
@@ -45,7 +44,7 @@ class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
         nextPage(hasUkCrn)
     }
 
@@ -63,7 +62,7 @@ class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
 
@@ -79,7 +78,7 @@ class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
         routes.NonUkCrnController.onPageLoad(CheckMode)
     }
   }
@@ -93,7 +92,7 @@ class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
 
-    pageNavigator.nextPage(mode, updatedRegistration) shouldBe
+    pageNavigator.nextPage(mode, NavigationData(updatedRegistration)) shouldBe
       routes.NotableErrorController.answersAreInvalid()
   }
 }

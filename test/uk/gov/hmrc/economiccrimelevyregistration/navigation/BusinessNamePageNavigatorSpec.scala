@@ -54,7 +54,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
         nextPage(entityType)
     }
 
@@ -76,7 +76,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
         routes.CheckYourAnswersController.onPageLoad()
     }
   }

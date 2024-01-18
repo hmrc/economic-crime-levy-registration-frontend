@@ -16,12 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import org.scalacheck.Arbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityRegistrationNumberMaxLength, OrganisationNameMaxLength, UtrLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class NonUkCrnPageNavigatorSpec extends SpecBase {
@@ -30,7 +27,7 @@ class NonUkCrnPageNavigatorSpec extends SpecBase {
 
   "nextPage" should {
     "return a call to the UTR type page in Normal mode" in forAll { (registration: Registration) =>
-      pageNavigator.nextPage(NormalMode, registration) shouldBe
+      pageNavigator.nextPage(NormalMode, NavigationData(registration)) shouldBe
         routes.UtrTypeController.onPageLoad(NormalMode)
     }
 
@@ -47,7 +44,7 @@ class NonUkCrnPageNavigatorSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }

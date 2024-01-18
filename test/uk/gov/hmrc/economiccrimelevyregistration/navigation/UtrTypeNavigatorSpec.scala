@@ -36,7 +36,8 @@ class UtrTypeNavigatorSpec extends SpecBase {
           case CtUtr => routes.CtUtrController.onPageLoad(NormalMode)
         }
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe call
+        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+          call
     }
 
     "return a call to the other entity check your answers page in Check mode" in forAll {
@@ -47,7 +48,8 @@ class UtrTypeNavigatorSpec extends SpecBase {
           case Some(SaUtr) if otherEntityJourneyData.saUtr.isEmpty => routes.SaUtrController.onPageLoad(CheckMode)
           case _                                                   => routes.CheckYourAnswersController.onPageLoad()
         }
-        pageNavigator.nextPage(CheckMode, registration) shouldBe call
+        pageNavigator.nextPage(CheckMode, NavigationData(registration)) shouldBe
+          call
     }
   }
 

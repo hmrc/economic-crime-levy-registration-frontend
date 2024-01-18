@@ -16,19 +16,20 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{EntityTypePageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -40,21 +41,14 @@ class EntityTypeControllerSpec extends SpecBase {
   val formProvider: EntityTypeFormProvider = new EntityTypeFormProvider()
   val form: Form[EntityType]               = formProvider()
 
-  val pageNavigator: EntityTypePageNavigator = new EntityTypePageNavigator(
-    mock[IncorporatedEntityIdentificationFrontendConnector],
-    mock[SoleTraderIdentificationFrontendConnector],
-    mock[PartnershipIdentificationFrontendConnector]
-  ) {
+  val pageNavigator: EntityTypePageNavigator = new EntityTypePageNavigator() {
     override protected def navigateInNormalMode(
-      registration: Registration
-    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
+      navigationData: NavigationData
+    ): Call = onwardRoute
 
     override protected def navigateInCheckMode(
-      registration: Registration
-    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
-
-    override def navigateToCheckYourAnswers(): Future[Call] =
-      Future.successful(onwardRoute)
+      navigationData: NavigationData
+    ): Call = onwardRoute
   }
 
   val dataCleanup: EntityTypeDataCleanup = new EntityTypeDataCleanup {
@@ -62,15 +56,15 @@ class EntityTypeControllerSpec extends SpecBase {
     override def cleanupOtherEntityData(registration: Registration): Registration = registration
   }
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockAuditConnector: AuditConnector                 = mock[AuditConnector]
 
   class TestContext(registrationData: Registration) {
     val controller = new EntityTypeController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       dataCleanup,
@@ -111,8 +105,11 @@ class EntityTypeControllerSpec extends SpecBase {
             entityType = Some(entityType)
           )
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
+
+          when(mockEclRegistrationService.registerEntityType(any(), any(), any()))
+            .thenReturn(EitherT.fromEither[Future](Right(onwardRoute.url)))
 
           val result: Future[Result] =
             controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))

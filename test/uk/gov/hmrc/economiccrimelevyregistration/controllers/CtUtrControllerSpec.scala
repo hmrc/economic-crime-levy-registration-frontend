@@ -16,38 +16,38 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.{OK, SEE_OTHER}
-import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrView
-import play.api.mvc.{BodyParsers, Call, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
+import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.arbRegistration
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{CtUtrPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrView
 
 import scala.concurrent.Future
 
 class CtUtrControllerSpec extends SpecBase {
 
-  val view: CtUtrView                                        = app.injector.instanceOf[CtUtrView]
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val formProvider: CtUtrFormProvider                        = new CtUtrFormProvider()
-  val form: Form[String]                                     = formProvider()
-  override val appConfig: AppConfig                          = mock[AppConfig]
-  val CTUTR                                                  = "0123456789"
+  val view: CtUtrView                                    = app.injector.instanceOf[CtUtrView]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val formProvider: CtUtrFormProvider                    = new CtUtrFormProvider()
+  val form: Form[String]                                 = formProvider()
+  override val appConfig: AppConfig                      = mock[AppConfig]
+  val CTUTR                                              = "0123456789"
 
   val pageNavigator: CtUtrPageNavigator = new CtUtrPageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration): Call =
+    override protected def navigateInNormalMode(navigationData: NavigationData): Call =
       onwardRoute
 
-    override protected def navigateInCheckMode(registration: Registration): Call =
+    override protected def navigateInCheckMode(navigationData: NavigationData): Call =
       onwardRoute
   }
 
@@ -56,7 +56,7 @@ class CtUtrControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       view
@@ -95,8 +95,9 @@ class CtUtrControllerSpec extends SpecBase {
           saUtr = None
         )
         val updatedRegistration: Registration = registration.copy(optOtherEntityJourneyData = Some(otherData))
-        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-          .thenReturn(Future.successful(updatedRegistration))
+
+        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+          .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", CTUTR)))

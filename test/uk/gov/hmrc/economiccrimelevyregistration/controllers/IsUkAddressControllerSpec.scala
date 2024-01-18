@@ -16,19 +16,20 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{IsUkAddressPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
 
 import scala.concurrent.Future
@@ -39,14 +40,12 @@ class IsUkAddressControllerSpec extends SpecBase {
   val formProvider: IsUkAddressFormProvider = new IsUkAddressFormProvider()
   val form: Form[Boolean]                   = formProvider()
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
-  val pageNavigator: IsUkAddressPageNavigator = new IsUkAddressPageNavigator(
-    mock[AddressLookupFrontendConnector]
-  ) {
-    override protected def navigateInNormalMode(registration: Registration)(implicit
-      request: RequestHeader
-    ): Future[Call] = Future.successful(onwardRoute)
+  val pageNavigator: IsUkAddressPageNavigator = new IsUkAddressPageNavigator() {
+    override protected def navigateInNormalMode(
+      navigationData: NavigationData
+    ): Call = onwardRoute
   }
 
   class TestContext(registrationData: Registration) {
@@ -54,7 +53,7 @@ class IsUkAddressControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       view
@@ -112,8 +111,11 @@ class IsUkAddressControllerSpec extends SpecBase {
           val updatedRegistration: Registration =
             registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
+
+          when(mockEclRegistrationService.getAddressLookupUrl(any(), any()))
+            .thenReturn(EitherT.fromEither[Future](Right(onwardRoute.url)))
 
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", contactAddressIsUk.toString)))

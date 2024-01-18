@@ -16,20 +16,20 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWithValidCompanyProfile
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.ConfirmContactAddressDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{ConfirmContactAddressPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ConfirmContactAddressView
 
@@ -41,14 +41,12 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
   val formProvider: ConfirmContactAddressFormProvider = new ConfirmContactAddressFormProvider()
   val form: Form[Boolean]                             = formProvider()
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
-  val pageNavigator: ConfirmContactAddressPageNavigator = new ConfirmContactAddressPageNavigator(
-    mockEclRegistrationConnector
-  ) {
+  val pageNavigator: ConfirmContactAddressPageNavigator = new ConfirmContactAddressPageNavigator() {
     override protected def navigateInNormalMode(
-      registration: Registration
-    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
+      navigationData: NavigationData
+    ): Call = onwardRoute
   }
 
   val dataCleanup: ConfirmContactAddressDataCleanup = new ConfirmContactAddressDataCleanup {
@@ -60,7 +58,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       dataCleanup,
@@ -157,8 +155,8 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
               Some(useRegisteredOfficeAddressAsContactAddress)
             )
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(

@@ -132,7 +132,7 @@ class EclRegistrationService @Inject() (
     entityType: EntityType,
     mode: Mode,
     isSame: Boolean
-  )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, String] =
+  ): EitherT[Future, DataRetrievalError, String] =
     if ((mode == CheckMode) && isSame) {
       EitherT.fromEither[Future](Right(""))
     } else {

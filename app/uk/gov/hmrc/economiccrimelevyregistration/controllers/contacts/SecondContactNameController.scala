@@ -42,7 +42,6 @@ class SecondContactNameController @Inject() (
   eclRegistrationService: EclRegistrationService,
   formProvider: SecondContactNameFormProvider,
   pageNavigator: SecondContactNamePageNavigator,
-  answersAreInvalidView: AnswersAreInvalidView,
   view: SecondContactNameView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController

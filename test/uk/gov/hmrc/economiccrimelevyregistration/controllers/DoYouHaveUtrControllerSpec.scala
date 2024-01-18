@@ -16,17 +16,18 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveUtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{DoYouHaveUtrPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveUtrView
 
 import scala.concurrent.Future
@@ -37,13 +38,13 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
   val formProvider: DoYouHaveUtrFormProvider = new DoYouHaveUtrFormProvider()
   val form: Form[Boolean]                    = formProvider()
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: DoYouHaveUtrPageNavigator = new DoYouHaveUtrPageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration): Call =
+    override protected def navigateInNormalMode(navigationData: NavigationData): Call =
       onwardRoute
 
-    override protected def navigateInCheckMode(registration: Registration): Call =
+    override protected def navigateInCheckMode(navigationData: NavigationData): Call =
       onwardRoute
   }
 
@@ -53,7 +54,7 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       formProvider,
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       pageNavigator,
       view
     )
@@ -107,8 +108,8 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
               optOtherEntityJourneyData = Some(otherEntityJourneyData)
             )
 
-          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(

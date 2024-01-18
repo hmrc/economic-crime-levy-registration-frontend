@@ -16,23 +16,21 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.{Arbitrary, Gen}
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclCalculatorService
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, UkRevenuePageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclCalculatorService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 
 import scala.concurrent.Future
 
@@ -42,14 +40,13 @@ class UkRevenueControllerSpec extends SpecBase {
   val formProvider: UkRevenueFormProvider = new UkRevenueFormProvider()
   val form: Form[BigDecimal]              = formProvider()
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val mockEclCalculatorService: EclCalculatorService         = mock[EclCalculatorService]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockEclCalculatorService: EclCalculatorService     = mock[EclCalculatorService]
 
   val pageNavigator: UkRevenuePageNavigator =
     new UkRevenuePageNavigator() {
-      override protected def navigateInNormalMode(registration: Registration)(implicit
-        request: RequestHeader
-      ): Future[Call] = Future.successful(onwardRoute)
+      override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+        onwardRoute
     }
 
   val minRevenue = 0L
@@ -60,7 +57,7 @@ class UkRevenueControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       mockEclCalculatorService,
       formProvider,
       pageNavigator,
@@ -107,14 +104,14 @@ class UkRevenueControllerSpec extends SpecBase {
           registration.copy(relevantApRevenue = Some(ukRevenue))
 
         when(mockEclCalculatorService.checkIfRevenueMeetsThreshold(ArgumentMatchers.eq(updatedRegistration))(any()))
-          .thenReturn(Future.successful(revenueMeetsThreshold))
+          .thenReturn(EitherT.fromEither[Future](Right(revenueMeetsThreshold)))
 
         when(
-          mockEclRegistrationConnector.upsertRegistration(
+          mockEclRegistrationService.upsertRegistration(
             ArgumentMatchers.eq(updatedRegistration.copy(revenueMeetsThreshold = revenueMeetsThreshold))
-          )(any())
+          )
         )
-          .thenReturn(Future.successful(updatedRegistration))
+          .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", ukRevenue.toString)))

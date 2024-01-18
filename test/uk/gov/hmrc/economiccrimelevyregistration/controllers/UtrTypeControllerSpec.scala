@@ -16,19 +16,19 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{BodyParsers, Call, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UtrTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.UtrTypePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, UtrTypePageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UtrTypeView
 
 import scala.concurrent.Future
@@ -39,26 +39,25 @@ class UtrTypeControllerSpec extends SpecBase {
   val formProvider: UtrTypeFormProvider = new UtrTypeFormProvider()
   val form: Form[UtrType]               = formProvider()
 
-  val pageNavigator: UtrTypePageNavigator = new UtrTypePageNavigator(
-  ) {
+  val pageNavigator: UtrTypePageNavigator = new UtrTypePageNavigator() {
     override protected def navigateInNormalMode(
-      registration: Registration
+      navigationData: NavigationData
     ): Call = onwardRoute
 
     override protected def navigateInCheckMode(
-      registration: Registration
+      navigationData: NavigationData
     ): Call = onwardRoute
   }
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  override val appConfig: AppConfig                          = mock[AppConfig]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  override val appConfig: AppConfig                      = mock[AppConfig]
 
   class TestContext(registrationData: Registration) {
     val controller = new UtrTypeController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       view
@@ -99,8 +98,8 @@ class UtrTypeControllerSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           val result: Future[Result] =
             controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", utrType.toString)))

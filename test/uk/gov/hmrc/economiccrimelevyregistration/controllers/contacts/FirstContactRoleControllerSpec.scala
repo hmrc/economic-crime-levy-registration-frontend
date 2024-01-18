@@ -16,21 +16,22 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactRoleFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactRolePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactRoleView
 
 import scala.concurrent.Future
@@ -42,17 +43,17 @@ class FirstContactRoleControllerSpec extends SpecBase {
   val form: Form[String]                         = formProvider()
 
   val pageNavigator: FirstContactRolePageNavigator = new FirstContactRolePageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(navigationData: NavigationData): Call = onwardRoute
   }
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   class TestContext(registrationData: Registration) {
     val controller = new FirstContactRoleController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       view
@@ -137,8 +138,8 @@ class FirstContactRoleControllerSpec extends SpecBase {
             )
           )
 
-        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-          .thenReturn(Future.successful(updatedRegistration))
+        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+          .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", role)))

@@ -30,14 +30,16 @@ class RelevantAp12MonthsPageNavigatorSpec extends SpecBase {
       (registration: Registration, mode: Mode) =>
         val updatedRegistration = registration.copy(relevantAp12Months = Some(true))
 
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe routes.UkRevenueController.onPageLoad(mode)
+        pageNavigator.nextPage(mode, NavigationData(updatedRegistration)) shouldBe
+          routes.UkRevenueController.onPageLoad(mode)
     }
 
     "return a Call to the relevant AP length page from the relevant AP 12 months page in either mode when the 'No' option is selected" in forAll {
       (registration: Registration, mode: Mode) =>
         val updatedRegistration = registration.copy(relevantAp12Months = Some(false))
 
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe routes.RelevantApLengthController.onPageLoad(mode)
+        pageNavigator.nextPage(mode, NavigationData(updatedRegistration)) shouldBe
+          routes.RelevantApLengthController.onPageLoad(mode)
     }
   }
 

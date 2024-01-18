@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import org.scalacheck.Arbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
@@ -41,7 +40,7 @@ class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
         routes.UtrController.onPageLoad(NormalMode)
     }
 
@@ -59,7 +58,7 @@ class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
           routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
     }
 
@@ -81,7 +80,7 @@ class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }

@@ -30,7 +30,8 @@ class CtUtrPostcodePageNavigatorSpec extends SpecBase {
     "return a call to the address lookup journey in either mode" in {
       (registration: RegistrationWithUnincorporatedAssociation, journeyUrl: String, mode: Mode) =>
         val updatedRegistration: Registration = registration.registration
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe Call(GET, journeyUrl)
+        pageNavigator.nextPage(mode, NavigationData(updatedRegistration)) shouldBe
+          Call(GET, journeyUrl)
     }
   }
 

@@ -16,19 +16,19 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.SEE_OTHER
-import play.api.mvc.{BodyParsers, Call, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
 import uk.gov.hmrc.economiccrimelevyregistration.RegistrationWithUnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrPostcodeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPostcodePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{CtUtrPostcodePageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrPostcodeView
 
 import scala.concurrent.Future
@@ -41,19 +41,19 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
   override val appConfig: AppConfig           = mock[AppConfig]
 
   val pageNavigator: CtUtrPostcodePageNavigator = new CtUtrPostcodePageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(navigationData: NavigationData): Call = onwardRoute
 
-    override protected def navigateInCheckMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInCheckMode(navigationData: NavigationData): Call = onwardRoute
   }
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   class TestContext(registration: Registration) {
     val controller = new CtUtrPostcodeController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registration.internalId),
       fakeDataRetrievalAction(registration),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       view
@@ -93,8 +93,10 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
     "redirect to the next page" in { (registration: RegistrationWithUnincorporatedAssociation) =>
       new TestContext(registration.registration) {
         val updatedRegistration: Registration = registration.registration
-        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-          .thenReturn(Future.successful(updatedRegistration))
+
+        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+          .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
+
         val postcode: String                  = registration.registration.otherEntityJourneyData.postcode.get
 
         val result: Future[Result] =

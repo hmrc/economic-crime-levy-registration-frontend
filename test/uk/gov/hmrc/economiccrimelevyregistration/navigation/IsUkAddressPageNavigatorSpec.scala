@@ -16,35 +16,23 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.AddressLookupFrontendConnector
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
 import uk.gov.hmrc.http.HttpVerbs.GET
 
-import scala.concurrent.Future
-
 class IsUkAddressPageNavigatorSpec extends SpecBase {
 
-  val mockAddressLookupFrontendConnector: AddressLookupFrontendConnector = mock[AddressLookupFrontendConnector]
-
-  val pageNavigator = new IsUkAddressPageNavigator(mockAddressLookupFrontendConnector)
+  val pageNavigator = new IsUkAddressPageNavigator()
 
   "nextPage" should {
     "return a call to the address lookup journey in either mode" in forAll {
       (registration: Registration, contactAddressIsUk: Boolean, journeyUrl: String, mode: Mode) =>
         val updatedRegistration: Registration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
 
-        when(
-          mockAddressLookupFrontendConnector
-            .initJourney(ArgumentMatchers.eq(contactAddressIsUk), ArgumentMatchers.eq(mode))(any())
-        )
-          .thenReturn(Future.successful(journeyUrl))
-
-        await(pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)) shouldBe Call(GET, journeyUrl)
+        pageNavigator.nextPage(mode, NavigationData(updatedRegistration, journeyUrl)) shouldBe
+          Call(GET, journeyUrl)
     }
   }
 

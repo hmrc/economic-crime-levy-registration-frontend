@@ -42,7 +42,6 @@ class FirstContactRoleController @Inject() (
   eclRegistrationService: EclRegistrationService,
   formProvider: FirstContactRoleFormProvider,
   pageNavigator: FirstContactRolePageNavigator,
-  answersAreInvalidView: AnswersAreInvalidView,
   view: FirstContactRoleView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -57,7 +56,7 @@ class FirstContactRoleController @Inject() (
     (for {
       firstContactName <- request.firstContactName.asResponseError
     } yield firstContactName).fold(
-      _ => Ok(answersAreInvalidView()),
+      _ => Redirect(uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid()),
       name =>
         Ok(
           view(
@@ -80,7 +79,7 @@ class FirstContactRoleController @Inject() (
             firstContactName <- request.firstContactName.asResponseError
           } yield firstContactName)
             .fold(
-              _ => Future.successful(Ok(answersAreInvalidView())),
+              _ => Future.successful(Redirect(uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid())),
               name =>
                 Future.successful(
                   BadRequest(

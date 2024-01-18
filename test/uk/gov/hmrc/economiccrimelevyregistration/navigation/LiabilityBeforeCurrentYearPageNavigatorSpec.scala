@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 
@@ -39,8 +38,8 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
         when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
           .thenReturn(Future.successful(AuditResult.Success))
 
-        pageNavigator.nextPage(false, registration, NormalMode, false) shouldBe routes.NotLiableController
-          .youDoNotNeedToRegister()
+        pageNavigator.nextPage(NormalMode, NavigationData(registration, "", false, false, false.toString)) shouldBe
+          routes.NotLiableController.youDoNotNeedToRegister()
 
         verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
 
@@ -57,8 +56,11 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
         when(mockAuditConnector.sendExtendedEvent(any())(any(), any()))
           .thenReturn(Future.successful(AuditResult.Success))
 
-        pageNavigator.nextPage(false, updatedRegistration, NormalMode, true) shouldBe routes.NotLiableController
-          .youDoNotNeedToRegister()
+        pageNavigator.nextPage(
+          NormalMode,
+          NavigationData(updatedRegistration, "", true, false, false.toString)
+        ) shouldBe
+          routes.NotLiableController.youDoNotNeedToRegister()
 
         verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
 
@@ -72,16 +74,34 @@ class LiabilityBeforeCurrentYearPageNavigatorSpec extends SpecBase {
             revenueMeetsThreshold = Some(true)
           )
 
-        pageNavigator.nextPage(false, updatedRegistration, NormalMode, true) shouldBe routes.EntityTypeController
-          .onPageLoad(NormalMode)
+        pageNavigator.nextPage(
+          NormalMode,
+          NavigationData(updatedRegistration, "", true, false, false.toString)
+        ) shouldBe
+          routes.EntityTypeController.onPageLoad(NormalMode)
     }
 
-    "return a Call to the AML supervisor page if selected option is 'Yes'" in forAll { registration: Registration =>
-      val updatedRegistration = registration.copy(
-        registrationType = Some(Initial)
-      )
-      pageNavigator.nextPage(true, updatedRegistration, NormalMode, false) shouldBe routes.AmlSupervisorController
-        .onPageLoad(NormalMode, Initial, true)
+    "return a Call to the AML supervisor page if selected option is 'Yes' and you do not come from revenue page" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(
+          registrationType = Some(Initial)
+        )
+
+        pageNavigator.nextPage(
+          NormalMode,
+          NavigationData(updatedRegistration, "", false, false, true.toString)
+        ) shouldBe
+          routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, true)
+    }
+
+    "return a Call to the entity type page if selected option is 'Yes' abd you come from revenue page" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(
+          registrationType = Some(Initial)
+        )
+
+        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration, "", true, false, true.toString)) shouldBe
+          routes.EntityTypeController.onPageLoad(NormalMode)
     }
   }
 

@@ -43,7 +43,6 @@ class FirstContactEmailController @Inject() (
   formProvider: FirstContactEmailFormProvider,
   pageNavigator: FirstContactEmailPageNavigator,
   view: FirstContactEmailView,
-  answersAreInvalidView: AnswersAreInvalidView,
   sessionService: SessionService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -58,7 +57,7 @@ class FirstContactEmailController @Inject() (
     (for {
       firstContactName <- request.firstContactName.asResponseError
     } yield firstContactName).fold(
-      _ => Ok(answersAreInvalidView()),
+      _ => Redirect(uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid()),
       name =>
         Ok(
           view(
@@ -81,7 +80,7 @@ class FirstContactEmailController @Inject() (
             firstContactName <- request.firstContactName.asResponseError
           } yield firstContactName)
             .fold(
-              _ => Future.successful(Ok(answersAreInvalidView())),
+              _ => Future.successful(Redirect(uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid())),
               name =>
                 Future.successful(
                   BadRequest(

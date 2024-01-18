@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
@@ -24,8 +25,8 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Mode, NormalMode, Registration, RegistrationAdditionalInfo}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityBeforeCurrentYearPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, NormalMode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{LiabilityBeforeCurrentYearPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -42,10 +43,11 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
   val mockSessionService: SessionService = mock[SessionService]
 
-  val pageNavigator: LiabilityBeforeCurrentYearPageNavigator = new LiabilityBeforeCurrentYearPageNavigator(
-    mock[AuditConnector]
-  ) {
-    override def nextPage(answer: Boolean, registration: Registration, mode: Mode, fromRevenuePage: Boolean): Call =
+  val pageNavigator: LiabilityBeforeCurrentYearPageNavigator = new LiabilityBeforeCurrentYearPageNavigator(mock[AuditConnector]) {
+    override def navigateInNormalMode(navigationData: NavigationData): Call =
+      onwardRoute
+
+    override def navigateInCheckMode(navigationData: NavigationData): Call =
       onwardRoute
   }
 
@@ -85,7 +87,8 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
               None
             )
 
-          when(mockService.createOrUpdate(any())(any())).thenReturn(Future.successful(()))
+          when(mockService.createOrUpdate(any()))
+            .thenReturn(EitherT.fromEither[Future](Right()))
 
           val result: Future[Result] =
             controller.onSubmit(true, NormalMode)(
@@ -96,7 +99,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
           redirectLocation(result) shouldBe Some(onwardRoute.url)
 
-          verify(mockService, times(1)).createOrUpdate(any())(any())
+          verify(mockService, times(1)).createOrUpdate(any())(any(), any())
 
           reset(mockService)
         }

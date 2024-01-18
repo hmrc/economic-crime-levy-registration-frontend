@@ -20,7 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 
 class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
 
@@ -32,10 +32,8 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true), registrationType = Some(Amendment))
 
-        await(
-          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
-        ) shouldBe routes.AmlSupervisorController
-          .onPageLoad(NormalMode, Amendment, false)
+        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+          routes.AmlSupervisorController.onPageLoad(NormalMode, Amendment, false)
     }
 
     "return a Call to the check your answers page from the AML regulated activity page in CheckMode when the 'Yes' option is selected" in forAll {
@@ -43,9 +41,8 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true), registrationType = Some(Initial))
 
-        await(
-          pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
-        ) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
     }
 
     "return a Call to the liable in previous year page from the AML regulated activity page in either mode when the 'No' option is selected" in forAll {
@@ -53,10 +50,8 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false), registrationType = Some(Initial))
 
-        await(
-          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
-        ) shouldBe routes.LiabilityBeforeCurrentYearController
-          .onPageLoad(false, NormalMode)
+        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+          routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode)
     }
   }
 

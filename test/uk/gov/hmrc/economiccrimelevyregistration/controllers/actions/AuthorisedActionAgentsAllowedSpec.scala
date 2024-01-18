@@ -25,11 +25,11 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
-import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, ValidRegistrationWithRegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
+import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, ValidRegistrationWithRegistrationType}
 
 import scala.concurrent.Future
 

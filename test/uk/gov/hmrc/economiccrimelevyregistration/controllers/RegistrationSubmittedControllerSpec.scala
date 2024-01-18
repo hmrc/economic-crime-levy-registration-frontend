@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 
@@ -71,7 +72,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             ArgumentMatchers.eq(SessionKeys.LiabilityYear)
           )(any())
         )
-          .thenReturn(Future.successful(Some(liabilityYear.asString)))
+          .thenReturn(EitherT.fromEither[Future](Right(liabilityYear.asString)))
 
         when(
           mockSessionService.get(
@@ -82,7 +83,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             any()
           )
         )
-          .thenReturn(Future.successful(amlRegulatedActivity))
+          .thenReturn(EitherT.fromEither[Future](Right(amlRegulatedActivity)))
 
         val result: Future[Result] = controller.onPageLoad()(
           request
@@ -129,7 +130,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             ArgumentMatchers.eq(SessionKeys.LiabilityYear)
           )(any())
         )
-          .thenReturn(Future.successful(Some(liabilityYear.asString)))
+          .thenReturn(EitherT.fromEither[Future](Right(liabilityYear.asString)))
 
         when(
           mockSessionService.get(
@@ -140,7 +141,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             any()
           )
         )
-          .thenReturn(Future.successful(amlRegulatedActivity))
+          .thenReturn(EitherT.fromEither[Future](Right(amlRegulatedActivity)))
 
         val result: Future[Result] = controller.onPageLoad()(
           request
@@ -172,7 +173,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             ArgumentMatchers.eq(SessionKeys.LiabilityYear)
           )(any())
         )
-          .thenReturn(Future.successful(Some(liabilityYear.asString)))
+          .thenReturn(EitherT.fromEither[Future](Right(liabilityYear.asString)))
 
         when(
           mockSessionService.get(
@@ -183,7 +184,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             any()
           )
         )
-          .thenReturn(Future.successful(amlRegulatedActivity))
+          .thenReturn(EitherT.fromEither[Future](Right(amlRegulatedActivity)))
 
         val result =
           controller.onPageLoad()(AuthorisedRequest(fakeRequest, internalId, groupId, Some(eclReference)))
@@ -210,7 +211,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             ArgumentMatchers.eq(SessionKeys.LiabilityYear)
           )(any())
         )
-          .thenReturn(Future.successful(Some(liabilityYear.asString)))
+          .thenReturn(EitherT.fromEither[Future](Right(liabilityYear.asString)))
 
         when(
           mockSessionService.get(
@@ -221,7 +222,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             any()
           )
         )
-          .thenReturn(Future.successful(amlRegulatedActivity))
+          .thenReturn(EitherT.fromEither[Future](Right(amlRegulatedActivity)))
 
         val result: IllegalStateException = intercept[IllegalStateException] {
           await(controller.onPageLoad()(fakeRequest))

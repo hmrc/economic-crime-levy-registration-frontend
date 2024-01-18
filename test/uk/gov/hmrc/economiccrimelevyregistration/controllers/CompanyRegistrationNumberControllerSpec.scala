@@ -16,21 +16,21 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{BodyParsers, Call, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CompanyRegistrationNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.CompanyRegistrationNumberPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{CompanyRegistrationNumberPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CompanyRegistrationNumberView
 
 import scala.concurrent.Future
@@ -44,23 +44,23 @@ class CompanyRegistrationNumberControllerSpec extends SpecBase {
   val pageNavigator: CompanyRegistrationNumberPageNavigator = new CompanyRegistrationNumberPageNavigator(
   ) {
     override protected def navigateInNormalMode(
-      registration: Registration
+      navigationData: NavigationData
     ): Call = onwardRoute
 
     override protected def navigateInCheckMode(
-      registration: Registration
+      navigationData: NavigationData
     ): Call = onwardRoute
   }
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  override val appConfig: AppConfig                          = mock[AppConfig]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  override val appConfig: AppConfig                      = mock[AppConfig]
 
   class TestContext(registrationData: Registration) {
     val controller = new CompanyRegistrationNumberController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       view
@@ -108,8 +108,8 @@ class CompanyRegistrationNumberControllerSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-          .thenReturn(Future.successful(updatedRegistration))
+        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+          .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
         val result: Future[Result] =
           controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", companyNumber)))

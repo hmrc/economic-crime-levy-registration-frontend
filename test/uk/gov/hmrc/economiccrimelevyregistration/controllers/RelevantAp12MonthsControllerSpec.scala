@@ -16,19 +16,19 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantAp12MonthsDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantAp12MonthsFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantAp12MonthsPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, RelevantAp12MonthsPageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantAp12MonthsView
 
 import scala.concurrent.Future
@@ -39,10 +39,10 @@ class RelevantAp12MonthsControllerSpec extends SpecBase {
   val formProvider: RelevantAp12MonthsFormProvider = new RelevantAp12MonthsFormProvider()
   val form: Form[Boolean]                          = formProvider()
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: RelevantAp12MonthsPageNavigator = new RelevantAp12MonthsPageNavigator {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(navigationData: NavigationData): Call = onwardRoute
   }
 
   val dataCleanup: RelevantAp12MonthsDataCleanup = new RelevantAp12MonthsDataCleanup {
@@ -54,7 +54,7 @@ class RelevantAp12MonthsControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       dataCleanup,
@@ -96,8 +96,8 @@ class RelevantAp12MonthsControllerSpec extends SpecBase {
           val updatedRegistration: Registration =
             registration.copy(relevantAp12Months = Some(relevantAp12Months))
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(

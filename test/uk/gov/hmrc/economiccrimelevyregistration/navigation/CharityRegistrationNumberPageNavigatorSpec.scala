@@ -44,7 +44,7 @@ class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
         routes.DoYouHaveUtrController.onPageLoad(NormalMode)
     }
 
@@ -62,7 +62,7 @@ class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }
