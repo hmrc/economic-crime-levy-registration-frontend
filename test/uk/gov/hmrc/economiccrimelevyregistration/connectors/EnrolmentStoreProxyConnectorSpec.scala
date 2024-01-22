@@ -22,14 +22,15 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResponse
 import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import scala.concurrent.Future
 
 class EnrolmentStoreProxyConnectorSpec extends SpecBase {
 
-  val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new EnrolmentStoreProxyConnectorImpl(appConfig, mockHttpClient)
-  val enrolmentStoreUrl: String  = s"${appConfig.enrolmentStoreProxyBaseUrl}/enrolment-store-proxy/enrolment-store"
+  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  val connector                    = new EnrolmentStoreProxyConnectorImpl(appConfig, mockHttpClient)
+  val enrolmentStoreUrl: String    = s"${appConfig.enrolmentStoreProxyBaseUrl}/enrolment-store-proxy/enrolment-store"
 
   "getEnrolmentsForGroup" should {
 

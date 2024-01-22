@@ -25,13 +25,14 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import scala.concurrent.Future
 
 class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new PartnershipIdentificationFrontendConnectorImpl(appConfig, mockHttpClient)
-  val apiUrl                     = s"${appConfig.partnershipEntityIdentificationFrontendBaseUrl}/partnership-identification/api"
+  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  val connector                    = new PartnershipIdentificationFrontendConnectorImpl(appConfig, mockHttpClient)
+  val apiUrl                       = s"${appConfig.partnershipEntityIdentificationFrontendBaseUrl}/partnership-identification/api"
 
   "createPartnershipJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {

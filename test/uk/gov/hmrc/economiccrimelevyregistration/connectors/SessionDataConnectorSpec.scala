@@ -22,15 +22,16 @@ import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND, NO_CONTENT}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionData
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{BadGatewayException, GatewayTimeoutException, HttpClient, HttpResponse, InternalServerException, UpstreamErrorResponse}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
 class SessionDataConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new SessionDataConnector(appConfig, mockHttpClient)
-  val eclSessionDataUrl          = "http://localhost:14001/economic-crime-levy-registration"
+  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  val connector                    = new SessionDataConnector(appConfig, mockHttpClient)
+  val eclSessionDataUrl            = "http://localhost:14001/economic-crime-levy-registration"
 
   "get" should {
 

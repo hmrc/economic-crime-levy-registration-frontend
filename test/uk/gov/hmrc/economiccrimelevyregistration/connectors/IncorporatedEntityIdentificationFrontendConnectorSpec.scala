@@ -25,13 +25,14 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{RegisteredSo
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import scala.concurrent.Future
 
 class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new IncorporatedEntityIdentificationFrontendConnectorImpl(appConfig, mockHttpClient)
-  val apiUrl                     = s"${appConfig.incorporatedEntityIdentificationFrontendBaseUrl}/incorporated-entity-identification/api"
+  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  val connector                    = new IncorporatedEntityIdentificationFrontendConnectorImpl(appConfig, mockHttpClient)
+  val apiUrl                       = s"${appConfig.incorporatedEntityIdentificationFrontendBaseUrl}/incorporated-entity-identification/api"
 
   "createUkCompanyJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {

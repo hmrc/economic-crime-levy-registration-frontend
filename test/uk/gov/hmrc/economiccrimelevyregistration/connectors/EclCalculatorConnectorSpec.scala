@@ -23,13 +23,14 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculateLiabilityRequest, CalculatedLiability}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import scala.concurrent.Future
 
 class EclCalculatorConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new EclCalculatorConnector(appConfig, mockHttpClient)
-  val eclCalculatorUrl           = "http://localhost:14010/economic-crime-levy-calculator"
+  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  val connector                    = new EclCalculatorConnector(appConfig, mockHttpClient)
+  val eclCalculatorUrl             = "http://localhost:14010/economic-crime-levy-calculator"
 
   "calculateLiability" should {
     "return the calculated liability when the http client returns the calculated liability" in forAll {

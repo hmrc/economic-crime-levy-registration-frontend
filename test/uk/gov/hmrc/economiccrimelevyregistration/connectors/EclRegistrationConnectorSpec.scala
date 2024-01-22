@@ -24,14 +24,15 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, Registration}
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HttpClient, HttpException, HttpResponse, UpstreamErrorResponse}
 
 import scala.concurrent.Future
 
 class EclRegistrationConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new EclRegistrationConnector(appConfig, mockHttpClient)
-  val eclRegistrationUrl         = "http://localhost:14001/economic-crime-levy-registration"
+  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  val connector                    = new EclRegistrationConnector(appConfig, mockHttpClient)
+  val eclRegistrationUrl           = "http://localhost:14001/economic-crime-levy-registration"
 
   "getRegistration" should {
 

@@ -23,15 +23,16 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.NormalEntityTemplateId
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HttpClient, HttpResponse, UpstreamErrorResponse}
 
 import scala.concurrent.Future
 
 class EmailConnectorSpec extends SpecBase {
 
-  val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new EmailConnector(appConfig, mockHttpClient)
-  val sendEmailUrl: String       = s"${appConfig.emailBaseUrl}/hmrc/email"
+  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  val connector                    = new EmailConnector(appConfig, mockHttpClient)
+  val sendEmailUrl: String         = s"${appConfig.emailBaseUrl}/hmrc/email"
 
   "sendRegistrationSubmittedEmail" should {
     val expectedUrl = sendEmailUrl
