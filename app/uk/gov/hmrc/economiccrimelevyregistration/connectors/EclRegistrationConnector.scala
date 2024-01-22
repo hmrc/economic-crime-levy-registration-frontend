@@ -46,7 +46,8 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
 
   def deleteRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
     httpClient
-      .delete(url"$eclRegistrationUrl/registrations/$internalId").executeAndContinue
+      .delete(url"$eclRegistrationUrl/registrations/$internalId")
+      .executeAndContinue
 
   def getSubscriptionStatus(businessPartnerId: String)(implicit hc: HeaderCarrier): Future[EclSubscriptionStatus] =
     httpClient

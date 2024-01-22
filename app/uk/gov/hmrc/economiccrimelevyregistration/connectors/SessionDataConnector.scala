@@ -46,5 +46,7 @@ class SessionDataConnector @Inject() (appConfig: AppConfig, httpClient: HttpClie
       .executeAndContinue
 
   def delete(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
-    httpClient.delete(url"$eclRegistrationUrl/session/$internalId").executeAndContinue
+    httpClient
+      .delete(url"$eclRegistrationUrl/session/$internalId")
+      .executeAndContinue
 }

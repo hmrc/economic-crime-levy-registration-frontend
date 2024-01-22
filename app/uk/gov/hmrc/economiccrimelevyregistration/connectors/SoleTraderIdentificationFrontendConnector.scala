@@ -59,7 +59,9 @@ class SoleTraderIdentificationFrontendConnectorImpl @Inject() (
   }
 
   def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[SoleTraderEntityJourneyData] =
-    httpClient.get(url"$apiUrl/journey/$journeyId").executeAndDeserialise[SoleTraderEntityJourneyData]
+    httpClient
+      .get(url"$apiUrl/journey/$journeyId")
+      .executeAndDeserialise[SoleTraderEntityJourneyData]
 
   private def toSoleTraderEntityCreateJourneyRequest(
     mode: Mode,

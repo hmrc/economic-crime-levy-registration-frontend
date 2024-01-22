@@ -71,7 +71,9 @@ class PartnershipIdentificationFrontendConnectorImpl @Inject() (
   }
 
   def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[PartnershipEntityJourneyData] =
-    httpClient.get(url"$apiUrl/journey/$journeyId").executeAndDeserialise[PartnershipEntityJourneyData]
+    httpClient
+      .get(url"$apiUrl/journey/$journeyId")
+      .executeAndDeserialise[PartnershipEntityJourneyData]
 
   private def toPartnershipEntityCreateJourneyRequest(
     mode: Mode,

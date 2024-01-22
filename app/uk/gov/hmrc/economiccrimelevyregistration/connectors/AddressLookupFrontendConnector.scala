@@ -66,6 +66,8 @@ class AddressLookupFrontendConnectorImpl @Inject() (
   }
 
   def getAddress(addressId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData] =
-    httpClient.get(url"$baseUrl/api/confirmed?id=$addressId").executeAndDeserialise[AlfAddressData]
+    httpClient
+      .get(url"$baseUrl/api/confirmed?id=$addressId")
+      .executeAndDeserialise[AlfAddressData]
 
 }

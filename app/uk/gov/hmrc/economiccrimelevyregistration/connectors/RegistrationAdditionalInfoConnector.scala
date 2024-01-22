@@ -46,5 +46,7 @@ class RegistrationAdditionalInfoConnector @Inject() (appConfig: AppConfig, httpC
       .executeAndContinue
 
   def delete(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
-    httpClient.delete(url"$eclRegistrationUrl/registration-additional-info/$internalId").executeAndContinue
+    httpClient
+      .delete(url"$eclRegistrationUrl/registration-additional-info/$internalId")
+      .executeAndContinue
 }
