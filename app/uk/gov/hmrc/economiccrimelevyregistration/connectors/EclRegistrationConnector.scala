@@ -34,7 +34,9 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
     url"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
 
   def getRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] =
-    httpClient.get(url"$eclRegistrationUrl/registrations/$internalId").executeAndDeserialise[Registration]
+    httpClient
+      .get(url"$eclRegistrationUrl/registrations/$internalId")
+      .executeAndDeserialise[Registration]
 
   def upsertRegistration(registration: Registration)(implicit hc: HeaderCarrier): Future[Registration] =
     httpClient
@@ -43,7 +45,8 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
       .executeAndDeserialise[Registration]
 
   def deleteRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
-    httpClient.delete(url"$eclRegistrationUrl/registrations/$internalId").executeAndContinue
+    httpClient
+      .delete(url"$eclRegistrationUrl/registrations/$internalId").executeAndContinue
 
   def getSubscriptionStatus(businessPartnerId: String)(implicit hc: HeaderCarrier): Future[EclSubscriptionStatus] =
     httpClient
