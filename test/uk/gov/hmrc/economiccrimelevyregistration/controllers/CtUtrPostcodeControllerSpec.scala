@@ -97,7 +97,7 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
         when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
           .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
-        val postcode: String                  = registration.registration.otherEntityJourneyData.postcode.get
+        val postcode: String = registration.registration.otherEntityJourneyData.postcode.get
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", postcode)))

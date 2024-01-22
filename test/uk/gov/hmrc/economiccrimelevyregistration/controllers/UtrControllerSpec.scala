@@ -97,7 +97,7 @@ class UtrControllerSpec extends SpecBase {
         when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
           .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
-        val utr: String                       = registration.registration.otherEntityJourneyData.ctUtr.getOrElse("")
+        val utr: String = registration.registration.otherEntityJourneyData.ctUtr.getOrElse("")
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", utr)))

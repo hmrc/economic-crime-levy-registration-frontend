@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsEmpty, Request, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
@@ -50,10 +52,12 @@ class DataRetrievalActionSpec extends SpecBase {
   "refine" should {
     "return internal server error if additional info cannot be retrieved" in forAll {
       (internalId: String, groupId: String, registration: Registration) =>
-        when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
+        when(mockEclRegistrationService.getOrCreateRegistration(any()))
+          .thenReturn(EitherT.fromEither[Future](Right(registration)))
 
         val error = "Error"
-        when(mockRegistrationAdditionalInfoService.get(any())(any())).thenReturn(Future.failed(new Exception(error)))
+        when(mockRegistrationAdditionalInfoService.get(any())(any(), any()))
+          .thenReturn(EitherT.fromEither[Future](Left(DataRetrievalError.InternalUnexpectedError("", None))))
 
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
@@ -71,7 +75,8 @@ class DataRetrievalActionSpec extends SpecBase {
           None
         )
 
-        when(mockRegistrationAdditionalInfoService.get(any())(any())).thenReturn(Future.successful(Some(info)))
+        when(mockRegistrationAdditionalInfoService.get(any())(any(), any()))
+          .thenReturn(EitherT.fromEither[Future](Right(info)))
 
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))

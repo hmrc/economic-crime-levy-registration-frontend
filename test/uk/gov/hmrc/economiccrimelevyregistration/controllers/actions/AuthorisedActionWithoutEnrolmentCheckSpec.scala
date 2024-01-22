@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{BodyParsers, Request, Result}
@@ -28,6 +29,7 @@ import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.EnrolmentStoreProxyError
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
 import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, ValidRegistrationWithRegistrationType}
 
@@ -76,11 +78,11 @@ class AuthorisedActionWithoutEnrolmentCheckSpec extends SpecBase {
             )
           )
 
-        when(mockEclRegistrationService.getOrCreateRegistration(any())(any()))
-          .thenReturn(Future.successful(validRegistration.registration))
+        when(mockEclRegistrationService.getOrCreateRegistration(any()))
+          .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
 
         when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
-          .thenReturn(Future.successful(None))
+          .thenReturn(EitherT.fromEither[Future](Left(EnrolmentStoreProxyError.InternalUnexpectedError("", None))))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
@@ -113,7 +115,7 @@ class AuthorisedActionWithoutEnrolmentCheckSpec extends SpecBase {
           )
 
         when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
-          .thenReturn(Future.successful(None))
+          .thenReturn(EitherT.fromEither[Future](Left(EnrolmentStoreProxyError.InternalUnexpectedError("", None))))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 

@@ -43,7 +43,9 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
   val mockSessionService: SessionService = mock[SessionService]
 
-  val pageNavigator: LiabilityBeforeCurrentYearPageNavigator = new LiabilityBeforeCurrentYearPageNavigator(mock[AuditConnector]) {
+  val pageNavigator: LiabilityBeforeCurrentYearPageNavigator = new LiabilityBeforeCurrentYearPageNavigator(
+    mock[AuditConnector]
+  ) {
     override def navigateInNormalMode(navigationData: NavigationData): Call =
       onwardRoute
 

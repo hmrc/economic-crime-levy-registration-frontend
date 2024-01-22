@@ -27,7 +27,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AnswersAreInvalidView
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNumberView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -56,7 +55,10 @@ class SecondContactNumberController @Inject() (
     (for {
       secondContactName <- request.secondContactName.asResponseError
     } yield secondContactName).fold(
-      _ => Redirect(uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid()),
+      _ =>
+        Redirect(
+          uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid()
+        ),
       name =>
         Ok(
           view(
@@ -79,7 +81,13 @@ class SecondContactNumberController @Inject() (
             secondContactName <- request.secondContactName.asResponseError
           } yield secondContactName)
             .fold(
-              _ => Future.successful(Redirect(uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid())),
+              _ =>
+                Future.successful(
+                  Redirect(
+                    uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController
+                      .answersAreInvalid()
+                  )
+                ),
               name =>
                 Future.successful(
                   BadRequest(

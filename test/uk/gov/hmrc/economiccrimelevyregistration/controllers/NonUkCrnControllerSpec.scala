@@ -53,7 +53,7 @@ class NonUkCrnControllerSpec extends SpecBase {
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  override val appConfig: AppConfig                          = mock[AppConfig]
+  override val appConfig: AppConfig                      = mock[AppConfig]
 
   class TestContext(registrationData: Registration) {
     val controller = new NonUkCrnController(

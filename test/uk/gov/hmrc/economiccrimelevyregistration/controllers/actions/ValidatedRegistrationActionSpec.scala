@@ -16,23 +16,26 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, DataValidationErrors}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 
 import scala.concurrent.Future
 
 class ValidatedRegistrationActionSpec extends SpecBase {
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
-  val validatedRegistrationAction = new ValidatedRegistrationActionImpl(mockEclRegistrationConnector)
+  val validatedRegistrationAction = new ValidatedRegistrationActionImpl(
+    mockEclRegistrationService
+  )
 
   val testAction: Request[_] => Future[Result] = { _ =>
     Future(Ok("Test"))
@@ -40,8 +43,8 @@ class ValidatedRegistrationActionSpec extends SpecBase {
 
   "filter" should {
     "return None if the registration data is valid" in forAll { (internalId: String, registration: Registration) =>
-      when(mockEclRegistrationConnector.getRegistrationValidationErrors(any())(any()))
-        .thenReturn(Future.successful(None))
+      when(mockEclRegistrationService.getRegistrationValidationErrors(any())(any()))
+        .thenReturn(EitherT.fromEither[Future](Left(DataRetrievalError.InternalUnexpectedError("", None))))
 
       val result: Future[Option[Result]] =
         validatedRegistrationAction.filter(
@@ -53,8 +56,8 @@ class ValidatedRegistrationActionSpec extends SpecBase {
 
     "redirect to the journey recovery page if the registration data is invalid" in forAll {
       (internalId: String, registration: Registration, dataValidationErrors: DataValidationErrors) =>
-        when(mockEclRegistrationConnector.getRegistrationValidationErrors(any())(any()))
-          .thenReturn(Future.successful(Some(dataValidationErrors)))
+        when(mockEclRegistrationService.getRegistrationValidationErrors(any())(any()))
+          .thenReturn(EitherT.fromEither[Future](Right(dataValidationErrors)))
 
         val result: Future[Option[Result]] =
           validatedRegistrationAction.filter(
