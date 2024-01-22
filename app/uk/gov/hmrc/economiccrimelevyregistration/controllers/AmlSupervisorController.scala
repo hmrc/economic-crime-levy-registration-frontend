@@ -130,7 +130,10 @@ class AmlSupervisorController @Inject() (
 
             (for {
               upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            } yield NavigationData(upsertedRegistration, "", false)).convertToResult(mode, pageNavigator)
+            } yield NavigationData(
+              registration = upsertedRegistration,
+              fromSpecificPage = fromLiableBeforeCurrentYearPage
+            )).convertToResult(mode, pageNavigator)
           }
         )
     }

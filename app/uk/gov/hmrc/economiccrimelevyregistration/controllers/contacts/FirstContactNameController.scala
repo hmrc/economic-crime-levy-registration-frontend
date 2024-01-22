@@ -80,7 +80,9 @@ class FirstContactNameController @Inject() (
               eclRegistrationService
                 .upsertRegistration(request.registration.copy(contacts = updatedContacts))
                 .asResponseError
-          } yield NavigationData(updatedRegistration)).convertToResult(mode, pageNavigator)
+          } yield NavigationData(
+            registration = updatedRegistration
+          )).convertToResult(mode, pageNavigator)
         }
       )
   }

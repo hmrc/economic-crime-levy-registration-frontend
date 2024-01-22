@@ -68,7 +68,9 @@ class AmlRegulatedActivityController @Inject() (
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
             _                     = if (amlRegulatedActivity) upsertSession(amlRegulatedActivity, request.internalId)
-          } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
+          } yield NavigationData(
+            registration = upsertedRegistration
+          )).convertToResult(mode, pageNavigator)
         }
       )
   }

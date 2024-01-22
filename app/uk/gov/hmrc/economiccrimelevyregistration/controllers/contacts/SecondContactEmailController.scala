@@ -111,7 +111,9 @@ class SecondContactEmailController @Inject() (
             upsertedRegistration <- eclRegistrationService
                                       .upsertRegistration(request.registration.copy(contacts = updatedContacts))
                                       .asResponseError
-          } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
+          } yield NavigationData(
+            registration = upsertedRegistration
+          )).convertToResult(mode, pageNavigator)
         }
       )
   }

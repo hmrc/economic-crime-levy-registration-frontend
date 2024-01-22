@@ -21,7 +21,7 @@ import play.api.mvc._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendmentRequestedView, AnswersAreInvalidView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendmentRequestedView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -32,8 +32,7 @@ class AmendmentRequestedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: AmendmentRequestedView,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  sessionService: SessionService,
-  answersAreInvalidView: AnswersAreInvalidView
+  sessionService: SessionService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -44,7 +43,7 @@ class AmendmentRequestedController @Inject() (
       firstContactEmailAddress <-
         sessionService.get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress).asResponseError
     } yield firstContactEmailAddress).fold(
-      _ => Ok(answersAreInvalidView()),
+      _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
       success => Ok(view(success, request.eclRegistrationReference))
     )
   }

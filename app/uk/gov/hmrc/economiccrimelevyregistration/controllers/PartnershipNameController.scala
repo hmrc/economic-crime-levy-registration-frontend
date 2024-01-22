@@ -62,7 +62,9 @@ class PartnershipNameController @Inject() (
           val updatedRegistration = request.registration.copy(partnershipName = Some(partnershipName))
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
+          } yield NavigationData(
+            registration = upsertedRegistration
+          )).convertToResult(mode, pageNavigator)
         }
       )
   }

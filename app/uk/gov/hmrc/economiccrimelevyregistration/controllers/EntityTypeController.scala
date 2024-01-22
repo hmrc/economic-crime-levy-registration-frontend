@@ -63,7 +63,7 @@ class EntityTypeController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType => {
-          val isSame = request.registration.entityType match {
+          val sameEntityType = request.registration.entityType match {
             case Some(value) => value == entityType
             case None        => false
           }
@@ -80,8 +80,12 @@ class EntityTypeController @Inject() (
 
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            url                  <- eclRegistrationService.registerEntityType(entityType, mode, isSame).asResponseError
-          } yield NavigationData(upsertedRegistration, url, false, isSame)).convertToResult(mode, pageNavigator)
+            grsJourneyUrl        <- eclRegistrationService.registerEntityType(entityType, mode, sameEntityType).asResponseError
+          } yield NavigationData(
+            registration = upsertedRegistration,
+            url = grsJourneyUrl,
+            isSame = sameEntityType
+          )).convertToResult(mode, pageNavigator)
         }
       )
   }

@@ -65,7 +65,9 @@ class UtrTypeController @Inject() (
               request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
             (for {
               upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
+            } yield NavigationData(
+              registration = upsertedRegistration
+            )).convertToResult(mode, pageNavigator)
           }
         )
     }

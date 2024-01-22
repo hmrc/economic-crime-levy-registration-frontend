@@ -88,11 +88,9 @@ class LiabilityBeforeCurrentYearController @Inject() (
 
                 (for (_ <- service.createOrUpdate(info).asResponseError)
                   yield NavigationData(
-                    request.registration,
-                    "",
-                    fromRevenuePage,
-                    false,
-                    liableBeforeCurrentYear.toString
+                    registration = request.registration,
+                    fromSpecificPage = fromRevenuePage,
+                    value = liableBeforeCurrentYear.toString
                   )).convertToResult(mode, pageNavigator, liabilityYearSessionData)
               }
               .getOrElse(

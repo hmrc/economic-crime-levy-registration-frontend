@@ -78,16 +78,7 @@ class ConfirmContactAddressController @Inject() (
           } yield address)
             .fold(
               _ => Future.successful(Redirect(routes.NotableErrorController.answersAreInvalid())),
-              address =>
-                Future.successful(
-                  BadRequest(
-                    view(
-                      formWithErrors,
-                      AddressViewModel.insetText(address),
-                      mode
-                    )
-                  )
-                )
+              address => Future.successful(BadRequest(view(formWithErrors, AddressViewModel.insetText(address), mode)))
             ),
         useRegisteredOfficeAddressAsContactAddress => {
           val updatedRegistration = request.registration
@@ -106,7 +97,9 @@ class ConfirmContactAddressController @Inject() (
 
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(modifiedRegistration).asResponseError
-          } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
+          } yield NavigationData(
+            registration = upsertedRegistration
+          )).convertToResult(mode, pageNavigator)
         }
       )
   }

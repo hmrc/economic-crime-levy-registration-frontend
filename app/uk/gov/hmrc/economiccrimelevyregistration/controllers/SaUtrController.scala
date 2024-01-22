@@ -67,7 +67,9 @@ class SaUtrController @Inject() (
             val updatedRegistration = request.registration.copy(optOtherEntityJourneyData = Some(otherEntity))
             (for {
               upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
+            } yield NavigationData(
+              registration = upsertedRegistration
+            )).convertToResult(mode, pageNavigator)
           }
         )
     }

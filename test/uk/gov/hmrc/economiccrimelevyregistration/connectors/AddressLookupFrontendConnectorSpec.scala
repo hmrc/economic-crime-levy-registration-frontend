@@ -25,14 +25,15 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HttpClient, HttpResponse, UpstreamErrorResponse}
 
 import scala.concurrent.Future
 
 class AddressLookupFrontendConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new AddressLookupFrontendConnectorImpl(appConfig, mockHttpClient)
-  val baseUrl                    = appConfig.addressLookupFrontendBaseUrl
+  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  val connector                    = new AddressLookupFrontendConnectorImpl(appConfig, mockHttpClient)
+  val baseUrl                      = appConfig.addressLookupFrontendBaseUrl
 
   "initJourney" should {
     val expectedUrl = s"$baseUrl/api/init"

@@ -64,7 +64,9 @@ class RelevantAp12MonthsController @Inject() (
             dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
+          } yield NavigationData(
+            registration = upsertedRegistration
+          )).convertToResult(mode, pageNavigator)
         }
       )
   }

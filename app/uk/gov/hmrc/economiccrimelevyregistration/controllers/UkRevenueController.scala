@@ -73,7 +73,9 @@ class UkRevenueController @Inject() (
                                          )
                                        )
                                        .asResponseError
-          } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
+          } yield NavigationData(
+            registration = upsertedRegistration
+          )).convertToResult(mode, pageNavigator)
         }
       )
   }

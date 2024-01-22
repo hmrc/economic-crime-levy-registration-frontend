@@ -46,7 +46,9 @@ class AddressLookupContinueController @Inject() (
         address              <- addressLookupFrontendService.getAddress(id).asResponseError
         registration          = request.registration.copy(contactAddress = alfAddressToEclAddress(address))
         upsertedRegistration <- eclRegistrationService.upsertRegistration(registration).asResponseError
-      } yield NavigationData(upsertedRegistration)).convertToResult(mode, pageNavigator)
+      } yield NavigationData(
+        registration = upsertedRegistration
+      )).convertToResult(mode, pageNavigator)
   }
 
   private def alfAddressToEclAddress(alfAddressData: AlfAddressData): Option[EclAddress] =
