@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import akka.actor.ActorSystem
+import com.typesafe.config.Config
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
@@ -23,16 +25,22 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.email.AmendRegistrationS
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.{NormalEntityTemplateId, OtherEntityTemplateId}
 import uk.gov.hmrc.economiccrimelevyregistration.models.email._
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, Retries, StringContextOps}
 
 import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EmailConnector @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(implicit
+class EmailConnector @Inject() (
+  appConfig: AppConfig,
+  httpClient: HttpClientV2,
+  override val configuration: Config,
+  override val actorSystem: ActorSystem
+)(implicit
   ec: ExecutionContext
-) extends BaseConnector {
+) extends BaseConnector
+    with Retries {
 
   private val sendEmailUrl: URL = url"${appConfig.emailBaseUrl}/hmrc/email"
 
@@ -43,12 +51,14 @@ class EmailConnector @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(
   )(implicit
     hc: HeaderCarrier
   ): Future[Unit] =
-    httpClient
-      .post(sendEmailUrl)
-      .withBody(
-        Json.toJson(toRegistrationSubmittedEmailRequest(to, registrationSubmittedEmailParameters, entityType))
-      )
-      .executeAndContinue
+    retryFor[Unit]("HMRC email - Send registration")(retryCondition) {
+      httpClient
+        .post(sendEmailUrl)
+        .withBody(
+          Json.toJson(toRegistrationSubmittedEmailRequest(to, registrationSubmittedEmailParameters, entityType))
+        )
+        .executeAndContinue
+    }
 
   def sendAmendRegistrationSubmittedEmail(
     to: String,
@@ -56,12 +66,14 @@ class EmailConnector @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(
   )(implicit
     hc: HeaderCarrier
   ): Future[Unit] =
-    httpClient
-      .post(sendEmailUrl)
-      .withBody(
-        Json.toJson(toAmendRegistrationSubmittedEmailRequest(to, amendRegistrationSubmittedEmailParameters))
-      )
-      .executeAndContinue
+    retryFor[Unit]("HMRC email - Send amend registration")(retryCondition) {
+      httpClient
+        .post(sendEmailUrl)
+        .withBody(
+          Json.toJson(toAmendRegistrationSubmittedEmailRequest(to, amendRegistrationSubmittedEmailParameters))
+        )
+        .executeAndContinue
+    }
 
   private def toRegistrationSubmittedEmailRequest(
     to: String,

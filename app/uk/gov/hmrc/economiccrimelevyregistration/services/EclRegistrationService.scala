@@ -195,7 +195,7 @@ class EclRegistrationService @Inject() (
       case Some(ukMode) =>
         EitherT {
           addressLookupFrontendConnector
-            .initJourney(ukMode, mode)
+            .initJourney(ukMode, mode) //TODO - should be using service
             .map(Right(_))
             .recover {
               case error @ UpstreamErrorResponse(message, code, _, _)

@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import akka.actor.ActorSystem
+import com.typesafe.config.Config
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
@@ -23,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{RegisteredSo
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, Retries, StringContextOps}
 
 import java.net.URL
 import javax.inject.Inject
@@ -38,12 +40,16 @@ trait IncorporatedEntityIdentificationFrontendConnector {
 
 class IncorporatedEntityIdentificationFrontendConnectorImpl @Inject() (
   appConfig: AppConfig,
-  httpClient: HttpClientV2
+  httpClient: HttpClientV2,
+  override val configuration: Config,
+  override val actorSystem: ActorSystem
 )(implicit
   val messagesApi: MessagesApi,
   ec: ExecutionContext
 ) extends IncorporatedEntityIdentificationFrontendConnector
-    with BaseConnector {
+    with BaseConnector
+    with Retries {
+
   private val apiUrl: URL =
     url"${appConfig.incorporatedEntityIdentificationFrontendBaseUrl}/incorporated-entity-identification/api"
 
@@ -58,20 +64,26 @@ class IncorporatedEntityIdentificationFrontendConnectorImpl @Inject() (
       case _                                   => url""
     }
 
-    httpClient
-      .post(url)
-      .withBody(
-        Json.toJson(
-          toIncorporatedEntityCreateJourneyRequest(mode, serviceNameLabels)
+    retryFor[GrsCreateJourneyResponse]("Incorporated entity identification - Create journey")(retryCondition) {
+      httpClient
+        .post(url)
+        .withBody(
+          Json.toJson(
+            toIncorporatedEntityCreateJourneyRequest(mode, serviceNameLabels)
+          )
         )
-      )
-      .executeAndDeserialise[GrsCreateJourneyResponse]
+        .executeAndDeserialise[GrsCreateJourneyResponse]
+    }
   }
 
   def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityJourneyData] =
-    httpClient
-      .get(url"$apiUrl/journey/$journeyId")
-      .executeAndDeserialise[IncorporatedEntityJourneyData]
+    retryFor[IncorporatedEntityJourneyData]("Incorporated entity identification - Get entity journey data")(
+      retryCondition
+    ) {
+      httpClient
+        .get(url"$apiUrl/journey/$journeyId")
+        .executeAndDeserialise[IncorporatedEntityJourneyData]
+    }
 
   private def toIncorporatedEntityCreateJourneyRequest(
     mode: Mode,

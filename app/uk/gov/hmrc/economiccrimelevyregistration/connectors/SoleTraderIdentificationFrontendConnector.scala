@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import akka.actor.ActorSystem
+import com.typesafe.config.Config
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, Retries, StringContextOps}
 
 import java.net.URL
 import javax.inject.Inject
@@ -38,12 +40,16 @@ trait SoleTraderIdentificationFrontendConnector {
 
 class SoleTraderIdentificationFrontendConnectorImpl @Inject() (
   appConfig: AppConfig,
-  httpClient: HttpClientV2
+  httpClient: HttpClientV2,
+  override val configuration: Config,
+  override val actorSystem: ActorSystem
 )(implicit
   val messagesApi: MessagesApi,
   ec: ExecutionContext
 ) extends SoleTraderIdentificationFrontendConnector
-    with BaseConnector {
+    with BaseConnector
+    with Retries {
+
   private val apiUrl: URL =
     url"${appConfig.soleTraderEntityIdentificationFrontendBaseUrl}/sole-trader-identification/api"
 
@@ -52,16 +58,20 @@ class SoleTraderIdentificationFrontendConnectorImpl @Inject() (
   ): Future[GrsCreateJourneyResponse] = {
     val serviceNameLabels = ServiceNameLabels()
 
-    httpClient
-      .post(url"$apiUrl/sole-trader-journey")
-      .withBody(Json.toJson(toSoleTraderEntityCreateJourneyRequest(mode, serviceNameLabels)))
-      .executeAndDeserialise[GrsCreateJourneyResponse]
+    retryFor[GrsCreateJourneyResponse]("Sole trader identification - Create journey")(retryCondition) {
+      httpClient
+        .post(url"$apiUrl/sole-trader-journey")
+        .withBody(Json.toJson(toSoleTraderEntityCreateJourneyRequest(mode, serviceNameLabels)))
+        .executeAndDeserialise[GrsCreateJourneyResponse]
+    }
   }
 
   def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[SoleTraderEntityJourneyData] =
-    httpClient
-      .get(url"$apiUrl/journey/$journeyId")
-      .executeAndDeserialise[SoleTraderEntityJourneyData]
+    retryFor[SoleTraderEntityJourneyData]("Sole trader identification - Get journey data")(retryCondition) {
+      httpClient
+        .get(url"$apiUrl/journey/$journeyId")
+        .executeAndDeserialise[SoleTraderEntityJourneyData]
+    }
 
   private def toSoleTraderEntityCreateJourneyRequest(
     mode: Mode,

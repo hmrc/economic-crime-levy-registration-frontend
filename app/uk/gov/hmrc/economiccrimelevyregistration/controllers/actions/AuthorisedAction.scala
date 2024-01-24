@@ -131,6 +131,8 @@ abstract class BaseAuthorisedAction @Inject() (
         val affinityGroup: AffinityGroup   = optAffinityGroup.getOrElseFail("Unable to retrieve affinityGroup")
         val credentialRole: CredentialRole = optCredentialRole.getOrElseFail("Unable to retrieve credentialRole")
 
+        //TODO - return erro page rather than exception
+
         val eclEnrolment: Option[Enrolment]          = enrolments.enrolments.find(_.key == EclEnrolment.ServiceName)
         val eclRegistrationReference: Option[String] =
           eclEnrolment.flatMap(_.getIdentifier(EclEnrolment.IdentifierKey).map(_.value))

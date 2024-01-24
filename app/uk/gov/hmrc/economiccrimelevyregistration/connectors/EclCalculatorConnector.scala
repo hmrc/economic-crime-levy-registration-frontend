@@ -38,6 +38,7 @@ class EclCalculatorConnector @Inject() (appConfig: AppConfig, httpClient: HttpCl
       relevantApLength = relevantApLength,
       ukRevenue = relevantApRevenue.toLong
     )
+
     httpClient
       .post(url"${appConfig.eclCalculatorBaseUrl}/economic-crime-levy-calculator/calculate-liability")
       .withBody(Json.toJson(body))

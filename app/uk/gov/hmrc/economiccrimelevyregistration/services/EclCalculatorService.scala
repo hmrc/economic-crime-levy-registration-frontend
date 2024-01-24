@@ -50,17 +50,14 @@ class EclCalculatorService @Inject() (
 
   private def f(relevantApLength: Int, revenue: BigDecimal)(implicit
     hc: HeaderCarrier
-  ): EitherT[Future, DataRetrievalError, Option[Boolean]] =
+  ): EitherT[Future, DataRetrievalError, Option[Boolean]] = //TODO - what the *** is this function name?!
     EitherT {
       eclCalculatorConnector
         .calculateLiability(relevantApLength, revenue)
-        .map(liability =>
-          Right(if (liability.amountDue.amount > 0) {
-            Some(true)
-          } else {
-            Some(false)
-          })
-        )
+        .map { liability =>
+          val revenueMoreThanZero = liability.amountDue.amount > 0
+          Right(Some(revenueMoreThanZero))
+        }
         .recover {
           case error @ UpstreamErrorResponse(message, code, _, _)
               if UpstreamErrorResponse.Upstream5xxResponse

@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import akka.actor.ActorSystem
+import com.typesafe.config.Config
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
@@ -23,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, Retries, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,12 +38,16 @@ trait AddressLookupFrontendConnector {
 @Singleton
 class AddressLookupFrontendConnectorImpl @Inject() (
   appConfig: AppConfig,
-  httpClient: HttpClientV2
+  httpClient: HttpClientV2,
+  override val configuration: Config,
+  override val actorSystem: ActorSystem
 )(implicit
   val messagesApi: MessagesApi,
   ec: ExecutionContext
 ) extends AddressLookupFrontendConnector
-    with BaseConnector {
+    with BaseConnector
+    with Retries {
+
   private val baseUrl = appConfig.addressLookupFrontendBaseUrl
 
   def initJourney(ukMode: Boolean, mode: Mode)(implicit
@@ -59,15 +65,19 @@ class AddressLookupFrontendConnectorImpl @Inject() (
       ),
       labels = alfLabels
     )
-    httpClient
-      .post(url"$baseUrl/api/init")
-      .withBody(Json.toJson(body))
-      .executeAndExtractHeader[String]
+    retryFor[String]("Address look up - Initiate journey")(retryCondition) {
+      httpClient
+        .post(url"$baseUrl/api/init")
+        .withBody(Json.toJson(body))
+        .executeAndExtractHeader[String]
+    }
   }
 
   def getAddress(addressId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData] =
-    httpClient
-      .get(url"$baseUrl/api/confirmed?id=$addressId")
-      .executeAndDeserialise[AlfAddressData]
+    retryFor[AlfAddressData]("Address look up - Get address")(retryCondition) {
+      httpClient
+        .get(url"$baseUrl/api/confirmed?id=$addressId")
+        .executeAndDeserialise[AlfAddressData]
+    }
 
 }

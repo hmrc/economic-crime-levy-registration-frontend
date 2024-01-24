@@ -39,7 +39,7 @@ class RegistrationDataRetrievalAction @Inject() (
       registration <- eclRegistrationService.getOrCreateRegistration(request.internalId).asResponseError
       info         <- registrationAdditionalInfoService.get(request.internalId)(hc(request), ec).asResponseError
     } yield (registration, info)).fold(
-      _ => Left(InternalServerError),
+      _ => Left(InternalServerError), //TODO - return error page
       data =>
         Right(
           RegistrationDataRequest(

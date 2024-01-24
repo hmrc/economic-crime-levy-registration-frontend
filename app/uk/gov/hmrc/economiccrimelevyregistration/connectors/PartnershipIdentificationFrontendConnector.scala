@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import akka.actor.ActorSystem
+import com.typesafe.config.Config
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
@@ -23,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, Retries, StringContextOps}
 
 import java.net.URL
 import javax.inject.Inject
@@ -40,12 +42,16 @@ trait PartnershipIdentificationFrontendConnector {
 
 class PartnershipIdentificationFrontendConnectorImpl @Inject() (
   appConfig: AppConfig,
-  httpClient: HttpClientV2
+  httpClient: HttpClientV2,
+  override val configuration: Config,
+  override val actorSystem: ActorSystem
 )(implicit
   val messagesApi: MessagesApi,
   ec: ExecutionContext
 ) extends PartnershipIdentificationFrontendConnector
-    with BaseConnector {
+    with BaseConnector
+    with Retries {
+
   private val apiUrl: URL =
     url"${appConfig.partnershipEntityIdentificationFrontendBaseUrl}/partnership-identification/api"
 
@@ -64,16 +70,21 @@ class PartnershipIdentificationFrontendConnectorImpl @Inject() (
       case _                           => url""
     }
 
-    httpClient
-      .post(url)
-      .withBody(Json.toJson(toPartnershipEntityCreateJourneyRequest(mode, serviceNameLabels)))
-      .executeAndDeserialise[GrsCreateJourneyResponse]
+    retryFor[GrsCreateJourneyResponse]("Partnership identification - Create journey")(retryCondition) {
+
+      httpClient
+        .post(url)
+        .withBody(Json.toJson(toPartnershipEntityCreateJourneyRequest(mode, serviceNameLabels)))
+        .executeAndDeserialise[GrsCreateJourneyResponse]
+    }
   }
 
   def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[PartnershipEntityJourneyData] =
-    httpClient
-      .get(url"$apiUrl/journey/$journeyId")
-      .executeAndDeserialise[PartnershipEntityJourneyData]
+    retryFor[PartnershipEntityJourneyData]("Partnership identification - Get journey data")(retryCondition) {
+      httpClient
+        .get(url"$apiUrl/journey/$journeyId")
+        .executeAndDeserialise[PartnershipEntityJourneyData]
+    }
 
   private def toPartnershipEntityCreateJourneyRequest(
     mode: Mode,

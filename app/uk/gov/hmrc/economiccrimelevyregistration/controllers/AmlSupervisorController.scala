@@ -156,6 +156,6 @@ class AmlSupervisorController @Inject() (
     auditConnector
       .sendExtendedEvent(RegistrationNotLiableAuditEvent(internalId, notLiableReason).extendedDataEvent)
 
-    Future.unit
+    Future.unit //TODO - what?!
   }
 }
