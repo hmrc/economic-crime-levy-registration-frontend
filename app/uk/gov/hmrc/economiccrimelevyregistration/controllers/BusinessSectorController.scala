@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{BusinessSectorPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.BusinessSectorView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{BusinessSectorView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -40,7 +40,7 @@ class BusinessSectorController @Inject() (
   formProvider: BusinessSectorFormProvider,
   pageNavigator: BusinessSectorPageNavigator,
   view: BusinessSectorView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler

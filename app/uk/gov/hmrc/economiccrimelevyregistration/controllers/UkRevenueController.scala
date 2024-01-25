@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, UkRevenuePageNavigator}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclCalculatorService, EclRegistrationService}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, UkRevenueView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -41,7 +41,7 @@ class UkRevenueController @Inject() (
   formProvider: UkRevenueFormProvider,
   pageNavigator: UkRevenuePageNavigator,
   view: UkRevenueView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler

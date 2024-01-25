@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.UtrTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, UtrTypePageNavigator}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.UtrTypeView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, UtrTypeView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -40,7 +40,7 @@ class UtrTypeController @Inject() (
   formProvider: UtrTypeFormProvider,
   pageNavigator: UtrTypePageNavigator,
   view: UtrTypeView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler

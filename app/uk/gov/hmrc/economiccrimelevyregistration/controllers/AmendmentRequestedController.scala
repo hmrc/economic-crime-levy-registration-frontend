@@ -21,11 +21,12 @@ import play.api.mvc._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendmentRequestedView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendmentRequestedView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.BaseController
 
 @Singleton
 class AmendmentRequestedController @Inject() (
@@ -33,9 +34,9 @@ class AmendmentRequestedController @Inject() (
   view: AmendmentRequestedView,
   authorise: AuthorisedActionWithEnrolmentCheck,
   sessionService: SessionService
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
-    with I18nSupport
+    with BaseController
     with ErrorHandler {
 
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
@@ -43,7 +44,7 @@ class AmendmentRequestedController @Inject() (
       firstContactEmailAddress <-
         sessionService.get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress).asResponseError
     } yield firstContactEmailAddress).fold(
-      _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
+      error => routeError(error),
       success => Ok(view(success, request.eclRegistrationReference))
     )
   }

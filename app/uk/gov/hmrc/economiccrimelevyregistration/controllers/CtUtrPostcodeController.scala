@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{CtUtrPostcodePageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrPostcodeView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{CtUtrPostcodeView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -40,7 +40,7 @@ class CtUtrPostcodeController @Inject() (
   formProvider: CtUtrPostcodeFormProvider,
   pageNavigator: CtUtrPostcodePageNavigator,
   view: CtUtrPostcodeView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler

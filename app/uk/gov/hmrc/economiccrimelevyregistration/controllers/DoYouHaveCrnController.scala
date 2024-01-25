@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{DoYouHaveCrnPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveCrnView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{DoYouHaveCrnView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Singleton
@@ -42,7 +42,8 @@ class DoYouHaveCrnController @Inject() (
   pageNavigator: DoYouHaveCrnPageNavigator,
   view: DoYouHaveCrnView
 )(implicit
-  ec: ExecutionContext
+  ec: ExecutionContext,
+  errorTemplate: ErrorTemplate
 ) extends FrontendBaseController
     with I18nSupport
     with ErrorHandler

@@ -22,6 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddress
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{AddressLookupContinuePageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupContinueService, EclRegistrationService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -35,7 +36,7 @@ class AddressLookupContinueController @Inject() (
   addressLookupFrontendService: AddressLookupContinueService,
   eclRegistrationService: EclRegistrationService,
   pageNavigator: AddressLookupContinuePageNavigator
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with BaseController
     with ErrorHandler {

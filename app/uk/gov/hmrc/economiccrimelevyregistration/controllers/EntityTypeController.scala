@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.EntityTypeSelectedEvent
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{EntityTypePageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{EntityTypeView, ErrorTemplate}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -45,7 +45,7 @@ class EntityTypeController @Inject() (
   dataCleanup: EntityTypeDataCleanup,
   auditConnector: AuditConnector,
   view: EntityTypeView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with BaseController

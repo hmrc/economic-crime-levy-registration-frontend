@@ -21,7 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationStartView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -34,7 +34,7 @@ class AmendRegistrationStartController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   view: AmendRegistrationStartView,
   registrationService: EclRegistrationService
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler
@@ -48,7 +48,7 @@ class AmendRegistrationStartController @Inject() (
       createOrUpdateRegistration <-
         registrationAdditionalInfoService.createOrUpdate(request.internalId, Some(eclReference)).asResponseError
     } yield createOrUpdateRegistration).fold(
-      _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
+      error => routeError(error),
       _ => Ok(view(eclReference))
     )
   }

@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationServic
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, OtherRegistrationPdfView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, ErrorTemplate, OtherRegistrationPdfView}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -52,7 +52,7 @@ class CheckYourAnswersController @Inject() (
   emailService: EmailService,
   otherRegistrationPdfView: OtherRegistrationPdfView,
   amendRegistrationPdfView: AmendRegistrationPdfView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with BaseController
@@ -164,7 +164,7 @@ class CheckYourAnswersController @Inject() (
                     )
                     .asResponseError
     } yield (response, email)).fold(
-      _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
+      error => routeError(error),
       data => {
         val session = registration.entityType match {
           case Some(value) if EntityType.isOther(value) => request.session

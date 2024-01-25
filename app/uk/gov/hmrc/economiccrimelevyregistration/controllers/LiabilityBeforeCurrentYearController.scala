@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYea
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{LiabilityBeforeCurrentYearPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityBeforeCurrentYearView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 
@@ -44,7 +44,8 @@ class LiabilityBeforeCurrentYearController @Inject() (
   pageNavigator: LiabilityBeforeCurrentYearPageNavigator,
   view: LiabilityBeforeCurrentYearView
 )(implicit
-  ec: ExecutionContext
+  ec: ExecutionContext,
+  errorTemplate: ErrorTemplate
 ) extends FrontendBaseController
     with I18nSupport
     with ErrorHandler

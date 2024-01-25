@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.PartnershipNamePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.PartnershipNameView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, PartnershipNameView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -41,7 +41,7 @@ class PartnershipNameController @Inject() (
   formProvider: PartnershipNameFormProvider,
   pageNavigator: PartnershipNamePageNavigator,
   view: PartnershipNameView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler

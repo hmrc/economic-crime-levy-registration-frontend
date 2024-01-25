@@ -30,7 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{AmlSupervisorPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlSupervisorView, ErrorTemplate}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -50,7 +50,7 @@ class AmlSupervisorController @Inject() (
   pageNavigator: AmlSupervisorPageNavigator,
   auditConnector: AuditConnector,
   view: AmlSupervisorView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler

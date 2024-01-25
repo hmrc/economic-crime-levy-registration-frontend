@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{DoYouHaveCtUtrPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveCtUtrView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{DoYouHaveCtUtrView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Singleton
@@ -42,7 +42,8 @@ class DoYouHaveCtUtrController @Inject() (
   pageNavigator: DoYouHaveCtUtrPageNavigator,
   view: DoYouHaveCtUtrView
 )(implicit
-  ec: ExecutionContext
+  ec: ExecutionContext,
+  errorTemplate: ErrorTemplate
 ) extends FrontendBaseController
     with I18nSupport
     with ErrorHandler

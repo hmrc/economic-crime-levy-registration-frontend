@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{IsUkAddressPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, IsUkAddressView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -40,7 +40,7 @@ class IsUkAddressController @Inject() (
   formProvider: IsUkAddressFormProvider,
   pageNavigator: IsUkAddressPageNavigator,
   view: IsUkAddressView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler

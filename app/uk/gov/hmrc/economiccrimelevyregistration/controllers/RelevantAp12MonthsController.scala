@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantAp12MonthsFormPro
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, RelevantAp12MonthsPageNavigator}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantAp12MonthsView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RelevantAp12MonthsView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -42,7 +42,7 @@ class RelevantAp12MonthsController @Inject() (
   pageNavigator: RelevantAp12MonthsPageNavigator,
   dataCleanup: RelevantAp12MonthsDataCleanup,
   view: RelevantAp12MonthsView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler

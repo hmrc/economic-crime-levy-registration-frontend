@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantApLengthFormProvi
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, RelevantApLengthPageNavigator}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantApLengthView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RelevantApLengthView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -42,7 +42,7 @@ class RelevantApLengthController @Inject() (
   pageNavigator: RelevantApLengthPageNavigator,
   dataCleanup: RelevantApLengthDataCleanup,
   view: RelevantApLengthView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler

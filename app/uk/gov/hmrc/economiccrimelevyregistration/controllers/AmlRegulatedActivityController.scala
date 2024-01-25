@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{AmlRegulatedActivityPageNavigator, NavigationData}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlRegulatedActivityView, ErrorTemplate}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -43,7 +43,7 @@ class AmlRegulatedActivityController @Inject() (
   formProvider: AmlRegulatedActivityFormProvider,
   pageNavigator: AmlRegulatedActivityPageNavigator,
   view: AmlRegulatedActivityView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with ErrorHandler
     with BaseController
