@@ -21,7 +21,7 @@ import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, GetSubscriptionResponse, Registration}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpResponse, UpstreamErrorResponse}
 
@@ -84,4 +84,9 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
     hc: HeaderCarrier
   ): Future[CreateEclSubscriptionResponse] =
     httpClient.POSTEmpty[CreateEclSubscriptionResponse](s"$eclRegistrationUrl/submit-registration/$internalId")
+
+  def getSubscription(eclReference: String)(implicit hc: HeaderCarrier): Future[GetSubscriptionResponse] =
+    httpClient.GET[GetSubscriptionResponse](
+      s"$eclRegistrationUrl/subscription/$eclReference"
+    )
 }

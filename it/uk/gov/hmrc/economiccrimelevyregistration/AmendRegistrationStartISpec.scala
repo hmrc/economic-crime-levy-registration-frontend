@@ -20,7 +20,7 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GetAdditionalDetails, GetSubscriptionResponse, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 
@@ -31,17 +31,21 @@ class AmendRegistrationStartISpec extends ISpecBase {
 
       stubAuthorisedWithEclEnrolment()
 
-      val registration = random[Registration].copy(registrationType = Some(Amendment))
+      val registration            = random[Registration].copy(registrationType = Some(Amendment))
+      val additionalDetails       = random[GetAdditionalDetails]
+      val getSubscriptionResponse = random[GetSubscriptionResponse].copy(additionalDetails =
+        additionalDetails.copy(businessSector = "HighValueDealer", amlSupervisor = "Hmrc")
+      )
 
       stubGetRegistration(registration)
-      stubUpsertRegistration(registration)
+      stubUpsertRegistrationWithoutRequestMatching(registration)
+      stubGetSubscription(getSubscriptionResponse)
 
       stubUpsertRegistrationAdditionalInfo(RegistrationAdditionalInfo(testInternalId, None, None))
 
       val result = callRoute(FakeRequest(routes.AmendRegistrationStartController.onPageLoad(testInternalId)))
 
-      status(result) shouldBe OK
-      html(result)     should include("Register for the Economic Crime Levy")
+      status(result) shouldBe SEE_OTHER
     }
   }
 

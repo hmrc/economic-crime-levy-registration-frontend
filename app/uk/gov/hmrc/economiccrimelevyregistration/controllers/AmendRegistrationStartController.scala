@@ -18,10 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.i18n.Lang.logger
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc._
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
+import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
@@ -40,7 +42,8 @@ class AmendRegistrationStartController @Inject() (
   errorHandler: ErrorHandler,
   view: AmendRegistrationStartView,
   registrationService: EclRegistrationService,
-  registrationConnector: EclRegistrationConnector
+  registrationConnector: EclRegistrationConnector,
+  appConfig: AppConfig
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -52,13 +55,35 @@ class AmendRegistrationStartController @Inject() (
     } yield response
 
     createOrUpdateRegistration
-      .map(_ => Ok(view(eclReference)))
+      .flatMap { _ =>
+        if (appConfig.getSubscriptionEnabled) {
+          routeToAmendReason(eclReference, request.internalId)
+        } else {
+          Future.successful(Ok(view(eclReference)))
+        }
+      }
       .recover { case e =>
         logger.error(
           s"Failed to create registration additional info for eclReference $eclReference. Error message: ${e.getMessage}"
         )
         InternalServerError(errorHandler.internalServerErrorTemplate)
       }
+  }
+
+  private def routeToAmendReason(eclRegistrationReference: String, internalId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[Result] = {
+    val result = for {
+      registration            <- registrationService.getOrCreateRegistration(internalId)
+      getSubscriptionResponse <- registrationService.getSubscription(eclRegistrationReference)
+      upsertedRegistration    <-
+        registrationService.upsertRegistration(
+          registrationService.transformToRegistration(registration, getSubscriptionResponse)
+        )
+    } yield upsertedRegistration
+
+    result.map(_ => Redirect(routes.AmendReasonController.onPageLoad(CheckMode).url))
+
   }
 
   private def getOrCreateRegistration(

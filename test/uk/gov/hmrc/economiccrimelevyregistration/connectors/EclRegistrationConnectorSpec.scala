@@ -18,12 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Arbitrary
 import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR, NO_CONTENT, OK}
 import play.api.libs.json.Json
+import play.api.test.Helpers.status
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, GetSubscriptionResponse, Registration}
 import uk.gov.hmrc.http.{HttpClient, HttpException, HttpResponse, UpstreamErrorResponse}
 
 import scala.concurrent.Future
@@ -292,4 +294,27 @@ class EclRegistrationConnectorSpec extends SpecBase {
         reset(mockHttpClient)
     }
   }
+
+  "getSubscription" should {
+    "return a subscription response with answers that user already provided during the registration" in forAll(
+      Arbitrary.arbitrary[GetSubscriptionResponse],
+      nonEmptyString
+    ) { (getSubscriptionResponse: GetSubscriptionResponse, eclReference: String) =>
+      val expectedUrl = s"$eclRegistrationUrl/subscription/$eclReference"
+
+      when(
+        mockHttpClient
+          .GET[GetSubscriptionResponse](ArgumentMatchers.eq(expectedUrl), any(), any())(
+            any(),
+            any(),
+            any()
+          )
+      ).thenReturn(Future.successful(getSubscriptionResponse))
+
+      val result = await(connector.getSubscription(eclReference))
+
+      result shouldBe getSubscriptionResponse
+    }
+  }
+
 }
