@@ -30,7 +30,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -123,7 +125,9 @@ abstract class BaseAuthorisedAction @Inject() (
   val agentsAllowed: Boolean
   val assistantsAllowed: Boolean
 
-  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
+  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
+    implicit val hcFromRequest: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
     authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup and credentialRole) {
       case optInternalId ~ enrolments ~ optGroupId ~ optAffinityGroup ~ optCredentialRole =>
         val internalId: String             = optInternalId.getOrElseFail("Unable to retrieve internalId")
@@ -152,10 +156,10 @@ abstract class BaseAuthorisedAction @Inject() (
                 }
             }
         }
-
-    }(hc(request), executionContext) recover { case _: NoActiveSession =>
+    } recover { case _: NoActiveSession =>
       Redirect(config.signInUrl, Map("continue" -> Seq(s"${config.host}${request.uri}")))
     }
+  }
 
   private def processEclReference[A](
     request: Request[A],
@@ -163,7 +167,7 @@ abstract class BaseAuthorisedAction @Inject() (
     block: AuthorisedRequest[A] => Future[Result],
     groupId: String,
     eclRegistrationReference: Option[String]
-  ): Future[Result] =
+  )(implicit hc: HeaderCarrier): Future[Result] =
     eclRegistrationReference match {
       case Some(_) =>
         block(
@@ -177,7 +181,7 @@ abstract class BaseAuthorisedAction @Inject() (
       case None    =>
         (for {
           eclReferenceFromGroupEnrolment <-
-            enrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(groupId)(hc(request))
+            enrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(groupId)
         } yield eclReferenceFromGroupEnrolment).foldF(
           _ => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference)),
           _ => Future.successful(Redirect(routes.NotableErrorController.groupAlreadyEnrolled()))
@@ -191,7 +195,7 @@ abstract class BaseAuthorisedAction @Inject() (
     groupId: String,
     eclEnrolment: Option[Enrolment],
     eclRegistrationReference: Option[String]
-  ): Future[Result] =
+  )(implicit hc: HeaderCarrier): Future[Result] =
     eclEnrolment match {
       case Some(_) =>
         if (request.uri.toLowerCase.contains("amend")) {
@@ -215,7 +219,7 @@ abstract class BaseAuthorisedAction @Inject() (
       case None    =>
         (for {
           eclReference <-
-            enrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(groupId)(hc(request))
+            enrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(groupId)
         } yield eclReference).foldF(
           _ => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference)),
           _ => Future.successful(Redirect(routes.NotableErrorController.groupAlreadyEnrolled()))

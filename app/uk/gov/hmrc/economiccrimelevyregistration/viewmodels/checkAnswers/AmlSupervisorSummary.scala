@@ -47,7 +47,7 @@ object AmlSupervisorSummary {
             ActionItemViewModel(
               "site.change",
               routes.AmlSupervisorController
-                .onPageLoad(CheckMode, request.registration.registrationType.get, false)
+                .onPageLoad(CheckMode, request.registration.registrationType.get)
                 .url
             )
               .withVisuallyHiddenText(

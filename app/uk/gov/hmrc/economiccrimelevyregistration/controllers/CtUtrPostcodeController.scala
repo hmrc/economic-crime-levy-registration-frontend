@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrPostcodeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{CtUtrPostcodePageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPostcodePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{CtUtrPostcodeView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -61,9 +61,7 @@ class CtUtrPostcodeController @Inject() (
           val updatedRegistration = request.registration.copy(optOtherEntityJourneyData = Some(otherEntity))
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield NavigationData(
-            registration = upsertedRegistration
-          )).convertToResult(mode, pageNavigator)
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

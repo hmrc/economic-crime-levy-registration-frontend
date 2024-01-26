@@ -24,23 +24,23 @@ import javax.inject.Inject
 
 class UkRevenuePageNavigator @Inject() () extends PageNavigator {
 
-  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
-    navigate(NormalMode, navigationData.registration)
+  override protected def navigateInNormalMode(registration: Registration): Call =
+    navigate(registration, NormalMode)
 
-  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
-    navigate(CheckMode, navigationData.registration)
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    navigate(registration, CheckMode)
 
-  private def navigate(mode: Mode, registration: Registration): Call =
+  private def navigate(registration: Registration, mode: Mode): Call =
     registration.relevantApRevenue match {
       case Some(_) =>
         registration.revenueMeetsThreshold match {
           case Some(true)  =>
             mode match {
-              case NormalMode => routes.LiabilityBeforeCurrentYearController.onPageLoad(true, mode)
+              case NormalMode => routes.LiabilityBeforeCurrentYearController.onPageLoad(mode)
               case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
             }
           case Some(false) =>
-            routes.LiabilityBeforeCurrentYearController.onPageLoad(true, mode)
+            routes.LiabilityBeforeCurrentYearController.onPageLoad(mode)
           case _           =>
             routes.NotableErrorController.answersAreInvalid()
         }

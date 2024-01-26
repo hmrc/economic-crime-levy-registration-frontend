@@ -19,31 +19,31 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
-case class NavigationData(
-  registration: Registration,
-  url: String,
-  fromSpecificPage: Boolean,
-  isSame: Boolean,
-  value: String
-)
-
-object NavigationData {
-  def apply(
-    registration: Registration,
-    url: String = "",
-    fromSpecificPage: Boolean = false,
-    isSame: Boolean = false,
-    value: String = ""
-  ) = new NavigationData(registration, url, fromSpecificPage, isSame, value)
-}
+//case class NavigationData(
+//  registration: Registration,
+//  url: String,
+//  fromSpecificPage: Boolean,
+//  isSame: Boolean,
+//  value: String
+//)
+//
+//object NavigationData {
+//  def apply(
+//    registration: Registration,
+//    url: String = "",
+//    fromSpecificPage: Boolean = false,
+//    isSame: Boolean = false,
+//    value: String = ""
+//  ) = new NavigationData(registration, url, fromSpecificPage, isSame, value)
+//}
 
 trait PageNavigator {
-  def nextPage(mode: Mode, navigationData: NavigationData): Call = mode match {
-    case NormalMode => navigateInNormalMode(navigationData)
-    case CheckMode  => navigateInCheckMode(navigationData)
+  def nextPage(mode: Mode, registration: Registration): Call = mode match {
+    case NormalMode => navigateInNormalMode(registration)
+    case CheckMode  => navigateInCheckMode(registration)
   }
 
-  protected def navigateInNormalMode(navigationData: NavigationData): Call
+  protected def navigateInNormalMode(registration: Registration): Call
 
-  protected def navigateInCheckMode(navigationData: NavigationData): Call
+  protected def navigateInCheckMode(registration: Registration): Call
 }

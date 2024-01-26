@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationAdditionalInfo
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationStartView, ErrorTemplate}
@@ -45,8 +46,9 @@ class AmendRegistrationStartController @Inject() (
       registration               <- registrationService.getOrCreateRegistration(request.internalId).asResponseError
       _                          <-
         registrationService.upsertRegistration(registration.copy(registrationType = Some(Amendment))).asResponseError
+      additionalInfo              = RegistrationAdditionalInfo(request.internalId, None, Some(eclReference))
       createOrUpdateRegistration <-
-        registrationAdditionalInfoService.createOrUpdate(request.internalId, Some(eclReference)).asResponseError
+        registrationAdditionalInfoService.createOrUpdate(additionalInfo).asResponseError
     } yield createOrUpdateRegistration).fold(
       error => routeError(error),
       _ => Ok(view(eclReference))

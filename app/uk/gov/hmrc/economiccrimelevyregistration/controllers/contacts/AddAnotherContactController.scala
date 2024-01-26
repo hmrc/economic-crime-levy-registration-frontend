@@ -25,9 +25,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, _}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContactFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.AddAnotherContactView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -44,7 +44,7 @@ class AddAnotherContactController @Inject() (
   pageNavigator: AddAnotherContactPageNavigator,
   dataCleanup: AddAnotherContactDataCleanup,
   view: AddAnotherContactView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with BaseController
@@ -79,9 +79,7 @@ class AddAnotherContactController @Inject() (
 
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield NavigationData(
-            registration = upsertedRegistration
-          )).convertToResult(mode, pageNavigator)
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

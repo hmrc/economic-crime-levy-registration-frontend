@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Finan
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{AmlSupervisorPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlSupervisorView, ErrorTemplate}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -62,8 +62,7 @@ class AmlSupervisorController @Inject() (
 
   def onPageLoad(
     mode: Mode,
-    registrationType: RegistrationType = Initial,
-    fromLiableBeforeCurrentYearPage: Boolean = false
+    registrationType: RegistrationType = Initial
   ): Action[AnyContent] =
     (authorise andThen getRegistrationData) { implicit request =>
       registrationType match {
@@ -73,7 +72,6 @@ class AmlSupervisorController @Inject() (
               form.prepare(request.registration.amlSupervisor),
               mode,
               Some(registrationType),
-              fromLiableBeforeCurrentYearPage,
               request.eclRegistrationReference
             )
           )
@@ -83,7 +81,6 @@ class AmlSupervisorController @Inject() (
               amendForm.prepare(request.registration.amlSupervisor),
               mode,
               Some(registrationType),
-              fromLiableBeforeCurrentYearPage,
               request.eclRegistrationReference
             )
           )
@@ -92,8 +89,7 @@ class AmlSupervisorController @Inject() (
 
   def onSubmit(
     mode: Mode,
-    registrationType: RegistrationType = Initial,
-    fromLiableBeforeCurrentYearPage: Boolean
+    registrationType: RegistrationType = Initial
   ): Action[AnyContent] =
     (authorise andThen getRegistrationData).async { implicit request =>
       form
@@ -106,7 +102,6 @@ class AmlSupervisorController @Inject() (
                   formWithErrors,
                   mode,
                   Some(registrationType),
-                  fromLiableBeforeCurrentYearPage,
                   request.eclRegistrationReference
                 )
               )
@@ -130,10 +125,7 @@ class AmlSupervisorController @Inject() (
 
             (for {
               upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            } yield NavigationData(
-              registration = upsertedRegistration,
-              fromSpecificPage = fromLiableBeforeCurrentYearPage
-            )).convertToResult(mode, pageNavigator)
+            } yield upsertedRegistration).convertToResult(mode, pageNavigator)
           }
         )
     }

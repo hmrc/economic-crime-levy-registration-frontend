@@ -18,16 +18,17 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.EntityTypeSelectedEvent
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{EntityTypePageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{EntityTypeView, ErrorTemplate}
+import uk.gov.hmrc.http.HttpVerbs.GET
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -41,7 +42,6 @@ class EntityTypeController @Inject() (
   getRegistrationData: DataRetrievalAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: EntityTypeFormProvider,
-  pageNavigator: EntityTypePageNavigator,
   dataCleanup: EntityTypeDataCleanup,
   auditConnector: AuditConnector,
   view: EntityTypeView
@@ -63,11 +63,6 @@ class EntityTypeController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType => {
-          val sameEntityType = request.registration.entityType match {
-            case Some(value) => value == entityType
-            case None        => false
-          }
-
           auditConnector
             .sendExtendedEvent(
               EntityTypeSelectedEvent(
@@ -76,46 +71,77 @@ class EntityTypeController @Inject() (
               ).extendedDataEvent
             )
 
-          val updatedRegistration = cleanup(mode, request.registration, entityType)
-
-          (for {
-            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            grsJourneyUrl        <- eclRegistrationService.registerEntityType(entityType, mode, sameEntityType).asResponseError
-          } yield NavigationData(
-            registration = upsertedRegistration,
-            url = grsJourneyUrl,
-            isSame = sameEntityType
-          )).convertToResult(mode, pageNavigator)
+          mode match {
+            case NormalMode => navigateInNormalMode(entityType)
+            case CheckMode  => navigateInCheckMode(entityType)
+          }
         }
       )
   }
 
-  private def cleanup(
-    mode: Mode,
-    registration: Registration,
-    entityType: EntityType
-  ) = {
-    val previousEntityType = registration.entityType
-    val isOther            = EntityType.isOther(entityType)
-    if (previousEntityType.contains(entityType) && mode == CheckMode && isOther) {
-      registration
-    } else if (!isOther) {
-      dataCleanup.cleanup(
-        registration.copy(
-          entityType = Some(entityType)
-        )
-      )
+  private def navigateInNormalMode(newEntityType: EntityType)(implicit request: RegistrationDataRequest[_]) =
+    if (EntityType.isOther(newEntityType)) {
+      upsertAndRedirectToBusinessNamePage(NormalMode, request.registration, newEntityType)
     } else {
-      previousEntityType match {
-        case Some(value) if value == entityType =>
-          dataCleanup.cleanup(
-            registration.copy(entityType = Some(entityType))
-          )
-        case _                                  =>
-          dataCleanup.cleanupOtherEntityData(
-            registration.copy(entityType = Some(entityType))
-          )
-      }
+      upsertRegistrationAndRedirectToGRS(NormalMode, request.registration, newEntityType)
+    }
+
+  private def navigateInCheckMode(newEntityType: EntityType)(implicit request: RegistrationDataRequest[_]) = {
+    val sameEntityTypeAsPrevious = request.registration.entityType.contains(newEntityType)
+
+    (sameEntityTypeAsPrevious, EntityType.isOther(newEntityType)) match {
+      case (true, true)   => Future.successful(Redirect(routes.CheckYourAnswersController.onPageLoad()))
+      case (false, true)  =>
+        upsertAndRedirectToBusinessNamePage(NormalMode, request.registration, newEntityType)
+      case (true, false)  =>
+        (for {
+          grsJourneyUrl <- eclRegistrationService.registerEntityType(newEntityType, NormalMode).asResponseError
+        } yield grsJourneyUrl).fold(
+          err => routeError(err),
+          url => Redirect(Call(GET, url))
+        )
+      case (false, false) => upsertRegistrationAndRedirectToGRS(NormalMode, request.registration, newEntityType)
     }
   }
+
+  private def upsertAndRedirectToBusinessNamePage(mode: Mode, registration: Registration, newEntityType: EntityType)(
+    implicit request: RegistrationDataRequest[_]
+  ) = {
+    val updatedRegistration = cleanup(registration, newEntityType)
+    (for {
+      upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+    } yield upsertedRegistration).fold(
+      err => routeError(err),
+      _ => Redirect(routes.BusinessNameController.onPageLoad(mode))
+    )
+  }
+
+  private def upsertRegistrationAndRedirectToGRS(
+    mode: Mode,
+    registration: Registration,
+    newEntityType: EntityType
+  )(implicit request: RegistrationDataRequest[_]) = {
+    val updatedRegistration = cleanup(registration, newEntityType)
+    (for {
+      _             <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+      grsJourneyUrl <- eclRegistrationService.registerEntityType(newEntityType, mode).asResponseError
+    } yield grsJourneyUrl).fold(
+      err => routeError(err),
+      url => Redirect(Call(GET, url))
+    )
+  }
+
+  private def cleanup(
+    registration: Registration,
+    entityType: EntityType
+  ) =
+    if (EntityType.isOther(entityType)) {
+      dataCleanup.cleanupOtherEntityData(
+        registration.copy(entityType = Some(entityType))
+      )
+    } else {
+      dataCleanup.cleanup(
+        registration.copy(entityType = Some(entityType))
+      )
+    }
 }

@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveCrnFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{DoYouHaveCrnPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveCrnPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{DoYouHaveCrnView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -76,9 +76,7 @@ class DoYouHaveCrnController @Inject() (
 
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield NavigationData(
-            registration = upsertedRegistration
-          )).convertToResult(mode, pageNavigator)
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

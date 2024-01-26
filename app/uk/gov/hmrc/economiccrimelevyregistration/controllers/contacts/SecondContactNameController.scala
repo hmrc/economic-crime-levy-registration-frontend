@@ -24,9 +24,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, Er
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNameFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNamePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNameView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -42,7 +42,7 @@ class SecondContactNameController @Inject() (
   formProvider: SecondContactNameFormProvider,
   pageNavigator: SecondContactNamePageNavigator,
   view: SecondContactNameView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with BaseController
@@ -74,16 +74,13 @@ class SecondContactNameController @Inject() (
           ),
         name => {
           val updatedContacts: Contacts = request.registration.contacts
-            .copy(firstContactDetails = request.registration.contacts.firstContactDetails.copy(name = Some(name)))
+            .copy(secondContactDetails = request.registration.contacts.secondContactDetails.copy(name = Some(name)))
 
           (for {
-            upsertedRegistration <-
-              eclRegistrationService
-                .upsertRegistration(request.registration.copy(contacts = updatedContacts))
-                .asResponseError
-          } yield NavigationData(
-            registration = upsertedRegistration
-          )).convertToResult(mode, pageNavigator)
+            upsertedRegistration <- eclRegistrationService
+                                      .upsertRegistration(request.registration.copy(contacts = updatedContacts))
+                                      .asResponseError
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

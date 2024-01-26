@@ -24,9 +24,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, Er
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactEmailFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactEmailPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactEmailView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -43,7 +43,7 @@ class FirstContactEmailController @Inject() (
   pageNavigator: FirstContactEmailPageNavigator,
   view: FirstContactEmailView,
   sessionService: SessionService
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with BaseController
@@ -118,9 +118,7 @@ class FirstContactEmailController @Inject() (
               eclRegistrationService
                 .upsertRegistration(updatedRegistration)
                 .asResponseError
-          } yield NavigationData(
-            registration = upsertedRegistration
-          )).convertToResult(mode, pageNavigator)
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

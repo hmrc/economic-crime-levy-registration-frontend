@@ -24,9 +24,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, Er
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNumberView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -42,7 +42,7 @@ class SecondContactNumberController @Inject() (
   formProvider: SecondContactNumberFormProvider,
   pageNavigator: SecondContactNumberPageNavigator,
   view: SecondContactNumberView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with BaseController
@@ -62,7 +62,7 @@ class SecondContactNumberController @Inject() (
       name =>
         Ok(
           view(
-            form.prepare(request.registration.contacts.secondContactDetails.role),
+            form.prepare(request.registration.contacts.secondContactDetails.telephoneNumber),
             name,
             mode,
             request.registration.registrationType,
@@ -101,17 +101,17 @@ class SecondContactNumberController @Inject() (
                   )
                 )
             ),
-        role => {
+        telephoneNumber => {
           val updatedContacts: Contacts = request.registration.contacts
-            .copy(secondContactDetails = request.registration.contacts.secondContactDetails.copy(role = Some(role)))
+            .copy(secondContactDetails =
+              request.registration.contacts.secondContactDetails.copy(telephoneNumber = Some(telephoneNumber))
+            )
 
           (for {
             upsertedRegistration <- eclRegistrationService
                                       .upsertRegistration(request.registration.copy(contacts = updatedContacts))
                                       .asResponseError
-          } yield NavigationData(
-            registration = upsertedRegistration
-          )).convertToResult(mode, pageNavigator)
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

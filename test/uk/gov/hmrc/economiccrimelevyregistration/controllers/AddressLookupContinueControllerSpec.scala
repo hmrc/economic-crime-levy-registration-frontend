@@ -26,13 +26,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.{AddressLookupContinuePageNavigator, NavigationData}
-import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupContinueService, EclRegistrationService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupService, EclRegistrationService}
 
 import scala.concurrent.Future
 
 class AddressLookupContinueControllerSpec extends SpecBase {
-  val mockAddressLookupFrontendService: AddressLookupContinueService = mock[AddressLookupContinueService]
-  val mockEclRegistrationService: EclRegistrationService             = mock[EclRegistrationService]
+  val mockAddressLookupFrontendService: AddressLookupService = mock[AddressLookupService]
+  val mockEclRegistrationService: EclRegistrationService     = mock[EclRegistrationService]
 
   val pageNavogator = new AddressLookupContinuePageNavigator {
     override protected def navigateInNormalMode(navigationData: NavigationData): Call =

@@ -62,7 +62,7 @@ class CompanyRegistrationNumberPageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad(NormalMode)
+          routes.CheckYourAnswersController.onPageLoad()
     }
   }
 

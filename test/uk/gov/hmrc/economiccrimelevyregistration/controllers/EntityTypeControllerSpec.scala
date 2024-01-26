@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{EntityTypePageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector

@@ -22,10 +22,9 @@ import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.Results.{InternalServerError, Redirect}
 import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.twirl.api.Html
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.ErrorCode.{BadGateway, BadRequest}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, ErrorCode, ResponseError}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, PageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -71,7 +70,7 @@ trait BaseController extends I18nSupport {
       case None        => Left(DataRetrievalError.FieldNotFound(message))
     }
 
-  implicit class ResponseHandler(data: EitherT[Future, ResponseError, NavigationData]) {
+  implicit class ResponseHandler(data: EitherT[Future, ResponseError, Registration]) {
 
     def convertToResult(
       mode: Mode,

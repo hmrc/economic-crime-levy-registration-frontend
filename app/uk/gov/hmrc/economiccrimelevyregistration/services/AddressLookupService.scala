@@ -27,15 +27,16 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class AddressLookupContinueService @Inject() (addressLookupFrontendConnector: AddressLookupFrontendConnector)(implicit
-  hc: HeaderCarrier,
+class AddressLookupService @Inject() (addressLookupFrontendConnector: AddressLookupFrontendConnector)(implicit
   ec: ExecutionContext
 ) {
 
-  def initJourney(ukMode: Boolean, mode: Mode): EitherT[Future, AddressLookupContinueError, String] =
+  def initJourney(isUkAddress: Boolean, mode: Mode)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, AddressLookupContinueError, String] =
     EitherT {
       addressLookupFrontendConnector
-        .initJourney(ukMode, mode)
+        .initJourney(isUkAddress, mode)
         .map(Right(_))
         .recover {
           case error @ UpstreamErrorResponse(message, code, _, _)
@@ -48,7 +49,7 @@ class AddressLookupContinueService @Inject() (addressLookupFrontendConnector: Ad
 
   def getAddress(
     addressId: String
-  ): EitherT[Future, AddressLookupContinueError, AlfAddressData] =
+  )(implicit hc: HeaderCarrier): EitherT[Future, AddressLookupContinueError, AlfAddressData] =
     EitherT {
       addressLookupFrontendConnector
         .getAddress(addressId)

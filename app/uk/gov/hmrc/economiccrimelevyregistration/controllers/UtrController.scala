@@ -23,9 +23,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, UtrPageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.UtrPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.UtrView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, UtrView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -40,7 +40,7 @@ class UtrController @Inject() (
   formProvider: UtrFormProvider,
   pageNavigator: UtrPageNavigator,
   view: UtrView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler
@@ -69,9 +69,7 @@ class UtrController @Inject() (
 
             (for {
               upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            } yield NavigationData(
-              registration = upsertedRegistration
-            )).convertToResult(mode, pageNavigator)
+            } yield upsertedRegistration).convertToResult(mode, pageNavigator)
           }
         )
     }

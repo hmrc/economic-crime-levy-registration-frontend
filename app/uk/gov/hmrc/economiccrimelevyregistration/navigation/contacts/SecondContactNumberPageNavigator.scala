@@ -18,23 +18,23 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, NormalMode}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, PageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
 class SecondContactNumberPageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
-    navigationData.registration.contacts.secondContactDetails.telephoneNumber match {
+  override protected def navigateInNormalMode(registration: Registration): Call =
+    registration.contacts.secondContactDetails.telephoneNumber match {
       case Some(_) =>
-        navigationData.registration.grsAddressToEclAddress match {
+        registration.grsAddressToEclAddress match {
           case Some(_) => routes.ConfirmContactAddressController.onPageLoad(NormalMode)
           case _       => routes.IsUkAddressController.onPageLoad(NormalMode)
         }
       case _       => routes.NotableErrorController.answersAreInvalid()
     }
 
-  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
-    navigationData.registration.contacts.secondContactDetails match {
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    registration.contacts.secondContactDetails match {
       case ContactDetails(Some(_), Some(_), Some(_), Some(_)) => routes.CheckYourAnswersController.onPageLoad()
       case _                                                  => routes.NotableErrorController.answersAreInvalid()
     }

@@ -20,8 +20,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, Mode}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{AddressLookupContinuePageNavigator, NavigationData}
-import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupContinueService, EclRegistrationService}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.AddressLookupContinuePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -33,7 +33,7 @@ class AddressLookupContinueController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  addressLookupFrontendService: AddressLookupContinueService,
+  addressLookupFrontendService: AddressLookupService,
   eclRegistrationService: EclRegistrationService,
   pageNavigator: AddressLookupContinuePageNavigator
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
@@ -47,9 +47,7 @@ class AddressLookupContinueController @Inject() (
         address              <- addressLookupFrontendService.getAddress(id).asResponseError
         registration          = request.registration.copy(contactAddress = alfAddressToEclAddress(address))
         upsertedRegistration <- eclRegistrationService.upsertRegistration(registration).asResponseError
-      } yield NavigationData(
-        registration = upsertedRegistration
-      )).convertToResult(mode, pageNavigator)
+      } yield upsertedRegistration).convertToResult(mode, pageNavigator)
   }
 
   private def alfAddressToEclAddress(alfAddressData: AlfAddressData): Option[EclAddress] =

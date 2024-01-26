@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{IsUkAddressPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
 
@@ -42,12 +42,6 @@ class IsUkAddressControllerSpec extends SpecBase {
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
-  val pageNavigator: IsUkAddressPageNavigator = new IsUkAddressPageNavigator() {
-    override protected def navigateInNormalMode(
-      navigationData: NavigationData
-    ): Call = onwardRoute
-  }
-
   class TestContext(registrationData: Registration) {
     val controller = new IsUkAddressController(
       mcc,
@@ -55,7 +49,6 @@ class IsUkAddressControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationService,
       formProvider,
-      pageNavigator,
       view
     )
   }

@@ -18,14 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{IsUkAddressPageNavigator, NavigationData}
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, IsUkAddressView}
+import uk.gov.hmrc.http.HttpVerbs.GET
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -38,8 +38,8 @@ class IsUkAddressController @Inject() (
   getRegistrationData: DataRetrievalAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: IsUkAddressFormProvider,
-  pageNavigator: IsUkAddressPageNavigator,
-  view: IsUkAddressView
+  view: IsUkAddressView,
+  addressLookupService: AddressLookupService
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
@@ -73,12 +73,22 @@ class IsUkAddressController @Inject() (
           val updatedRegistration = request.registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
           (for {
             upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            addressLookupUrl     <- eclRegistrationService.getAddressLookupUrl(upsertedRegistration, mode).asResponseError
-          } yield NavigationData(
-            registration = upsertedRegistration,
-            url = addressLookupUrl
-          )).convertToResult(mode, pageNavigator)
+            addressLookupUrl     <- addressLookupService.initJourney(contactAddressIsUk, mode).asResponseError
+          } yield addressLookupUrl).fold(
+            err => Redirect(routes.NotableErrorController.answersAreInvalid()),
+            url => {
+              println(s"url is!! $url")
+              Redirect(Call(GET, url))
+            }
+          )
         }
       )
   }
+
+//  private def upsertAndRedirect()
+//  private def navigate(registration: Registration, url: String, mode: Mode): Call =
+//    registration.contactAddressIsUk match {
+//      case Some(ukMode) => Call(GET, url)
+//      case _            => routes.NotableErrorController.answersAreInvalid()
+//    }
 }

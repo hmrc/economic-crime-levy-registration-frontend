@@ -31,7 +31,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 trait AddressLookupFrontendConnector {
-  def initJourney(ukMode: Boolean, mode: Mode)(implicit hc: HeaderCarrier): Future[String]
+  def initJourney(isUkAddress: Boolean, mode: Mode)(implicit hc: HeaderCarrier): Future[String]
   def getAddress(journeyId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData]
 }
 
@@ -50,7 +50,7 @@ class AddressLookupFrontendConnectorImpl @Inject() (
 
   private val baseUrl = appConfig.addressLookupFrontendBaseUrl
 
-  def initJourney(ukMode: Boolean, mode: Mode)(implicit
+  def initJourney(isUkAddress: Boolean, mode: Mode)(implicit
     hc: HeaderCarrier
   ): Future[String] = {
     val alfLabels = AlfEnCyLabels(appConfig)
@@ -61,7 +61,7 @@ class AddressLookupFrontendConnectorImpl @Inject() (
         signOutHref = appConfig.eclSignOutUrl,
         accessibilityFooterUrl = appConfig.accessibilityStatementPath,
         deskProServiceName = appConfig.appName,
-        ukMode = ukMode
+        ukMode = isUkAddress
       ),
       labels = alfLabels
     )

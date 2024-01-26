@@ -18,22 +18,22 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
 import javax.inject.Inject
 
 class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
-  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
-    navigationData.registration.otherEntityJourneyData.isCtUtrPresent match {
+  override protected def navigateInNormalMode(registration: Registration): Call =
+    registration.otherEntityJourneyData.isCtUtrPresent match {
       case Some(isCtUtrPresent) =>
-        navigateInEitherMode(isCtUtrPresent, navigationData.registration.otherEntityJourneyData.ctUtr, NormalMode)
+        navigateInEitherMode(isCtUtrPresent, registration.otherEntityJourneyData.ctUtr, NormalMode)
       case None                 => routes.NotableErrorController.answersAreInvalid()
     }
 
-  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
-    navigationData.registration.otherEntityJourneyData.isCtUtrPresent match {
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    registration.otherEntityJourneyData.isCtUtrPresent match {
       case Some(isCtUtrPresent) =>
-        navigateInEitherMode(isCtUtrPresent, navigationData.registration.otherEntityJourneyData.ctUtr, CheckMode)
+        navigateInEitherMode(isCtUtrPresent, registration.otherEntityJourneyData.ctUtr, CheckMode)
       case None                 => routes.NotableErrorController.answersAreInvalid()
     }
 

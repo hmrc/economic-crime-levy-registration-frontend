@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, NormalMode, Registration, RegistrationAdditionalInfo}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{LiabilityBeforeCurrentYearPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector

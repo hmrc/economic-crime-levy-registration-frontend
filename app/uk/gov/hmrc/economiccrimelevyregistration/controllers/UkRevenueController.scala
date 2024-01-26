@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, UkRevenuePageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclCalculatorService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, UkRevenueView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -73,9 +73,7 @@ class UkRevenueController @Inject() (
                                          )
                                        )
                                        .asResponseError
-          } yield NavigationData(
-            registration = upsertedRegistration
-          )).convertToResult(mode, pageNavigator)
+          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

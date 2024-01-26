@@ -22,15 +22,15 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, Normal
 
 class NonUkCrnPageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(navigationData: NavigationData): Call =
-    navigateInMode(navigationData.registration, NormalMode)
+  override protected def navigateInNormalMode(registration: Registration): Call =
+    navigateInMode(registration, NormalMode)
 
   private def navigateInMode(registration: Registration, mode: Mode) =
     routes.UtrTypeController.onPageLoad(mode)
 
-  override protected def navigateInCheckMode(navigationData: NavigationData): Call =
-    if (navigationData.registration.otherEntityJourneyData.utrType.isEmpty) {
-      navigateInMode(navigationData.registration, CheckMode)
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    if (registration.otherEntityJourneyData.utrType.isEmpty) {
+      navigateInMode(registration, CheckMode)
     } else {
       routes.CheckYourAnswersController.onPageLoad()
     }

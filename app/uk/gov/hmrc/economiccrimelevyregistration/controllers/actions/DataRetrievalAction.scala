@@ -21,7 +21,9 @@ import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,10 +36,14 @@ class RegistrationDataRetrievalAction @Inject() (
     with FrontendHeaderCarrierProvider
     with ErrorHandler {
 
-  override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
+  override protected def refine[A](
+    request: AuthorisedRequest[A]
+  ): Future[Either[Result, RegistrationDataRequest[A]]] = {
+    implicit val hcFromRequest: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
     (for {
       registration <- eclRegistrationService.getOrCreateRegistration(request.internalId).asResponseError
-      info         <- registrationAdditionalInfoService.get(request.internalId)(hc(request), ec).asResponseError
+      info         <- registrationAdditionalInfoService.getOrCreate(request.internalId).asResponseError
     } yield (registration, info)).fold(
       _ => Left(InternalServerError), //TODO - return error page
       data =>
@@ -51,6 +57,7 @@ class RegistrationDataRetrievalAction @Inject() (
           )
         )
     )
+  }
 
   override protected def executionContext: ExecutionContext = ec
 }

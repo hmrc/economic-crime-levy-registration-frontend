@@ -47,7 +47,6 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
     "return OK and the correct view" in forAll { registration: Registration =>
       when(
         mockRegistrationAdditionalInfoService.createOrUpdate(
-          anyString(),
           any()
         )(any(), any())
       ).thenReturn(
@@ -70,7 +69,6 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
 
       when(
         mockRegistrationAdditionalInfoService.createOrUpdate(
-          anyString(),
           any()
         )(any(), any())
       ).thenReturn(
