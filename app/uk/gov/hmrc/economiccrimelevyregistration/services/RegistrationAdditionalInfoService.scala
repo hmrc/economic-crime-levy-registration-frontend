@@ -47,7 +47,9 @@ class RegistrationAdditionalInfoService @Inject() (
             val additionalInfo = RegistrationAdditionalInfo(internalId, None, None)
             registrationAdditionalInfoConnector.upsert(additionalInfo) //TODO - take error into account
             Right(additionalInfo)
-          case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+          case NonFatal(thr) =>
+            println(s"LALALALALALALA $thr")
+            Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
 

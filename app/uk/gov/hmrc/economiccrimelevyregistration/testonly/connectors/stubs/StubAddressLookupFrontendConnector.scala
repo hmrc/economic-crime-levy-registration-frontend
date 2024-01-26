@@ -36,7 +36,7 @@ class StubAddressLookupFrontendConnector @Inject() (
 ) extends AddressLookupFrontendConnector {
   override def initJourney(isUkAddress: Boolean, mode: Mode)(implicit hc: HeaderCarrier): Future[String] =
     Future.successful(
-      s"/register-for-economic-crime-levy/test-only/stub-alf-journey-data?continueUrl=${mode.toString.toLowerCase}"
+      s"${appConfig.host}/register-for-economic-crime-levy/test-only/stub-alf-journey-data?continueUrl=${mode.toString.toLowerCase}"
     )
 
   override def getAddress(journeyId: String)(implicit hc: HeaderCarrier): Future[AlfAddressData] =

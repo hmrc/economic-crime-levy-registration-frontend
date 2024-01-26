@@ -31,12 +31,12 @@ object FirstContactNameSummary {
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
     request.registration.contacts.firstContactDetails.name.map { answer =>
       SummaryListRowViewModel(
-        key = Key("checkYourAnswers.firstContactNameOrError.label"),
+        key = Key("checkYourAnswers.firstContactName.label"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),
         actions = Seq(
           ActionItemViewModel("site.change", contacts.routes.FirstContactNameController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(
-              messages("checkYourAnswers.firstContactNameOrError.label")
+              messages("checkYourAnswers.firstContactName.label")
             )
         )
       )

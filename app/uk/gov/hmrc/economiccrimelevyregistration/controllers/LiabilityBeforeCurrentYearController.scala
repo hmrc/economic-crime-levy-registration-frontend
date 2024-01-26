@@ -78,14 +78,16 @@ class LiabilityBeforeCurrentYearController @Inject() (
               request.eclRegistrationReference
             )
 
-            val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> liabilityYear.get.toString)
+            liabilityYear.map { year =>
+              val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> year.toString)
 
-            sessionService.upsert(
-              SessionData(
-                registration.internalId,
-                liabilityYearSessionData
+              sessionService.upsert(
+                SessionData(
+                  registration.internalId,
+                  liabilityYearSessionData
+                )
               )
-            )
+            }
 
             additionalInfoService
               .createOrUpdate(info)
@@ -136,6 +138,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
             )
           ).extendedDataEvent
         )
+      case None        => routes.NotLiableController.youDoNotNeedToRegister()
     }
     routes.NotLiableController.youDoNotNeedToRegister()
   }
@@ -145,11 +148,15 @@ class LiabilityBeforeCurrentYearController @Inject() (
     liableForPreviousFY: Boolean
   ): Option[LiabilityYear] =
     (liableForCurrentFY, liableForPreviousFY) match {
-      case (Some(true), true) | (Some(false), true) => Some(LiabilityYear(TaxYear.current.previous.startYear))
-      case (Some(true), false)                      => Some(LiabilityYear(TaxYear.current.currentYear))
-      case _                                        => None
+      case (Some(_), true)     => Some(LiabilityYear(TaxYear.current.previous.startYear))
+      case (Some(true), false) => Some(LiabilityYear(TaxYear.current.currentYear))
+      case _                   => None
     }
 
   private def isLiableForPreviousFY(info: Option[RegistrationAdditionalInfo]) =
-    info.map(_.liabilityYear.exists(_.isNotCurrentFY))
+    info.get.liabilityYear match {
+      case Some(value) => Some(value.isNotCurrentFY)
+      case _           => None
+    }
+
 }
