@@ -42,7 +42,6 @@ class AmendRegistrationStartController @Inject() (
   errorHandler: ErrorHandler,
   view: AmendRegistrationStartView,
   registrationService: EclRegistrationService,
-  registrationConnector: EclRegistrationConnector,
   appConfig: AppConfig
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -76,13 +75,15 @@ class AmendRegistrationStartController @Inject() (
     val result = for {
       registration            <- registrationService.getOrCreateRegistration(internalId)
       getSubscriptionResponse <- registrationService.getSubscription(eclRegistrationReference)
-      upsertedRegistration    <-
-        registrationService.upsertRegistration(
-          registrationService.transformToRegistration(registration, getSubscriptionResponse)
-        )
+      transformedRegistration  = registrationService.transformToRegistration(registration, getSubscriptionResponse)
+      upsertedRegistration    <- registrationService.upsertRegistration(transformedRegistration)
     } yield upsertedRegistration
 
-    result.map(_ => Redirect(routes.AmendReasonController.onPageLoad(CheckMode).url))
+    result
+      .map(_ => Redirect(routes.AmendReasonController.onPageLoad(CheckMode).url))
+      .recover { case e =>
+        throw e
+      }
 
   }
 
@@ -91,7 +92,7 @@ class AmendRegistrationStartController @Inject() (
   )(implicit hc: HeaderCarrier): Future[Unit] =
     for {
       registration <- registrationService.getOrCreateRegistration(internalId)
-      _            <- registrationConnector.upsertRegistration(registration.copy(registrationType = Some(Amendment)))
+      _            <- registrationService.upsertRegistration(registration.copy(registrationType = Some(Amendment)))
     } yield ()
 
   private def getOrCreateRegistrationAdditionalInfo(

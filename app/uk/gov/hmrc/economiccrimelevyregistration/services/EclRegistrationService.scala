@@ -78,11 +78,7 @@ class EclRegistrationService @Inject() (
         )
       case _           => ContactDetails.empty
     }
-    val secondContactPresent                = if (secondaryContact.isEmpty) {
-      Some(false)
-    } else {
-      Some(true)
-    }
+    val secondContactPresent                = Some(secondaryContact.isEmpty)
 
     val contacts: Contacts = Contacts(firstContactDetails, secondContactPresent, secondContactDetails)
 
@@ -111,13 +107,12 @@ class EclRegistrationService @Inject() (
   }
 
   private def getAmlSupervisor(amlSupervisor: String): AmlSupervisor = {
+    val sanitisedAmlSupervisor                         = amlSupervisor.filterNot(_.isWhitespace).toLowerCase
     val amlProfessionalBodySupervisors: Option[String] =
-      appConfig.amlProfessionalBodySupervisors.find(p =>
-        p.toLowerCase() == amlSupervisor.replace(" ", "").toLowerCase()
-      )
+      appConfig.amlProfessionalBodySupervisors.find(p => p.toLowerCase() == sanitisedAmlSupervisor)
 
     if (amlProfessionalBodySupervisors.isEmpty) {
-      amlSupervisor.replace(" ", "").toLowerCase() match {
+      sanitisedAmlSupervisor match {
         case "hmrc" => AmlSupervisor(AmlSupervisorType.Hmrc, None)
         case e      => throw new IllegalStateException(s"AML supervisor returned in GetSubscriptionResponse not valid: $e")
       }

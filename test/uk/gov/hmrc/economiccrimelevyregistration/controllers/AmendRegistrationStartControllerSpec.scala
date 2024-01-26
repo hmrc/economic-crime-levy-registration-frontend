@@ -34,7 +34,6 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
 
   val view: AmendRegistrationStartView                                         = app.injector.instanceOf[AmendRegistrationStartView]
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
-  val mockRegistrationConnector: EclRegistrationConnector                      = mock[EclRegistrationConnector]
   val mockRegistrationService: EclRegistrationService                          = mock[EclRegistrationService]
   val mockErrorHandler: ErrorHandler                                           = mock[ErrorHandler]
 
@@ -45,7 +44,6 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
     mockErrorHandler,
     view,
     mockRegistrationService,
-    mockRegistrationConnector,
     appConfig
   )
 
@@ -64,7 +62,7 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
         when(mockRegistrationService.getOrCreateRegistration(any())(any()))
           .thenReturn(Future.successful(registration))
 
-        when(mockRegistrationConnector.upsertRegistration(any())(any()))
+        when(mockRegistrationService.upsertRegistration(any())(any()))
           .thenReturn(Future.successful(registration))
 
         when(mockRegistrationService.getSubscription(any())(any()))
@@ -82,7 +80,7 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
       when(mockRegistrationService.getOrCreateRegistration(any())(any()))
         .thenReturn(Future.successful(registration))
 
-      when(mockRegistrationConnector.upsertRegistration(any())(any()))
+      when(mockRegistrationService.upsertRegistration(any())(any()))
         .thenReturn(Future.successful(registration))
 
       when(

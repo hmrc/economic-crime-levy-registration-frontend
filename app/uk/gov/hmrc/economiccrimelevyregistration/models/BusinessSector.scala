@@ -95,7 +95,7 @@ object BusinessSector {
   }
 
   def transformFromSubscriptionResponse(businessSector: String): BusinessSector =
-    businessSector.replace(" ", "").toLowerCase() match {
+    businessSector.filterNot(_.isWhitespace).toLowerCase() match {
       case "creditinstitution"             => CreditInstitution
       case "financialinstitution"          => FinancialInstitution
       case "auditor"                       => Auditor
