@@ -93,9 +93,7 @@ class EclRegistrationService @Inject() (
       None,
       subscriptionAddress.postCode,
       None,
-      subscriptionAddress.countryCode.getOrElse(
-        throw new IllegalStateException("Country code not found in GetSubscriptionResponse")
-      )
+      subscriptionAddress.countryCode.get
     )
     registration.copy(
       contacts = contacts,
