@@ -37,10 +37,10 @@ class EclCalculatorService @Inject() (
     registration.relevantApRevenue match {
       case Some(revenue) =>
         registration.relevantAp12Months match {
-          case Some(true)  => f(EclTaxYear.YearInDays, revenue)
+          case Some(true)  => calculateLiabilityAmount(EclTaxYear.YearInDays, revenue)
           case Some(false) =>
             registration.relevantApLength match {
-              case Some(relevantApLength) => f(relevantApLength, revenue)
+              case Some(relevantApLength) => calculateLiabilityAmount(relevantApLength, revenue)
               case _                      => EitherT.fromEither[Future](Right(None))
             }
           case _           => EitherT.fromEither[Future](Right(None))
@@ -48,9 +48,9 @@ class EclCalculatorService @Inject() (
       case _             => EitherT.fromEither[Future](Right(None))
     }
 
-  private def f(relevantApLength: Int, revenue: BigDecimal)(implicit
+  private def calculateLiabilityAmount(relevantApLength: Int, revenue: BigDecimal)(implicit
     hc: HeaderCarrier
-  ): EitherT[Future, DataRetrievalError, Option[Boolean]] = //TODO - what the *** is this function name?!
+  ): EitherT[Future, DataRetrievalError, Option[Boolean]] =
     EitherT {
       eclCalculatorConnector
         .calculateLiability(relevantApLength, revenue)

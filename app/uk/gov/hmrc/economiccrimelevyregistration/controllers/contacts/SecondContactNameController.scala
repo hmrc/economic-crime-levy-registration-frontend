@@ -46,7 +46,6 @@ class SecondContactNameController @Inject() (
     extends FrontendBaseController
     with I18nSupport
     with BaseController
-    with ContactsUtils
     with ErrorHandler {
 
   val form: Form[String] = formProvider()

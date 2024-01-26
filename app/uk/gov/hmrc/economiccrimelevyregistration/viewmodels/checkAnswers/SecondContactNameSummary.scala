@@ -31,12 +31,12 @@ object SecondContactNameSummary {
   def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
     request.registration.contacts.secondContactDetails.name.map { answer =>
       SummaryListRowViewModel(
-        key = Key("checkYourAnswers.secondContactName.label"),
+        key = Key("checkYourAnswers.secondContactNameOrError.label"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),
         actions = Seq(
           ActionItemViewModel("site.change", contacts.routes.SecondContactNameController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(
-              messages("checkYourAnswers.secondContactName.label")
+              messages("checkYourAnswers.secondContactNameOrError.label")
             )
         )
       )

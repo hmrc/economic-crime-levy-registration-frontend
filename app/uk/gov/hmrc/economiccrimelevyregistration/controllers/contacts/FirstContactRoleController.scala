@@ -46,14 +46,13 @@ class FirstContactRoleController @Inject() (
     extends FrontendBaseController
     with I18nSupport
     with BaseController
-    with ContactsUtils
     with ErrorHandler {
 
   val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     (for {
-      firstContactName <- request.firstContactName.asResponseError
+      firstContactName <- request.firstContactNameOrError
     } yield firstContactName).fold(
       _ =>
         Redirect(
@@ -78,7 +77,7 @@ class FirstContactRoleController @Inject() (
       .fold(
         formWithErrors =>
           (for {
-            firstContactName <- request.firstContactName.asResponseError
+            firstContactName <- request.firstContactNameOrError
           } yield firstContactName)
             .fold(
               _ =>

@@ -35,15 +35,16 @@ class EclRegistrationService @Inject() (
   incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
   soleTraderIdentificationFrontendConnector: SoleTraderIdentificationFrontendConnector,
   partnershipIdentificationFrontendConnector: PartnershipIdentificationFrontendConnector,
-  auditConnector: AuditConnector,
-  addressLookupFrontendConnector: AddressLookupFrontendConnector
+  auditConnector: AuditConnector
 )(implicit
   ec: ExecutionContext
 ) {
+
   def getOrCreateRegistration(
     internalId: String
   )(implicit hc: HeaderCarrier): EitherT[Future, RegistrationError, Registration] =
     EitherT {
+
       eclRegistrationConnector
         .getRegistration(internalId)
         .map(Right(_))

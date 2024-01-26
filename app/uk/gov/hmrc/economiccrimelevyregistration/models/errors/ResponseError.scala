@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models.errors
 
+import play.api.libs.Files.logger
 import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
 import play.api.libs.json._
 import uk.gov.hmrc.http.UpstreamErrorResponse
@@ -30,34 +31,40 @@ object ResponseError {
   val MessageFieldName = "message"
   val CodeFieldName    = "code"
 
-  def badRequestError(message: String): ResponseError =
-    StandardError(message, ErrorCode.BadRequest)
+  def badGateway(message: String, code: Int): ResponseError = {
 
-  def notFoundError(message: String): ResponseError =
-    StandardError(message, ErrorCode.NotFound)
+    val causeText =
+      s"""
+       |Message: $message
+       |Upstream status code: $code
+       |""".stripMargin
 
-  def unauthorized(message: String): ResponseError =
-    StandardError(message, ErrorCode.Unauthorized)
+    logger.error(s"""Bad gateway: $message
+       |
+       |$causeText""".stripMargin)
 
-  def badGateway(message: String, code: Int): ResponseError =
     BadGateway(message, ErrorCode.BadGateway, code)
-
-  def upstreamServiceError(
-    message: String = "Internal server error",
-    code: ErrorCode = ErrorCode.InternalServerError,
-    cause: UpstreamErrorResponse
-  ): ResponseError =
-    UpstreamServiceError(message, code, cause)
+  }
 
   def internalServiceError(
     message: String = "Internal server error",
     code: ErrorCode = ErrorCode.InternalServerError,
     cause: Option[Throwable] = None
-  ): ResponseError =
-    InternalServiceError(message, code, cause)
+  ): ResponseError = {
+    val causeText = cause
+      .map { ex =>
+        s"""
+           |Message: ${ex.getMessage}
+           |Trace: ${ex.getStackTrace.mkString(System.lineSeparator())}
+           |""".stripMargin
+      }
+      .getOrElse("No exception is available")
+    logger.error(s"""Internal Server Error: $message
+         |
+         |$causeText""".stripMargin)
 
-  def unknownError =
-    StandardError("Unknown error", ErrorCode.Unknown)
+    InternalServiceError("Internal server error", code, cause)
+  }
 
   implicit val errorWrites: OWrites[ResponseError] =
     (
@@ -91,11 +98,6 @@ case class BadGateway(
 object BadGateway {
   def causedBy(message: String, code: Int): ResponseError =
     ResponseError.badGateway(message = message, code = code)
-}
-
-object UpstreamServiceError {
-  def causedBy(cause: UpstreamErrorResponse): ResponseError =
-    ResponseError.upstreamServiceError(cause = cause)
 }
 
 case class InternalServiceError(

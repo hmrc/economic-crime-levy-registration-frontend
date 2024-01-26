@@ -18,74 +18,21 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
 import play.api.Logging
-import play.api.http.Status.BAD_GATEWAY
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait ErrorHandler extends Logging {
 
-  implicit class AsyncErrorConvertor[E, R](value: EitherT[Future, E, R]) {
+  implicit class EitherTErrorConvertor[E, R](value: EitherT[Future, E, R]) {
 
     def asResponseError(implicit c: Converter[E], ec: ExecutionContext): EitherT[Future, ResponseError, R] =
-      value.leftMap(c.convert).leftSemiflatTap {
-        case InternalServiceError(message, _, cause) =>
-          val causeText = cause
-            .map { ex =>
-              s"""
-                   |Message: ${ex.getMessage}
-                   |Trace: ${ex.getStackTrace.mkString(System.lineSeparator())}
-                   |""".stripMargin
-            }
-            .getOrElse("No exception is available")
-          logger.error(s"""Internal Server Error: $message
-               |
-               |$causeText""".stripMargin)
-          Future.successful(())
-        case BadGateway(message, _, responseCode)    =>
-          val causeText = s"""
-                 |Message: $message
-                 |Upstream status code: $responseCode
-                 |""".stripMargin
-
-          logger.error(s"""Bad gateway: $message
-               |
-               |$causeText""".stripMargin)
-          Future.successful(())
-        case _                                       => Future.successful(())
-      }
-
+      value.leftMap(c.convert)
   }
 
-  implicit class ErrorConvertor[E, R](value: Either[E, R]) {
-    def asResponseError(implicit c: Converter[E]): Either[ResponseError, R] =
-      value.left.map(c.convert(_)).left.map {
-        case InternalServiceError(message, _, cause) =>
-          val causeText = cause
-            .map { ex =>
-              s"""
-                 |Message: ${ex.getMessage}
-                 |Trace: ${ex.getStackTrace.mkString(System.lineSeparator())}
-                 |""".stripMargin
-            }
-            .getOrElse("No exception is available")
-          logger.error(s"""Internal Server Error: $message
-                          |
-                          |$causeText""".stripMargin)
-          ResponseError.internalServiceError(message = message, cause = cause)
-        case BadGateway(message, _, responseCode)    =>
-          val causeText = s"""
-                             |Message: $message
-                             |Upstream status code: $responseCode
-                             |""".stripMargin
-
-          logger.error(s"""Bad gateway: $message
-                          |
-                          |$causeText""".stripMargin)
-          ResponseError.badGateway(message, responseCode)
-        case _                                       =>
-          ResponseError.unknownError
-      }
+  implicit class EitherErrorConvertor[E, R](value: Either[E, R]) {
+    def asResponseError(implicit converter: Converter[E], ec: ExecutionContext): Either[ResponseError, R] =
+      value.left.map(converter.convert)
   }
 
   trait Converter[E] {
@@ -97,8 +44,6 @@ trait ErrorHandler extends Logging {
       ResponseError.badGateway(cause, statusCode)
     case AddressLookupContinueError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
-    case _                                                                  =>
-      ResponseError.unknownError
   }
 
   implicit val registrationErrorConverter: Converter[RegistrationError] = {
@@ -106,19 +51,13 @@ trait ErrorHandler extends Logging {
       ResponseError.badGateway(cause, statusCode)
     case RegistrationError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
-    case _                                                         =>
-      ResponseError.unknownError
   }
 
   implicit val dataRetrievalErrorConverter: Converter[DataRetrievalError] = {
     case DataRetrievalError.BadGateway(cause, statusCode)           =>
       ResponseError.badGateway(cause, statusCode)
-    case DataRetrievalError.FieldNotFound(message)                  =>
-      ResponseError.badGateway(message, BAD_GATEWAY)
     case DataRetrievalError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
-    case _                                                          =>
-      ResponseError.unknownError
   }
 
   implicit val sessionErrorConverter: Converter[SessionError] = {
@@ -126,8 +65,6 @@ trait ErrorHandler extends Logging {
       ResponseError.badGateway(cause, statusCode)
     case SessionError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
-    case _                                                    =>
-      ResponseError.unknownError
   }
 
 }

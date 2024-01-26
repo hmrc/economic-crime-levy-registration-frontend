@@ -45,7 +45,6 @@ class FirstContactNumberController @Inject() (
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
-    with ContactsUtils
     with ErrorHandler
     with BaseController {
 
@@ -53,7 +52,7 @@ class FirstContactNumberController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     (for {
-      firstContactName <- request.firstContactName.asResponseError
+      firstContactName <- request.firstContactNameOrError
     } yield firstContactName).fold(
       _ =>
         Redirect(
@@ -78,7 +77,7 @@ class FirstContactNumberController @Inject() (
       .fold(
         formWithErrors =>
           (for {
-            firstContactName <- request.firstContactName.asResponseError
+            firstContactName <- request.firstContactNameOrError
           } yield firstContactName)
             .fold(
               _ =>

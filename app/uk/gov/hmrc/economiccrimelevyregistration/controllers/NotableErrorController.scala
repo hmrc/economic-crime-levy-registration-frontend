@@ -20,10 +20,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -59,7 +56,7 @@ class NotableErrorController @Inject() (
   def userAlreadyEnrolled: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
     (for {
       eclReference <-
-        getEclReference("ECL registration reference not found in request").asResponseError
+        request.eclReferenceOrError
     } yield eclReference)
       .fold(
         _ => Ok(answersAreInvalidView()),
@@ -72,8 +69,7 @@ class NotableErrorController @Inject() (
       s"${appConfig.taxAndSchemeManagementUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclReference/users"
 
     (for {
-      eclReference <-
-        getEclReference("ECL registration reference not found in request").asResponseError
+      eclReference <- request.eclReferenceOrError
     } yield eclReference).fold(
       _ => Ok(answersAreInvalidView()),
       success => Ok(groupAlreadyEnrolledView(success, taxAndSchemeManagementUrl(success)))
@@ -104,26 +100,11 @@ class NotableErrorController @Inject() (
   def verificationFailed: Action[AnyContent] = (authoriseWithoutEnrolmentCheck andThen getRegistrationData) {
     implicit request =>
       (for {
-        entityType <- getEntityType("Entity type not found in registration data").asResponseError
+        entityType <- request.entityTypeOrError
       } yield entityType).fold(
         _ => Ok(answersAreInvalidView()),
         _ => Ok(verificationFailedView())
       )
   }
 
-  private def getEclReference(
-    message: String
-  )(implicit request: AuthorisedRequest[_]): Either[DataRetrievalError, String] =
-    request.eclRegistrationReference match {
-      case Some(value) => Right(value)
-      case None        => Left(DataRetrievalError.FieldNotFound(message))
-    }
-
-  private def getEntityType(
-    message: String
-  )(implicit request: RegistrationDataRequest[_]): Either[DataRetrievalError, EntityType] =
-    request.registration.entityType match {
-      case Some(value) => Right(value)
-      case None        => Left(DataRetrievalError.FieldNotFound(message))
-    }
 }

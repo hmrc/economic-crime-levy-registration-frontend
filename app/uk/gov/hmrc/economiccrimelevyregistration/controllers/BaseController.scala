@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
+import play.api.Logger
 import play.api.http.HeaderNames.CACHE_CONTROL
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.Results.{InternalServerError, Redirect}
@@ -59,15 +60,6 @@ trait BaseController extends I18nSupport {
           CACHE_CONTROL -> "no-cache"
         )
       case errorCode                                            => Results.Status(errorCode.statusCode)(fallbackClientErrorTemplate(request, errorTemplate))
-    }
-
-  protected def getField[T](
-    message: String,
-    data: Option[T]
-  ): Either[DataRetrievalError, T] =
-    data match {
-      case Some(value) => Right(value)
-      case None        => Left(DataRetrievalError.FieldNotFound(message))
     }
 
   implicit class ResponseHandler(data: EitherT[Future, ResponseError, Registration]) {

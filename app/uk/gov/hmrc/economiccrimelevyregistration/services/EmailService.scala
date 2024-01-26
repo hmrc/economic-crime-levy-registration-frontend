@@ -119,7 +119,7 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
         )
       case _                                                                                                    =>
         EitherT.fromEither[Future](
-          Left(DataRetrievalError.FieldNotFound("Invalid contact details"))
+          Left(DataRetrievalError.InternalUnexpectedError("Invalid contact details", None))
         )
     })
 
@@ -130,7 +130,7 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
   ): Either[DataRetrievalError, (String, String)] =
     (contacts.firstContactDetails.emailAddress, contacts.firstContactDetails.name) match {
       case (Some(emailAddress), Some(name)) => Right((emailAddress, name))
-      case _                                => Left(DataRetrievalError.FieldNotFound("Invalid contact details"))
+      case _                                => Left(DataRetrievalError.InternalUnexpectedError("Invalid contact details", None))
     }
 
   private def sendEmail(emailAddress: String, name: String)(implicit

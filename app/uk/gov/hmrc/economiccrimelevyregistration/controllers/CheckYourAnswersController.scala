@@ -155,14 +155,7 @@ class CheckYourAnswersController @Inject() (
       _        <- registrationService.deleteRegistration(request.internalId).asResponseError
       _        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
       _        <- sendEmail(registration, request.additionalInfo, response.eclReference).asResponseError
-      email    <- EitherT
-                    .fromEither[Future](
-                      getField(
-                        "First contact email address not found in registration data",
-                        registration.contacts.firstContactDetails.emailAddress
-                      )
-                    )
-                    .asResponseError
+      email     = registration.contacts.firstContactDetails.emailAddress
     } yield (response, email)).fold(
       error => routeError(error),
       data => {
@@ -175,7 +168,7 @@ class CheckYourAnswersController @Inject() (
         }
 
         val updatedSession = session ++ Seq(
-          SessionKeys.FirstContactEmailAddress -> data._2
+          SessionKeys.FirstContactEmailAddress -> data._2.get //TODO -fix this
         )
 
         Redirect(getNextPage(registration)).withSession(
@@ -214,11 +207,7 @@ class CheckYourAnswersController @Inject() (
           registration.carriedOutAmlRegulatedActivityInCurrentFy
         )
       case Some(Amendment) =>
-        emailService.sendAmendRegistrationSubmitted(registration.contacts)
-      case None            =>
-        EitherT.fromEither[Future](
-          Left(DataRetrievalError.FieldNotFound("Invalid registration type"))
-        )
+        emailService.sendAmendRegistrationSubmitted(registration.contacts) //TODO - what to do if NONE
     }
 
   private def getRegistrationWithEncodedFields(

@@ -21,7 +21,6 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.ConfirmContactAddressDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts.ContactsUtils
 import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
@@ -48,13 +47,12 @@ class ConfirmContactAddressController @Inject() (
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler
-    with BaseController
-    with ContactsUtils {
+    with BaseController {
 
   val form: Form[Boolean]                        = formProvider()
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     (for {
-      address <- request.contactAddress.asResponseError
+      address <- request.eclAddressOrError.asResponseError
     } yield address).fold(
       error => routeError(error),
       address =>
@@ -74,7 +72,7 @@ class ConfirmContactAddressController @Inject() (
       .fold(
         formWithErrors =>
           (for {
-            address <- request.contactAddress.asResponseError
+            address <- request.eclAddressOrError.asResponseError
           } yield address)
             .fold(
               error => Future.successful(routeError(error)),
