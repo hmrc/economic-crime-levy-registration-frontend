@@ -139,7 +139,7 @@ class AmlSupervisorController @Inject() (
       case FinancialConductAuthority =>
         sendNotLiableAuditEvent(registration.internalId, NotLiableReason.SupervisedByFinancialConductAuthority)
       case _                         =>
-        Future.successful(unit)
+        Future.successful(())
     }
 
   private def sendNotLiableAuditEvent(internalId: String, notLiableReason: NotLiableReason)(implicit
