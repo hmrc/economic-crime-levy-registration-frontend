@@ -129,14 +129,7 @@ abstract class BaseAuthorisedAction @Inject() (
     implicit val hcFromRequest: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup and credentialRole) {
-      case optInternalId ~ enrolments ~ optGroupId ~ optAffinityGroup ~ optCredentialRole =>
-        val internalId: String             = optInternalId.getOrElseFail("Unable to retrieve internalId")
-        val groupId: String                = optGroupId.getOrElseFail("Unable to retrieve groupIdentifier")
-        val affinityGroup: AffinityGroup   = optAffinityGroup.getOrElseFail("Unable to retrieve affinityGroup")
-        val credentialRole: CredentialRole = optCredentialRole.getOrElseFail("Unable to retrieve credentialRole")
-
-        //TODO - return erro page rather than exception
-
+      case Some(internalId) ~ enrolments ~ Some(groupId) ~ Some(affinityGroup) ~ Some(credentialRole) =>
         val eclEnrolment: Option[Enrolment]          = enrolments.enrolments.find(_.key == EclEnrolment.ServiceName)
         val eclRegistrationReference: Option[String] =
           eclEnrolment.flatMap(_.getIdentifier(EclEnrolment.IdentifierKey).map(_.value))
@@ -156,6 +149,7 @@ abstract class BaseAuthorisedAction @Inject() (
                 }
             }
         }
+      case _                                                                                          => Future.failed(new Exception("Failed to authorise due to missing data"))
     } recover { case _: NoActiveSession =>
       Redirect(config.signInUrl, Map("continue" -> Seq(s"${config.host}${request.uri}")))
     }
@@ -209,7 +203,7 @@ abstract class BaseAuthorisedAction @Inject() (
           )
         } else {
           (for {
-            registration <- eclRegistrationService.getOrCreateRegistration(internalId).asResponseError
+            registration <- eclRegistrationService.getOrCreate(internalId).asResponseError
           } yield registration).foldF(
             _ => Future.successful(Redirect(routes.NotableErrorController.registrationFailed())),
             registration =>
@@ -282,8 +276,4 @@ abstract class BaseAuthorisedAction @Inject() (
     } else {
       Future.successful(Redirect(routes.NotableErrorController.agentCannotRegister()))
     }
-
-  implicit class OptionOps[T](o: Option[T]) {
-    def getOrElseFail(failureMessage: String): T = o.getOrElse(throw new IllegalStateException(failureMessage))
-  }
 }

@@ -26,10 +26,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.EntityTypeSelectedEvent
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{EntityTypeView, ErrorTemplate}
 import uk.gov.hmrc.http.HttpVerbs.GET
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -43,7 +42,7 @@ class EntityTypeController @Inject() (
   eclRegistrationService: EclRegistrationService,
   formProvider: EntityTypeFormProvider,
   dataCleanup: EntityTypeDataCleanup,
-  auditConnector: AuditConnector,
+  auditService: AuditService,
   view: EntityTypeView
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
@@ -63,13 +62,12 @@ class EntityTypeController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType => {
-          auditConnector
-            .sendExtendedEvent(
-              EntityTypeSelectedEvent(
-                request.internalId,
-                entityType
-              ).extendedDataEvent
-            )
+          val event = EntityTypeSelectedEvent(
+            request.internalId,
+            entityType
+          ).extendedDataEvent
+
+          auditService.sendEvent(event)
 
           mode match {
             case NormalMode => navigateInNormalMode(entityType)

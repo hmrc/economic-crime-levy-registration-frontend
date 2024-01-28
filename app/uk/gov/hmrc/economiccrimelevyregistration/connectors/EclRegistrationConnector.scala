@@ -38,11 +38,11 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
       .get(url"$eclRegistrationUrl/registrations/$internalId")
       .executeAndDeserialise[Registration]
 
-  def upsertRegistration(registration: Registration)(implicit hc: HeaderCarrier): Future[Registration] =
+  def upsertRegistration(registration: Registration)(implicit hc: HeaderCarrier): Future[Unit] =
     httpClient
       .put(url"$eclRegistrationUrl/registrations")
       .withBody(Json.toJson(registration))
-      .executeAndDeserialise[Registration]
+      .executeAndContinue
 
   def deleteRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
     httpClient

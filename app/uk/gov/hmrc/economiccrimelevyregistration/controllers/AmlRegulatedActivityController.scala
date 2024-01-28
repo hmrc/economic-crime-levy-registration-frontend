@@ -27,7 +27,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, SessionData, Sess
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlRegulatedActivityView, ErrorTemplate}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -66,21 +65,17 @@ class AmlRegulatedActivityController @Inject() (
             registrationType = Some(Initial)
           )
           (for {
-            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            _                     = if (amlRegulatedActivity)
-                                      upsertSession(
-                                        amlRegulatedActivity,
-                                        request.internalId
-                                      ) //TODO - what to do if amlRegulatedActivity is false
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+            _          <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            sessionData =
+              SessionData(
+                updatedRegistration.internalId,
+                Map(SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString)
+              )
+            _           = sessionService
+                            .upsert(sessionData)
+                            .asResponseError
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
         }
       )
-  }
-
-  def upsertSession(amlRegulatedActivity: Boolean, internalId: String)(implicit hc: HeaderCarrier) = {
-    val amlActivitySessionData = Map(SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString)
-    for {
-      _ <- sessionService.upsert(SessionData(internalId, amlActivitySessionData)).asResponseError
-    } yield ()
   }
 }

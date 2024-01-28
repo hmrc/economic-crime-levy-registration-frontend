@@ -104,11 +104,13 @@ class FirstContactRoleController @Inject() (
           val updatedContacts: Contacts = request.registration.contacts
             .copy(firstContactDetails = request.registration.contacts.firstContactDetails.copy(role = Some(role)))
 
+          val updatedRegistration = request.registration.copy(contacts = updatedContacts)
+
           (for {
-            upsertedRegistration <- eclRegistrationService
-                                      .upsertRegistration(request.registration.copy(contacts = updatedContacts))
-                                      .asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+            _ <- eclRegistrationService
+                   .upsertRegistration(updatedRegistration)
+                   .asResponseError
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

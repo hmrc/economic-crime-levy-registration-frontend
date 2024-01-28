@@ -60,8 +60,8 @@ class CtUtrPostcodeController @Inject() (
           val otherEntity         = request.registration.otherEntityJourneyData.copy(postcode = Some(postcode))
           val updatedRegistration = request.registration.copy(optOtherEntityJourneyData = Some(otherEntity))
           (for {
-            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+            _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

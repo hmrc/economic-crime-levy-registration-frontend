@@ -94,8 +94,8 @@ class ConfirmContactAddressController @Inject() (
             }
 
           (for {
-            upsertedRegistration <- eclRegistrationService.upsertRegistration(modifiedRegistration).asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+            _ <- eclRegistrationService.upsertRegistration(modifiedRegistration).asResponseError
+          } yield modifiedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

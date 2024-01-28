@@ -106,11 +106,13 @@ class SecondContactNumberController @Inject() (
               request.registration.contacts.secondContactDetails.copy(telephoneNumber = Some(telephoneNumber))
             )
 
+          val updatedRegistration = request.registration.copy(contacts = updatedContacts)
+
           (for {
-            upsertedRegistration <- eclRegistrationService
-                                      .upsertRegistration(request.registration.copy(contacts = updatedContacts))
-                                      .asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+            _ <- eclRegistrationService
+                   .upsertRegistration(updatedRegistration)
+                   .asResponseError
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

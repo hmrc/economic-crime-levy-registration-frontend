@@ -77,8 +77,8 @@ class FirstContactNameController @Inject() (
           val updatedRegistration       = request.registration.copy(contacts = updatedContacts)
 
           (for {
-            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+            _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

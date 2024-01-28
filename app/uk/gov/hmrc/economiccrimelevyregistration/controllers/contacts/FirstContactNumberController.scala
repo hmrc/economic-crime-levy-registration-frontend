@@ -106,12 +106,14 @@ class FirstContactNumberController @Inject() (
               request.registration.contacts.firstContactDetails.copy(telephoneNumber = Some(telephoneNumber))
             )
 
+          val updatedRegistration = request.registration.copy(contacts = updatedContacts)
+
           (for {
-            upsertedRegistration <-
+            _ <-
               eclRegistrationService
-                .upsertRegistration(request.registration.copy(contacts = updatedContacts))
+                .upsertRegistration(updatedRegistration)
                 .asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
 
         }
       )

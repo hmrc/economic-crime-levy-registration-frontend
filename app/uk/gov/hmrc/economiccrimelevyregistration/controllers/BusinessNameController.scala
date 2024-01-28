@@ -67,8 +67,8 @@ class BusinessNameController @Inject() (
               request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
             (for {
-              upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+              _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            } yield updatedRegistration).convertToResult(mode, pageNavigator)
           }
         )
     }

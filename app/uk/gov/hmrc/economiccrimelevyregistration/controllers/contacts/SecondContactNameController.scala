@@ -75,11 +75,12 @@ class SecondContactNameController @Inject() (
           val updatedContacts: Contacts = request.registration.contacts
             .copy(secondContactDetails = request.registration.contacts.secondContactDetails.copy(name = Some(name)))
 
+          val updatedRegistration = request.registration.copy(contacts = updatedContacts)
           (for {
-            upsertedRegistration <- eclRegistrationService
-                                      .upsertRegistration(request.registration.copy(contacts = updatedContacts))
-                                      .asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+            _ <- eclRegistrationService
+                   .upsertRegistration(updatedRegistration)
+                   .asResponseError
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

@@ -46,7 +46,7 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK and the correct view" in forAll { registration: Registration =>
       when(
-        mockRegistrationAdditionalInfoService.createOrUpdate(
+        mockRegistrationAdditionalInfoService.upsert(
           any()
         )(any(), any())
       ).thenReturn(
@@ -68,7 +68,7 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
         .thenReturn(EitherT.fromEither[Future](Right(registration)))
 
       when(
-        mockRegistrationAdditionalInfoService.createOrUpdate(
+        mockRegistrationAdditionalInfoService.upsert(
           any()
         )(any(), any())
       ).thenReturn(

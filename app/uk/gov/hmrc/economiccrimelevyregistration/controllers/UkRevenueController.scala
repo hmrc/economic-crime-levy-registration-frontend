@@ -66,14 +66,13 @@ class UkRevenueController @Inject() (
           (for {
             revenueMeetsThreshold <-
               eclCalculatorService.checkIfRevenueMeetsThreshold(updatedRegistration).asResponseError
-            upsertedRegistration  <- eclRegistrationService
+            revenueWithThreshold   = updatedRegistration.copy(revenueMeetsThreshold = revenueMeetsThreshold)
+            _                     <- eclRegistrationService
                                        .upsertRegistration(
-                                         updatedRegistration.copy(
-                                           revenueMeetsThreshold = revenueMeetsThreshold
-                                         )
+                                         revenueWithThreshold
                                        )
                                        .asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+          } yield revenueWithThreshold).convertToResult(mode, pageNavigator)
         }
       )
   }

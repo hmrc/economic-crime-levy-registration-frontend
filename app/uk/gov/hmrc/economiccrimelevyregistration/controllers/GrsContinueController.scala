@@ -99,7 +99,7 @@ class GrsContinueController @Inject() (
     incorporatedEntityJourneyData: Option[IncorporatedEntityJourneyData] = None,
     soleTraderEntityJourneyData: Option[SoleTraderEntityJourneyData] = None,
     partnershipEntityJourneyData: Option[PartnershipEntityJourneyData] = None
-  )(implicit request: RegistrationDataRequest[AnyContent]): Future[Registration] =
+  )(implicit request: RegistrationDataRequest[AnyContent]): Future[Unit] =
     eclRegistrationConnector.upsertRegistration(
       request.registration.copy(
         incorporatedEntityJourneyData = incorporatedEntityJourneyData,

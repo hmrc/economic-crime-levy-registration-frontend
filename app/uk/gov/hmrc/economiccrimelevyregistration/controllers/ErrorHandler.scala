@@ -31,7 +31,7 @@ trait ErrorHandler extends Logging {
   }
 
   implicit class EitherErrorConvertor[E, R](value: Either[E, R]) {
-    def asResponseError(implicit converter: Converter[E], ec: ExecutionContext): Either[ResponseError, R] =
+    def asResponseError(implicit converter: Converter[E]): Either[ResponseError, R] =
       value.left.map(converter.convert)
   }
 
@@ -46,11 +46,8 @@ trait ErrorHandler extends Logging {
       ResponseError.internalServiceError(message = message, cause = cause)
   }
 
-  implicit val registrationErrorConverter: Converter[RegistrationError] = {
-    case RegistrationError.BadGateway(cause, statusCode)           =>
-      ResponseError.badGateway(cause, statusCode)
-    case RegistrationError.InternalUnexpectedError(message, cause) =>
-      ResponseError.internalServiceError(message = message, cause = cause)
+  implicit val auditErrorConverter: Converter[AuditError] = { case AuditError.InternalUnexpectedError(message, cause) =>
+    ResponseError.internalServiceError(message = message, cause = cause)
   }
 
   implicit val dataRetrievalErrorConverter: Converter[DataRetrievalError] = {

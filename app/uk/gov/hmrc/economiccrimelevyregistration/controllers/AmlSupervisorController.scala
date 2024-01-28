@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import cats.instances.unit
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -28,15 +29,16 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Finan
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlSupervisorView, ErrorTemplate}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.postfixOps
 
 @Singleton
 class AmlSupervisorController @Inject() (
@@ -48,8 +50,8 @@ class AmlSupervisorController @Inject() (
   amendFormProvider: AmendAmlSupervisorFormProvider,
   appConfig: AppConfig,
   pageNavigator: AmlSupervisorPageNavigator,
-  auditConnector: AuditConnector,
-  view: AmlSupervisorView
+  view: AmlSupervisorView,
+  auditService: AuditService
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
@@ -113,41 +115,31 @@ class AmlSupervisorController @Inject() (
                 registrationType = Some(registrationType)
               )
 
-            updatedRegistration.amlSupervisor match {
-              case Some(amlSupervisor) =>
-                amlSupervisor.supervisorType match {
-                  case t @ (GamblingCommission | FinancialConductAuthority) =>
-                    registerWithGcOrFca(t, updatedRegistration)
-                  case _                                                    =>
-                }
-              case None                =>
-            }
-
             (for {
-              upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+              _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+              _  = registerWithGcOrFca(updatedRegistration).asResponseError
+            } yield updatedRegistration).convertToResult(mode, pageNavigator)
           }
         )
     }
 
-  private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType, registration: Registration)(implicit
+  private def registerWithGcOrFca(registration: Registration)(implicit
     hc: HeaderCarrier
-  ): Future[Unit] =
-    amlSupervisorType match {
-      case GamblingCommission        =>
-        sendNotLiableAuditEvent(registration.internalId, NotLiableReason.SupervisedByGamblingCommission)
-      case FinancialConductAuthority =>
-        sendNotLiableAuditEvent(registration.internalId, NotLiableReason.SupervisedByFinancialConductAuthority)
-      case _                         =>
-        Future.successful(())
+  ) =
+    registration.amlSupervisor.map(_.supervisorType) match {
+      case Some(GamblingCommission)        =>
+        val event = RegistrationNotLiableAuditEvent(
+          registration.internalId,
+          NotLiableReason.SupervisedByGamblingCommission
+        ).extendedDataEvent
+        auditService.sendEvent(event)
+      case Some(FinancialConductAuthority) =>
+        val event = RegistrationNotLiableAuditEvent(
+          registration.internalId,
+          NotLiableReason.SupervisedByFinancialConductAuthority
+        ).extendedDataEvent
+        auditService.sendEvent(event)
+      case _                               =>
+        EitherT[Future, AuditError, Unit](Future.successful(Right(())))
     }
-
-  private def sendNotLiableAuditEvent(internalId: String, notLiableReason: NotLiableReason)(implicit
-    hc: HeaderCarrier
-  ): Future[Unit] = {
-    auditConnector
-      .sendExtendedEvent(RegistrationNotLiableAuditEvent(internalId, notLiableReason).extendedDataEvent)
-
-    Future.unit //TODO - what?!
-  }
 }

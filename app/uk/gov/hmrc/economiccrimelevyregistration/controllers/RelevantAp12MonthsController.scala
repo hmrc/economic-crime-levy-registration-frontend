@@ -63,8 +63,8 @@ class RelevantAp12MonthsController @Inject() (
           val updatedRegistration =
             dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
           (for {
-            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+            _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }

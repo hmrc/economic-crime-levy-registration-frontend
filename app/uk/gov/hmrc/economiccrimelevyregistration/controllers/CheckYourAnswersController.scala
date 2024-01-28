@@ -20,7 +20,7 @@ import cats.data.EitherT
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
@@ -48,7 +48,6 @@ class CheckYourAnswersController @Inject() (
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
-  validateRegistrationData: ValidatedRegistrationAction,
   emailService: EmailService,
   otherRegistrationPdfView: OtherRegistrationPdfView,
   amendRegistrationPdfView: AmendRegistrationPdfView
@@ -103,17 +102,23 @@ class CheckYourAnswersController @Inject() (
   ).withCssClass("govuk-!-margin-bottom-9")
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen getRegistrationData andThen validateRegistrationData) { implicit request =>
-      Ok(
-        view(
-          eclDetails(),
-          organisationDetails(),
-          contactDetails(),
-          otherEntityDetails(),
-          request.registration.registrationType,
-          request.eclRegistrationReference
+    (authorise andThen getRegistrationData).async { implicit request =>
+      registrationService
+        .getRegistrationValidationErrors(request.internalId)
+        .fold(
+          _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
+          _ =>
+            Ok(
+              view(
+                eclDetails(),
+                organisationDetails(),
+                contactDetails(),
+                otherEntityDetails(),
+                request.registration.registrationType,
+                request.eclRegistrationReference
+              )
+            )
         )
-      )
     }
 
   private def getBase64EncodedPdf(registration: Registration)(implicit
@@ -208,7 +213,11 @@ class CheckYourAnswersController @Inject() (
           registration.carriedOutAmlRegulatedActivityInCurrentFy
         )
       case Some(Amendment) =>
-        emailService.sendAmendRegistrationSubmitted(registration.contacts) //TODO - what to do if NONE
+        emailService.sendAmendRegistrationSubmitted(registration.contacts)
+      case None            =>
+        EitherT[Future, DataRetrievalError, Unit](
+          Future.successful(Left(DataRetrievalError.InternalUnexpectedError("Registration type is null.", None)))
+        )
     }
 
   private def getRegistrationWithEncodedFields(

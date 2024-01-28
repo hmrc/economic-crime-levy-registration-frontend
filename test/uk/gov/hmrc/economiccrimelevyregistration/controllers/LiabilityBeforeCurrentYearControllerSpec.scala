@@ -89,7 +89,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
               None
             )
 
-          when(mockService.createOrUpdate(any()))
+          when(mockService.upsert(any()))
             .thenReturn(EitherT.fromEither[Future](Right()))
 
           val result: Future[Result] =
@@ -101,7 +101,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
           redirectLocation(result) shouldBe Some(onwardRoute.url)
 
-          verify(mockService, times(1)).createOrUpdate(any())(any(), any())
+          verify(mockService, times(1)).upsert(any())(any(), any())
 
           reset(mockService)
         }

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import com.google.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -25,9 +26,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
-import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityBeforeCurrentYearView}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 
@@ -43,7 +45,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
   additionalInfoService: RegistrationAdditionalInfoService,
   sessionService: SessionService,
   view: LiabilityBeforeCurrentYearView,
-  auditConnector: AuditConnector
+  auditService: AuditService
 )(implicit
   ec: ExecutionContext,
   errorTemplate: ErrorTemplate
@@ -90,7 +92,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
             }
 
             additionalInfoService
-              .createOrUpdate(info)
+              .upsert(info)
               .asResponseError
               .fold(
                 err => routeError(err),
@@ -101,47 +103,52 @@ class LiabilityBeforeCurrentYearController @Inject() (
         )
     }
 
-  private def navigateByMode(mode: Mode, registration: Registration, liableBeforeCurrentYear: Boolean): Call =
+  private def navigateByMode(mode: Mode, registration: Registration, liableBeforeCurrentYear: Boolean)(implicit
+    hc: HeaderCarrier
+  ): Call =
     mode match {
       case NormalMode => navigateInNormalMode(liableBeforeCurrentYear, registration, mode)
       case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
     }
 
-  private def navigateInNormalMode(liableBeforeCurrentYear: Boolean, registration: Registration, mode: Mode): Call =
+  private def navigateInNormalMode(liableBeforeCurrentYear: Boolean, registration: Registration, mode: Mode)(implicit
+    hc: HeaderCarrier
+  ): Call =
     (liableBeforeCurrentYear, registration.revenueMeetsThreshold) match {
-      case (false, Some(false)) => sendNotLiableAuditEvent(registration)
+      case (false, Some(false)) =>
+        sendNotLiableAuditEvent(registration)
+        routes.NotLiableController.youDoNotNeedToRegister()
       case (_, Some(_))         => routes.EntityTypeController.onPageLoad(mode)
-      case (false, None)        => sendNotLiableAuditEvent(registration)
+      case (false, None)        =>
+        sendNotLiableAuditEvent(registration)
+        routes.NotLiableController.youDoNotNeedToRegister()
       case (true, None)         =>
         routes.AmlSupervisorController
           .onPageLoad(mode, registration.registrationType.get)
     }
 
-  private def sendNotLiableAuditEvent(registration: Registration): Call = {
+  private def sendNotLiableAuditEvent(registration: Registration)(implicit hc: HeaderCarrier) =
     registration.revenueMeetsThreshold match {
       case Some(true)  =>
-        auditConnector.sendExtendedEvent(
-          RegistrationNotLiableAuditEvent(
-            registration.internalId,
-            NotLiableReason.DidNotCarryOutAmlRegulatedActivity
-          ).extendedDataEvent
-        )
+        val event = RegistrationNotLiableAuditEvent(
+          registration.internalId,
+          NotLiableReason.DidNotCarryOutAmlRegulatedActivity
+        ).extendedDataEvent
+        auditService.sendEvent(event)
       case Some(false) =>
-        auditConnector.sendExtendedEvent(
-          RegistrationNotLiableAuditEvent(
-            registration.internalId,
-            NotLiableReason.RevenueDoesNotMeetThreshold.apply(
-              registration.relevantAp12Months,
-              registration.relevantApLength,
-              registration.relevantApRevenue.get.toLong,
-              registration.revenueMeetsThreshold.get
-            )
-          ).extendedDataEvent
-        )
-      case None        => routes.NotLiableController.youDoNotNeedToRegister()
+        val event = RegistrationNotLiableAuditEvent(
+          registration.internalId,
+          NotLiableReason.RevenueDoesNotMeetThreshold.apply(
+            registration.relevantAp12Months,
+            registration.relevantApLength,
+            registration.relevantApRevenue.get.toLong,
+            registration.revenueMeetsThreshold.get
+          )
+        ).extendedDataEvent
+        auditService.sendEvent(event)
+
+      case None => EitherT[Future, AuditError, Unit](Future.successful(Right(())))
     }
-    routes.NotLiableController.youDoNotNeedToRegister()
-  }
 
   private def getFirstLiabilityYear(
     liableForCurrentFY: Option[Boolean],

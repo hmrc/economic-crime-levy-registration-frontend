@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
-import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
@@ -31,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class RegistrationDataRetrievalAction @Inject() (
   eclRegistrationService: EclRegistrationService,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService
-)(implicit val ec: ExecutionContext)
+)(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction
     with FrontendHeaderCarrierProvider
     with ErrorHandler {
@@ -42,24 +41,26 @@ class RegistrationDataRetrievalAction @Inject() (
     implicit val hcFromRequest: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     (for {
-      registration <- eclRegistrationService.getOrCreateRegistration(request.internalId).asResponseError
-      info         <- registrationAdditionalInfoService.getOrCreate(request.internalId).asResponseError
-    } yield (registration, info)).fold(
-      _ => Left(InternalServerError), //TODO - return error page
+      registration <- eclRegistrationService.getOrCreate(request.internalId).asResponseError
+      info         <- registrationAdditionalInfoService
+                        .getOrCreate(request.internalId, request.eclRegistrationReference)
+                        .asResponseError
+    } yield (registration, info)).foldF(
+      error => Future.failed(new Exception(error.message)),
       data =>
-        Right(
-          RegistrationDataRequest(
-            request.request,
-            request.internalId,
-            data._1,
-            Some(data._2),
-            request.eclRegistrationReference
+        Future.successful(
+          Right(
+            RegistrationDataRequest(
+              request.request,
+              request.internalId,
+              data._1,
+              Some(data._2),
+              request.eclRegistrationReference
+            )
           )
         )
     )
   }
-
-  override protected def executionContext: ExecutionContext = ec
 }
 
 trait DataRetrievalAction extends ActionRefiner[AuthorisedRequest, RegistrationDataRequest]

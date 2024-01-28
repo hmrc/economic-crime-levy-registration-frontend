@@ -16,10 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models.errors
 
-trait RegistrationError
+trait AuditError
 
-object RegistrationError {
-  case class BadGateway(reason: String, code: Int) extends RegistrationError
+object AuditError {
+  case class InternalUnexpectedError(message: String, cause: Option[Throwable]) extends AuditError
 
-  case class InternalUnexpectedError(message: String, cause: Option[Throwable]) extends RegistrationError
 }

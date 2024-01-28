@@ -44,10 +44,10 @@ class AddressLookupContinueController @Inject() (
   def continue(mode: Mode, id: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
     implicit request =>
       (for {
-        address              <- addressLookupFrontendService.getAddress(id).asResponseError
-        registration          = request.registration.copy(contactAddress = alfAddressToEclAddress(address))
-        upsertedRegistration <- eclRegistrationService.upsertRegistration(registration).asResponseError
-      } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+        address            <- addressLookupFrontendService.getAddress(id).asResponseError
+        updatedRegistration = request.registration.copy(contactAddress = alfAddressToEclAddress(address))
+        _                  <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+      } yield updatedRegistration).convertToResult(mode, pageNavigator)
   }
 
   private def alfAddressToEclAddress(alfAddressData: AlfAddressData): Option[EclAddress] =

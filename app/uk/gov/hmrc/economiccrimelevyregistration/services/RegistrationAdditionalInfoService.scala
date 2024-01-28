@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import cats.data.EitherT
+import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.RegistrationAdditionalInfoConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationAdditionalInfo
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
@@ -32,46 +33,41 @@ class RegistrationAdditionalInfoService @Inject() (
 )(implicit ec: ExecutionContext) {
 
   def getOrCreate(
-    internalId: String
+    internalId: String,
+    eclReference: Option[String]
   )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo] =
-    EitherT {
-      registrationAdditionalInfoConnector
-        .get(internalId)
-        .map(info => Right(info))
-        .recover {
-          case error @ UpstreamErrorResponse(message, code, _, _)
-              if UpstreamErrorResponse.Upstream5xxResponse.unapply(error).isDefined =>
-            Left(DataRetrievalError.BadGateway(message, code))
-          case error @ UpstreamErrorResponse(message, code, _, _)
-              if UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
-            val additionalInfo = RegistrationAdditionalInfo(internalId, None, None)
-            registrationAdditionalInfoConnector.upsert(additionalInfo) //TODO - take error into account
-            Right(additionalInfo)
-          case NonFatal(thr) =>
-            println(s"LALALALALALALA $thr")
-            Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
-        }
+    get(internalId).flatMap {
+      case Some(additionalInfo) =>
+        EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo](Future.successful(Right(additionalInfo)))
+      case None                 =>
+        val newAdditionalInfo = RegistrationAdditionalInfo(internalId, None, eclReference)
+        upsert(newAdditionalInfo).map(_ => newAdditionalInfo)
     }
 
   def get(
     internalId: String
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo] =
+  )(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): EitherT[Future, DataRetrievalError, Option[RegistrationAdditionalInfo]] =
     EitherT {
       registrationAdditionalInfoConnector
         .get(internalId)
-        .map(Right(_))
+        .map(additionalInfo => Right(Some(additionalInfo)))
         .recover {
-          case e: NotFoundException => Left(DataRetrievalError.NotFound(internalId))
-          case error @ UpstreamErrorResponse(_, _, _, _)
+          case err: NotFoundException                          => Right(None)
+          case err @ UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+            Right(None)
+          case error @ UpstreamErrorResponse(message, code, _, _)
               if UpstreamErrorResponse.Upstream5xxResponse
                 .unapply(error)
                 .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
-            Left(DataRetrievalError.NotFound(internalId))
-          case NonFatal(thr)        => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+            Left(DataRetrievalError.BadGateway(message, code))
+          case NonFatal(thr)                                   => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
 
-  def createOrUpdate(
+  def upsert(
     info: RegistrationAdditionalInfo
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, DataRetrievalError, Unit] =
     EitherT {

@@ -108,16 +108,16 @@ class FirstContactEmailController @Inject() (
             )
 
           (for {
-            _                    <-
+            _                  <-
               sessionService
                 .upsert(SessionData(request.internalId, Map(SessionKeys.FirstContactEmailAddress -> email)))
                 .asResponseError
-            updatedRegistration   = request.registration.copy(contacts = updatedContacts)
-            upsertedRegistration <-
+            updatedRegistration = request.registration.copy(contacts = updatedContacts)
+            _                  <-
               eclRegistrationService
                 .upsertRegistration(updatedRegistration)
                 .asResponseError
-          } yield upsertedRegistration).convertToResult(mode, pageNavigator)
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
         }
       )
   }
