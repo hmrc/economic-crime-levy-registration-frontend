@@ -21,10 +21,9 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
 
@@ -34,7 +33,6 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
 
   val view: AmendRegistrationStartView                                         = app.injector.instanceOf[AmendRegistrationStartView]
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
-  val mockRegistrationConnector: EclRegistrationConnector                      = mock[EclRegistrationConnector]
   val mockRegistrationService: EclRegistrationService                          = mock[EclRegistrationService]
   val mockErrorHandler: ErrorHandler                                           = mock[ErrorHandler]
 
@@ -45,37 +43,83 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
     mockErrorHandler,
     view,
     mockRegistrationService,
-    mockRegistrationConnector
+    appConfig
   )
 
   "onPageLoad" should {
-    "return OK and the correct view" in forAll { registration: Registration =>
-      when(
-        mockRegistrationAdditionalInfoService.createOrUpdate(
-          anyString(),
-          any()
-        )(any())
-      ).thenReturn(
-        Future.successful(())
-      )
+    "return OK and the correct view" in forAll {
+      (registration: Registration, getSubscriptionResponse: GetSubscriptionResponse) =>
+        when(
+          mockRegistrationAdditionalInfoService.createOrUpdate(
+            anyString(),
+            any()
+          )(any())
+        ).thenReturn(
+          Future.successful(())
+        )
 
-      when(mockRegistrationService.getOrCreateRegistration(any())(any()))
-        .thenReturn(Future.successful(registration))
+        when(mockRegistrationService.getOrCreateRegistration(any())(any()))
+          .thenReturn(Future.successful(registration))
 
-      when(mockRegistrationConnector.upsertRegistration(any())(any()))
-        .thenReturn(Future.successful(registration))
-      val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
+        when(mockRegistrationService.upsertRegistration(any())(any()))
+          .thenReturn(Future.successful(registration))
 
-      status(result) shouldBe OK
+        when(mockRegistrationService.getSubscription(any())(any()))
+          .thenReturn(Future.successful(getSubscriptionResponse))
 
-      contentAsString(result) shouldBe view("eclReferenceValue")(fakeRequest, messages).toString
+        when(mockRegistrationService.upsertRegistration(any())(any()))
+          .thenReturn(Future.successful(registration))
+
+        val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
+
+        status(result) shouldBe SEE_OTHER
+
+        reset(mockRegistrationService)
+    }
+
+    "return Internal server error and the correct view when call to getSubscriptionFails" in forAll {
+      (registration: Registration, getSubscriptionResponse: GetSubscriptionResponse) =>
+        when(
+          mockRegistrationAdditionalInfoService.createOrUpdate(
+            anyString(),
+            any()
+          )(any())
+        ).thenReturn(
+          Future.successful(())
+        )
+
+        when(mockRegistrationService.getOrCreateRegistration(any())(any()))
+          .thenReturn(Future.successful(registration))
+
+        when(mockRegistrationService.upsertRegistration(any())(any()))
+          .thenReturn(Future.successful(registration))
+
+        when(mockRegistrationService.getSubscription(any())(any()))
+          .thenReturn(Future.failed(new Exception("Error")))
+
+        when(mockRegistrationService.upsertRegistration(any())(any()))
+          .thenReturn(Future.successful(registration))
+
+        when(
+          mockErrorHandler.internalServerErrorTemplate(any())
+        ).thenReturn(
+          Html("error page")
+        )
+
+        val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
+
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+
+        reset(mockRegistrationService)
+        reset(mockErrorHandler)
+
     }
 
     "return Internal server error and the correct view" in forAll { registration: Registration =>
       when(mockRegistrationService.getOrCreateRegistration(any())(any()))
         .thenReturn(Future.successful(registration))
 
-      when(mockRegistrationConnector.upsertRegistration(any())(any()))
+      when(mockRegistrationService.upsertRegistration(any())(any()))
         .thenReturn(Future.successful(registration))
 
       when(
@@ -96,6 +140,10 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
       val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
 
       status(result) shouldBe INTERNAL_SERVER_ERROR
+      reset(mockRegistrationService)
+      reset(mockRegistrationAdditionalInfoService)
+      reset(mockErrorHandler)
+
     }
   }
 
