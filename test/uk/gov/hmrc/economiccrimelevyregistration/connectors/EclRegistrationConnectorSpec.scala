@@ -315,6 +315,28 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
       result shouldBe getSubscriptionResponse
     }
+
+    "throw an UpstreamErrorResponse exception when the http client returns a error response for getSubscription call" in forAll {
+      eclReference: String =>
+        val expectedUrl = s"$eclRegistrationUrl/subscription/$eclReference"
+
+        val response = UpstreamErrorResponse("Internal server error", INTERNAL_SERVER_ERROR)
+
+        when(
+          mockHttpClient
+            .GET[GetSubscriptionResponse](ArgumentMatchers.eq(expectedUrl), any(), any())(
+              any(),
+              any(),
+              any()
+            )
+        ).thenReturn(Future.failed(response))
+
+        val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
+          await(connector.getSubscription(eclReference))
+        }
+
+        result.getMessage shouldBe "Internal server error"
+    }
   }
 
 }

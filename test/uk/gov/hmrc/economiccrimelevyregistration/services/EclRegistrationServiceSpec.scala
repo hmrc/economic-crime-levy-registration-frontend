@@ -47,6 +47,8 @@ class EclRegistrationServiceSpec extends SpecBase {
         verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
 
         reset(mockAuditConnector)
+        reset(mockEclRegistrationConnector)
+
     }
 
     "return an existing registration" in forAll { (internalId: String, registration: Registration) =>
@@ -55,6 +57,8 @@ class EclRegistrationServiceSpec extends SpecBase {
 
       val result = await(service.getOrCreateRegistration(internalId))
       result shouldBe registration
+      reset(mockEclRegistrationConnector)
+
     }
   }
 
@@ -69,6 +73,26 @@ class EclRegistrationServiceSpec extends SpecBase {
       val result = await(service.getSubscription(eclReference))
 
       result shouldBe getSubscriptionResponse
+      reset(mockEclRegistrationConnector)
+
+    }
+
+    "return error when call to connector fails" in forAll(
+      nonEmptyString
+    ) { (eclReference: String) =>
+      when(mockEclRegistrationConnector.getSubscription(ArgumentMatchers.eq(eclReference))(any()))
+        .thenReturn(Future.failed(new IllegalStateException("Error")))
+
+      val result = intercept[IllegalStateException] {
+        await(
+          service
+            .getSubscription(eclReference)
+        )
+      }
+      result.getMessage shouldBe "Error"
+      result            shouldBe a[IllegalStateException]
+
+      reset(mockEclRegistrationConnector)
     }
   }
 }
