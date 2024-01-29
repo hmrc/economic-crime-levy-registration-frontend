@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Arbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
@@ -28,7 +30,7 @@ import scala.concurrent.Future
 class EclRegistrationServiceSpec extends SpecBase {
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
   val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
-  val service                                                = new EclRegistrationService(mockEclRegistrationConnector, mockAuditConnector)
+  val service                                                = new EclRegistrationService(mockEclRegistrationConnector, mockAuditConnector, appConfig)
 
   "getOrCreateRegistration" should {
     "return a created registration when one does not exist" in forAll {
@@ -45,6 +47,8 @@ class EclRegistrationServiceSpec extends SpecBase {
         verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
 
         reset(mockAuditConnector)
+        reset(mockEclRegistrationConnector)
+
     }
 
     "return an existing registration" in forAll { (internalId: String, registration: Registration) =>
@@ -53,6 +57,42 @@ class EclRegistrationServiceSpec extends SpecBase {
 
       val result = await(service.getOrCreateRegistration(internalId))
       result shouldBe registration
+      reset(mockEclRegistrationConnector)
+
+    }
+  }
+
+  "getSubscription" should {
+    "return valid subscription response when eclReference is passed" in forAll(
+      (Arbitrary.arbitrary[GetSubscriptionResponse]),
+      nonEmptyString
+    ) { (getSubscriptionResponse: GetSubscriptionResponse, eclReference: String) =>
+      when(mockEclRegistrationConnector.getSubscription(eclReference))
+        .thenReturn(Future.successful(getSubscriptionResponse))
+
+      val result = await(service.getSubscription(eclReference))
+
+      result shouldBe getSubscriptionResponse
+      reset(mockEclRegistrationConnector)
+
+    }
+
+    "return error when call to connector fails" in forAll(
+      nonEmptyString
+    ) { (eclReference: String) =>
+      when(mockEclRegistrationConnector.getSubscription(ArgumentMatchers.eq(eclReference))(any()))
+        .thenReturn(Future.failed(new IllegalStateException("Error")))
+
+      val result = intercept[IllegalStateException] {
+        await(
+          service
+            .getSubscription(eclReference)
+        )
+      }
+      result.getMessage shouldBe "Error"
+      result            shouldBe a[IllegalStateException]
+
+      reset(mockEclRegistrationConnector)
     }
   }
 }

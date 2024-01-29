@@ -98,6 +98,12 @@ class CheckYourAnswersController @Inject() (
     ).flatten
   ).withCssClass("govuk-!-margin-bottom-9")
 
+  private def amendReasonDetails()(implicit request: RegistrationDataRequest[_]): SummaryList = SummaryListViewModel(
+    rows = Seq(
+      AmendReasonSummary.row()
+    ).flatten
+  ).withCssClass("govuk-!-margin-bottom-9")
+
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getRegistrationData andThen validateRegistrationData) { implicit request =>
       Ok(
@@ -106,6 +112,7 @@ class CheckYourAnswersController @Inject() (
           organisationDetails(),
           contactDetails(),
           otherEntityDetails(),
+          amendReasonDetails,
           request.registration.registrationType,
           request.eclRegistrationReference
         )
@@ -132,6 +139,7 @@ class CheckYourAnswersController @Inject() (
       organisationDetails(),
       contactDetails(),
       otherEntityDetails(),
+      amendReasonDetails(),
       request.registration.registrationType,
       request.eclRegistrationReference
     )
@@ -220,6 +228,7 @@ class CheckYourAnswersController @Inject() (
     val organisation = organisationDetails(LiabilityYearSummary.row())
     val contact      = contactDetails()
     val otherEntity  = otherEntityDetails()
+    val amendReason  = amendReasonDetails()
 
     registrationType match {
       case Some(Amendment) =>
@@ -228,7 +237,11 @@ class CheckYourAnswersController @Inject() (
             ViewUtils.formatLocalDate(date),
             eclDetails(),
             organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
-            contact.copy(rows = contact.rows.map(_.copy(actions = None)))
+            contact.copy(rows = contact.rows.map(_.copy(actions = None))),
+            amendReason.copy(
+              rows = amendReason.rows.map(_.copy(actions = None)),
+              attributes = Map("id" -> "amendReason")
+            )
           ).toString()
         )
       case _               =>
@@ -237,7 +250,9 @@ class CheckYourAnswersController @Inject() (
             ViewUtils.formatLocalDate(date),
             organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
             contact.copy(rows = contact.rows.map(_.copy(actions = None))),
-            otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None)))
+            otherEntity.copy(
+              rows = otherEntity.rows.map(_.copy(actions = None))
+            )
           ).toString()
         )
     }

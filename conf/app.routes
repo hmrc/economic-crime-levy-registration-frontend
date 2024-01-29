@@ -211,3 +211,8 @@ GET         /what-is-your-utr                                                   
 POST        /what-is-your-utr                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrController.onSubmit(mode: Mode = NormalMode)
 GET         /check-answer/what-is-your-utr                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrController.onPageLoad(mode: Mode = CheckMode)
 POST        /check-answer/what-is-your-utr                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.UtrController.onSubmit(mode: Mode = CheckMode)
+
+GET         /why-are-you-amending-your-registration                             uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendReasonController.onPageLoad(mode: Mode = NormalMode)
+POST        /why-are-you-amending-your-registration                             uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendReasonController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/why-are-you-amending-your-registration               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendReasonController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/why-are-you-amending-your-registration               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendReasonController.onSubmit(mode: Mode = CheckMode)

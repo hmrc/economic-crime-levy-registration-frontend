@@ -22,7 +22,9 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterEach, EitherValues, OptionValues, TryValues}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc._
 import play.api.test.Helpers.{stubBodyParser, stubControllerComponents}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}

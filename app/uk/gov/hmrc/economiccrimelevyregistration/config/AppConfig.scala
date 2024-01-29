@@ -82,6 +82,7 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val soleTraderBvEnabled: Boolean                        = configuration.get[Boolean]("features.soleTraderBvEnabled")
   val enrolmentStoreProxyStubReturnsEclReference: Boolean =
     configuration.get[Boolean]("features.enrolmentStoreProxyStubReturnsEclReference")
+  val getSubscriptionEnabled: Boolean                     = configuration.get[Boolean]("features.getSubscriptionEnabled")
 
   val enrolmentStoreProxyBaseUrl: String = servicesConfig.baseUrl("enrolment-store-proxy")
 
@@ -90,4 +91,5 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val emailBaseUrl: String = servicesConfig.baseUrl("email")
 
   val amlProfessionalBodySupervisors: Seq[String] = configuration.get[Seq[String]]("amlProfessionalBodySupervisors")
+
 }

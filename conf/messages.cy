@@ -118,6 +118,11 @@ amlSupervisor.LawSociety = Cymdeithas y Cyfreithwyr
 amlSupervisor.LawSocietyOfNorthernIreland = Cymdeithas Cyfreithwyr Gogledd Iwerddon
 amlSupervisor.LawSocietyOfScotland = Cymdeithas Cyfreithwyr yr Alban
 
+amendReason.title = Pam ydych chi'n gwneud cais i newid eich cofrestriad?
+amendReason.h1 = Pam ydych chi'n gwneud cais i newid eich cofrestriad?
+amendReason.p1 = Nodwch unrhyw wybodaeth sy’n berthnasol i’ch cais i ddiwygio’ch cofrestriad. Peidiwch â chynnwys gwybodaeth bersonol nac ariannol, megis eich rhif Yswiriant Gwladol neu fanylion eich cerdyn credyd.
+amendReason.error.required = Nodwch y rheswm dros wneud cais i newid eich cofrestriad
+
 relevantAp12Months.title = Cyfnod cyfrifyddu perthnasol
 relevantAp12Months.heading = Cyfnod cyfrifyddu perthnasol
 relevantAp12Months.p1 = Eich cyfnod cyfrifyddu perthnasol yw unrhyw gyfnod sy’n dod i ben yn ystod y flwyddyn ariannol. Mae’n seiliedig ar y cyfnod cyfrifyddu rydych yn ei ddefnyddio ar gyfer eich Ffurflen Dreth y Cwmni.
@@ -371,6 +376,8 @@ checkYourAnswers.overseasTaxIdentifier.label = Dynodydd treth tramor
 checkYourAnswers.eclDetails = Manylion ECL
 checkYourAnswers.eclReferenceNumber.label = Cyfeirnod ECL
 checkYourAnswers.liabilityDate.label = Dyddiad cychwyn atebolrwydd
+checkYourAnswers.amendReason.title = Rheswm dros ddiwygio
+checkYourAnswers.amendReason.label = Gwybodaeth ychwanegol
 
 submitted.title = Cofrestriad wedi’i gyflwyno
 submitted.heading = Cofrestriad wedi’i gyflwyno
