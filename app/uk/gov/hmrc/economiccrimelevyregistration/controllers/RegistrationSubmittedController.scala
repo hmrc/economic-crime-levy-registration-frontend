@@ -20,7 +20,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -33,7 +33,9 @@ class RegistrationSubmittedController @Inject() (
   authorise: AuthorisedActionWithoutEnrolmentCheck,
   view: RegistrationSubmittedView,
   outOfSessionRegistrationSubmittedView: OutOfSessionRegistrationSubmittedView,
-  sessionService: SessionService
+  sessionService: SessionService,
+  registrationAdditionalInfoService: RegistrationAdditionalInfoService,
+  registrationService: EclRegistrationService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -42,6 +44,8 @@ class RegistrationSubmittedController @Inject() (
 
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     (for {
+      _                    <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
+      _                    <- registrationService.deleteRegistration(request.internalId).asResponseError
       liabilityYear        <-
         sessionService.get(request.session, request.internalId, SessionKeys.LiabilityYear).asResponseError
       amlRegulatedActivity <-

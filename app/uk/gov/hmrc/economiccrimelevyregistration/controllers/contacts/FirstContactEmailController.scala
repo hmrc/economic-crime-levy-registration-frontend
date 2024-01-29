@@ -106,18 +106,23 @@ class FirstContactEmailController @Inject() (
             .copy(firstContactDetails =
               request.registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
             )
-
+          val updatedRegistration       = request.registration.copy(contacts = updatedContacts)
           (for {
-            _                  <-
-              sessionService
-                .upsert(SessionData(request.internalId, Map(SessionKeys.FirstContactEmailAddress -> email)))
-                .asResponseError
-            updatedRegistration = request.registration.copy(contacts = updatedContacts)
-            _                  <-
+            _ <-
               eclRegistrationService
                 .upsertRegistration(updatedRegistration)
                 .asResponseError
-          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+            _  =
+              sessionService
+                .upsert(SessionData(request.internalId, Map(SessionKeys.FirstContactEmailAddress -> email)))
+                .asResponseError
+          } yield updatedRegistration)
+            .convertToResult(mode, pageNavigator)
+            .map(
+              _.withSession(
+                request.session ++ Seq(SessionKeys.FirstContactEmailAddress -> email)
+              )
+            )
         }
       )
   }

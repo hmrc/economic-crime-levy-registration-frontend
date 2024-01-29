@@ -20,33 +20,46 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.RegistrationReceivedView
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegistrationReceivedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class RegistrationReceivedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithoutEnrolmentCheck,
-  view: RegistrationReceivedView
-) extends FrontendBaseController
+  view: RegistrationReceivedView,
+  sessionService: SessionService,
+  registrationAdditionalInfoService: RegistrationAdditionalInfoService,
+  registrationService: EclRegistrationService
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
+    extends FrontendBaseController
+    with BaseController
+    with ErrorHandler
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    val firstContactEmailAddress: Option[String]  = request.session.get(SessionKeys.FirstContactEmailAddress)
-    val secondContactEmailAddress: Option[String] = request.session.get(SessionKeys.SecondContactEmailAddress)
-    val amlRegulatedActivity: Option[String]      = request.session.get(SessionKeys.AmlRegulatedActivity)
-    val liabilityYear: Option[String]             = request.session.get(SessionKeys.LiabilityYear)
-    val transformedLiabilityYear                  = liabilityYear.map(value => LiabilityYear(value.toInt))
+  def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
+    (for {
+      _                                        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
+      _                                        <- registrationService.deleteRegistration(request.internalId).asResponseError
+      firstContactEmailAddress: Option[String]  = request.session.get(SessionKeys.FirstContactEmailAddress)
+      secondContactEmailAddress: Option[String] = request.session.get(SessionKeys.SecondContactEmailAddress)
+      amlRegulatedActivity: Option[String]      = request.session.get(SessionKeys.AmlRegulatedActivity)
+      liabilityYear: Option[String]             = request.session.get(SessionKeys.LiabilityYear)
+      transformedLiabilityYear                  = liabilityYear.map(value => LiabilityYear(value.toInt))
 
-    Ok(
-      view(
-        firstContactEmailAddress.getOrElse(""),
-        secondContactEmailAddress,
-        transformedLiabilityYear,
-        amlRegulatedActivity
-      )
+      registrationReceivedView = view(
+                                   firstContactEmailAddress.getOrElse(""),
+                                   secondContactEmailAddress,
+                                   transformedLiabilityYear,
+                                   amlRegulatedActivity
+                                 )
+    } yield registrationReceivedView).fold(
+      error => routeError(error),
+      registrationReceivedView => Ok(registrationReceivedView)
     )
   }
 }

@@ -23,9 +23,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactEmailFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactEmailPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactEmailView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -41,7 +41,8 @@ class SecondContactEmailController @Inject() (
   eclRegistrationService: EclRegistrationService,
   formProvider: SecondContactEmailFormProvider,
   pageNavigator: SecondContactEmailPageNavigator,
-  view: SecondContactEmailView
+  view: SecondContactEmailView,
+  sessionService: SessionService
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
@@ -106,10 +107,18 @@ class SecondContactEmailController @Inject() (
               request.registration.contacts.secondContactDetails.copy(emailAddress = Some(email))
             )
           val updatedRegistration       = request.registration.copy(contacts = updatedContacts)
+          val sessionData               = SessionData(request.internalId, Map(SessionKeys.SecondContactEmailAddress -> email))
 
           (for {
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+            _  = sessionService.upsert(sessionData)
+          } yield updatedRegistration)
+            .convertToResult(mode, pageNavigator)
+            .map(
+              _.withSession(
+                request.session ++ Seq(SessionKeys.SecondContactEmailAddress -> email)
+              )
+            )
         }
       )
   }

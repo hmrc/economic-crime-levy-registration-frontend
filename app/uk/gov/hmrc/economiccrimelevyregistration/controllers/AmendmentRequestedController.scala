@@ -20,7 +20,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendmentRequestedView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -33,7 +33,9 @@ class AmendmentRequestedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: AmendmentRequestedView,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  sessionService: SessionService
+  sessionService: SessionService,
+  registrationAdditionalInfoService: RegistrationAdditionalInfoService,
+  registrationService: EclRegistrationService
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with BaseController
@@ -41,6 +43,8 @@ class AmendmentRequestedController @Inject() (
 
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     (for {
+      _                        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
+      _                        <- registrationService.deleteRegistration(request.internalId).asResponseError
       firstContactEmailAddress <-
         sessionService.get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress).asResponseError
     } yield firstContactEmailAddress).fold(

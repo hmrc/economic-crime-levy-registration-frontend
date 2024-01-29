@@ -42,7 +42,25 @@ class SessionService @Inject() (sessionRetrievalConnector: SessionDataConnector)
           sessionData <- getSessionData(internalId)
           value       <- retrieveValueFromSessionData(sessionData, key)
         } yield value
+    }
 
+  def getOptional(session: Session, internalId: String, key: String)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, SessionError, Option[String]] =
+    Try {
+      session(key)
+    } match {
+      case Success(value) => EitherT.rightT(Some(value))
+      case Failure(_)     =>
+        EitherT[Future, SessionError, Option[String]] {
+          (for {
+            sessionData <- getSessionData(internalId)
+            value       <- retrieveValueFromSessionData(sessionData, key)
+          } yield value).fold(
+            err => Right(None),
+            value => Right(Some(value))
+          )
+        }
     }
 
   def upsert(sessionData: SessionData)(implicit

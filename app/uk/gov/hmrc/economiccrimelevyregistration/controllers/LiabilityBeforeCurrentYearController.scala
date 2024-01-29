@@ -80,23 +80,29 @@ class LiabilityBeforeCurrentYearController @Inject() (
               request.eclRegistrationReference
             )
 
-            liabilityYear.map { year =>
-              val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> year.toString)
-
-              sessionService.upsert(
-                SessionData(
-                  registration.internalId,
-                  liabilityYearSessionData
-                )
-              )
-            }
-
             additionalInfoService
               .upsert(info)
               .asResponseError
               .fold(
                 err => routeError(err),
-                _ => Redirect(navigateByMode(mode, registration, liableBeforeCurrentYear))
+                _ =>
+                  liabilityYear match {
+                    case Some(year) =>
+                      val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> year.toString)
+
+                      sessionService.upsert(
+                        SessionData(
+                          registration.internalId,
+                          liabilityYearSessionData
+                        )
+                      )
+
+                      Redirect(navigateByMode(mode, registration, liableBeforeCurrentYear)).withSession(
+                        request.session ++ Seq(SessionKeys.LiabilityYear -> year.toString)
+                      )
+                    case None       =>
+                      Redirect(navigateByMode(mode, registration, liableBeforeCurrentYear))
+                  }
               )
 
           }
@@ -165,5 +171,4 @@ class LiabilityBeforeCurrentYearController @Inject() (
       case Some(value) => Some(value.isNotCurrentFY)
       case _           => None
     }
-
 }

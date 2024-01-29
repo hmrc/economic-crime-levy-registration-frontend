@@ -19,13 +19,13 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import cats.data.EitherT
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Session}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
@@ -50,7 +50,8 @@ class CheckYourAnswersController @Inject() (
   view: CheckYourAnswersView,
   emailService: EmailService,
   otherRegistrationPdfView: OtherRegistrationPdfView,
-  amendRegistrationPdfView: AmendRegistrationPdfView
+  amendRegistrationPdfView: AmendRegistrationPdfView,
+  sessionService: SessionService
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
@@ -157,8 +158,6 @@ class CheckYourAnswersController @Inject() (
                     )
                     .asResponseError
       response <- registrationService.submitRegistration(request.internalId).asResponseError
-      _        <- registrationService.deleteRegistration(request.internalId).asResponseError
-      _        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
       _        <- sendEmail(registration, request.additionalInfo, response.eclReference).asResponseError
       email     = registration.contacts.firstContactDetails.emailAddress
     } yield (response, email)).fold(
@@ -172,16 +171,19 @@ class CheckYourAnswersController @Inject() (
             )
         }
 
-        val updatedSession = session ++ Seq(
+        val sessionWithFirstContactEmail = session ++ Seq(
           SessionKeys.FirstContactEmailAddress -> registration.contacts.firstContactDetails.emailAddress
             .getOrElse(throw new IllegalStateException("First contact email address not found in registration data"))
         )
 
-        Redirect(getNextPage(registration)).withSession(
-          registration.contacts.secondContactDetails.emailAddress.fold(updatedSession)(email =>
-            updatedSession ++ Seq(SessionKeys.SecondContactEmailAddress -> email)
+        val updatedSession =
+          registration.contacts.secondContactDetails.emailAddress.fold(sessionWithFirstContactEmail)(email =>
+            sessionWithFirstContactEmail ++ Seq(SessionKeys.SecondContactEmailAddress -> email)
           )
-        )
+
+        sessionService.upsert(SessionData(request.internalId, updatedSession.data))
+
+        Redirect(getNextPage(registration)).withSession(updatedSession)
       }
     )
   }

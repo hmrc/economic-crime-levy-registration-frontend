@@ -64,6 +64,7 @@ class AmlRegulatedActivityController @Inject() (
             carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity),
             registrationType = Some(Initial)
           )
+
           (for {
             _          <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
             sessionData =
@@ -74,7 +75,15 @@ class AmlRegulatedActivityController @Inject() (
             _           = sessionService
                             .upsert(sessionData)
                             .asResponseError
-          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+          } yield updatedRegistration)
+            .convertToResult(mode, pageNavigator)
+            .map(
+              _.withSession(
+                request.session ++ Seq(
+                  SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString
+                )
+              )
+            )
         }
       )
   }
