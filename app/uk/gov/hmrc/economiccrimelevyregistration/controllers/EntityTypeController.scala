@@ -69,19 +69,27 @@ class EntityTypeController @Inject() (
 
           auditService.sendEvent(event)
 
-          mode match {
-            case NormalMode => navigateInNormalMode(entityType)
-            case CheckMode  => navigateInCheckMode(entityType)
-          }
+          val updatedRegistration = cleanup(request.registration, entityType)
+
+          (for {
+            _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield updatedRegistration).foldF(
+            err => Future.successful(routeError(err)),
+            _ =>
+              mode match {
+                case NormalMode => navigateInNormalMode(entityType)
+                case CheckMode  => navigateInCheckMode(entityType)
+              }
+          )
         }
       )
   }
 
   private def navigateInNormalMode(newEntityType: EntityType)(implicit request: RegistrationDataRequest[_]) =
     if (EntityType.isOther(newEntityType)) {
-      upsertAndRedirectToBusinessNamePage(NormalMode, request.registration, newEntityType)
+      Future.successful(Redirect(routes.BusinessNameController.onPageLoad(NormalMode)))
     } else {
-      upsertRegistrationAndRedirectToGRS(NormalMode, request.registration, newEntityType)
+      redirectToGRS(NormalMode, newEntityType)
     }
 
   private def navigateInCheckMode(newEntityType: EntityType)(implicit request: RegistrationDataRequest[_]) = {
@@ -90,7 +98,7 @@ class EntityTypeController @Inject() (
     (sameEntityTypeAsPrevious, EntityType.isOther(newEntityType)) match {
       case (true, true)   => Future.successful(Redirect(routes.CheckYourAnswersController.onPageLoad()))
       case (false, true)  =>
-        upsertAndRedirectToBusinessNamePage(NormalMode, request.registration, newEntityType)
+        Future.successful(Redirect(routes.BusinessNameController.onPageLoad(CheckMode)))
       case (true, false)  =>
         (for {
           grsJourneyUrl <- eclRegistrationService.registerEntityType(newEntityType, NormalMode).asResponseError
@@ -98,48 +106,32 @@ class EntityTypeController @Inject() (
           err => routeError(err),
           url => Redirect(Call(GET, url))
         )
-      case (false, false) => upsertRegistrationAndRedirectToGRS(NormalMode, request.registration, newEntityType)
+      case (false, false) => redirectToGRS(CheckMode, newEntityType)
     }
   }
 
-  private def upsertAndRedirectToBusinessNamePage(mode: Mode, registration: Registration, newEntityType: EntityType)(
-    implicit request: RegistrationDataRequest[_]
-  ) = {
-    val updatedRegistration = cleanup(registration, newEntityType)
-    (for {
-      upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-    } yield upsertedRegistration).fold(
-      err => routeError(err),
-      _ => Redirect(routes.BusinessNameController.onPageLoad(mode))
-    )
-  }
-
-  private def upsertRegistrationAndRedirectToGRS(
+  private def redirectToGRS(
     mode: Mode,
-    registration: Registration,
     newEntityType: EntityType
-  )(implicit request: RegistrationDataRequest[_]) = {
-    val updatedRegistration = cleanup(registration, newEntityType)
+  )(implicit request: RegistrationDataRequest[_]) =
     (for {
-      _             <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
       grsJourneyUrl <- eclRegistrationService.registerEntityType(newEntityType, mode).asResponseError
     } yield grsJourneyUrl).fold(
       err => routeError(err),
       url => Redirect(Call(GET, url))
     )
-  }
 
   private def cleanup(
     registration: Registration,
-    entityType: EntityType
+    newEntityType: EntityType
   ) =
-    if (EntityType.isOther(entityType)) {
+    if (EntityType.isOther(newEntityType)) {
       dataCleanup.cleanupOtherEntityData(
-        registration.copy(entityType = Some(entityType))
+        registration.copy(entityType = Some(newEntityType))
       )
     } else {
       dataCleanup.cleanup(
-        registration.copy(entityType = Some(entityType))
+        registration.copy(entityType = Some(newEntityType))
       )
     }
 }
