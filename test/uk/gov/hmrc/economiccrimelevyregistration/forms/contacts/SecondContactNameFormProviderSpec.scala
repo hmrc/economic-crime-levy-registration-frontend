@@ -22,8 +22,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.NameM
 
 class SecondContactNameFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "secondContactNameOrError.error.required"
-  val lengthKey   = "secondContactNameOrError.error.length"
+  val requiredKey = "secondContactName.error.required"
+  val lengthKey   = "secondContactName.error.length"
 
   val form = new SecondContactNameFormProvider()()
 

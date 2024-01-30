@@ -61,7 +61,7 @@ class SecondContactNumberController @Inject() (
       name =>
         Ok(
           view(
-            form.prepare(request.registration.contacts.secondContactDetails.telephoneNumber),
+            form.prepare(request.registration.contacts.secondContactDetails.role),
             name,
             mode,
             request.registration.registrationType,

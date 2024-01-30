@@ -85,7 +85,7 @@ class ConfirmContactAddressController @Inject() (
           val cleanedUpRegistration = dataCleanup.cleanup(updatedRegistration)
 
           val modifiedRegistration =
-            if (cleanedUpRegistration.useRegisteredOfficeAddressAsContactAddress.contains(true)) {
+            if (useRegisteredOfficeAddressAsContactAddress) {
               cleanedUpRegistration.copy(
                 contactAddress = cleanedUpRegistration.grsAddressToEclAddress
               )

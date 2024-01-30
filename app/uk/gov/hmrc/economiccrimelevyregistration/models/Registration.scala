@@ -45,7 +45,7 @@ final case class Registration(
   registrationType: Option[RegistrationType]
 ) {
 
-  def grsAddressToEclAddress: Option[EclAddress] = {
+  val grsAddressToEclAddress: Option[EclAddress] = {
     val incorporatedEntityAddress: Option[IncorporatedEntityAddress] =
       (incorporatedEntityJourneyData, soleTraderEntityJourneyData, partnershipEntityJourneyData) match {
         case (Some(d), None, None) => Some(d.companyProfile.unsanitisedCHROAddress)
@@ -65,7 +65,7 @@ final case class Registration(
           region = address.region.map(_.trim),
           postCode = address.postal_code.map(_.trim),
           poBox = address.po_box.map(_.trim),
-          countryCode = "GB"
+          countryCode = "GB" //TODO - why is this hard coded?
         )
       }
     }

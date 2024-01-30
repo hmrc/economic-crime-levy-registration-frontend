@@ -56,7 +56,8 @@ class FirstContactNumberController @Inject() (
     } yield firstContactName).fold(
       _ =>
         Redirect(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid()
+          uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController
+            .answersAreInvalid() //TODO - routeError instead
         ),
       name =>
         Ok(
