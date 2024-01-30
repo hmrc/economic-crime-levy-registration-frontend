@@ -21,7 +21,7 @@ import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, DataValidationError}
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
 
 import javax.inject.{Inject, Singleton}
@@ -129,11 +129,11 @@ class EclRegistrationService @Inject() (
 
   def getRegistrationValidationErrors(
     internalId: String
-  )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, Unit] = {
-    EitherT {
+  )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, Option[DataValidationError]] =
+    EitherT[Future, DataRetrievalError, Option[DataValidationError]] {
       eclRegistrationConnector
         .getRegistrationValidationErrors(internalId)
-        .map(Right(_))
+        .map(str => Right(str.map(x => DataValidationError(x))))
         .recover {
           case error @ UpstreamErrorResponse(message, code, _, _)
               if UpstreamErrorResponse.Upstream5xxResponse
@@ -143,7 +143,6 @@ class EclRegistrationService @Inject() (
           case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
-  }
 
   def registerEntityType(
     entityType: EntityType,

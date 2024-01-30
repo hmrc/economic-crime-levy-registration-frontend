@@ -107,18 +107,26 @@ class CheckYourAnswersController @Inject() (
       registrationService
         .getRegistrationValidationErrors(request.internalId)
         .fold(
-          _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
-          _ =>
-            Ok(
-              view(
-                eclDetails(),
-                organisationDetails(),
-                contactDetails(),
-                otherEntityDetails(),
-                request.registration.registrationType,
-                request.eclRegistrationReference
+          x => {
+            println("ERROING 1111: " + x)
+            Redirect(routes.NotableErrorController.answersAreInvalid())
+          },
+          {
+            case Some(error) =>
+              println("ERROING: " + error.message)
+              Redirect(routes.NotableErrorController.answersAreInvalid())
+            case None        =>
+              Ok(
+                view(
+                  eclDetails(),
+                  organisationDetails(),
+                  contactDetails(),
+                  otherEntityDetails(),
+                  request.registration.registrationType,
+                  request.eclRegistrationReference
+                )
               )
-            )
+          }
         )
     }
 

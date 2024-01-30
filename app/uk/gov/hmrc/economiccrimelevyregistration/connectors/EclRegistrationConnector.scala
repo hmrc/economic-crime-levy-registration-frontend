@@ -57,10 +57,10 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
 
   def getRegistrationValidationErrors(
     internalId: String
-  )(implicit hc: HeaderCarrier): Future[Unit] =
+  )(implicit hc: HeaderCarrier): Future[Option[String]] =
     httpClient
       .get(url"$eclRegistrationUrl/registrations/$internalId/validation-errors")
-      .executeAndContinue
+      .executeAndDeserialiseOption[String]
 
   def submitRegistration(internalId: String)(implicit
     hc: HeaderCarrier
