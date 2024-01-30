@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantAp12MonthsDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.CancelRegistrationAmendmentFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.CancelRegistrationAmendmentView
+import uk.gov.hmrc.economiccrimelevyregistration.connectors._
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
+import uk.gov.hmrc.economiccrimelevyregistration.forms.{CancelRegistrationAmendmentFormProvider, RelevantAp12MonthsFormProvider}
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantAp12MonthsPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{CancelRegistrationAmendmentView, RelevantAp12MonthsView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -33,9 +36,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CancelRegistrationAmendmentController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  authorise: AuthorisedAction,
-  getReturnData: DataRetrievalAction,
-  registrationConnector: EclRegistrationConnector,
+  authorise: AuthorisedActionWithEnrolmentCheck,
+  getRegistrationData: DataRetrievalAction,
+  eclRegistrationConnector: EclRegistrationConnector,
   formProvider: CancelRegistrationAmendmentFormProvider,
   appConfig: AppConfig,
   view: CancelRegistrationAmendmentView
@@ -45,21 +48,24 @@ class CancelRegistrationAmendmentController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen getReturnData) { implicit request =>
+  def onPageLoad(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(view(form.prepare(None)))
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen getReturnData).async { implicit request =>
+  def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        cancelReturnAmendment =>
-          if (cancelReturnAmendment) {
-            registrationConnector.deleteRegistration(request.internalId).map(_ => Redirect(appConfig.yourEclAccountUrl))
+        cancelRegistrationAmendment =>
+          if (cancelRegistrationAmendment) {
+            eclRegistrationConnector
+              .deleteRegistration(request.internalId)
+              .map(_ => Redirect(appConfig.yourEclAccountUrl))
           } else {
             Future.successful(Redirect(routes.CheckYourAnswersController.onPageLoad()))
           }
       )
   }
+
 }

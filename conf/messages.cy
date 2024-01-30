@@ -617,7 +617,7 @@ otherEntityType.addUtr.error.length = Mae’n rhaid i Gyfeirnod Unigryw y Trethd
 
 otherEntityType.utr.question.label = A oes gennych Gyfeirnod Unigryw y Trethdalwr?
 
-cancelRegistrationAmendment.title = A ydych yn siŵr eich bod am ganslo’ch cais i ddiwygio’ch datganiad?
-cancelRegistrationAmendment.heading = A ydych yn siŵr eich bod am ganslo’ch cais i ddiwygio’ch datganiad?
+cancelRegistrationAmendment.title = Ydych chi'n siŵr eich bod am ganslo'ch cais i newid eich cofrestriad?
+cancelRegistrationAmendment.heading = Ydych chi'n siŵr eich bod am ganslo'ch cais i newid eich cofrestriad?
 cancelRegistrationAmendment.body = Bydd eich atebion yn cael eu dileu.
-cancelRegistrationAmendment.error.required = Dewiswch ‘Iawn’ os hoffech ganslo’ch cais i ddiwygio’ch datganiad
+cancelRegistrationAmendment.error.required = Dewiswch 'Iawn' os ydych yn dymuno canslo eich cais i newid eich cofrestriad
