@@ -19,15 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantAp12MonthsDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.CancelRegistrationAmendmentFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
-import uk.gov.hmrc.economiccrimelevyregistration.forms.{CancelRegistrationAmendmentFormProvider, RelevantAp12MonthsFormProvider}
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantAp12MonthsPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{CancelRegistrationAmendmentView, RelevantAp12MonthsView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.CancelRegistrationAmendmentView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
