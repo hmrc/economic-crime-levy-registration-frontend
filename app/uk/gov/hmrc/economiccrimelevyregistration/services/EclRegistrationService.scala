@@ -129,7 +129,7 @@ class EclRegistrationService @Inject() (
 
   def getRegistrationValidationErrors(
     internalId: String
-  )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, Unit] =
+  )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, Unit] = {
     EitherT {
       eclRegistrationConnector
         .getRegistrationValidationErrors(internalId)
@@ -143,6 +143,7 @@ class EclRegistrationService @Inject() (
           case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
+  }
 
   def registerEntityType(
     entityType: EntityType,

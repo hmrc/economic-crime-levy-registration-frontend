@@ -88,7 +88,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
                 _ =>
                   liabilityYear match {
                     case Some(year) =>
-                      val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> year.toString)
+                      val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> year.asString)
 
                       sessionService.upsert(
                         SessionData(
@@ -98,7 +98,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
                       )
 
                       Redirect(navigateByMode(mode, registration, liableBeforeCurrentYear)).withSession(
-                        request.session ++ Seq(SessionKeys.LiabilityYear -> year.toString)
+                        request.session ++ Seq(SessionKeys.LiabilityYear -> year.asString)
                       )
                     case None       =>
                       Redirect(navigateByMode(mode, registration, liableBeforeCurrentYear))

@@ -36,6 +36,7 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
   def getRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] =
     httpClient
       .get(url"$eclRegistrationUrl/registrations/$internalId")
+      .setHeader("Authorization" -> hc.authorization.get.value)
       .executeAndDeserialise[Registration]
 
   def upsertRegistration(registration: Registration)(implicit hc: HeaderCarrier): Future[Unit] =
@@ -66,5 +67,6 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
   ): Future[CreateEclSubscriptionResponse] =
     httpClient
       .post(url"$eclRegistrationUrl/submit-registration/$internalId")
+      .setHeader("Authorization" -> hc.authorization.get.value)
       .executeAndDeserialise[CreateEclSubscriptionResponse]
 }
