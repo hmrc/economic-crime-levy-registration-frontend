@@ -11,9 +11,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.CancelRegistrationAmendmentController.onPageLoad().url}" should {
-//    behave like authorisedActionWithEnrolmentCheckRoute(
-//      routes.CancelRegistrationAmendmentController.onPageLoad()
-//    )
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      routes.CancelRegistrationAmendmentController.onPageLoad()
+    )
 
     "respond with 200 status and the cancel registration view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -30,10 +30,10 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
     }
   }
 
-  s"POST ${routes.CancelRegistrationAmendmentController.onSubmit().url}" should {
-//    behave like authorisedActionWithEnrolmentCheckRoute(
-//      routes.CancelRegistrationAmendmentController.onSubmit()
-//    )
+  s"POST ${routes.CancelRegistrationAmendmentController.onSubmit().url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      routes.CancelRegistrationAmendmentController.onSubmit()
+    )
 
     "delete the registration when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()

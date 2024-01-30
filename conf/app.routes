@@ -217,5 +217,5 @@ POST        /why-are-you-amending-your-registration                             
 GET         /change-answer/why-are-you-amending-your-registration               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendReasonController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/why-are-you-amending-your-registration               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendReasonController.onSubmit(mode: Mode = CheckMode)
 
-GET         /cancel-registration-amendment 	                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.CancelRegistrationAmendmentController.onPageLoad()
-POST        /cancel-registration-amendment	                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.CancelRegistrationAmendmentController.onSubmit()
+GET         /cancel-registration        	                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.CancelRegistrationAmendmentController.onPageLoad()
+POST        /cancel-registration        	                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.CancelRegistrationAmendmentController.onSubmit()
