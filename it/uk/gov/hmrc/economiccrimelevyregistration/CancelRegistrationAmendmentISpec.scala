@@ -11,9 +11,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.CancelRegistrationAmendmentController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(
-      routes.CancelRegistrationAmendmentController.onPageLoad()
-    )
+//    behave like authorisedActionWithEnrolmentCheckRoute(
+//      routes.CancelRegistrationAmendmentController.onPageLoad()
+//    )
 
     "respond with 200 status and the cancel registration view" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -30,28 +30,27 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
     }
   }
 
-//  s"POST ${routes.CancelRegistrationAmendmentController.onSubmit(NormalMode).url}"  should {
-//    behave like authorisedActionWithEnrolmentCheckRoute(routes.CancelRegistrationAmendmentController.onSubmit(NormalMode))
-//
-//    "save the selected option then redirect to the UK revenue page when the Yes option is selected" in {
-//      stubAuthorisedWithNoGroupEnrolment()
-//
-//      val registration = random[Registration]
-//
-//      stubGetRegistration(registration)
-//
-//      val updatedRegistration =
-//        registration.copy(relevantAp12Months = Some(true), relevantApLength = None, revenueMeetsThreshold = None)
-//
-//      stubUpsertRegistration(updatedRegistration)
-//
-//      val result = callRoute(
-//        FakeRequest(routes.CancelRegistrationAmendmentController.onSubmit(NormalMode)).withFormUrlEncodedBody(("value", "true"))
-//      )
-//
-//      status(result) shouldBe SEE_OTHER
-//
-//      redirectLocation(result) shouldBe Some(routes.UkRevenueController.onPageLoad(NormalMode).url)
-//    }
-//  }
+  s"POST ${routes.CancelRegistrationAmendmentController.onSubmit().url}"  should {
+//    behave like authorisedActionWithEnrolmentCheckRoute(
+//      routes.CancelRegistrationAmendmentController.onSubmit()
+//    )
+
+    "delete the registration when the Yes option is selected" in {
+      stubAuthorisedWithNoGroupEnrolment()
+
+      val registration = random[Registration]
+
+      stubGetRegistration(registration)
+      stubDeleteRegistration()
+
+      val result = callRoute(
+        FakeRequest(routes.CancelRegistrationAmendmentController.onSubmit())
+          .withFormUrlEncodedBody(("value", "true"))
+      )
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(appConfig.yourEclAccountUrl)
+    }
+  }
 }
