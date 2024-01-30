@@ -30,7 +30,7 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
     }
   }
 
-  s"POST ${routes.CancelRegistrationAmendmentController.onSubmit().url}"  should {
+  s"POST ${routes.CancelRegistrationAmendmentController.onSubmit().url}" should {
 //    behave like authorisedActionWithEnrolmentCheckRoute(
 //      routes.CancelRegistrationAmendmentController.onSubmit()
 //    )
