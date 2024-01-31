@@ -25,7 +25,7 @@
         appConfig: AppConfig
 )
 
-@(email: String, eclReference: Option[String], address1: String, address2: String, address3: String, address4: String)(implicit request: Request[_], messages: Messages)
+@(email: String, eclReference: Option[String], addressLine1: String, addressLine2: String, addressLine3: String, addressLine4: String)(implicit request: Request[_], messages: Messages)
 
 
 @layout(
@@ -66,10 +66,10 @@
     <p class="govuk-body">@messages("amendmentRequested.body.address.heading")</p>
 
     <p class="gobuk-body">
-        @messages("amendmentRequested.body.address.line", address1)<br>
-        @messages("amendmentRequested.body.address.line", address2)<br>
-        @messages("amendmentRequested.body.address.line", address3)<br>
-        @messages("amendmentRequested.body.address.line", address4)
+        @messages("amendmentRequested.body.address.line", addressLine1)<br>
+        @messages("amendmentRequested.body.address.line", addressLine2)<br>
+        @messages("amendmentRequested.body.address.line", addressLine3)<br>
+        @messages("amendmentRequested.body.address.line", addressLine4)
     </p>
 
     <p class="govuk-body">@Html(messages("amendmentRequested.body.p7", messages("amendmentRequested.body.p7.link", appConfig.exitSurveyUrl)))</p>

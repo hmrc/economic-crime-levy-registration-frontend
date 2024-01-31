@@ -54,14 +54,16 @@ class AmendmentRequestedController @Inject() (
       .get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress)
       .map {
         case Some(firstContactEmailAddress) =>
-          Ok(view(
-            firstContactEmailAddress,
-            request.eclRegistrationReference,
-            getSessionData(SessionKeys.address1),
-            getSessionData(SessionKeys.address2),
-            getSessionData(SessionKeys.address3),
-            getSessionData(SessionKeys.address4)
-          ))
+          Ok(
+            view(
+              firstContactEmailAddress,
+              request.eclRegistrationReference,
+              getSessionData(SessionKeys.addressLine1),
+              getSessionData(SessionKeys.addressLine2),
+              getSessionData(SessionKeys.addressLine3),
+              getSessionData(SessionKeys.addressLine4)
+            )
+          )
         case None                           =>
           logger.error("Failed to retrieve first contact email address from session and database")
           InternalServerError
