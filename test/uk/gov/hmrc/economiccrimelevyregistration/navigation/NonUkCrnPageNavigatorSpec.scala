@@ -27,7 +27,7 @@ class NonUkCrnPageNavigatorSpec extends SpecBase {
 
   "nextPage" should {
     "return a call to the UTR type page in Normal mode" in forAll { (registration: Registration) =>
-      pageNavigator.nextPage(NormalMode, NavigationData(registration)) shouldBe
+      pageNavigator.nextPage(NormalMode, registration) shouldBe
         routes.UtrTypeController.onPageLoad(NormalMode)
     }
 
@@ -44,7 +44,7 @@ class NonUkCrnPageNavigatorSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }

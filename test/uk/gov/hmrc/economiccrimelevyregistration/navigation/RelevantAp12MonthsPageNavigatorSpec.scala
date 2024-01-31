@@ -30,7 +30,7 @@ class RelevantAp12MonthsPageNavigatorSpec extends SpecBase {
       (registration: Registration, mode: Mode) =>
         val updatedRegistration = registration.copy(relevantAp12Months = Some(true))
 
-        pageNavigator.nextPage(mode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
           routes.UkRevenueController.onPageLoad(mode)
     }
 
@@ -38,7 +38,7 @@ class RelevantAp12MonthsPageNavigatorSpec extends SpecBase {
       (registration: Registration, mode: Mode) =>
         val updatedRegistration = registration.copy(relevantAp12Months = Some(false))
 
-        pageNavigator.nextPage(mode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
           routes.RelevantApLengthController.onPageLoad(mode)
     }
   }

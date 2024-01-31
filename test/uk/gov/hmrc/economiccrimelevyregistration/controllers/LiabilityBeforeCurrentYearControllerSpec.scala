@@ -78,7 +78,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
             )
 
           when(mockAdditionalInfoService.upsert(any()))
-            .thenReturn(EitherT.fromEither[Future](Right()))
+            .thenReturn(EitherT.fromEither[Future](Righttest()))
 
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(

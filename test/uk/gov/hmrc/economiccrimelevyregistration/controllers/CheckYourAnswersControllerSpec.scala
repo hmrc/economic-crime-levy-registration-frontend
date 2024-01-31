@@ -26,13 +26,12 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.ValidRegistrationWithRegistrationType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidatedRegistrationAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
@@ -50,9 +49,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val pdfView                    = app.injector.instanceOf[OtherRegistrationPdfView]
   val amendPdfView               = app.injector.instanceOf[AmendRegistrationPdfView]
 
-  val mockEclRegistrationService: EclRegistrationService                       = mock[EclRegistrationService]
-  val mockEmailService: EmailService                                           = mock[EmailService]
-  val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockEmailService: EmailService                     = mock[EmailService]
+  val mockSessionService                                 = mock[SessionService]
 
   class TestContext(registrationData: Registration) {
     val controller = new CheckYourAnswersController(
@@ -60,12 +59,12 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationService,
-      mockRegistrationAdditionalInfoService,
       mcc,
       view,
       mockEmailService,
       pdfView,
-      amendPdfView
+      amendPdfView,
+      mockSessionService
     )
   }
 
@@ -194,9 +193,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
             .thenReturn(EitherT.fromEither[Future](Right()))
 
-          when(mockRegistrationAdditionalInfoService.delete(any())(any(), any()))
-            .thenReturn(EitherT.fromEither[Future](Right()))
-
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
           status(result)                                             shouldBe SEE_OTHER
@@ -215,7 +211,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           reset(mockEclRegistrationService)
           reset(mockEmailService)
-          reset(mockRegistrationAdditionalInfoService)
         }
     }
 
@@ -258,9 +253,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
             .thenReturn(EitherT.fromEither[Future](Right()))
 
-          when(mockRegistrationAdditionalInfoService.delete(any())(any(), any()))
-            .thenReturn(EitherT.fromEither[Future](Right()))
-
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
           status(result)                                             shouldBe SEE_OTHER
@@ -284,7 +276,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           reset(mockEclRegistrationService)
           reset(mockEmailService)
-          reset(mockRegistrationAdditionalInfoService)
         }
     }
 
@@ -329,9 +320,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
             .thenReturn(EitherT.fromEither[Future](Right()))
 
-          when(mockRegistrationAdditionalInfoService.delete(any())(any(), any()))
-            .thenReturn(EitherT.fromEither[Future](Right()))
-
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
           status(result)                                             shouldBe SEE_OTHER
@@ -350,7 +338,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           reset(mockEclRegistrationService)
           reset(mockEmailService)
-          reset(mockRegistrationAdditionalInfoService)
         }
     }
 
@@ -395,9 +382,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
             .thenReturn(EitherT.fromEither[Future](Right()))
 
-          when(mockRegistrationAdditionalInfoService.delete(any())(any(), any()))
-            .thenReturn(EitherT.fromEither[Future](Right()))
-
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
           status(result)                                             shouldBe SEE_OTHER
@@ -421,7 +405,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           reset(mockEclRegistrationService)
           reset(mockEmailService)
-          reset(mockRegistrationAdditionalInfoService)
         }
     }
 
@@ -458,9 +441,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
             .thenReturn(EitherT.fromEither[Future](Right()))
 
-          when(mockRegistrationAdditionalInfoService.delete(any())(any(), any()))
-            .thenReturn(EitherT.fromEither[Future](Right()))
-
           val result: IllegalStateException = intercept[IllegalStateException] {
             await(controller.onSubmit()(fakeRequest))
           }
@@ -477,7 +457,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           reset(mockEclRegistrationService)
           reset(mockEmailService)
-          reset(mockRegistrationAdditionalInfoService)
         }
     }
   }

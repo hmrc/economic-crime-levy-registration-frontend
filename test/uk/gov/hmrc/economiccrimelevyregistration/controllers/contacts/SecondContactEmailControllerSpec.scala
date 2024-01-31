@@ -29,9 +29,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.Email
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactEmailPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactEmailView
 
 import scala.concurrent.Future
@@ -43,10 +42,11 @@ class SecondContactEmailControllerSpec extends SpecBase {
   val form: Form[String]                           = formProvider()
 
   val pageNavigator: SecondContactEmailPageNavigator = new SecondContactEmailPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: NavigationData): Call = onwardRoute
+    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockSessionService                                 = mock[SessionService]
 
   class TestContext(registrationData: Registration) {
     val controller = new SecondContactEmailController(
@@ -56,7 +56,8 @@ class SecondContactEmailControllerSpec extends SpecBase {
       mockEclRegistrationService,
       formProvider,
       pageNavigator,
-      view
+      view,
+      mockSessionService
     )
   }
 

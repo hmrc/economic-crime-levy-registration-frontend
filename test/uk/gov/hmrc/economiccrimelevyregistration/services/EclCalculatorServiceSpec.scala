@@ -48,7 +48,7 @@ class EclCalculatorServiceSpec extends SpecBase {
         )
           .thenReturn(Future.successful(calculatedLiability.copy(amountDue = EclAmount(amount = 1))))
 
-        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration))
+        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
 
         result shouldBe Some(true)
     }
@@ -75,7 +75,7 @@ class EclCalculatorServiceSpec extends SpecBase {
         )
           .thenReturn(Future.successful(calculatedLiability.copy(amountDue = EclAmount(amount = 1))))
 
-        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration))
+        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
 
         result shouldBe Some(true)
     }
@@ -97,7 +97,7 @@ class EclCalculatorServiceSpec extends SpecBase {
         )
           .thenReturn(Future.successful(calculatedLiability.copy(amountDue = EclAmount(amount = 0))))
 
-        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration))
+        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
 
         result shouldBe Some(false)
     }
@@ -124,7 +124,7 @@ class EclCalculatorServiceSpec extends SpecBase {
         )
           .thenReturn(Future.successful(calculatedLiability.copy(amountDue = EclAmount(amount = 0))))
 
-        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration))
+        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
 
         result shouldBe Some(false)
     }

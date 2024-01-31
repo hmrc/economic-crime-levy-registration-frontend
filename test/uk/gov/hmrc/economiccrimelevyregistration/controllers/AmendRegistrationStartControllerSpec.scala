@@ -23,6 +23,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
 
@@ -71,7 +72,9 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
           any()
         )(any(), any())
       ).thenReturn(
-        EitherT.fromEither[Future](Left(RegistrationError.InternalUnexpectedError("", None)))
+        EitherT[Future, DataRetrievalError, Unit](
+          Future.successful(Left(DataRetrievalError.InternalUnexpectedError("", None)))
+        )
       )
 
       val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)

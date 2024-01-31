@@ -52,7 +52,7 @@ class DataRetrievalActionSpec extends SpecBase {
   "refine" should {
     "return internal server error if additional info cannot be retrieved" in forAll {
       (internalId: String, groupId: String, registration: Registration) =>
-        when(mockEclRegistrationService.getOrCreateRegistration(any()))
+        when(mockEclRegistrationService.getOrCreate(any()))
           .thenReturn(EitherT.fromEither[Future](Right(registration)))
 
         val error = "Error"
@@ -67,7 +67,8 @@ class DataRetrievalActionSpec extends SpecBase {
 
     "transform an AuthorisedRequest into a RegistrationDataRequest when data retrieval succeeds" in forAll {
       (internalId: String, groupId: String, registration: Registration, liabilityYear: LiabilityYear) =>
-        when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
+        when(mockEclRegistrationService.getOrCreate(any())(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Registration](Future.successful(Right(registration))))
 
         val info = RegistrationAdditionalInfo(
           registration.internalId,
@@ -76,7 +77,11 @@ class DataRetrievalActionSpec extends SpecBase {
         )
 
         when(mockRegistrationAdditionalInfoService.get(any())(any(), any()))
-          .thenReturn(EitherT.fromEither[Future](Right(info)))
+          .thenReturn(
+            EitherT[Future, DataRetrievalError, Option[RegistrationAdditionalInfo]](
+              Future.successful(Right(Some(info)))
+            )
+          )
 
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))

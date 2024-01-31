@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendm
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
@@ -45,7 +45,6 @@ class CheckYourAnswersController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   registrationService: EclRegistrationService,
-  registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
   emailService: EmailService,
@@ -107,13 +106,9 @@ class CheckYourAnswersController @Inject() (
       registrationService
         .getRegistrationValidationErrors(request.internalId)
         .fold(
-          x => {
-            println("ERROING 1111: " + x)
-            Redirect(routes.NotableErrorController.answersAreInvalid())
-          },
+          x => Redirect(routes.NotableErrorController.answersAreInvalid()),
           {
             case Some(error) =>
-              println("ERROING: " + error.message)
               Redirect(routes.NotableErrorController.answersAreInvalid())
             case None        =>
               Ok(

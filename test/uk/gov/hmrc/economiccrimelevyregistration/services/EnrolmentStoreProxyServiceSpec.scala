@@ -31,28 +31,21 @@ class EnrolmentStoreProxyServiceSpec extends SpecBase {
     "return true when the list of group enrolments contains the ECL enrolment" in forAll {
       (groupId: String, groupEnrolmentsWithEcl: GroupEnrolmentsResponseWithEcl) =>
         when(mockEnrolmentStoreProxyConnector.getEnrolmentsForGroup(any())(any()))
-          .thenReturn(Future.successful(Some(groupEnrolmentsWithEcl.groupEnrolmentsResponse)))
+          .thenReturn(Future.successful(groupEnrolmentsWithEcl.groupEnrolmentsResponse))
 
-        val result = await(service.getEclReferenceFromGroupEnrolment(groupId))
+        val result = await(service.getEclReferenceFromGroupEnrolment(groupId).value)
         result shouldBe Some(groupEnrolmentsWithEcl.eclReferenceNumber)
     }
 
     "return false when the list of group enrolments does not contain the ECL enrolment" in forAll {
       (groupId: String, groupEnrolmentsWithoutEcl: GroupEnrolmentsResponseWithoutEcl) =>
         when(mockEnrolmentStoreProxyConnector.getEnrolmentsForGroup(any())(any()))
-          .thenReturn(Future.successful(Some(groupEnrolmentsWithoutEcl.groupEnrolmentsResponse)))
+          .thenReturn(Future.successful(groupEnrolmentsWithoutEcl.groupEnrolmentsResponse))
 
-        val result = await(service.getEclReferenceFromGroupEnrolment(groupId))
+        val result = await(service.getEclReferenceFromGroupEnrolment(groupId).value)
         result shouldBe None
     }
 
-    "return false when there are no group enrolments returned" in forAll { groupId: String =>
-      when(mockEnrolmentStoreProxyConnector.getEnrolmentsForGroup(any())(any()))
-        .thenReturn(Future.successful(None))
-
-      val result = await(service.getEclReferenceFromGroupEnrolment(groupId))
-      result shouldBe None
-    }
   }
 
 }

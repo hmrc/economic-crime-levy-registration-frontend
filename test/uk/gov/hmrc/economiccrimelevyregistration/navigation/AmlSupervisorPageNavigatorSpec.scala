@@ -37,7 +37,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           registrationType = Some(Initial)
         )
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration, "", random[Boolean])) shouldBe
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
           routes.RegisterWithGcController.onPageLoad()
     }
 
@@ -48,7 +48,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           registrationType = Some(Initial)
         )
 
-        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration, "", random[Boolean])) shouldBe
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           routes.RegisterWithGcController.onPageLoad()
     }
 
@@ -60,7 +60,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
             registrationType = Some(Initial)
           )
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration, "", random[Boolean])) shouldBe
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
           routes.RegisterWithFcaController.onPageLoad()
     }
 
@@ -72,7 +72,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
             registrationType = Some(Initial)
           )
 
-        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration, "", random[Boolean])) shouldBe
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           routes.RegisterWithFcaController.onPageLoad()
     }
 
@@ -85,7 +85,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
         val updatedRegistration   =
           registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration, "", false)) shouldBe
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
           routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
     }
 
@@ -98,7 +98,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
         val updatedRegistration   =
           registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
-        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration, "", false)) shouldBe
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }
@@ -112,7 +112,7 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
       val updatedRegistration   =
         registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
-      pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration, "", true)) shouldBe
+      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
         routes.EntityTypeController.onPageLoad(NormalMode)
   }
 

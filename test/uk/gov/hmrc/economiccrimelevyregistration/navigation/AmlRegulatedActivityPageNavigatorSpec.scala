@@ -32,8 +32,8 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true), registrationType = Some(Amendment))
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
-          routes.AmlSupervisorController.onPageLoad(NormalMode, Amendment, false)
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+          routes.AmlSupervisorController.onPageLoad(NormalMode, Amendment)
     }
 
     "return a Call to the check your answers page from the AML regulated activity page in CheckMode when the 'Yes' option is selected" in forAll {
@@ -41,7 +41,7 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true), registrationType = Some(Initial))
 
-        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
 
@@ -50,8 +50,8 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false), registrationType = Some(Initial))
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
-          routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode)
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+          routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode)
     }
   }
 

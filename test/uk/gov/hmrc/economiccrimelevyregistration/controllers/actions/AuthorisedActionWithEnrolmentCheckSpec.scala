@@ -81,7 +81,7 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
         when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
           .thenReturn(EitherT.fromEither[Future](Left(EnrolmentStoreProxyError.InternalUnexpectedError("", None))))
 
-        when(mockEclRegistrationService.getOrCreateRegistration(ArgumentMatchers.eq(internalId)))
+        when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId)))
           .thenReturn(EitherT.fromEither[Future](Right(validRegistration)))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
@@ -119,7 +119,7 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
             )
           )
 
-        when(mockEclRegistrationService.getOrCreateRegistration(ArgumentMatchers.eq(internalId)))
+        when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId)))
           .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
@@ -151,7 +151,7 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
         when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
           .thenReturn(EitherT.fromEither[Future](Right(eclReferenceNumber)))
 
-        when(mockEclRegistrationService.getOrCreateRegistration(ArgumentMatchers.eq(internalId)))
+        when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId)))
           .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
@@ -180,7 +180,7 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
         when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
           .thenReturn(EitherT.fromEither[Future](Left(EnrolmentStoreProxyError.InternalUnexpectedError("", None))))
 
-        when(mockEclRegistrationService.getOrCreateRegistration(ArgumentMatchers.eq(internalId)))
+        when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId)))
           .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
@@ -208,7 +208,7 @@ class AuthorisedActionWithEnrolmentCheckSpec extends SpecBase {
             )
           )
 
-        when(mockEclRegistrationService.getOrCreateRegistration(ArgumentMatchers.eq(internalId)))
+        when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId)))
           .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)

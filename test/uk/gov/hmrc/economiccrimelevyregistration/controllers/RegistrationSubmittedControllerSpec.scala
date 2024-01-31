@@ -22,6 +22,7 @@ import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.SessionError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
@@ -216,17 +217,6 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           )(any())
         )
           .thenReturn(EitherT.fromEither[Future](Right(liabilityYear.asString)))
-
-        when(
-          mockSessionService.get(
-            ArgumentMatchers.eq(fakeRequest.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.AmlRegulatedActivity)
-          )(
-            any()
-          )
-        )
-          .thenReturn(EitherT.fromEither[Future](Right(amlRegulatedActivity)))
 
         val result: IllegalStateException = intercept[IllegalStateException] {
           await(controller.onPageLoad()(fakeRequest))

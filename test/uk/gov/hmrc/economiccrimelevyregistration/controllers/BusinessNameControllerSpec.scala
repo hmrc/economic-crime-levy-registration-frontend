@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.BusinessNameFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{BusinessNamePageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.BusinessNamePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.BusinessNameView
 

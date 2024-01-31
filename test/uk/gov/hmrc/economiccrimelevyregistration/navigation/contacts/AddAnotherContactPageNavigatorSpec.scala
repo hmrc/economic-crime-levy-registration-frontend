@@ -21,7 +21,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 
 class AddAnotherContactPageNavigatorSpec extends SpecBase {
 
@@ -32,7 +31,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(true)))
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
           contacts.routes.SecondContactNameController.onPageLoad(NormalMode)
     }
 
@@ -49,7 +48,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
           soleTraderEntityJourneyData = None
         )
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
           routes.ConfirmContactAddressController.onPageLoad(NormalMode)
     }
 

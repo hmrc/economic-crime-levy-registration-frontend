@@ -108,9 +108,6 @@ class IsUkAddressControllerSpec extends SpecBase {
           when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
             .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
-          when(mockEclRegistrationService.getAddressLookupUrl(any(), any()))
-            .thenReturn(EitherT.fromEither[Future](Right(onwardRoute.url)))
-
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", contactAddressIsUk.toString)))
 

@@ -68,13 +68,15 @@ class EmailServiceSpec extends SpecBase {
 
         val result: Unit =
           await(
-            service.sendRegistrationSubmittedEmails(
-              updatedContacts,
-              eclRegistrationReference,
-              entityType,
-              None,
-              None
-            )(hc, messages)
+            service
+              .sendRegistrationSubmittedEmails(
+                updatedContacts,
+                eclRegistrationReference,
+                entityType,
+                None,
+                None
+              )(hc, messages)
+              .value
           )
 
         result shouldBe ()
@@ -147,13 +149,15 @@ class EmailServiceSpec extends SpecBase {
 
         val result: Unit =
           await(
-            service.sendRegistrationSubmittedEmails(
-              updatedContacts,
-              eclRegistrationReference,
-              entityType,
-              None,
-              None
-            )(hc, messages)
+            service
+              .sendRegistrationSubmittedEmails(
+                updatedContacts,
+                eclRegistrationReference,
+                entityType,
+                None,
+                None
+              )(hc, messages)
+              .value
           )
 
         result shouldBe ()
@@ -171,13 +175,15 @@ class EmailServiceSpec extends SpecBase {
 
         val result = intercept[IllegalStateException] {
           await(
-            service.sendRegistrationSubmittedEmails(
-              Contacts.empty,
-              eclRegistrationReference,
-              entityType,
-              None,
-              None
-            )(hc, messages)
+            service
+              .sendRegistrationSubmittedEmails(
+                Contacts.empty,
+                eclRegistrationReference,
+                entityType,
+                None,
+                None
+              )(hc, messages)
+              .value
           )
         }
 

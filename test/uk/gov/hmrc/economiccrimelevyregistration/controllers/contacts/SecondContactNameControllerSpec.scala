@@ -29,7 +29,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.NameM
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNamePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNameView
@@ -43,7 +42,7 @@ class SecondContactNameControllerSpec extends SpecBase {
   val form: Form[String]                          = formProvider()
 
   val pageNavigator: SecondContactNamePageNavigator = new SecondContactNamePageNavigator() {
-    override protected def navigateInNormalMode(navigationData: NavigationData): Call = onwardRoute
+    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]

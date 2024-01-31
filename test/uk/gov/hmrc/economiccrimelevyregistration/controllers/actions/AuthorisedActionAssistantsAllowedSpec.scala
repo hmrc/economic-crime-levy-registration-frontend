@@ -78,7 +78,7 @@ class AuthorisedActionAssistantsAllowedSpec extends SpecBase {
             )
           )
 
-        when(mockEclRegistrationService.getOrCreateRegistration(any()))
+        when(mockEclRegistrationService.getOrCreate(any()))
           .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
 
         when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
@@ -121,7 +121,7 @@ class AuthorisedActionAssistantsAllowedSpec extends SpecBase {
             )
           )
 
-        when(mockEclRegistrationService.getOrCreateRegistration(any()))
+        when(mockEclRegistrationService.getOrCreate(any()))
           .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)

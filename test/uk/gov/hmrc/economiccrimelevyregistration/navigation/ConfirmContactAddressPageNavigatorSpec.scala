@@ -32,7 +32,7 @@ class ConfirmContactAddressPageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(false))
 
-        pageNavigator.nextPage(mode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
           routes.IsUkAddressController.onPageLoad(mode)
     }
 
@@ -50,7 +50,7 @@ class ConfirmContactAddressPageNavigatorSpec extends SpecBase {
           soleTraderEntityJourneyData = None
         )
 
-        pageNavigator.nextPage(mode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }

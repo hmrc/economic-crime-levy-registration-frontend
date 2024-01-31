@@ -40,7 +40,7 @@ class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
         routes.UtrController.onPageLoad(NormalMode)
     }
 
@@ -58,7 +58,7 @@ class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
           routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
     }
 
@@ -80,7 +80,7 @@ class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }

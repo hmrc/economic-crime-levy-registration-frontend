@@ -30,7 +30,7 @@ class CtUtrPageNavigatorSpec extends SpecBase {
       (validTrustRegistration: ValidTrustRegistration) =>
         pageNavigator.nextPage(
           NormalMode,
-          NavigationData(validTrustRegistration.registration)
+          validTrustRegistration.registration
         ) shouldBe routes.BusinessSectorController.onPageLoad(NormalMode)
     }
 
@@ -38,7 +38,7 @@ class CtUtrPageNavigatorSpec extends SpecBase {
       (registrationWithUnincorporatedAssociation: RegistrationWithUnincorporatedAssociation) =>
         pageNavigator.nextPage(
           NormalMode,
-          NavigationData(registrationWithUnincorporatedAssociation.registration)
+          registrationWithUnincorporatedAssociation.registration
         ) shouldBe routes.CtUtrPostcodeController.onPageLoad(NormalMode)
     }
   }

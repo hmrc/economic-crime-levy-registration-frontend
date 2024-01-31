@@ -31,7 +31,7 @@ class PartnershipNamePageNavigatorSpec extends SpecBase {
       (registration: Registration, partnershipName: String) =>
         val updatedRegistration: Registration = registration.copy(partnershipName = Some(partnershipName))
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe routes.BusinessSectorController
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.BusinessSectorController
           .onPageLoad(
             NormalMode
           )
@@ -43,7 +43,7 @@ class PartnershipNamePageNavigatorSpec extends SpecBase {
 
         pageNavigator.nextPage(
           CheckMode,
-          NavigationData(updatedRegistration)
+          updatedRegistration
         ) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
   }

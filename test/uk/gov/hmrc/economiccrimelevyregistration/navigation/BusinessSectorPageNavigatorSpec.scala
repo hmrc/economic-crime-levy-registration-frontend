@@ -30,7 +30,7 @@ class BusinessSectorPageNavigatorSpec extends SpecBase {
       (registration: Registration, businessSector: BusinessSector) =>
         val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
           contacts.routes.FirstContactNameController.onPageLoad(NormalMode)
     }
 
@@ -38,7 +38,7 @@ class BusinessSectorPageNavigatorSpec extends SpecBase {
       (registration: Registration, businessSector: BusinessSector) =>
         val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
 
-        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }

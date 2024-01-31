@@ -20,7 +20,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 
 class SecondContactNamePageNavigatorSpec extends SpecBase {
 
@@ -36,7 +35,7 @@ class SecondContactNamePageNavigatorSpec extends SpecBase {
             )
           )
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
           contacts.routes.SecondContactRoleController.onPageLoad(NormalMode)
     }
 
@@ -47,7 +46,7 @@ class SecondContactNamePageNavigatorSpec extends SpecBase {
             registration.contacts.copy(secondContactDetails = validContactDetails.copy(role = None))
           )
 
-        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           contacts.routes.SecondContactRoleController.onPageLoad(CheckMode)
     }
 
@@ -56,7 +55,7 @@ class SecondContactNamePageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(contacts = registration.contacts.copy(secondContactDetails = validContactDetails))
 
-        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }

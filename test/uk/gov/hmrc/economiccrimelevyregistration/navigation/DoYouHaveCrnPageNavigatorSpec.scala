@@ -44,7 +44,7 @@ class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
         nextPage(hasUkCrn)
     }
 
@@ -62,7 +62,7 @@ class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
 
@@ -78,7 +78,7 @@ class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
+      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
         routes.NonUkCrnController.onPageLoad(CheckMode)
     }
   }
@@ -92,7 +92,7 @@ class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
 
-    pageNavigator.nextPage(mode, NavigationData(updatedRegistration)) shouldBe
+    pageNavigator.nextPage(mode, updatedRegistration) shouldBe
       routes.NotableErrorController.answersAreInvalid()
   }
 }

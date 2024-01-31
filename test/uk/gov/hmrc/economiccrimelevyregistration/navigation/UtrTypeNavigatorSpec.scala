@@ -36,7 +36,7 @@ class UtrTypeNavigatorSpec extends SpecBase {
           case CtUtr => routes.CtUtrController.onPageLoad(NormalMode)
         }
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
           call
     }
 
@@ -48,7 +48,8 @@ class UtrTypeNavigatorSpec extends SpecBase {
           case Some(SaUtr) if otherEntityJourneyData.saUtr.isEmpty => routes.SaUtrController.onPageLoad(CheckMode)
           case _                                                   => routes.CheckYourAnswersController.onPageLoad()
         }
-        pageNavigator.nextPage(CheckMode, NavigationData(registration)) shouldBe
+
+        pageNavigator.nextPage(CheckMode, registration) shouldBe
           call
     }
   }

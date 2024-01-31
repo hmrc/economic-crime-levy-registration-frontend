@@ -21,7 +21,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
 
 class SecondContactNumberPageNavigatorSpec extends SpecBase {
 
@@ -45,7 +44,7 @@ class SecondContactNumberPageNavigatorSpec extends SpecBase {
             soleTraderEntityJourneyData = None
           )
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
           routes.ConfirmContactAddressController.onPageLoad(NormalMode)
     }
 
@@ -64,7 +63,7 @@ class SecondContactNumberPageNavigatorSpec extends SpecBase {
             soleTraderEntityJourneyData = None
           )
 
-        pageNavigator.nextPage(NormalMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
           routes.IsUkAddressController.onPageLoad(NormalMode)
     }
 
@@ -75,7 +74,7 @@ class SecondContactNumberPageNavigatorSpec extends SpecBase {
             contacts = registration.contacts.copy(secondContactDetails = validContactDetails)
           )
 
-        pageNavigator.nextPage(CheckMode, NavigationData(updatedRegistration)) shouldBe
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }

@@ -34,7 +34,7 @@ import scala.concurrent.Future
 class AddressLookupFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
   val mockRequestBuilder           = mock[RequestBuilder]
-  val connector                    = new AddressLookupFrontendConnectorImpl(appConfig, mockHttpClient)
+  val connector                    = new AddressLookupFrontendConnectorImpl(appConfig, mockHttpClient, config, actorSystem)
   val baseUrl                      = appConfig.addressLookupFrontendBaseUrl
 
   //when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any()))
