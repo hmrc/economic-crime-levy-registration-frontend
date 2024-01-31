@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, UtrPageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.UtrPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UtrView
 
@@ -41,9 +41,9 @@ class UtrControllerSpec extends SpecBase {
   override val appConfig: AppConfig = mock[AppConfig]
 
   val pageNavigator: UtrPageNavigator = new UtrPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: NavigationData): Call = onwardRoute
+    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
 
-    override protected def navigateInCheckMode(navigationData: NavigationData): Call = onwardRoute
+    override protected def navigateInCheckMode(navigationData: Registration): Call = onwardRoute
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]

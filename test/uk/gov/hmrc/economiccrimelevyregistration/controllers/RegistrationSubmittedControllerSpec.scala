@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 
 import scala.concurrent.Future
@@ -35,13 +35,17 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
   val outOfSessionRegistrationSubmittedView: OutOfSessionRegistrationSubmittedView =
     app.injector.instanceOf[OutOfSessionRegistrationSubmittedView]
   val mockSessionService: SessionService                                           = mock[SessionService]
+  val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService     = mock[RegistrationAdditionalInfoService]
+  val mockEclRegistrationService: EclRegistrationService                           = mock[EclRegistrationService]
 
   val controller = new RegistrationSubmittedController(
     mcc,
     fakeAuthorisedActionWithoutEnrolmentCheck("test-internal-id"),
     view,
     outOfSessionRegistrationSubmittedView,
-    mockSessionService
+    mockSessionService,
+    mockRegistrationAdditionalInfoService,
+    mockEclRegistrationService
   )
 
   "onPageLoad" should {

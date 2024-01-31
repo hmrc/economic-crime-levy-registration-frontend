@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.cleanup.ConfirmContactAddressDa
 import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{ConfirmContactAddressPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ConfirmContactAddressView
@@ -44,9 +44,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: ConfirmContactAddressPageNavigator = new ConfirmContactAddressPageNavigator() {
-    override protected def navigateInNormalMode(
-      navigationData: NavigationData
-    ): Call = onwardRoute
+    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
   }
 
   val dataCleanup: ConfirmContactAddressDataCleanup = new ConfirmContactAddressDataCleanup {

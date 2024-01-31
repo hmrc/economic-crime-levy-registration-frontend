@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantApLengthDataCle
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantApLengthFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, RelevantApLengthPageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantApLengthPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantApLengthView
 
@@ -44,7 +44,7 @@ class RelevantApLengthControllerSpec extends SpecBase {
 
   val pageNavigator: RelevantApLengthPageNavigator = new RelevantApLengthPageNavigator() {
     override protected def navigateInNormalMode(
-      navigationData: NavigationData
+      navigationData: Registration
     ): Call = onwardRoute
   }
 

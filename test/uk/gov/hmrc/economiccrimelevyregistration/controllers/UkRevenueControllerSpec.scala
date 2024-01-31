@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, UkRevenuePageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclCalculatorService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 
@@ -45,7 +45,7 @@ class UkRevenueControllerSpec extends SpecBase {
 
   val pageNavigator: UkRevenuePageNavigator =
     new UkRevenuePageNavigator() {
-      override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+      override protected def navigateInNormalMode(navigationData: Registration): Call =
         onwardRoute
     }
 

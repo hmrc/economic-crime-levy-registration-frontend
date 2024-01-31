@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.SaUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.arbRegistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, SaUtrPageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.SaUtrPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.SaUtrView
 
@@ -44,10 +44,10 @@ class SaUtrControllerSpec extends SpecBase {
   val SAUTR                                              = "0123456789"
 
   val pageNavigator: SaUtrPageNavigator = new SaUtrPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+    override protected def navigateInNormalMode(navigationData: Registration): Call =
       onwardRoute
 
-    override protected def navigateInCheckMode(navigationData: NavigationData): Call =
+    override protected def navigateInCheckMode(navigationData: Registration): Call =
       onwardRoute
   }
 

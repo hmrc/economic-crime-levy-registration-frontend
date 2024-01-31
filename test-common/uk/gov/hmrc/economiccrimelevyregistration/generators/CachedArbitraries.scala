@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddress
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.NotLiableReason.RevenueDoesNotMeetThreshold
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResponse
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailParameters
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationError
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 
 object CachedArbitraries extends EclTestData {
@@ -45,7 +45,7 @@ object CachedArbitraries extends EclTestData {
   implicit lazy val arbGrsCreateJourneyResponse: Arbitrary[GrsCreateJourneyResponse]                    = mkArb
   implicit lazy val arbGroupEnrolmentsResponse: Arbitrary[GroupEnrolmentsResponse]                      = mkArb
   implicit lazy val arbEclSubscriptionStatus: Arbitrary[EclSubscriptionStatus]                          = mkArb
-  implicit lazy val arbDataValidationErrors: Arbitrary[DataValidationErrors]                            = mkArb
+  implicit lazy val arbDataValidationError: Arbitrary[DataValidationError]                              = mkArb
   implicit lazy val arbAlfAddressData: Arbitrary[AlfAddressData]                                        = mkArb
   implicit lazy val arbCalculatedLiability: Arbitrary[CalculatedLiability]                              = mkArb
   implicit lazy val arbCalculateLiabilityRequest: Arbitrary[CalculateLiabilityRequest]                  = mkArb

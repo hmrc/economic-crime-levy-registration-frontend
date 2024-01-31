@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.base
 
+import akka.actor.ActorSystem
+import com.typesafe.config.Config
 import org.mockito.MockitoSugar
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -33,6 +35,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpVerbs.GET
 
@@ -63,6 +66,9 @@ trait SpecBase
   val appConfig: AppConfig                             = app.injector.instanceOf[AppConfig]
   val messages: Messages                               = messagesApi.preferred(fakeRequest)
   val bodyParsers: PlayBodyParsers                     = app.injector.instanceOf[PlayBodyParsers]
+  implicit val errorTemplate: ErrorTemplate            = app.injector.instanceOf[ErrorTemplate]
+  val config: Config                                   = app.injector.instanceOf[Config]
+  val actorSystem: ActorSystem                         = ActorSystem("actor")
 
   def fakeAuthorisedActionWithEnrolmentCheck(internalId: String)                                                     =
     new FakeAuthorisedActionWithEnrolmentCheck(internalId, bodyParsers)

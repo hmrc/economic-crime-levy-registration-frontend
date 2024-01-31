@@ -20,16 +20,14 @@ import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, Result}
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, NormalMode, Registration, RegistrationAdditionalInfo}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
-import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
 
@@ -39,19 +37,9 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
   val formProvider: LiabilityBeforeCurrentYearFormProvider = new LiabilityBeforeCurrentYearFormProvider()
   val form: Form[Boolean]                                  = formProvider()
 
-  val mockService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
-
-  val mockSessionService: SessionService = mock[SessionService]
-
-  val pageNavigator: LiabilityBeforeCurrentYearPageNavigator = new LiabilityBeforeCurrentYearPageNavigator(
-    mock[AuditConnector]
-  ) {
-    override def navigateInNormalMode(navigationData: NavigationData): Call =
-      onwardRoute
-
-    override def navigateInCheckMode(navigationData: NavigationData): Call =
-      onwardRoute
-  }
+  val mockAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
+  val mockSessionService: SessionService                           = mock[SessionService]
+  val mockAuditService: AuditService                               = mock[AuditService]
 
   class TestContext(registrationData: Registration) {
     val controller = new LiabilityBeforeCurrentYearController(
@@ -59,21 +47,21 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       formProvider,
-      mockService,
+      mockAdditionalInfoService,
       mockSessionService,
-      pageNavigator,
-      view
+      view,
+      mockAuditService
     )
   }
 
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
       new TestContext(registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = None)) {
-        val result: Future[Result] = controller.onPageLoad(true, NormalMode)(fakeRequest)
+        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode, true)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
       }
     }
   }
@@ -89,11 +77,11 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
               None
             )
 
-          when(mockService.upsert(any()))
+          when(mockAdditionalInfoService.upsert(any()))
             .thenReturn(EitherT.fromEither[Future](Right()))
 
           val result: Future[Result] =
-            controller.onSubmit(true, NormalMode)(
+            controller.onSubmit(NormalMode)(
               fakeRequest.withFormUrlEncodedBody(("value", liableBeforeCurrentYear.toString))
             )
 
@@ -101,21 +89,21 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
           redirectLocation(result) shouldBe Some(onwardRoute.url)
 
-          verify(mockService, times(1)).upsert(any())(any(), any())
+          verify(mockAdditionalInfoService, times(1)).upsert(any())(any(), any())
 
-          reset(mockService)
+          reset(mockAdditionalInfoService)
         }
     }
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
       new TestContext(registration) {
         val result: Future[Result]        =
-          controller.onSubmit(true, NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
+          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
         val formWithErrors: Form[Boolean] = form.bind(Map("value" -> ""))
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, NormalMode, true)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString
       }
     }
   }

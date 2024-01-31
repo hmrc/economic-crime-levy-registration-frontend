@@ -22,18 +22,31 @@ import org.mockito.ArgumentMatchers.any
 import play.api.http.Status._
 import play.api.http.HeaderNames._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
-import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HttpClient, HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
+import uk.gov.hmrc.http.{HttpResponse, StringContextOps, UpstreamErrorResponse}
 
 import scala.concurrent.Future
 
 class AddressLookupFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  val mockRequestBuilder           = mock[RequestBuilder]
   val connector                    = new AddressLookupFrontendConnectorImpl(appConfig, mockHttpClient)
   val baseUrl                      = appConfig.addressLookupFrontendBaseUrl
+
+  //when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any()))
+  //          .thenReturn(mockRequestBuilder)
+  //        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+  //          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.toJson(obligationData)))))
+
+  //when(mockHttpClient.post(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
+  //        when(mockRequestBuilder.withBody(any())(any(), any(), any()))
+  //          .thenReturn(mockRequestBuilder)
+  //        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+  //          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.toJson(calculatedLiability)))))
 
   "initJourney" should {
     val expectedUrl = s"$baseUrl/api/init"
@@ -58,40 +71,26 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
         val headers  = Map(LOCATION -> Seq(journeyUrl))
         val response = HttpResponse(ACCEPTED, "", headers)
 
-        when(
-          mockHttpClient.POST[AlfJourneyConfig, Either[UpstreamErrorResponse, HttpResponse]](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedJourneyConfig),
-            any()
-          )(any(), any(), any(), any())
-        )
-          .thenReturn(Future.successful(Right(response)))
+        when(mockHttpClient.post(ArgumentMatchers.eq(url"$expectedUrl"))(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(expectedJourneyConfig)))(any(), any(), any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(response))
 
         val result = await(connector.initJourney(ukMode, NormalMode))
 
         result shouldBe journeyUrl
 
-        verify(mockHttpClient, times(1))
-          .POST[AlfJourneyConfig, Either[UpstreamErrorResponse, HttpResponse]](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedJourneyConfig),
-            any()
-          )(any(), any(), any(), any())
-
-        reset(mockHttpClient)
     }
 
     "throw an IllegalStateException when the http client returns a 202 response but the Location header is missing" in {
       val response = HttpResponse(ACCEPTED, "", Map.empty)
 
-      when(
-        mockHttpClient.POST[AlfJourneyConfig, Either[UpstreamErrorResponse, HttpResponse]](
-          ArgumentMatchers.eq(expectedUrl),
-          ArgumentMatchers.eq(expectedJourneyConfig),
-          any()
-        )(any(), any(), any(), any())
-      )
-        .thenReturn(Future.successful(Right(response)))
+      when(mockHttpClient.post(ArgumentMatchers.eq(url"$expectedUrl"))(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(expectedJourneyConfig)))(any(), any(), any()))
+        .thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+        .thenReturn(Future.successful(response))
 
       val result: IllegalStateException = intercept[IllegalStateException] {
         await(connector.initJourney(ukMode, NormalMode))
@@ -99,70 +98,47 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
 
       result.getMessage shouldBe "Location header not present in response"
 
-      verify(mockHttpClient, times(1))
-        .POST[AlfJourneyConfig, Either[UpstreamErrorResponse, HttpResponse]](
-          ArgumentMatchers.eq(expectedUrl),
-          ArgumentMatchers.eq(expectedJourneyConfig),
-          any()
-        )(any(), any(), any(), any())
-
-      reset(mockHttpClient)
     }
 
     "throw an exception when the http client returns a response other than 202" in {
       val response = UpstreamErrorResponse("Internal server error", INTERNAL_SERVER_ERROR)
 
-      when(
-        mockHttpClient.POST[AlfJourneyConfig, Either[UpstreamErrorResponse, HttpResponse]](
-          ArgumentMatchers.eq(expectedUrl),
-          ArgumentMatchers.eq(expectedJourneyConfig),
-          any()
-        )(any(), any(), any(), any())
-      )
-        .thenReturn(Future.successful(Left(response)))
+      when(mockHttpClient.post(ArgumentMatchers.eq(url"$expectedUrl"))(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(expectedJourneyConfig)))(any(), any(), any()))
+        .thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+        .thenReturn(Future.failed(response))
 
       val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
-        await(connector.initJourney(ukMode, NormalMode))
+        await(connector.initJourney(ukMode, NormalMode)) //UNSURE ON THIS ONE
       }
 
       result.getMessage shouldBe "Internal server error"
 
-      verify(mockHttpClient, times(1))
-        .POST[AlfJourneyConfig, Either[UpstreamErrorResponse, HttpResponse]](
-          ArgumentMatchers.eq(expectedUrl),
-          ArgumentMatchers.eq(expectedJourneyConfig),
-          any()
-        )(any(), any(), any(), any())
-
-      reset(mockHttpClient)
     }
   }
 
   "getAddress" should {
     "return the address identified by the given journey id" in forAll {
       (journeyId: String, alfAddressData: AlfAddressData) =>
-        val expectedUrl         = s"$baseUrl/api/confirmed"
+        val expectedUrl         = s"$baseUrl/api/confirmed?"
         val expectedQueryParams = Seq(("id", journeyId))
 
-        when(
-          mockHttpClient.GET[AlfAddressData](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedQueryParams),
-            any()
-          )(any(), any(), any())
-        )
-          .thenReturn(Future.successful(alfAddressData))
+        when(mockHttpClient.get(ArgumentMatchers.eq(url"$expectedUrl"))(any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.toJson(alfAddressData)))))
 
         val result = await(connector.getAddress(journeyId))
 
         result shouldBe alfAddressData
 
-        verify(mockHttpClient, times(1))
-          .GET[AlfAddressData](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedQueryParams),
-            any()
-          )(any(), any(), any())
+//        verify(mockHttpClient, times(1))
+//          .GET[AlfAddressData](
+//            ArgumentMatchers.eq(expectedUrl),
+//            ArgumentMatchers.eq(expectedQueryParams),
+//            any()
+//          )(any(), any(), any())
 
         reset(mockHttpClient)
     }

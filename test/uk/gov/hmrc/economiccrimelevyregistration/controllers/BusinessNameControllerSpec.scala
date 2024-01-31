@@ -37,23 +37,17 @@ import scala.concurrent.Future
 
 class BusinessNameControllerSpec extends SpecBase {
 
-  val view: BusinessNameView                 = app.injector.instanceOf[BusinessNameView]
-  val formProvider: BusinessNameFormProvider = new BusinessNameFormProvider()
-  val form: Form[String]                     = formProvider()
-
-  val pageNavigator: BusinessNamePageNavigator = new BusinessNamePageNavigator(
-  ) {
-    override protected def navigateInNormalMode(
-      navigationData: NavigationData
-    ): Call = onwardRoute
-
-    override protected def navigateInCheckMode(
-      navigationData: NavigationData
-    ): Call = onwardRoute
-  }
-
+  val view: BusinessNameView                             = app.injector.instanceOf[BusinessNameView]
+  val formProvider: BusinessNameFormProvider             = new BusinessNameFormProvider()
+  val form: Form[String]                                 = formProvider()
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
   override val appConfig: AppConfig                      = mock[AppConfig]
+  val pageNavigator: BusinessNamePageNavigator           = new BusinessNamePageNavigator(
+  ) {
+    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+
+    override protected def navigateInCheckMode(registration: Registration): Call = onwardRoute
+  }
 
   class TestContext(registrationData: Registration) {
     val controller = new BusinessNameController(

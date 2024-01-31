@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{DoYouHaveUtrPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveUtrPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveUtrView
 
@@ -41,10 +41,10 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: DoYouHaveUtrPageNavigator = new DoYouHaveUtrPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+    override protected def navigateInNormalMode(registration: Registration): Call =
       onwardRoute
 
-    override protected def navigateInCheckMode(navigationData: NavigationData): Call =
+    override protected def navigateInCheckMode(registration: Registration): Call =
       onwardRoute
   }
 

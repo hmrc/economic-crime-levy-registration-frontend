@@ -63,7 +63,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       mockRegistrationAdditionalInfoService,
       mcc,
       view,
-      new FakeValidatedRegistrationAction(registrationData),
       mockEmailService,
       pdfView,
       amendPdfView

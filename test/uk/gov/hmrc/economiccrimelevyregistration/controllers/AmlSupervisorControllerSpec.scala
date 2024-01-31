@@ -29,10 +29,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration, RegistrationType}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{AmlSupervisorPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.economiccrimelevyregistration.services.AuditService
 
 import scala.concurrent.Future
 
@@ -44,14 +44,19 @@ class AmlSupervisorControllerSpec extends SpecBase {
   val form: Form[AmlSupervisor]                         = formProvider(appConfig)
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  val mockAuditConnector: AuditConnector                 = mock[AuditConnector]
-
-  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: NavigationData): Call =
-      onwardRoute
-  }
+  val mockAuditService: AuditService                     = mock[AuditService]
 
   implicit val arbAmlSupervisor: Arbitrary[AmlSupervisor] = arbAmlSupervisor(appConfig)
+
+  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator {
+    override protected def navigateInNormalMode(
+      navigationData: Registration
+    ): Call = onwardRoute
+
+    override protected def navigateInCheckMode(
+      navigationData: Registration
+    ): Call = onwardRoute
+  }
 
   class TestContext(registrationData: Registration) {
     val controller = new AmlSupervisorController(
@@ -63,8 +68,8 @@ class AmlSupervisorControllerSpec extends SpecBase {
       amendFormProvider,
       appConfig,
       pageNavigator,
-      mockAuditConnector,
-      view
+      view,
+      mockAuditService
     )
   }
 
@@ -75,7 +80,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode, Some(RegistrationType.Initial), false, None)(
+        contentAsString(result) shouldBe view(form, NormalMode, Some(RegistrationType.Initial), None)(
           fakeRequest,
           messages
         ).toString
@@ -93,7 +98,6 @@ class AmlSupervisorControllerSpec extends SpecBase {
             form.fill(amlSupervisor),
             NormalMode,
             Some(RegistrationType.Initial),
-            false,
             None
           )(
             fakeRequest,
@@ -120,7 +124,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
           }
 
           val result: Future[Result] =
-            controller.onSubmit(NormalMode, RegistrationType.Initial, false)(
+            controller.onSubmit(NormalMode, RegistrationType.Initial)(
               fakeRequest.withFormUrlEncodedBody(formData: _*)
             )
 
@@ -132,14 +136,14 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
       new TestContext(registration) {
-        val result: Future[Result]              = controller.onSubmit(NormalMode, RegistrationType.Initial, false)(
+        val result: Future[Result]              = controller.onSubmit(NormalMode, RegistrationType.Initial)(
           fakeRequest.withFormUrlEncodedBody(("value", ""))
         )
         val formWithErrors: Form[AmlSupervisor] = form.bind(Map("value" -> ""))
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, NormalMode, Some(RegistrationType.Initial), false, None)(
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode, Some(RegistrationType.Initial), None)(
           fakeRequest,
           messages
         ).toString

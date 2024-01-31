@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrPostcodeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{CtUtrPostcodePageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPostcodePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrPostcodeView
 
@@ -41,9 +41,9 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
   override val appConfig: AppConfig           = mock[AppConfig]
 
   val pageNavigator: CtUtrPostcodePageNavigator = new CtUtrPostcodePageNavigator() {
-    override protected def navigateInNormalMode(navigationData: NavigationData): Call = onwardRoute
+    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
 
-    override protected def navigateInCheckMode(navigationData: NavigationData): Call = onwardRoute
+    override protected def navigateInCheckMode(registration: Registration): Call = onwardRoute
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]

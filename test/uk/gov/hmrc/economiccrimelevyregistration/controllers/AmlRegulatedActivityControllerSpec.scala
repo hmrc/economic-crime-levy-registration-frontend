@@ -44,7 +44,10 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   val mockSessionService: SessionService                 = mock[SessionService]
 
   val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+    override protected def navigateInNormalMode(navigationData: Registration): Call =
+      onwardRoute
+
+    override protected def navigateInCheckMode(navigationData: Registration): Call =
       onwardRoute
   }
 

@@ -42,7 +42,7 @@ class PartnershipNameControllerSpec extends SpecBase {
   val form: Form[String]                        = formProvider()
 
   val pageNavigator: PartnershipNamePageNavigator = new PartnershipNamePageNavigator() {
-    override protected def navigateInNormalMode(navigationData: NavigationData): Call = onwardRoute
+    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]

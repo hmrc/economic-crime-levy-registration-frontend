@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.NonUkCrnFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, NonUkCrnPageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.NonUkCrnPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.NonUkCrnView
 
@@ -44,11 +44,11 @@ class NonUkCrnControllerSpec extends SpecBase {
   val pageNavigator: NonUkCrnPageNavigator = new NonUkCrnPageNavigator(
   ) {
     override protected def navigateInNormalMode(
-      navigationData: NavigationData
+      navigationData: Registration
     ): Call = onwardRoute
 
     override protected def navigateInCheckMode(
-      navigationData: NavigationData
+      navigationData: Registration
     ): Call = onwardRoute
   }
 

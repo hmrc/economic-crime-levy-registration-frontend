@@ -17,13 +17,12 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
-import org.mockito.ArgumentMatchers.{any, anyString}
+import org.mockito.ArgumentMatchers.any
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.RegistrationError
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
 
@@ -53,7 +52,7 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
         EitherT.fromEither[Future](Right())
       )
 
-      when(mockRegistrationService.getOrCreateRegistration(any()))
+      when(mockRegistrationService.getOrCreate(any()))
         .thenReturn(EitherT.fromEither(Right(registration)))
 
       val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
@@ -64,7 +63,7 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
     }
 
     "return Internal server error and the correct view" in forAll { registration: Registration =>
-      when(mockRegistrationService.getOrCreateRegistration(any()))
+      when(mockRegistrationService.getOrCreate(any()))
         .thenReturn(EitherT.fromEither[Future](Right(registration)))
 
       when(

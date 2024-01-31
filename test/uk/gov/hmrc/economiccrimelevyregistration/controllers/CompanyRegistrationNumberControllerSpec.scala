@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.CompanyRegistrationNumber
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{CompanyRegistrationNumberPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.CompanyRegistrationNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CompanyRegistrationNumberView
 
@@ -37,23 +37,17 @@ import scala.concurrent.Future
 
 class CompanyRegistrationNumberControllerSpec extends SpecBase {
 
-  val view: CompanyRegistrationNumberView                 = app.injector.instanceOf[CompanyRegistrationNumberView]
-  val formProvider: CompanyRegistrationNumberFormProvider = new CompanyRegistrationNumberFormProvider()
-  val form: Form[String]                                  = formProvider()
-
+  val view: CompanyRegistrationNumberView                   = app.injector.instanceOf[CompanyRegistrationNumberView]
+  val formProvider: CompanyRegistrationNumberFormProvider   = new CompanyRegistrationNumberFormProvider()
+  val form: Form[String]                                    = formProvider()
+  val mockEclRegistrationService: EclRegistrationService    = mock[EclRegistrationService]
+  override val appConfig: AppConfig                         = mock[AppConfig]
   val pageNavigator: CompanyRegistrationNumberPageNavigator = new CompanyRegistrationNumberPageNavigator(
   ) {
-    override protected def navigateInNormalMode(
-      navigationData: NavigationData
-    ): Call = onwardRoute
+    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
 
-    override protected def navigateInCheckMode(
-      navigationData: NavigationData
-    ): Call = onwardRoute
+    override protected def navigateInCheckMode(registration: Registration): Call = onwardRoute
   }
-
-  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  override val appConfig: AppConfig                      = mock[AppConfig]
 
   class TestContext(registrationData: Registration) {
     val controller = new CompanyRegistrationNumberController(

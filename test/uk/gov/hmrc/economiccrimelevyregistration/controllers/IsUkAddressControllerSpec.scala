@@ -28,8 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
 
 import scala.concurrent.Future
@@ -39,6 +38,7 @@ class IsUkAddressControllerSpec extends SpecBase {
   val view: IsUkAddressView                 = app.injector.instanceOf[IsUkAddressView]
   val formProvider: IsUkAddressFormProvider = new IsUkAddressFormProvider()
   val form: Form[Boolean]                   = formProvider()
+  val addressLookup: AddressLookupService   = mock[AddressLookupService]
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
@@ -49,7 +49,8 @@ class IsUkAddressControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationService,
       formProvider,
-      view
+      view,
+      addressLookup
     )
   }
 

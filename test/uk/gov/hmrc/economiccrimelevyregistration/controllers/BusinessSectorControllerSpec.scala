@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.BusinessSectorFormProvide
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{BusinessSectorPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.BusinessSectorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.BusinessSectorView
 
@@ -35,16 +35,18 @@ import scala.concurrent.Future
 
 class BusinessSectorControllerSpec extends SpecBase {
 
-  val view: BusinessSectorView                 = app.injector.instanceOf[BusinessSectorView]
-  val formProvider: BusinessSectorFormProvider = new BusinessSectorFormProvider()
-  val form: Form[BusinessSector]               = formProvider()
+  val view: BusinessSectorView                           = app.injector.instanceOf[BusinessSectorView]
+  val formProvider: BusinessSectorFormProvider           = new BusinessSectorFormProvider()
+  val form: Form[BusinessSector]                         = formProvider()
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: BusinessSectorPageNavigator = new BusinessSectorPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+    override protected def navigateInNormalMode(registration: Registration): Call =
+      onwardRoute
+
+    override protected def navigateInCheckMode(registration: Registration): Call =
       onwardRoute
   }
-
-  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   class TestContext(registrationData: Registration) {
     val controller = new BusinessSectorController(

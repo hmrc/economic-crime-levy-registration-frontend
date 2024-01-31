@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveCrnFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{DoYouHaveCrnPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveCrnPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveCrnView
 
@@ -41,10 +41,10 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: DoYouHaveCrnPageNavigator = new DoYouHaveCrnPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: NavigationData): Call =
+    override protected def navigateInNormalMode(registration: Registration): Call =
       onwardRoute
 
-    override protected def navigateInCheckMode(navigationData: NavigationData): Call =
+    override protected def navigateInCheckMode(registration: Registration): Call =
       onwardRoute
   }
 

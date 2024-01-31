@@ -21,17 +21,15 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, Result}
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NavigationData
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
 
@@ -41,23 +39,13 @@ class EntityTypeControllerSpec extends SpecBase {
   val formProvider: EntityTypeFormProvider = new EntityTypeFormProvider()
   val form: Form[EntityType]               = formProvider()
 
-  val pageNavigator: EntityTypePageNavigator = new EntityTypePageNavigator() {
-    override protected def navigateInNormalMode(
-      navigationData: NavigationData
-    ): Call = onwardRoute
-
-    override protected def navigateInCheckMode(
-      navigationData: NavigationData
-    ): Call = onwardRoute
-  }
-
   val dataCleanup: EntityTypeDataCleanup = new EntityTypeDataCleanup {
     override def cleanup(registration: Registration): Registration                = registration
     override def cleanupOtherEntityData(registration: Registration): Registration = registration
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  val mockAuditConnector: AuditConnector                 = mock[AuditConnector]
+  val mockAuditConnector: AuditService                   = mock[AuditService]
 
   class TestContext(registrationData: Registration) {
     val controller = new EntityTypeController(
@@ -66,7 +54,6 @@ class EntityTypeControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationService,
       formProvider,
-      pageNavigator,
       dataCleanup,
       mockAuditConnector,
       view
@@ -108,7 +95,7 @@ class EntityTypeControllerSpec extends SpecBase {
           when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
             .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
-          when(mockEclRegistrationService.registerEntityType(any(), any(), any()))
+          when(mockEclRegistrationService.registerEntityType(any(), any()))
             .thenReturn(EitherT.fromEither[Future](Right(onwardRoute.url)))
 
           val result: Future[Result] =
@@ -118,7 +105,7 @@ class EntityTypeControllerSpec extends SpecBase {
 
           redirectLocation(result) shouldBe Some(onwardRoute.url)
 
-          verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
+          verify(mockAuditConnector, times(1)).sendEvent(any())(any())
 
           reset(mockAuditConnector)
         }

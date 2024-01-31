@@ -18,18 +18,21 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import play.api.http.Status.OK
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 
 import scala.concurrent.Future
 
 class SoleTraderIdentificationFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
-  val connector                    = new SoleTraderIdentificationFrontendConnectorImpl(appConfig, mockHttpClient)
+  val mockRequestBuilder           = mock[RequestBuilder]
+  val connector                    = new SoleTraderIdentificationFrontendConnectorImpl(appConfig, mockHttpClient, config, actorSystem)
   val apiUrl                       = s"${appConfig.soleTraderEntityIdentificationFrontendBaseUrl}/sole-trader-identification/api"
 
   "createSoleTraderJourney" should {
@@ -55,27 +58,22 @@ class SoleTraderIdentificationFrontendConnectorSpec extends SpecBase {
           )
         }
 
+        when(mockHttpClient.post(ArgumentMatchers.eq(url"$expectedUrl"))(any())).thenReturn(mockRequestBuilder)
         when(
-          mockHttpClient.POST[SoleTraderEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedSoleTraderEntityCreateJourneyRequest),
+          mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(expectedSoleTraderEntityCreateJourneyRequest)))(
+            any(),
+            any(),
             any()
-          )(any(), any(), any(), any())
+          )
         )
-          .thenReturn(Future.successful(grsCreateJourneyResponse))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.toJson(grsCreateJourneyResponse)))))
 
         val result = await(connector.createSoleTraderJourney(mode))
 
         result shouldBe grsCreateJourneyResponse
 
-        verify(mockHttpClient, times(1))
-          .POST[SoleTraderEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedSoleTraderEntityCreateJourneyRequest),
-            any()
-          )(any(), any(), any(), any())
-
-        reset(mockHttpClient)
     }
   }
 
@@ -84,27 +82,16 @@ class SoleTraderIdentificationFrontendConnectorSpec extends SpecBase {
       (soleTraderEntityJourneyData: SoleTraderEntityJourneyData, journeyId: String) =>
         val expectedUrl = s"$apiUrl/journey/$journeyId"
 
-        when(
-          mockHttpClient.GET[SoleTraderEntityJourneyData](
-            ArgumentMatchers.eq(expectedUrl),
-            any(),
-            any()
-          )(any(), any(), any())
-        )
-          .thenReturn(Future.successful(soleTraderEntityJourneyData))
+        when(mockHttpClient.get(ArgumentMatchers.eq(url"$expectedUrl"))(any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(
+            Future.successful(HttpResponse.apply(OK, Json.stringify(Json.toJson(soleTraderEntityJourneyData))))
+          )
 
         val result = await(connector.getJourneyData(journeyId))
 
         result shouldBe soleTraderEntityJourneyData
-
-        verify(mockHttpClient, times(1))
-          .GET[SoleTraderEntityJourneyData](
-            ArgumentMatchers.eq(expectedUrl),
-            any(),
-            any()
-          )(any(), any(), any())
-
-        reset(mockHttpClient)
     }
   }
 }

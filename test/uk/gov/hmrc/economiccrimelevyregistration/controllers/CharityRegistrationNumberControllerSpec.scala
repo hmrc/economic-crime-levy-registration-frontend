@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.CharityRegistrationNumber
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CharityRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{CharityRegistrationNumberPageNavigator, NavigationData}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.CharityRegistrationNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CharityRegistrationNumberView
 
@@ -41,19 +41,10 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
   val formProvider: CharityRegistrationNumberFormProvider = new CharityRegistrationNumberFormProvider()
   val form: Form[String]                                  = formProvider()
 
-  val pageNavigator: CharityRegistrationNumberPageNavigator = new CharityRegistrationNumberPageNavigator(
-  ) {
-    override protected def navigateInNormalMode(
-      navigationData: NavigationData
-    ): Call = onwardRoute
-
-    override protected def navigateInCheckMode(
-      navigationData: NavigationData
-    ): Call = onwardRoute
-  }
-
-  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  override val appConfig: AppConfig                      = mock[AppConfig]
+  val mockEclRegistrationService: EclRegistrationService                                 = mock[EclRegistrationService]
+  val mockCharityRegistrationNumberPageNavigator: CharityRegistrationNumberPageNavigator =
+    mock[CharityRegistrationNumberPageNavigator]
+  override val appConfig: AppConfig                                                      = mock[AppConfig]
 
   class TestContext(registrationData: Registration) {
     val controller = new CharityRegistrationNumberController(
@@ -62,7 +53,7 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationService,
       formProvider,
-      pageNavigator,
+      mockCharityRegistrationNumberPageNavigator,
       view
     )
   }

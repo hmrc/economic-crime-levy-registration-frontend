@@ -31,7 +31,7 @@ import scala.concurrent.Future
 
 class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
-  val connector                    = new PartnershipIdentificationFrontendConnectorImpl(appConfig, mockHttpClient)
+  val connector                    = new PartnershipIdentificationFrontendConnectorImpl(appConfig, mockHttpClient, config, actorSystem)
   val apiUrl                       = s"${appConfig.partnershipEntityIdentificationFrontendBaseUrl}/partnership-identification/api"
 
   "createPartnershipJourney" should {

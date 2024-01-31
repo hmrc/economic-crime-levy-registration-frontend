@@ -84,11 +84,4 @@ class IsUkAddressController @Inject() (
         }
       )
   }
-
-//  private def upsertAndRedirect()
-//  private def navigate(registration: Registration, url: String, mode: Mode): Call =
-//    registration.contactAddressIsUk match {
-//      case Some(ukMode) => Call(GET, url)
-//      case _            => routes.NotableErrorController.answersAreInvalid()
-//    }
 }

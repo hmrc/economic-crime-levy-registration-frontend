@@ -38,6 +38,7 @@ class EclRegistrationService @Inject() (
 )(implicit
   ec: ExecutionContext
 ) {
+
   def getOrCreate(
     internalId: String
   )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, Registration] =

@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UtrTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{NavigationData, UtrTypePageNavigator}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.UtrTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UtrTypeView
 
@@ -41,11 +41,11 @@ class UtrTypeControllerSpec extends SpecBase {
 
   val pageNavigator: UtrTypePageNavigator = new UtrTypePageNavigator() {
     override protected def navigateInNormalMode(
-      navigationData: NavigationData
+      navigationData: Registration
     ): Call = onwardRoute
 
     override protected def navigateInCheckMode(
-      navigationData: NavigationData
+      navigationData: Registration
     ): Call = onwardRoute
   }
 
