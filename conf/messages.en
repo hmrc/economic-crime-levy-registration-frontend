@@ -577,6 +577,8 @@ amendmentRequested.body.p3 = You will not receive an email or notification from 
 amendmentRequested.body.p4 = When you complete your yearly return, you will need to tell us:
 amendmentRequested.body.p5 = We will review your answers. We may contact you using the details you provided if we need any more information. This process will take up to 15 working days.
 amendmentRequested.body.p6 = We will send you a letter once we''ve amended your registration.
+amendmentRequested.body.address.heading = We will send the letter to:
+amendmentRequested.body.address.line = {0}
 amendmentRequested.body.p7  = {0} (takes 30 seconds)
 amendmentRequested.body.p7.link = <a href="{0}" class="govuk-link">What did you think of this service?</a>
 amendmentRequested.list.b1 = the relevant accounting period for your organisation

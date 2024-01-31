@@ -18,15 +18,17 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.Logging
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Session}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendmentRequestedView
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AmendmentRequestedController @Inject() (
@@ -39,12 +41,27 @@ class AmendmentRequestedController @Inject() (
     with I18nSupport
     with Logging {
 
+  def getSessionData(key: String)(implicit
+    request: AuthorisedRequest[AnyContent]
+  ): String =
+    request.session.get(key) match {
+      case Some(value) => value
+      case None        => ""
+    }
+
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     sessionService
       .get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress)
       .map {
         case Some(firstContactEmailAddress) =>
-          Ok(view(firstContactEmailAddress, request.eclRegistrationReference))
+          Ok(view(
+            firstContactEmailAddress,
+            request.eclRegistrationReference,
+            getSessionData(SessionKeys.address1),
+            getSessionData(SessionKeys.address2),
+            getSessionData(SessionKeys.address3),
+            getSessionData(SessionKeys.address4)
+          ))
         case None                           =>
           logger.error("Failed to retrieve first contact email address from session and database")
           InternalServerError

@@ -198,7 +198,23 @@ class CheckYourAnswersController @Inject() (
 
       val updatedSession = session ++ Seq(
         SessionKeys.FirstContactEmailAddress -> registration.contacts.firstContactDetails.emailAddress
-          .getOrElse(throw new IllegalStateException("First contact email address not found in registration data"))
+          .getOrElse(throw new IllegalStateException("First contact email address not found in registration data")),
+        SessionKeys.address1                 -> registration.contactAddress
+          .getOrElse(throw new IllegalStateException("Contact address not found in registration data"))
+          .addressLine1
+          .getOrElse(""),
+        SessionKeys.address2                 -> registration.contactAddress
+          .getOrElse(throw new IllegalStateException("Contact address not found in registration data"))
+          .addressLine2
+          .getOrElse(""),
+        SessionKeys.address3                 -> registration.contactAddress
+          .getOrElse(throw new IllegalStateException("Contact address not found in registration data"))
+          .addressLine3
+          .getOrElse(""),
+        SessionKeys.address4                 -> registration.contactAddress
+          .getOrElse(throw new IllegalStateException("Contact address not found in registration data"))
+          .addressLine4
+          .getOrElse("")
       )
 
       Redirect((registration.entityType, registration.registrationType) match {
