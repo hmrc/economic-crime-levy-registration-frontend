@@ -55,8 +55,7 @@ trait BaseConnector {
         .flatMap { response =>
           response.status match {
             case OK | CREATED | ACCEPTED => response.as[T]
-            case _                       =>
-              response.error
+            case _                       => response.error
           }
         }
 
@@ -65,9 +64,8 @@ trait BaseConnector {
         .execute[HttpResponse]
         .flatMap { response =>
           response.status match {
-            case OK | CREATED | ACCEPTED => response.asOption[T]
-            case _                       =>
-              response.error
+            case OK | CREATED | ACCEPTED => response.asOption[T] // DO WE NEED TO ADD '| NO_CONTENT' HERE??
+            case _                       => response.error
           }
         }
 

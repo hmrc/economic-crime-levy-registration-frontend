@@ -86,22 +86,16 @@ class FirstContactEmailControllerSpec extends SpecBase {
         }
     }
 
-    "throw an IllegalStateException when there is no first contact name in the registration data" in forAll {
-      (
-        registration: Registration
-      ) =>
-        val updatedRegistration = registration.copy(
-          contacts = Contacts.empty
-        )
+    "redirect to AnswersAreInvalid Page when there is no first contact name in the registration data" in forAll {
+      (registration: Registration) =>
+        val updatedRegistration = registration.copy(contacts = Contacts.empty)
 
-        new TestContext(
-          updatedRegistration
-        ) {
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onPageLoad(NormalMode)(fakeRequest))
-          }
+        new TestContext(updatedRegistration) {
+          val result: Result = await(controller.onPageLoad(NormalMode)(fakeRequest))
 
-          result.getMessage shouldBe "No first contact name found in registration data"
+          result shouldBe Redirect(
+            uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid()
+          )
         }
     }
 
@@ -159,7 +153,7 @@ class FirstContactEmailControllerSpec extends SpecBase {
         )
           .thenReturn(EitherT.fromEither[Future](Right()))
 
-        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
           .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
         val result: Future[Result] =

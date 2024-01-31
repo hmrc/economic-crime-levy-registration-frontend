@@ -30,6 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.Email
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
@@ -41,6 +42,7 @@ import uk.gov.hmrc.time.TaxYear
 
 import java.time.LocalDate
 import java.util.Base64
+import scala.concurrent
 import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends SpecBase {
@@ -177,21 +179,24 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         )
 
         new TestContext(updatedRegistration) {
-          when(mockEclRegistrationService.upsertRegistration(any()))
-            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(updatedRegistration))))
 
           when(
-            mockEclRegistrationService.submitRegistration(
-              ArgumentMatchers.eq(updatedRegistration.internalId)
-            )(any(), any())
+            mockEclRegistrationService
+              .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
           )
-            .thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
+            .thenReturn(
+              EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse](
+                Future.successful(Right(createEclSubscriptionResponse))
+              )
+            )
 
           when(
             mockEclRegistrationService
               .deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
           )
-            .thenReturn(EitherT.fromEither[Future](Right()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right())))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
@@ -237,13 +242,12 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         )
 
         new TestContext(updatedRegistration) {
-          when(mockEclRegistrationService.upsertRegistration(any()))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           when(
-            mockEclRegistrationService.submitRegistration(
-              ArgumentMatchers.eq(updatedRegistration.internalId)
-            )(any(), any())
+            mockEclRegistrationService
+              .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
           )
             .thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
 
@@ -304,7 +308,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         )
 
         new TestContext(updatedRegistration) {
-          when(mockEclRegistrationService.upsertRegistration(any()))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           when(
@@ -366,7 +370,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         )
 
         new TestContext(updatedRegistration) {
-          when(mockEclRegistrationService.upsertRegistration(any()))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           when(
@@ -425,7 +429,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         )
 
         new TestContext(updatedRegistration) {
-          when(mockEclRegistrationService.upsertRegistration(any()))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           when(

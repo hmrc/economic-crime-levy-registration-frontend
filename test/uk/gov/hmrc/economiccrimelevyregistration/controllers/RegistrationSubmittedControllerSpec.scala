@@ -62,6 +62,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             (SessionKeys.EclReference, eclReference),
             (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
           )
+
         } else {
           fakeRequest.withSession(
             (SessionKeys.EclReference, eclReference),
@@ -77,18 +78,16 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             ArgumentMatchers.eq(SessionKeys.LiabilityYear)
           )(any())
         )
-          .thenReturn(EitherT.fromEither[Future](Right(liabilityYear.asString)))
+          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(liabilityYear.asString))))
 
         when(
           mockSessionService.get(
             ArgumentMatchers.eq(request.session),
             anyString(),
             ArgumentMatchers.eq(SessionKeys.AmlRegulatedActivity)
-          )(
-            any()
-          )
+          )(any())
         )
-          .thenReturn(EitherT.fromEither[Future](Right(amlRegulatedActivity)))
+          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(amlRegulatedActivity.toString))))
 
         val result: Future[Result] = controller.onPageLoad()(
           request
@@ -146,7 +145,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             any()
           )
         )
-          .thenReturn(EitherT.fromEither[Future](Right(amlRegulatedActivity)))
+          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(amlRegulatedActivity.toString))))
 
         val result: Future[Result] = controller.onPageLoad()(
           request
@@ -189,7 +188,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             any()
           )
         )
-          .thenReturn(EitherT.fromEither[Future](Right(amlRegulatedActivity)))
+          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(amlRegulatedActivity.toString))))
 
         val result =
           controller.onPageLoad()(AuthorisedRequest(fakeRequest, internalId, groupId, Some(eclReference)))

@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
 import cats.data.EitherT
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
@@ -113,7 +114,7 @@ class SecondContactNameControllerSpec extends SpecBase {
             )
           )
 
-        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
           .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
         val result: Future[Result] =

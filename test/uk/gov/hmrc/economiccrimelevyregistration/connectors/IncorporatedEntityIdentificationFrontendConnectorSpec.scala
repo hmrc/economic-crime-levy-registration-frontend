@@ -18,21 +18,25 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import play.api.http.Status.OK
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{RegisteredSociety, UkLimitedCompany, UnlimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
-import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HttpClient, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 
 import scala.concurrent.Future
 
 class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
-  val connector                    = new IncorporatedEntityIdentificationFrontendConnectorImpl(appConfig, mockHttpClient)
-  val apiUrl                       = s"${appConfig.incorporatedEntityIdentificationFrontendBaseUrl}/incorporated-entity-identification/api"
+  val mockHttpClient: HttpClientV2       = mock[HttpClientV2]
+  val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
+  val connector                          =
+    new IncorporatedEntityIdentificationFrontendConnectorImpl(appConfig, mockHttpClient, config, actorSystem)
+  val apiUrl                             = s"${appConfig.incorporatedEntityIdentificationFrontendBaseUrl}/incorporated-entity-identification/api"
 
   "createUkCompanyJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {
@@ -42,10 +46,11 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
         mode: Mode
       ) =>
         val entityType = incorporatedEntityType.entityType
+        val response   = HttpResponse(OK, Json.toJson(grsCreateJourneyResponse).toString())
 
-        val expectedUrl: String = incorporatedEntityType.entityType match {
-          case UkLimitedCompany | UnlimitedCompany => s"$apiUrl/limited-company-journey"
-          case RegisteredSociety                   => s"$apiUrl/registered-society-journey"
+        val expectedUrl = incorporatedEntityType.entityType match {
+          case UkLimitedCompany | UnlimitedCompany => url"$apiUrl/limited-company-journey"
+          case RegisteredSociety                   => url"$apiUrl/registered-society-journey"
           case e                                   => throw new IllegalArgumentException(s"$e is not a valid incorporated entity type")
         }
 
@@ -66,57 +71,33 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
             labels = serviceNameLabels
           )
         }
-
+        when(mockHttpClient.post(ArgumentMatchers.eq(expectedUrl))).thenReturn(mockRequestBuilder)
         when(
-          mockHttpClient.POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedIncorporatedEntityCreateJourneyRequest),
-            any()
-          )(any(), any(), any(), any())
+          mockRequestBuilder
+            .withBody(ArgumentMatchers.eq(expectedIncorporatedEntityCreateJourneyRequest))(any(), any(), any())
         )
-          .thenReturn(Future.successful(grsCreateJourneyResponse))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(response))
 
         val result = await(connector.createIncorporatedEntityJourney(entityType, mode))
 
         result shouldBe grsCreateJourneyResponse
 
-        verify(mockHttpClient, times(1))
-          .POST[IncorporatedEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedIncorporatedEntityCreateJourneyRequest),
-            any()
-          )(any(), any(), any(), any())
-
-        reset(mockHttpClient)
     }
   }
 
   "getJourneyData" should {
     "return journey data for a given journey id" in forAll {
       (incorporatedEntityJourneyData: IncorporatedEntityJourneyData, journeyId: String) =>
-        val expectedUrl = s"$apiUrl/journey/$journeyId"
+        val expectedUrl = url"$apiUrl/journey/$journeyId"
+        val response    = HttpResponse(OK, Json.toJson(incorporatedEntityJourneyData).toString())
 
-        when(
-          mockHttpClient.GET[IncorporatedEntityJourneyData](
-            ArgumentMatchers.eq(expectedUrl),
-            any(),
-            any()
-          )(any(), any(), any())
-        )
-          .thenReturn(Future.successful(incorporatedEntityJourneyData))
+        when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(response))
 
         val result = await(connector.getJourneyData(journeyId))
 
         result shouldBe incorporatedEntityJourneyData
-
-        verify(mockHttpClient, times(1))
-          .GET[IncorporatedEntityJourneyData](
-            ArgumentMatchers.eq(expectedUrl),
-            any(),
-            any()
-          )(any(), any(), any())
-
-        reset(mockHttpClient)
     }
   }
 }

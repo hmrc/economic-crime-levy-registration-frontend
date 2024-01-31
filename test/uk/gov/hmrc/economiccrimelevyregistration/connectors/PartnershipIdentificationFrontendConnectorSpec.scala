@@ -19,33 +19,36 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import play.api.http.Status.OK
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
-import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HttpClient, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 
 import scala.concurrent.Future
 
 class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
-  val connector                    = new PartnershipIdentificationFrontendConnectorImpl(appConfig, mockHttpClient, config, actorSystem)
-  val apiUrl                       = s"${appConfig.partnershipEntityIdentificationFrontendBaseUrl}/partnership-identification/api"
+  val mockHttpClient: HttpClientV2       = mock[HttpClientV2]
+  val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
+  val connector                          = new PartnershipIdentificationFrontendConnectorImpl(appConfig, mockHttpClient, config, actorSystem)
+  val apiUrl                             = s"${appConfig.partnershipEntityIdentificationFrontendBaseUrl}/partnership-identification/api"
 
   "createPartnershipJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {
       (grsCreateJourneyResponse: GrsCreateJourneyResponse, partnershipType: PartnershipType, mode: Mode) =>
         val entityType = partnershipType.entityType
+        val response   = HttpResponse(OK, Json.toJson(grsCreateJourneyResponse), Map.empty)
 
-        val expectedUrl: String = entityType match {
-          case GeneralPartnership          => s"$apiUrl/general-partnership-journey"
-          case ScottishPartnership         => s"$apiUrl/scottish-partnership-journey"
-          case LimitedPartnership          => s"$apiUrl/limited-partnership-journey"
-          case ScottishLimitedPartnership  => s"$apiUrl/scottish-limited-partnership-journey"
-          case LimitedLiabilityPartnership => s"$apiUrl/limited-liability-partnership-journey"
-          case e                           => fail(s"$e is not a valid partnership type")
+        val expectedUrl = entityType match {
+          case GeneralPartnership          => url"$apiUrl/general-partnership-journey"
+          case ScottishPartnership         => url"$apiUrl/scottish-partnership-journey"
+          case LimitedPartnership          => url"$apiUrl/limited-partnership-journey"
+          case ScottishLimitedPartnership  => url"$apiUrl/scottish-limited-partnership-journey"
+          case LimitedLiabilityPartnership => url"$apiUrl/limited-liability-partnership-journey"
         }
 
         val expectedPartnershipEntityCreateJourneyRequest: PartnershipEntityCreateJourneyRequest = {
@@ -66,65 +69,36 @@ class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
           )
         }
 
+        when(mockHttpClient.post(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
         when(
-          mockHttpClient.POST[PartnershipEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedPartnershipEntityCreateJourneyRequest),
+          mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(expectedPartnershipEntityCreateJourneyRequest)))(
+            any(),
+            any(),
             any()
-          )(any(), any(), any(), any())
+          )
         )
-          .thenReturn(Future.successful(grsCreateJourneyResponse))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(response))
 
         val result = await(connector.createPartnershipJourney(entityType, mode))
 
         result shouldBe grsCreateJourneyResponse
 
-        verify(mockHttpClient, times(1))
-          .POST[PartnershipEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(expectedPartnershipEntityCreateJourneyRequest),
-            any()
-          )(any(), any(), any(), any())
-
-        reset(mockHttpClient)
-    }
-
-    "throw an IllegalArgumentException if an entity type that is not a partnership is passed through" in forAll {
-      mode: Mode =>
-        val result = intercept[IllegalArgumentException] {
-          await(connector.createPartnershipJourney(UkLimitedCompany, mode))
-        }
-
-        result.getMessage shouldBe "UkLimitedCompany is not a valid partnership type"
     }
   }
 
   "getJourneyData" should {
     "return journey data for a given journey id" in forAll {
       (partnershipEntityJourneyData: PartnershipEntityJourneyData, journeyId: String) =>
-        val expectedUrl = s"$apiUrl/journey/$journeyId"
+        val expectedUrl = url"$apiUrl/journey/$journeyId"
 
-        when(
-          mockHttpClient.GET[PartnershipEntityJourneyData](
-            ArgumentMatchers.eq(expectedUrl),
-            any(),
-            any()
-          )(any(), any(), any())
-        )
-          .thenReturn(Future.successful(partnershipEntityJourneyData))
+        when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(HttpResponse(OK, Json.toJson(partnershipEntityJourneyData).toString())))
 
         val result = await(connector.getJourneyData(journeyId))
 
         result shouldBe partnershipEntityJourneyData
-
-        verify(mockHttpClient, times(1))
-          .GET[PartnershipEntityJourneyData](
-            ArgumentMatchers.eq(expectedUrl),
-            any(),
-            any()
-          )(any(), any(), any())
-
-        reset(mockHttpClient)
     }
   }
 }

@@ -36,7 +36,6 @@ class SessionDataConnectorSpec extends SpecBase {
   val eclSessionDataUrl            = "http://localhost:14001/economic-crime-levy-registration"
 
   "get" should {
-
     "return SessionData data when request succeeds" in forAll { (internalId: String, sessionData: SessionData) =>
       val expectedUrl = url"$eclSessionDataUrl/session/$internalId"
 

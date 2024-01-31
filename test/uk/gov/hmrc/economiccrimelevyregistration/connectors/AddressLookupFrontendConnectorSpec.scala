@@ -47,6 +47,10 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
   //          .thenReturn(mockRequestBuilder)
   //        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
   //          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.toJson(calculatedLiability)))))
+  override def beforeEach() = {
+    reset(mockHttpClient)
+    reset(mockRequestBuilder)
+  }
 
   "initJourney" should {
     val expectedUrl = s"$baseUrl/api/init"
@@ -68,6 +72,7 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
 
     "return the url for the address lookup journey in the Location header when the http client returns a 202 response" in forAll {
       (journeyUrl: String) =>
+        beforeEach()
         val headers  = Map(LOCATION -> Seq(journeyUrl))
         val response = HttpResponse(ACCEPTED, "", headers)
 
@@ -85,6 +90,7 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
 
     "throw an IllegalStateException when the http client returns a 202 response but the Location header is missing" in {
       val response = HttpResponse(ACCEPTED, "", Map.empty)
+      beforeEach()
 
       when(mockHttpClient.post(ArgumentMatchers.eq(url"$expectedUrl"))(any())).thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(expectedJourneyConfig)))(any(), any(), any()))
@@ -102,12 +108,13 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
 
     "throw an exception when the http client returns a response other than 202" in {
       val response = UpstreamErrorResponse("Internal server error", INTERNAL_SERVER_ERROR)
+      beforeEach()
 
       when(mockHttpClient.post(ArgumentMatchers.eq(url"$expectedUrl"))(any())).thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(expectedJourneyConfig)))(any(), any(), any()))
         .thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.execute[HttpResponse](any(), any()))
-        .thenReturn(Future.failed(response))
+        .thenReturn(Future.successful(HttpResponse(NOT_FOUND, "Not Found")))
 
       val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
         await(connector.initJourney(ukMode, NormalMode)) //UNSURE ON THIS ONE
@@ -121,8 +128,8 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
   "getAddress" should {
     "return the address identified by the given journey id" in forAll {
       (journeyId: String, alfAddressData: AlfAddressData) =>
-        val expectedUrl         = s"$baseUrl/api/confirmed?"
-        val expectedQueryParams = Seq(("id", journeyId))
+        beforeEach()
+        val expectedUrl = s"$baseUrl/api/confirmed?id=$journeyId"
 
         when(mockHttpClient.get(ArgumentMatchers.eq(url"$expectedUrl"))(any()))
           .thenReturn(mockRequestBuilder)
@@ -133,14 +140,6 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
 
         result shouldBe alfAddressData
 
-//        verify(mockHttpClient, times(1))
-//          .GET[AlfAddressData](
-//            ArgumentMatchers.eq(expectedUrl),
-//            ArgumentMatchers.eq(expectedQueryParams),
-//            any()
-//          )(any(), any(), any())
-
-        reset(mockHttpClient)
     }
   }
 }

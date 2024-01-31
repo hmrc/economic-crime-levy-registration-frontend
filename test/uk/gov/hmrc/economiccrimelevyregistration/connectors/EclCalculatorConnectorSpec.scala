@@ -18,36 +18,33 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import play.api.http.Status.OK
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculateLiabilityRequest, CalculatedLiability}
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
-import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 
 import scala.concurrent.Future
 
 class EclCalculatorConnectorSpec extends SpecBase {
   val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  val mockRequestBuilder           = mock[RequestBuilder]
   val connector                    = new EclCalculatorConnector(appConfig, mockHttpClient)
   val eclCalculatorUrl             = "http://localhost:14010/economic-crime-levy-calculator"
+  val expectedUrl                  = url"$eclCalculatorUrl/calculate-liability"
 
   "calculateLiability" should {
     "return the calculated liability when the http client returns the calculated liability" in forAll {
-      (
-        calculateLiabilityRequest: CalculateLiabilityRequest,
-        calculatedLiability: CalculatedLiability
-      ) =>
-        val expectedUrl = s"$eclCalculatorUrl/calculate-liability"
-
+      (calculateLiabilityRequest: CalculateLiabilityRequest, calculatedLiability: CalculatedLiability) =>
+        when(mockHttpClient.post(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
         when(
-          mockHttpClient.POST[CalculateLiabilityRequest, CalculatedLiability](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(calculateLiabilityRequest.copy(amlRegulatedActivityLength = EclTaxYear.YearInDays)),
-            any()
-          )(any(), any(), any(), any())
+          mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(calculateLiabilityRequest)))(any(), any(), any())
         )
-          .thenReturn(Future.successful(calculatedLiability))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.toJson(calculatedLiability)))))
 
         val result = await(
           connector.calculateLiability(calculateLiabilityRequest.relevantApLength, calculateLiabilityRequest.ukRevenue)
@@ -55,14 +52,6 @@ class EclCalculatorConnectorSpec extends SpecBase {
 
         result shouldBe calculatedLiability
 
-        verify(mockHttpClient, times(1))
-          .POST[CalculateLiabilityRequest, CalculatedLiability](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(calculateLiabilityRequest.copy(amlRegulatedActivityLength = EclTaxYear.YearInDays)),
-            any()
-          )(any(), any(), any(), any())
-
-        reset(mockHttpClient)
     }
   }
 
