@@ -378,6 +378,7 @@ checkYourAnswers.eclReferenceNumber.label = Cyfeirnod ECL
 checkYourAnswers.liabilityDate.label = Dyddiad cychwyn atebolrwydd
 checkYourAnswers.amendReason.title = Rheswm dros ddiwygio
 checkYourAnswers.amendReason.label = Gwybodaeth ychwanegol
+checkYourAnswers.cancel = <a href="{0}" class="govuk-link">Canslo’r diwygiad hwn</a>
 
 submitted.title = Cofrestriad wedi’i gyflwyno
 submitted.heading = Cofrestriad wedi’i gyflwyno
@@ -615,3 +616,8 @@ otherEntityType.addUtr.error.required = Nodwch eich Cyfeirnod Unigryw y Trethdal
 otherEntityType.addUtr.error.length = Mae’n rhaid i Gyfeirnod Unigryw y Trethdalwr fod yn {0} digid.
 
 otherEntityType.utr.question.label = A oes gennych Gyfeirnod Unigryw y Trethdalwr?
+
+cancelRegistrationAmendment.title = Ydych chi'n siŵr eich bod am ganslo'ch cais i newid eich cofrestriad?
+cancelRegistrationAmendment.heading = Ydych chi'n siŵr eich bod am ganslo'ch cais i newid eich cofrestriad?
+cancelRegistrationAmendment.body = Bydd eich atebion yn cael eu dileu.
+cancelRegistrationAmendment.error.required = Dewiswch 'Iawn' os ydych yn dymuno canslo eich cais i newid eich cofrestriad
