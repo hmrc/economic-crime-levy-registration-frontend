@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import cats.data.OptionT
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.{JsResult, Reads}
@@ -59,22 +60,26 @@ trait BaseConnector {
           }
         }
 
-    def executeAndDeserialiseOption[T](implicit ec: ExecutionContext, reads: Reads[T]): Future[Option[T]] =
-      requestBuilder
-        .execute[HttpResponse]
-        .flatMap { response =>
-          response.status match {
-            case OK | CREATED | ACCEPTED => response.asOption[T] // DO WE NEED TO ADD '| NO_CONTENT' HERE??
-            case _                       => response.error
+    def executeAndDeserialiseOption[T](implicit ec: ExecutionContext, reads: Reads[T]): OptionT[Future, T] =
+      OptionT {
+        requestBuilder
+          .execute[HttpResponse]
+          .flatMap { response =>
+            response.status match {
+              case OK | CREATED | ACCEPTED | NO_CONTENT => response.asOption[T]
+              case _                                    => response.error
+            }
           }
-        }
+      }
 
     def executeAndExtractHeader[T](implicit ec: ExecutionContext): Future[String] =
       requestBuilder
         .execute[HttpResponse]
         .flatMap { response =>
           (response.status, response.header(HeaderNames.LOCATION)) match {
-            case (OK | CREATED | ACCEPTED, Some(journeyUrl)) => Future.successful(journeyUrl)
+            case (OK | CREATED | ACCEPTED, Some(journeyUrl)) =>
+              println(journeyUrl)
+              Future.successful(journeyUrl)
             case _                                           => response.error
           }
         }
@@ -82,9 +87,9 @@ trait BaseConnector {
     def executeAndContinue(implicit ec: ExecutionContext): Future[Unit] =
       requestBuilder
         .execute[HttpResponse]
-        .map { response =>
+        .flatMap { response =>
           response.status match {
-            case OK | CREATED | ACCEPTED | NO_CONTENT => ()
+            case OK | CREATED | ACCEPTED | NO_CONTENT => Future.successful(())
             case _                                    => response.error
           }
         }

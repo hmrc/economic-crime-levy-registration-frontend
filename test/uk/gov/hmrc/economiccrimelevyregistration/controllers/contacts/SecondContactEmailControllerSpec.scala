@@ -88,7 +88,7 @@ class SecondContactEmailControllerSpec extends SpecBase {
         }
     }
 
-    "throw an IllegalStateException when there is no second contact name in the registration data" in forAll {
+    "redirect to AnswersAreInvalidPage when there is no second contact name in the registration data" in forAll {
       (
         registration: Registration
       ) =>
@@ -99,11 +99,11 @@ class SecondContactEmailControllerSpec extends SpecBase {
         new TestContext(
           updatedRegistration
         ) {
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onPageLoad(NormalMode)(fakeRequest))
-          }
+          val result: Result = await(controller.onPageLoad(NormalMode)(fakeRequest))
 
-          result.getMessage shouldBe "No second contact name found in registration data"
+          result shouldBe Redirect(
+            uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid()
+          )
         }
     }
 

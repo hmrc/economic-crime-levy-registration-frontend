@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import akka.actor.ActorSystem
 import com.typesafe.config.Config
+import play.api.http.HeaderNames
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
@@ -53,6 +54,7 @@ class AddressLookupFrontendConnectorImpl @Inject() (
   def initJourney(isUkAddress: Boolean, mode: Mode)(implicit
     hc: HeaderCarrier
   ): Future[String] = {
+    println(hc.headers(Seq(HeaderNames.LOCATION)))
     val alfLabels = AlfEnCyLabels(appConfig)
     val body      = AlfJourneyConfig(
       options = AlfOptions(

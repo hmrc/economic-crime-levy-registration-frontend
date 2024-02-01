@@ -71,13 +71,19 @@ class IncorporatedEntityIdentificationFrontendConnectorSpec extends SpecBase {
             labels = serviceNameLabels
           )
         }
-        when(mockHttpClient.post(ArgumentMatchers.eq(expectedUrl))).thenReturn(mockRequestBuilder)
+        when(mockHttpClient.post(ArgumentMatchers.eq(expectedUrl))(any()))
+          .thenReturn(mockRequestBuilder)
         when(
           mockRequestBuilder
-            .withBody(ArgumentMatchers.eq(expectedIncorporatedEntityCreateJourneyRequest))(any(), any(), any())
+            .withBody(ArgumentMatchers.eq(Json.toJson(expectedIncorporatedEntityCreateJourneyRequest)))(
+              any(),
+              any(),
+              any()
+            )
         )
           .thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(response))
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(response))
 
         val result = await(connector.createIncorporatedEntityJourney(entityType, mode))
 

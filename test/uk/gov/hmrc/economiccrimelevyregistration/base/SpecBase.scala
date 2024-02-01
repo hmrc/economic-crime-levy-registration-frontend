@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.model.headers.Authorization
 import com.typesafe.config.Config
 import org.mockito.MockitoSugar
 import org.scalatest.matchers.should.Matchers

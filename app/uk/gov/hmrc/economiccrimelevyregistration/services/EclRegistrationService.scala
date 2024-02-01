@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import cats.data.EitherT
+import cats.implicits.catsSyntaxApplicativeError
 import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
@@ -131,9 +132,10 @@ class EclRegistrationService @Inject() (
   def getRegistrationValidationErrors(
     internalId: String
   )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, Option[DataValidationError]] =
-    EitherT[Future, DataRetrievalError, Option[DataValidationError]] {
+    EitherT {
       eclRegistrationConnector
         .getRegistrationValidationErrors(internalId)
+        .value
         .map(str => Right(str.map(x => DataValidationError(x))))
         .recover {
           case error @ UpstreamErrorResponse(message, code, _, _)

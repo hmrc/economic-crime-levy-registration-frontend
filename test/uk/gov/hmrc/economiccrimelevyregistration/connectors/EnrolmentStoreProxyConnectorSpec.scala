@@ -37,7 +37,7 @@ class EnrolmentStoreProxyConnectorSpec extends SpecBase {
 
   "getEnrolmentsForGroup" should {
     "return a list of enrolments for the specified group when the http client returns a list of enrolments" in forAll {
-      (groupId: String, groupEnrolments: Option[GroupEnrolmentsResponse]) =>
+      (groupId: String, groupEnrolments: GroupEnrolmentsResponse) =>
         val expectedUrl = url"$enrolmentStoreUrl/groups/$groupId/enrolments"
         val response    = HttpResponse(OK, Json.toJson(groupEnrolments), Map.empty)
 

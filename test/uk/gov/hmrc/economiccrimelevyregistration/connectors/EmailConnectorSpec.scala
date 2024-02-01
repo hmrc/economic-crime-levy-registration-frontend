@@ -45,13 +45,17 @@ class EmailConnectorSpec extends SpecBase {
     "return unit when the http client returns a successful http response" in forAll {
       (to: String, registrationSubmittedEmailParameters: RegistrationSubmittedEmailParameters) =>
         beforeEach()
-        val body     =
+        val body =
           RegistrationSubmittedEmailRequest(Seq(to), NormalEntityTemplateId, registrationSubmittedEmailParameters)
+
         val response = HttpResponse(ACCEPTED, "")
 
-        when(mockHttpClient.post(ArgumentMatchers.eq(sendEmailUrl))).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(body)))).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.execute[HttpResponse]).thenReturn(Future.successful(response))
+        when(mockHttpClient.post(ArgumentMatchers.eq(sendEmailUrl))(any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(body)))(any(), any(), any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(response))
 
         val result = await(connector.sendRegistrationSubmittedEmail(to, registrationSubmittedEmailParameters, None))
 
@@ -63,11 +67,14 @@ class EmailConnectorSpec extends SpecBase {
         beforeEach()
         val body     =
           RegistrationSubmittedEmailRequest(Seq(to), NormalEntityTemplateId, registrationSubmittedEmailParameters)
-        val response = UpstreamErrorResponse("Internal server error", INTERNAL_SERVER_ERROR)
+        val response = HttpResponse(INTERNAL_SERVER_ERROR, "Internal server error")
 
-        when(mockHttpClient.post(ArgumentMatchers.eq(sendEmailUrl))).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(body)))).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.execute[HttpResponse]).thenReturn(Future.failed(response))
+        when(mockHttpClient.post(ArgumentMatchers.eq(sendEmailUrl))(any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(body)))(any(), any(), any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(response))
 
         val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
           await(connector.sendRegistrationSubmittedEmail(to, registrationSubmittedEmailParameters, None))

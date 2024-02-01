@@ -31,12 +31,13 @@ class EclCalculatorServiceSpec extends SpecBase {
   val service                                            = new EclCalculatorService(mockEclCalculatorConnector)
 
   "checkIfRevenueMeetsThreshold" should {
-    "return true if the amount due is greater than 0 and the relevant AP is 12 months" in forAll {
+    "return true if the calculated liability amount due is greater than 0 and the relevant AP is 12 months" in forAll {
       (
         registration: Registration,
         relevantApRevenue: BigDecimal,
         calculatedLiability: CalculatedLiability
       ) =>
+//        val relevantApRevenue: BigDecimal = 12.55
         val updatedRegistration =
           registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(relevantApRevenue))
 
@@ -53,7 +54,7 @@ class EclCalculatorServiceSpec extends SpecBase {
         result shouldBe Right(Some(true))
     }
 
-    "return true if the amount due is greater than 0 and the relevant AP is not 12 months" in forAll {
+    "return true if the calculated liability amount due is greater than 0 and the relevant AP is not 12 months" in forAll {
       (
         registration: Registration,
         relevantApRevenue: BigDecimal,
@@ -80,7 +81,7 @@ class EclCalculatorServiceSpec extends SpecBase {
         result shouldBe Right(Some(true))
     }
 
-    "return false if the amount due is not greater than 0 and the relevant AP is 12 months" in forAll {
+    "return false if the calculated liability amount due is not greater than 0 and the relevant AP is 12 months" in forAll {
       (
         registration: Registration,
         relevantApRevenue: BigDecimal,
@@ -102,7 +103,7 @@ class EclCalculatorServiceSpec extends SpecBase {
         result shouldBe Right(Some(false))
     }
 
-    "return false if the amount due is not greater than 0 and the relevant AP is not 12 months" in forAll {
+    "return false if the calculated liability amount due is not greater than 0 and the relevant AP is not 12 months" in forAll {
       (
         registration: Registration,
         relevantApRevenue: BigDecimal,

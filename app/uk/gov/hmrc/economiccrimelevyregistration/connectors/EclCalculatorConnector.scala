@@ -34,7 +34,7 @@ class EclCalculatorConnector @Inject() (appConfig: AppConfig, httpClient: HttpCl
     hc: HeaderCarrier
   ): Future[CalculatedLiability] = {
     val body = CalculateLiabilityRequest(
-      amlRegulatedActivityLength = EclTaxYear.YearInDays,
+      amlRegulatedActivityLength = EclTaxYear.YearInDays, //TODO Why is this being set like this?
       relevantApLength = relevantApLength,
       ukRevenue = relevantApRevenue.toLong
     )

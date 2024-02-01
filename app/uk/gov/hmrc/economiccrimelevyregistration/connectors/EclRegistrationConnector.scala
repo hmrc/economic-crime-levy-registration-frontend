@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import cats.data.OptionT
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationError
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
@@ -57,7 +59,7 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
 
   def getRegistrationValidationErrors(
     internalId: String
-  )(implicit hc: HeaderCarrier): Future[Option[String]] =
+  )(implicit hc: HeaderCarrier): OptionT[Future, String] =
     httpClient
       .get(url"$eclRegistrationUrl/registrations/$internalId/validation-errors")
       .executeAndDeserialiseOption[String]

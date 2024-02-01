@@ -27,6 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResp
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailParameters
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationError
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
+import uk.gov.hmrc.http.Authorization
 
 object CachedArbitraries extends EclTestData {
 
@@ -56,5 +57,6 @@ object CachedArbitraries extends EclTestData {
   implicit lazy val arbMode: Arbitrary[Mode]                                                            = mkArb
   implicit lazy val arbRevenueDoesNotMeetThreshold: Arbitrary[RevenueDoesNotMeetThreshold]              = mkArb
   implicit lazy val arbUtrType: Arbitrary[UtrType]                                                      = mkArb
+  implicit lazy val arbAuthorization: Arbitrary[Authorization]                                          = mkArb
 
 }

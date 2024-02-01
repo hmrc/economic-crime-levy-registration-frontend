@@ -30,7 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.Telep
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, Mode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNumberView
@@ -87,27 +87,21 @@ class SecondContactNumberControllerSpec extends SpecBase {
         }
     }
 
-    "throw an IllegalStateException when there is no second contact name in the registration data" in forAll {
-      (
-        registration: Registration
-      ) =>
-        val updatedRegistration = registration.copy(
-          contacts = Contacts.empty
-        )
+    "redirect to AnswersAreInvalidPage when there is no second contact name in the registration data" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(contacts = Contacts.empty)
 
-        new TestContext(
-          updatedRegistration
-        ) {
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onPageLoad(NormalMode)(fakeRequest))
-          }
+        new TestContext(updatedRegistration) {
+          val result: Result = await(controller.onPageLoad(NormalMode)(fakeRequest))
 
-          result.getMessage shouldBe "No second contact name found in registration data"
+          result shouldBe Redirect(
+            uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid()
+          )
         }
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
-      (registration: Registration, number: String, name: String) =>
+      (registration: Registration, number: String, name: String, mode: Mode) =>
         new TestContext(
           registration.copy(
             contacts = registration.contacts
@@ -117,17 +111,14 @@ class SecondContactNumberControllerSpec extends SpecBase {
             registrationType = Some(Initial)
           )
         ) {
-          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(
-            form.fill(number),
-            name,
-            NormalMode,
-            None,
-            None
-          )(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form.fill(number), name, mode, None, None)(
+            fakeRequest,
+            messages
+          ).toString
         }
     }
   }

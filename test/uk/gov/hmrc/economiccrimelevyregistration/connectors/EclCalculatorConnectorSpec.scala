@@ -29,11 +29,11 @@ import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import scala.concurrent.Future
 
 class EclCalculatorConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
-  val mockRequestBuilder           = mock[RequestBuilder]
-  val connector                    = new EclCalculatorConnector(appConfig, mockHttpClient)
-  val eclCalculatorUrl             = "http://localhost:14010/economic-crime-levy-calculator"
-  val expectedUrl                  = url"$eclCalculatorUrl/calculate-liability"
+  val mockHttpClient: HttpClientV2       = mock[HttpClientV2]
+  val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
+  val connector                          = new EclCalculatorConnector(appConfig, mockHttpClient)
+  val eclCalculatorUrl                   = "http://localhost:14010/economic-crime-levy-calculator"
+  val expectedUrl                        = url"$eclCalculatorUrl/calculate-liability"
 
   "calculateLiability" should {
     "return the calculated liability when the http client returns the calculated liability" in forAll {
@@ -41,10 +41,9 @@ class EclCalculatorConnectorSpec extends SpecBase {
         when(mockHttpClient.post(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
         when(
           mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(calculateLiabilityRequest)))(any(), any(), any())
-        )
-          .thenReturn(mockRequestBuilder)
+        ).thenReturn(mockRequestBuilder)
         when(mockRequestBuilder.execute[HttpResponse](any(), any()))
-          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.toJson(calculatedLiability)))))
+          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(calculatedLiability).toString())))
 
         val result = await(
           connector.calculateLiability(calculateLiabilityRequest.relevantApLength, calculateLiabilityRequest.ukRevenue)
