@@ -579,7 +579,6 @@ amendmentRequested.body.p4 = Pan fyddwch yn llenwi’ch datganiad blynyddol, byd
 amendmentRequested.body.p5 = Byddwn yn adolygu’ch atebion. Os oes angen rhagor o wybodaeth arnom mae’n bosibl byddwn yn cysylltu â chi drwy ddefnyddio’r manylion yr ydych wedi eu rhoi. Bydd y broses hon yn cymryd 15 diwrnod gwaith.
 amendmentRequested.body.p6 = Byddwn yn anfon llythyr atoch ar ôl i ni ddiwygio’ch datganiad. Ni fyddwch yn gallu bwrw golwg dros y newidiadau hyn nes eich bod wedi cael y llythyr hwn.
 amendmentRequested.body.address.heading = Byddwn yn anfon llythyr at:
-amendmentRequested.body.address.line = {0}
 amendmentRequested.body.p7 = {0} (mae’n cymryd 30 eiliad)
 amendmentRequested.body.p7.link = <a href="{0}" class="govuk-link">Beth oedd eich barn am y gwasanaeth hwn?</a>
 amendmentRequested.list.b1 = y cyfnod cyfrifyddu perthnasol ar gyfer eich sefydliad

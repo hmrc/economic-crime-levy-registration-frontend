@@ -18,17 +18,16 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.Logging
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Session}
+import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendmentRequestedView
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class AmendmentRequestedController @Inject() (
@@ -41,27 +40,18 @@ class AmendmentRequestedController @Inject() (
     with I18nSupport
     with Logging {
 
-  def getSessionData(key: String)(implicit
-    request: AuthorisedRequest[AnyContent]
-  ): String =
-    request.session.get(key) match {
-      case Some(value) => value
-      case None        => ""
-    }
-
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     sessionService
       .get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress)
       .map {
         case Some(firstContactEmailAddress) =>
+          val contactAddress =
+            Json.fromJson[EclAddress](Json.parse(request.session.get(SessionKeys.contactAddress).getOrElse(""))).asOpt
           Ok(
             view(
               firstContactEmailAddress,
               request.eclRegistrationReference,
-              getSessionData(SessionKeys.addressLine1),
-              getSessionData(SessionKeys.addressLine2),
-              getSessionData(SessionKeys.addressLine3),
-              getSessionData(SessionKeys.addressLine4)
+              contactAddress
             )
           )
         case None                           =>

@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, ValidatedRegistrationAction}
@@ -199,22 +200,12 @@ class CheckYourAnswersController @Inject() (
       val updatedSession = session ++ Seq(
         SessionKeys.FirstContactEmailAddress -> registration.contacts.firstContactDetails.emailAddress
           .getOrElse(throw new IllegalStateException("First contact email address not found in registration data")),
-        SessionKeys.addressLine1             -> registration.contactAddress
-          .getOrElse(throw new IllegalStateException("Contact address not found in registration data"))
-          .addressLine1
-          .getOrElse(""),
-        SessionKeys.addressLine2             -> registration.contactAddress
-          .getOrElse(throw new IllegalStateException("Contact address not found in registration data"))
-          .addressLine2
-          .getOrElse(""),
-        SessionKeys.addressLine3             -> registration.contactAddress
-          .getOrElse(throw new IllegalStateException("Contact address not found in registration data"))
-          .addressLine3
-          .getOrElse(""),
-        SessionKeys.addressLine4             -> registration.contactAddress
-          .getOrElse(throw new IllegalStateException("Contact address not found in registration data"))
-          .addressLine4
-          .getOrElse("")
+        SessionKeys.contactAddress           -> Json
+          .toJson(
+            registration.contactAddress
+              .getOrElse(throw new IllegalStateException("Contact address not found in registration data"))
+          )
+          .toString
       )
 
       Redirect((registration.entityType, registration.registrationType) match {
