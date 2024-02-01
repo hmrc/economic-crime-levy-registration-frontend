@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendmentRequestedVi
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AmendmentRequestedController @Inject() (
@@ -43,20 +43,32 @@ class AmendmentRequestedController @Inject() (
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     sessionService
       .get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress)
-      .map {
+      .flatMap {
         case Some(firstContactEmailAddress) =>
-          val contactAddress =
-            Json.fromJson[EclAddress](Json.parse(request.session.get(SessionKeys.contactAddress).getOrElse(""))).asOpt
-          Ok(
-            view(
-              firstContactEmailAddress,
-              request.eclRegistrationReference,
-              contactAddress
-            )
-          )
+          sessionService
+            .get(request.session, request.internalId, SessionKeys.contactAddress)
+            .map { value =>
+              val contactAddress = value match {
+                case Some(json) => Json.fromJson[EclAddress](Json.parse(json)).asOpt
+                case None       => None
+              }
+              Ok(
+                view(
+                  firstContactEmailAddress,
+                  request.eclRegistrationReference,
+                  contactAddress
+                )
+              )
+            }
+            .recover { case e =>
+              logger.error(
+                s"Unable to retrieve contact address from session: ${e.getMessage}"
+              )
+              InternalServerError
+            }
         case None                           =>
           logger.error("Failed to retrieve first contact email address from session and database")
-          InternalServerError
+          Future.successful(InternalServerError)
       }
       .recover { case e =>
         logger.error(
