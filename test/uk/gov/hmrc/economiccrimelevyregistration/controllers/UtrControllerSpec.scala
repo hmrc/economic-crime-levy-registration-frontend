@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.SEE_OTHER
 import play.api.mvc.{Call, Result}
@@ -26,6 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.RegistrationWithUnincorporatedA
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UtrFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UtrPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
@@ -94,8 +96,12 @@ class UtrControllerSpec extends SpecBase {
       new TestContext(registration.registration) {
         val updatedRegistration: Registration = registration.registration
 
-        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
-          .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
+        when(
+          mockEclRegistrationService.upsertRegistration(
+            ArgumentMatchers.eq(updatedRegistration)
+          )(any())
+        )
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
         val utr: String = registration.registration.otherEntityJourneyData.ctUtr.getOrElse("")
 

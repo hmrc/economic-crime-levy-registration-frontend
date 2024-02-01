@@ -50,7 +50,7 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
 
-        result shouldBe Some(true)
+        result shouldBe Right(Some(true))
     }
 
     "return true if the amount due is greater than 0 and the relevant AP is not 12 months" in forAll {
@@ -77,7 +77,7 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
 
-        result shouldBe Some(true)
+        result shouldBe Right(Some(true))
     }
 
     "return false if the amount due is not greater than 0 and the relevant AP is 12 months" in forAll {
@@ -99,7 +99,7 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
 
-        result shouldBe Some(false)
+        result shouldBe Right(Some(false))
     }
 
     "return false if the amount due is not greater than 0 and the relevant AP is not 12 months" in forAll {
@@ -126,7 +126,7 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
 
-        result shouldBe Some(false)
+        result shouldBe Right(Some(false))
     }
   }
 }

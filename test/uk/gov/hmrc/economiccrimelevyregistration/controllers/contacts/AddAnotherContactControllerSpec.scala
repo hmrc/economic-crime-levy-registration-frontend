@@ -27,10 +27,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AddAnotherContactDataCl
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContactFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.AddAnotherContactView
+import org.mockito.ArgumentMatchers.any
 
 import scala.concurrent.Future
 
@@ -106,11 +108,11 @@ class AddAnotherContactControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, secondContact: Boolean) =>
         new TestContext(registration) {
-          val updatedRegistration: Registration =
-            registration.copy(contacts = registration.contacts.copy(secondContact = Some(secondContact)))
+          val contacts            = registration.contacts.copy(secondContact = Some(secondContact))
+          val updatedRegistration = dataCleanup.cleanup(registration).copy(contacts = contacts)
 
-          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
-            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", secondContact.toString)))

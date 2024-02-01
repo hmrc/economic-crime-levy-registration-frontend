@@ -56,7 +56,6 @@ class EmailConnectorSpec extends SpecBase {
         val result = await(connector.sendRegistrationSubmittedEmail(to, registrationSubmittedEmailParameters, None))
 
         result shouldBe ()
-
     }
 
     "throw an exception when the http client returns an upstream error response" in forAll {

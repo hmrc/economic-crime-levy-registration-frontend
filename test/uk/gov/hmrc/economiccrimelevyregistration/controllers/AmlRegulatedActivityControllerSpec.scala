@@ -27,6 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
@@ -103,8 +104,8 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
                 registrationType = Some(Initial)
               )
 
-            when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
-              .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
+            when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+              .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
             when(mockSessionService.upsert(any())(any()))
               .thenReturn(EitherT.fromEither[Future](Right()))

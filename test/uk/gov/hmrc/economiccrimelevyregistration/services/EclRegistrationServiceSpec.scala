@@ -60,7 +60,7 @@ class EclRegistrationServiceSpec extends SpecBase {
         .thenReturn(Future.successful(registration))
 
       val result = await(service.getOrCreate(internalId).value)
-      result shouldBe registration
+      result shouldBe Right(registration)
     }
   }
 }
