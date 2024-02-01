@@ -78,7 +78,7 @@ class EclRegistrationService @Inject() (
         )
       case _           => ContactDetails.empty
     }
-    val secondContactPresent                = Some(secondaryContact.isEmpty)
+    val secondContactPresent                = Some(secondaryContact.isDefined)
 
     val contacts: Contacts = Contacts(firstContactDetails, secondContactPresent, secondContactDetails)
 

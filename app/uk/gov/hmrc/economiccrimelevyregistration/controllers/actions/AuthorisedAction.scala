@@ -152,7 +152,7 @@ abstract class BaseAuthorisedAction @Inject() (
                 if (checkForEclEnrolment) {
                   eclEnrolment match {
                     case Some(_) =>
-                      if (request.uri.toLowerCase.contains("amend")) {
+                      if (request.uri.toLowerCase.contains("amend-")) {
                         block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
                       } else {
                         eclRegistrationService.getOrCreateRegistration(internalId)(hc(request)).flatMap {
