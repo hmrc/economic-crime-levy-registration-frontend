@@ -46,6 +46,9 @@ object ResponseError {
     BadGateway(message, ErrorCode.BadGateway, code)
   }
 
+  def badRequestError(message: String): ResponseError =
+    StandardError(message, ErrorCode.BadRequest)
+
   def internalServiceError(
     message: String = "Internal server error",
     code: ErrorCode = ErrorCode.InternalServerError,

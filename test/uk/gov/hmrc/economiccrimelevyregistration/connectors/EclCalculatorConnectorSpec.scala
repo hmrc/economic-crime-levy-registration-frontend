@@ -22,7 +22,8 @@ import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculateLiabilityRequest, CalculatedLiability}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Bands, CalculateLiabilityRequest, CalculatedLiability, EclAmount}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 
@@ -38,18 +39,25 @@ class EclCalculatorConnectorSpec extends SpecBase {
   "calculateLiability" should {
     "return the calculated liability when the http client returns the calculated liability" in forAll {
       (calculateLiabilityRequest: CalculateLiabilityRequest, calculatedLiability: CalculatedLiability) =>
+        val newCalculatedLiabilityRequest =
+          calculateLiabilityRequest.copy(amlRegulatedActivityLength = EclTaxYear.YearInDays)
+        val bandRange                     = calculatedLiability.bands.small.copy(amount = BigDecimal(20000.00))
+        val band                          = Bands(small = bandRange, medium = bandRange, large = bandRange, veryLarge = bandRange)
+        val newCalculatedLiability        = calculatedLiability.copy(amountDue = EclAmount(BigDecimal(2000.00)), bands = band)
+
         when(mockHttpClient.post(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
         when(
-          mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(calculateLiabilityRequest)))(any(), any(), any())
+          mockRequestBuilder
+            .withBody(ArgumentMatchers.eq(Json.toJson(newCalculatedLiabilityRequest)))(any(), any(), any())
         ).thenReturn(mockRequestBuilder)
         when(mockRequestBuilder.execute[HttpResponse](any(), any()))
-          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(calculatedLiability).toString())))
+          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(newCalculatedLiability).toString())))
 
         val result = await(
           connector.calculateLiability(calculateLiabilityRequest.relevantApLength, calculateLiabilityRequest.ukRevenue)
         )
 
-        result shouldBe calculatedLiability
+        result shouldBe newCalculatedLiability
 
     }
   }

@@ -72,14 +72,11 @@ class IsUkAddressController @Inject() (
         contactAddressIsUk => {
           val updatedRegistration = request.registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
           (for {
-            upsertedRegistration <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            addressLookupUrl     <- addressLookupService.initJourney(contactAddressIsUk, mode).asResponseError
+            _                <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            addressLookupUrl <- addressLookupService.initJourney(contactAddressIsUk, mode).asResponseError
           } yield addressLookupUrl).fold(
             err => Redirect(routes.NotableErrorController.answersAreInvalid()),
-            url => {
-              println(s"url is!! $url")
-              Redirect(Call(GET, url))
-            }
+            url => Redirect(Call(GET, url))
           )
         }
       )

@@ -34,7 +34,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
 import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpVerbs.GET
@@ -69,6 +69,7 @@ trait SpecBase
   implicit val errorTemplate: ErrorTemplate            = app.injector.instanceOf[ErrorTemplate]
   val config: Config                                   = app.injector.instanceOf[Config]
   val actorSystem: ActorSystem                         = ActorSystem("actor")
+  val eclReference: String                             = "ECLRefNumber12345"
 
   def fakeAuthorisedActionWithEnrolmentCheck(internalId: String)                                                     =
     new FakeAuthorisedActionWithEnrolmentCheck(internalId, bodyParsers)
@@ -78,8 +79,8 @@ trait SpecBase
     new FakeAuthorisedActionAgentsAllowed(bodyParsers)
   def fakeAuthorisedActionAssistantsAllowed                                                                          =
     new FakeAuthorisedActionAssistantsAllowed(bodyParsers)
-  def fakeDataRetrievalAction(data: Registration)                                                                    =
-    new FakeDataRetrievalAction(data)
+  def fakeDataRetrievalAction(data: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None)         =
+    new FakeDataRetrievalAction(data, additionalInfo)
 
   def onwardRoute: Call = Call(GET, "/foo")
 

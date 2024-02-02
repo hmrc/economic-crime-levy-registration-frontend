@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.{AmendAmlSupervisorFormPr
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AuditError, DataRetrievalError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
@@ -118,6 +118,8 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
           when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+          when(mockAuditService.sendEvent(any())(any()))
+            .thenReturn(EitherT[Future, AuditError, Unit](Future.successful(Right(()))))
 
           val formData: Seq[(String, String)] = amlSupervisor match {
             case AmlSupervisor(Other, Some(otherProfessionalBody)) =>

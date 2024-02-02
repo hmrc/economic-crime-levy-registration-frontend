@@ -101,9 +101,15 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, hasUkCrn: Boolean) =>
         new TestContext(registration) {
+          val companyRegistrationNumber                      = if (hasUkCrn) {
+            registration.otherEntityJourneyData.companyRegistrationNumber
+          } else {
+            None
+          }
           val otherEntityJourneyData: OtherEntityJourneyData = registration.otherEntityJourneyData
             .copy(
-              isUkCrnPresent = Some(hasUkCrn)
+              isUkCrnPresent = Some(hasUkCrn),
+              companyRegistrationNumber = companyRegistrationNumber
             )
           val updatedRegistration: Registration              =
             registration.copy(

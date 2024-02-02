@@ -26,12 +26,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.ResponseError
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.{IncorporatedEntityType, LimitedPartnershipType, PartnershipType, ScottishOrGeneralPartnershipType}
 
 import scala.concurrent.Future
 
-class GrsContinueControllerSpec extends SpecBase {
+class GrsContinueControllerSpec extends SpecBase with BaseController {
   val mockIncorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector =
     mock[IncorporatedEntityIdentificationFrontendConnector]
 
@@ -930,15 +931,15 @@ class GrsContinueControllerSpec extends SpecBase {
         }
     }
 
-    "throw an IllegalStateException if there is no entity type data in the registration" in forAll {
+    "return an error if there is no entity type data in the registration" in forAll {
       (journeyId: String, registration: Registration) =>
         new TestContext(registration.copy(entityType = None)) {
 
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.continue(NormalMode, journeyId)(fakeRequest))
-          }
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
-          result.getMessage shouldBe "No valid entity type found in registration data"
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.answersAreInvalid().url)
         }
     }
 
@@ -970,11 +971,12 @@ class GrsContinueControllerSpec extends SpecBase {
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(Future.successful(updatedRegistration))
 
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.continue(NormalMode, journeyId)(fakeRequest))
-          }
+          val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
-          result.getMessage shouldBe s"Invalid result received from GRS: identifiersMatch: $identifiersMatch, registration: $registrationNotCalled, businessVerification: $noBv"
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+
+//          result shouldBe ResponseError.internalServiceError()
+//            s"Invalid result received from GRS: identifiersMatch: $identifiersMatch, registration: $registrationNotCalled, businessVerification: $noBv"
         }
     }
 

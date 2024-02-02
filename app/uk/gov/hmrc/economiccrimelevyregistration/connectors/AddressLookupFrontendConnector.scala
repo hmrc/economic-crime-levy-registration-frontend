@@ -54,7 +54,6 @@ class AddressLookupFrontendConnectorImpl @Inject() (
   def initJourney(isUkAddress: Boolean, mode: Mode)(implicit
     hc: HeaderCarrier
   ): Future[String] = {
-    println(hc.headers(Seq(HeaderNames.LOCATION)))
     val alfLabels = AlfEnCyLabels(appConfig)
     val body      = AlfJourneyConfig(
       options = AlfOptions(

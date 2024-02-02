@@ -17,12 +17,14 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationType}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
@@ -45,16 +47,14 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK and the correct view" in forAll { registration: Registration =>
-      when(
-        mockRegistrationAdditionalInfoService.upsert(
-          any()
-        )(any(), any())
-      ).thenReturn(
-        EitherT.fromEither[Future](Right())
-      )
+      val updatedRegistration = registration.copy(registrationType = Some(Amendment))
 
-      when(mockRegistrationService.getOrCreate(any()))
-        .thenReturn(EitherT.fromEither(Right(registration)))
+      when(mockRegistrationService.getOrCreate(anyString())(any()))
+        .thenReturn(EitherT[Future, DataRetrievalError, Registration](Future.successful(Right(registration))))
+      when(mockRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+        .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+      when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
+        .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
       val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
 
@@ -63,25 +63,18 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
       contentAsString(result) shouldBe view("eclReferenceValue")(fakeRequest, messages).toString
     }
 
-    "return Internal server error and the correct view" in forAll { registration: Registration =>
-      when(mockRegistrationService.getOrCreate(any()))
-        .thenReturn(EitherT.fromEither[Future](Right(registration)))
-
-      when(
-        mockRegistrationAdditionalInfoService.upsert(
-          any()
-        )(any(), any())
-      ).thenReturn(
-        EitherT[Future, DataRetrievalError, Unit](
-          Future.successful(Left(DataRetrievalError.InternalUnexpectedError("", None)))
+    "return Internal server error and the correct view" in {
+      when(mockRegistrationService.getOrCreate(anyString())(any()))
+        .thenReturn(
+          EitherT[Future, DataRetrievalError, Registration](
+            Future.successful(Left(DataRetrievalError.InternalUnexpectedError("", None)))
+          )
         )
-      )
 
       val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
 
-      status(result) shouldBe SEE_OTHER
+      status(result) shouldBe INTERNAL_SERVER_ERROR
 
-      redirectLocation(result) shouldBe Some(routes.NotableErrorController.answersAreInvalid())
     }
   }
 

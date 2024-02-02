@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
 import cats.data.EitherT
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsEmpty, Request, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
@@ -52,17 +53,24 @@ class DataRetrievalActionSpec extends SpecBase {
   "refine" should {
     "return internal server error if additional info cannot be retrieved" in forAll {
       (internalId: String, groupId: String, registration: Registration) =>
-        when(mockEclRegistrationService.getOrCreate(any()))
-          .thenReturn(EitherT.fromEither[Future](Right(registration)))
+        when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId))(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Registration](Future.successful(Right(registration))))
 
-        val error = "Error"
-        when(mockRegistrationAdditionalInfoService.get(any())(any(), any()))
-          .thenReturn(EitherT.fromEither[Future](Left(DataRetrievalError.InternalUnexpectedError("", None))))
+        val error = "Internal server error"
+        when(mockRegistrationAdditionalInfoService.getOrCreate(ArgumentMatchers.eq(internalId), any())(any()))
+          .thenReturn(
+            EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo](
+              Future.successful(Left(DataRetrievalError.InternalUnexpectedError(error, None)))
+            )
+          )
 
-        val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
-          dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
+        val result = intercept[Exception] {
+          await(
+            dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
+          )
+        }
 
-        await(result) shouldBe Left(InternalServerError)
+        result.getMessage shouldBe error
     }
 
     "transform an AuthorisedRequest into a RegistrationDataRequest when data retrieval succeeds" in forAll {
@@ -75,13 +83,8 @@ class DataRetrievalActionSpec extends SpecBase {
           Some(liabilityYear),
           None
         )
-
-        when(mockRegistrationAdditionalInfoService.get(any())(any(), any()))
-          .thenReturn(
-            EitherT[Future, DataRetrievalError, Option[RegistrationAdditionalInfo]](
-              Future.successful(Right(Some(info)))
-            )
-          )
+        when(mockRegistrationAdditionalInfoService.getOrCreate(ArgumentMatchers.eq(internalId), (any()))(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo](Future.successful(Right(info))))
 
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))

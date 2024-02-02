@@ -62,11 +62,11 @@ class DoYouHaveUtrController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          answer => {
+          hasUtr => {
             val otherEntityJourneyData =
               request.registration.otherEntityJourneyData.copy(
-                isCtUtrPresent = Some(answer),
-                ctUtr = answer match {
+                isCtUtrPresent = Some(hasUtr),
+                ctUtr = hasUtr match {
                   case false => None
                   case true  => request.registration.otherEntityJourneyData.ctUtr
                 }

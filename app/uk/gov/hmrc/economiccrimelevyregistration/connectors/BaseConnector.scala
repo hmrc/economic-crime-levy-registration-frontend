@@ -77,9 +77,7 @@ trait BaseConnector {
         .execute[HttpResponse]
         .flatMap { response =>
           (response.status, response.header(HeaderNames.LOCATION)) match {
-            case (OK | CREATED | ACCEPTED, Some(journeyUrl)) =>
-              println(journeyUrl)
-              Future.successful(journeyUrl)
+            case (OK | CREATED | ACCEPTED, Some(journeyUrl)) => Future.successful(journeyUrl)
             case _                                           => response.error
           }
         }

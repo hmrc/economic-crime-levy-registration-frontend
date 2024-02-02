@@ -76,18 +76,22 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           routes.RegisterWithFcaController.onPageLoad()
     }
 
-    "return a Call to the relevant AP 12 months page in NormalMode when either the HMRC or Other AML Supervisor option is selected" in forAll {
-      registration: Registration =>
+    "return a Call to the relevant AP 12 months page in NormalMode when either the HMRC or Other AML Supervisor option is selected" +
+      "and the user has carried out Aml regulated activity in current FY" in forAll { registration: Registration =>
         val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
         val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample
         val amlSupervisor         =
           AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = otherProfessionalBody)
         val updatedRegistration   =
-          registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
+          registration.copy(
+            carriedOutAmlRegulatedActivityInCurrentFy = Some(true),
+            amlSupervisor = Some(amlSupervisor),
+            registrationType = Some(Initial)
+          )
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
           routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
-    }
+      }
 
     "return a Call to the check your answers page in CheckMode when either the HMRC or Other AML Supervisor option is selected" in forAll {
       registration: Registration =>
@@ -103,17 +107,21 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
     }
   }
 
-  "return a Call to the entity type page when from is liable before current year page" in forAll {
-    registration: Registration =>
+  "return a Call to the entity type page in NormalMode when either the HMRC or Other AML Supervisor option is selected" +
+    "and the user has NOT carried out Aml regulated activity in current FY" in forAll { registration: Registration =>
       val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
       val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample
       val amlSupervisor         =
         AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = otherProfessionalBody)
       val updatedRegistration   =
-        registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
+        registration.copy(
+          carriedOutAmlRegulatedActivityInCurrentFy = Some(false),
+          amlSupervisor = Some(amlSupervisor),
+          registrationType = Some(Initial)
+        )
 
       pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
         routes.EntityTypeController.onPageLoad(NormalMode)
-  }
+    }
 
 }

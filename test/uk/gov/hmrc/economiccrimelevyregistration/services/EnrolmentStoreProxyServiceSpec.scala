@@ -16,10 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import play.api.http.Status.BAD_GATEWAY
 import uk.gov.hmrc.economiccrimelevyregistration.{GroupEnrolmentsResponseWithEcl, GroupEnrolmentsResponseWithoutEcl}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EnrolmentStoreProxyConnector
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.EnrolmentStoreProxyError
 
 import scala.concurrent.Future
 
@@ -30,20 +33,20 @@ class EnrolmentStoreProxyServiceSpec extends SpecBase {
   "groupHasEnrolment" should {
     "return true when the list of group enrolments contains the ECL enrolment" in forAll {
       (groupId: String, groupEnrolmentsWithEcl: GroupEnrolmentsResponseWithEcl) =>
-        when(mockEnrolmentStoreProxyConnector.getEnrolmentsForGroup(any())(any()))
+        when(mockEnrolmentStoreProxyConnector.getEnrolmentsForGroup(ArgumentMatchers.eq(groupId))(any()))
           .thenReturn(Future.successful(groupEnrolmentsWithEcl.groupEnrolmentsResponse))
 
         val result = await(service.getEclReferenceFromGroupEnrolment(groupId).value)
-        result shouldBe Some(groupEnrolmentsWithEcl.eclReferenceNumber)
+        result shouldBe Right(groupEnrolmentsWithEcl.eclReferenceNumber)
     }
 
-    "return false when the list of group enrolments does not contain the ECL enrolment" in forAll {
+    "return EnrolmentStoreProxyError when the list of group enrolments does not contain the ECL enrolment" in forAll {
       (groupId: String, groupEnrolmentsWithoutEcl: GroupEnrolmentsResponseWithoutEcl) =>
-        when(mockEnrolmentStoreProxyConnector.getEnrolmentsForGroup(any())(any()))
+        when(mockEnrolmentStoreProxyConnector.getEnrolmentsForGroup(ArgumentMatchers.eq(groupId))(any()))
           .thenReturn(Future.successful(groupEnrolmentsWithoutEcl.groupEnrolmentsResponse))
 
         val result = await(service.getEclReferenceFromGroupEnrolment(groupId).value)
-        result shouldBe None
+        result shouldBe Left(EnrolmentStoreProxyError.BadGateway("Unable to find an ecl reference", BAD_GATEWAY))
     }
 
   }

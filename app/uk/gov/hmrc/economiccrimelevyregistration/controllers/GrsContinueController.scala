@@ -88,6 +88,11 @@ class GrsContinueController @Inject() (
               )
           }
 
+        case None =>
+          Future.successful(
+            routeError(ResponseError.badRequestError("No entity type found in registration data"))
+          )
+
         case _ =>
           Future.successful(
             routeError(ResponseError.internalServiceError("No valid entity type found in registration data"))

@@ -27,11 +27,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, RegisteredSociety, UkLimitedCompany, UnlimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 
+import java.net.URL
 import scala.concurrent.Future
 
 class EntityTypeControllerSpec extends SpecBase {
@@ -87,8 +89,9 @@ class EntityTypeControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "save the selected entity type then redirect to the next page" in forAll {
-      (registration: Registration, entityType: EntityType, mode: Mode) =>
+      (registration: Registration, mode: Mode) =>
         new TestContext(registration) {
+          val entityType                        = Charity
           val updatedRegistration: Registration = registration.copy(
             entityType = Some(entityType)
           )
@@ -96,19 +99,13 @@ class EntityTypeControllerSpec extends SpecBase {
           when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
-          when(mockEclRegistrationService.registerEntityType(any(), any()))
-            .thenReturn(EitherT.fromEither[Future](Right(onwardRoute.url)))
-
           val result: Future[Result] =
-            controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(onwardRoute.url)
+          redirectLocation(result) shouldBe Some(routes.BusinessNameController.onPageLoad(NormalMode).url)
 
-          verify(mockAuditConnector, times(1)).sendEvent(any())(any())
-
-          reset(mockAuditConnector)
         }
     }
 

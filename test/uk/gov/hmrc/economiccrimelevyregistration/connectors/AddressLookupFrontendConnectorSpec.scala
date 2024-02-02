@@ -24,9 +24,11 @@ import play.api.http.Status._
 import play.api.http.HeaderNames._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import play.api.libs.json.Json
+import play.api.mvc.ResponseHeader
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
+import uk.gov.hmrc.http.HttpResponse.unapply
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{HttpResponse, StringContextOps, UpstreamErrorResponse}
 
@@ -82,8 +84,9 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
 
     "throw an IllegalStateException when the http client returns a 202 response but the Location header is missing" in {
       beforeEach()
-      val response = HttpResponse(ACCEPTED, "No location header found", Map.empty)
-      val headers  = response.headers.filterNot(_._1 == HeaderNames.LOCATION)
+
+      val response = HttpResponse(ACCEPTED, "No location header found")
+      val headers  = response.headers.removed(LOCATION)
 
       when(mockHttpClient.post(ArgumentMatchers.eq(url"$expectedUrl"))(any())).thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(expectedJourneyConfig)))(any(), any(), any()))
@@ -109,7 +112,7 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(response))
 
       val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
-        await(connector.initJourney(ukMode, NormalMode)) //UNSURE ON THIS ONE
+        await(connector.initJourney(ukMode, NormalMode))
       }
 
       result.getMessage shouldBe "Internal server error"

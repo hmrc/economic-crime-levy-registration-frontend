@@ -131,7 +131,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
                 registrationType = Some(Initial)
               )
 
-            when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration)))
+            when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
               .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
             val result: Future[Result] =

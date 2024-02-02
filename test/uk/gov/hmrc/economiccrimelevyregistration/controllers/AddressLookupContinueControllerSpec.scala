@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import play.api.http.Status.SEE_OTHER
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
@@ -59,9 +60,8 @@ class AddressLookupContinueControllerSpec extends SpecBase {
     "retrieve the address data, store it then redirect to the check your answers page" in forAll {
       (journeyId: String, alfAddressData: AlfAddressData, registration: Registration) =>
         new TestContext(registration) {
-          when(
-            mockAddressLookupFrontendService.getAddress(ArgumentMatchers.eq(journeyId))
-          ).thenReturn(EitherT.fromEither[Future](Right(alfAddressData)))
+          when(mockAddressLookupFrontendService.getAddress(ArgumentMatchers.eq(journeyId))(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(alfAddressData)))
 
           val updatedRegistration = registration.copy(contactAddress =
             Some(
@@ -80,7 +80,7 @@ class AddressLookupContinueControllerSpec extends SpecBase {
           )
 
           when(
-            mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))
+            mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any())
           ).thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)

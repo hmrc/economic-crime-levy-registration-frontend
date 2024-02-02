@@ -101,11 +101,15 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, hasUtr: Boolean) =>
         new TestContext(registration) {
-          val otherEntityJourneyData: OtherEntityJourneyData = registration.otherEntityJourneyData
-            .copy(
-              isCtUtrPresent = Some(hasUtr)
+          val otherEntityJourneyData            =
+            registration.otherEntityJourneyData.copy(
+              isCtUtrPresent = Some(hasUtr),
+              ctUtr = hasUtr match {
+                case false => None
+                case true  => registration.otherEntityJourneyData.ctUtr
+              }
             )
-          val updatedRegistration: Registration              =
+          val updatedRegistration: Registration =
             registration.copy(
               optOtherEntityJourneyData = Some(otherEntityJourneyData)
             )
@@ -114,9 +118,7 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] =
-            controller.onSubmit(NormalMode)(
-              fakeRequest.withFormUrlEncodedBody(("value", hasUtr.toString))
-            )
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", hasUtr.toString)))
 
           status(result) shouldBe SEE_OTHER
 

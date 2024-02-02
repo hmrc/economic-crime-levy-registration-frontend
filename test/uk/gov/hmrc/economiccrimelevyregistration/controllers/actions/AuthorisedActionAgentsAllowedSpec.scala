@@ -82,7 +82,7 @@ class AuthorisedActionAgentsAllowedSpec extends SpecBase {
         when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
           .thenReturn(EitherT.fromEither[Future](Left(EnrolmentStoreProxyError.InternalUnexpectedError("", None))))
 
-        when(mockEclRegistrationService.getOrCreate(any()))
+        when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId))(any()))
           .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
@@ -122,7 +122,7 @@ class AuthorisedActionAgentsAllowedSpec extends SpecBase {
             )
           )
 
-        when(mockEclRegistrationService.getOrCreate(any()))
+        when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId))(any()))
           .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
 
         val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
@@ -131,48 +131,48 @@ class AuthorisedActionAgentsAllowedSpec extends SpecBase {
         redirectLocation(result).value shouldBe routes.NotableErrorController.assistantCannotRegister().url
     }
 
-    "throw an IllegalStateException if there is no internal id" in {
+    "throw an Exception if there is no internal id" in {
       when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
         .thenReturn(Future(None and Enrolments(Set.empty) and Some("") and Some(Organisation) and Some(User)))
 
-      val result = intercept[IllegalStateException] {
+      val result = intercept[Exception] {
         await(authorisedAction.invokeBlock(fakeRequest, testAction))
       }
 
-      result.getMessage shouldBe "Unable to retrieve internalId"
+      result.getMessage shouldBe "Failed to authorise due to missing data"
     }
 
-    "throw an IllegalStateException if there is no group id" in {
+    "throw an Exception if there is no group id" in {
       when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
         .thenReturn(Future(Some("") and Enrolments(Set.empty) and None and Some(Organisation) and Some(User)))
 
-      val result = intercept[IllegalStateException] {
+      val result = intercept[Exception] {
         await(authorisedAction.invokeBlock(fakeRequest, testAction))
       }
 
-      result.getMessage shouldBe "Unable to retrieve groupIdentifier"
+      result.getMessage shouldBe "Failed to authorise due to missing data"
     }
 
-    "throw an IllegalStateException if there is no affinity group" in {
+    "throw an Exception if there is no affinity group" in {
       when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
         .thenReturn(Future(Some("") and Enrolments(Set.empty) and Some("") and None and Some(User)))
 
-      val result = intercept[IllegalStateException] {
+      val result = intercept[Exception] {
         await(authorisedAction.invokeBlock(fakeRequest, testAction))
       }
 
-      result.getMessage shouldBe "Unable to retrieve affinityGroup"
+      result.getMessage shouldBe "Failed to authorise due to missing data"
     }
 
-    "throw an IllegalStateException if there is no credential role" in {
+    "throw an Exception if there is no credential role" in {
       when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
         .thenReturn(Future(Some("") and Enrolments(Set.empty) and Some("") and Some(Organisation) and None))
 
-      val result = intercept[IllegalStateException] {
+      val result = intercept[Exception] {
         await(authorisedAction.invokeBlock(fakeRequest, testAction))
       }
 
-      result.getMessage shouldBe "Unable to retrieve credentialRole"
+      result.getMessage shouldBe "Failed to authorise due to missing data"
     }
   }
 

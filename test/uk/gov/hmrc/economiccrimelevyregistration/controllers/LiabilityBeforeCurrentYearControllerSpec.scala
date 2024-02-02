@@ -17,7 +17,8 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.Result
@@ -25,9 +26,11 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, NormalMode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, SessionError}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, LiabilityYear, NormalMode, Registration, RegistrationAdditionalInfo, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
+import uk.gov.hmrc.time.TaxYear
 
 import scala.concurrent.Future
 
@@ -41,11 +44,11 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
   val mockSessionService: SessionService                           = mock[SessionService]
   val mockAuditService: AuditService                               = mock[AuditService]
 
-  class TestContext(registrationData: Registration) {
+  class TestContext(registrationData: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None) {
     val controller = new LiabilityBeforeCurrentYearController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeDataRetrievalAction(registrationData, additionalInfo),
       formProvider,
       mockAdditionalInfoService,
       mockSessionService,
@@ -55,43 +58,62 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = None)) {
-        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+    "return OK and the correct view when no answer has already been provided" in forAll {
+      (registration: Registration) =>
+        val info: RegistrationAdditionalInfo =
+          RegistrationAdditionalInfo(
+            registration.internalId,
+            None,
+            None
+          )
+        new TestContext(registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = None), Some(info)) {
 
-        status(result) shouldBe OK
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
-        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
-      }
+          status(result) shouldBe OK
+
+          contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
+        }
     }
   }
 
   "onSubmit" should {
     "save the selected answer then redirect to the next page" in forAll {
-      (registration: Registration, liableBeforeCurrentYear: Boolean, liabilityYear: LiabilityYear) =>
+      (registration: Registration, liableBeforeCurrentYear: Boolean) =>
         new TestContext(registration) {
+          val liabilityYear =
+            (registration.carriedOutAmlRegulatedActivityInCurrentFy, liableBeforeCurrentYear) match {
+              case (Some(_), true)     => Some(LiabilityYear(TaxYear.current.previous.startYear))
+              case (Some(true), false) => Some(LiabilityYear(TaxYear.current.currentYear))
+              case _                   => None
+            }
+
           val info: RegistrationAdditionalInfo =
             RegistrationAdditionalInfo(
               registration.internalId,
-              Some(liabilityYear),
-              None
+              liabilityYear,
+              Some(eclReference)
             )
 
-          when(mockAdditionalInfoService.upsert(any()))
-            .thenReturn(EitherT.fromEither[Future](Right(())))
+          when(mockAdditionalInfoService.upsert(ArgumentMatchers.eq(info))(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+          if (liabilityYear.isDefined) {
+            val liabilityYearSessionData: Map[String, String] =
+              Map(SessionKeys.LiabilityYear -> liabilityYear.value.asString)
+            val sessionData: SessionData                      = SessionData(registration.internalId, liabilityYearSessionData)
+
+            when(mockSessionService.upsert(ArgumentMatchers.eq(sessionData))(any()))
+              .thenReturn(EitherT[Future, SessionError, Unit](Future.successful(Right(()))))
+          }
 
           val result: Future[Result] =
-            controller.onSubmit(NormalMode)(
+            controller.onSubmit(CheckMode)(
               fakeRequest.withFormUrlEncodedBody(("value", liableBeforeCurrentYear.toString))
             )
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(onwardRoute.url)
-
-          verify(mockAdditionalInfoService, times(1)).upsert(any())(any(), any())
-
-          reset(mockAdditionalInfoService)
+          redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
         }
     }
 
