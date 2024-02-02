@@ -46,7 +46,7 @@ class AmendmentRequestedController @Inject() (
       .flatMap {
         case Some(firstContactEmailAddress) =>
           sessionService
-            .get(request.session, request.internalId, SessionKeys.contactAddress)
+            .get(request.session, request.internalId, SessionKeys.ContactAddress)
             .map { value =>
               val contactAddress = value match {
                 case Some(json) => Json.fromJson[EclAddress](Json.parse(json)).asOpt

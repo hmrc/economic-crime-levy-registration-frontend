@@ -23,5 +23,5 @@ object SessionKeys {
   val SecondContactEmailAddress = "secondContactEmailAddress"
   val LiabilityYear             = "liabilityYear"
   val AmlRegulatedActivity      = "amlRegulatedActivity"
-  val contactAddress            = "contactAddress"
+  val ContactAddress            = "contactAddress"
 }

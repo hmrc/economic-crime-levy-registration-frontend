@@ -200,7 +200,7 @@ class CheckYourAnswersController @Inject() (
       val updatedSession = session ++ Seq(
         SessionKeys.FirstContactEmailAddress -> registration.contacts.firstContactDetails.emailAddress
           .getOrElse(throw new IllegalStateException("First contact email address not found in registration data")),
-        SessionKeys.contactAddress           -> Json
+        SessionKeys.ContactAddress           -> Json
           .toJson(
             registration.contactAddress
               .getOrElse(throw new IllegalStateException("Contact address not found in registration data"))
