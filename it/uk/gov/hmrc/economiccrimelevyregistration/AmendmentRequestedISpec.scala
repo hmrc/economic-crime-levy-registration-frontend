@@ -35,15 +35,24 @@ class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the registration submitted HTML view" in forAll { sessionData: SessionData =>
       stubAuthorisedWithEclEnrolment()
 
-      stubGetSession(sessionData)
-
       val eclAddress               = random[EclAddress]
       val firstContactEmailAddress = emailAddress(EmailMaxLength).sample.get
+
+      val json = Json.toJson(eclAddress).toString
+
+      stubGetSession(
+        sessionData.copy(
+          values = Map(
+            (SessionKeys.ContactAddress, json),
+            (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
+          )
+        )
+      )
 
       val result = callRoute(
         FakeRequest(routes.AmendmentRequestedController.onPageLoad())
           .withSession(
-            (SessionKeys.ContactAddress, Json.toJson(eclAddress).toString),
+            (SessionKeys.ContactAddress, json),
             (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
           )
       )
