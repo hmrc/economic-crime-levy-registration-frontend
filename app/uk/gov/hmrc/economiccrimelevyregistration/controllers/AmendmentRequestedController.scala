@@ -18,15 +18,16 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.Logging
 import play.api.i18n.I18nSupport
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendmentRequestedView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AmendmentRequestedController @Inject() (
@@ -42,12 +43,32 @@ class AmendmentRequestedController @Inject() (
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     sessionService
       .get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress)
-      .map {
+      .flatMap {
         case Some(firstContactEmailAddress) =>
-          Ok(view(firstContactEmailAddress, request.eclRegistrationReference))
+          sessionService
+            .get(request.session, request.internalId, SessionKeys.ContactAddress)
+            .map { value =>
+              val contactAddress = value match {
+                case Some(json) => Json.fromJson[EclAddress](Json.parse(json)).asOpt
+                case None       => None
+              }
+              Ok(
+                view(
+                  firstContactEmailAddress,
+                  request.eclRegistrationReference,
+                  contactAddress
+                )
+              )
+            }
+            .recover { case e =>
+              logger.error(
+                s"Unable to retrieve contact address from session: ${e.getMessage}"
+              )
+              InternalServerError
+            }
         case None                           =>
           logger.error("Failed to retrieve first contact email address from session and database")
-          InternalServerError
+          Future.successful(InternalServerError)
       }
       .recover { case e =>
         logger.error(

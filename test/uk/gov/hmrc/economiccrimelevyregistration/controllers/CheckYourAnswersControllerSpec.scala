@@ -178,6 +178,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         val updatedRegistration = registration.copy(
           entityType = Some(entityType),
           registrationType = Some(Initial),
+          contactAddress = Some(EclAddress.empty),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
             secondContact = Some(false),
@@ -241,6 +242,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         val updatedRegistration = registration.copy(
           entityType = Some(entityType),
           registrationType = Some(Initial),
+          contactAddress = Some(EclAddress.empty),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
             secondContact = Some(false),
@@ -311,6 +313,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         val updatedRegistration = registration.copy(
           entityType = Some(entityType),
           registrationType = Some(Initial),
+          contactAddress = Some(EclAddress.empty),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
             secondContact = Some(true),
@@ -376,6 +379,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         val updatedRegistration = registration.copy(
           entityType = Some(entityType),
           registrationType = Some(Initial),
+          contactAddress = Some(EclAddress.empty),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
             secondContact = Some(true),
@@ -438,6 +442,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         val updatedRegistration = registration.copy(
           entityType = Some(entityType),
           registrationType = Some(Initial),
+          contactAddress = Some(EclAddress.empty),
           contacts = Contacts(
             firstContactDetails = validContactDetails.copy(emailAddress = None),
             secondContact = Some(false),

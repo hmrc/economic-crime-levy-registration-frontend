@@ -31,5 +31,7 @@ final case class EclAddress(
 )
 
 object EclAddress {
+  def empty = new EclAddress(None, None, None, None, None, None, None, None, "")
+
   implicit val format: OFormat[EclAddress] = Json.format[EclAddress]
 }
