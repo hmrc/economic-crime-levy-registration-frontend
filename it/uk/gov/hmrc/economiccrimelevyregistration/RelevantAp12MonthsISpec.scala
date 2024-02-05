@@ -36,8 +36,10 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option then redirect to the UK revenue page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val updatedRegistration =
@@ -57,8 +59,10 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option then redirect to the relevant AP length page when the No option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val updatedRegistration =

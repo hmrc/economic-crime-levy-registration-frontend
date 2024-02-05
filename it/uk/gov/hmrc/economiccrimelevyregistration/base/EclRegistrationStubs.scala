@@ -52,7 +52,8 @@ trait EclRegistrationStubs { self: WireMockStubs =>
       get(urlEqualTo(s"/economic-crime-levy-registration/registrations/$testInternalId/validation-errors")),
       if (valid) {
         aResponse()
-          .withStatus(NO_CONTENT)
+          .withStatus(OK)
+          .withBody(Json.toJson(None).toString())
       } else {
         aResponse()
           .withStatus(OK)

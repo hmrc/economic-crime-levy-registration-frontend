@@ -35,9 +35,9 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
     }
   }
 
-  s"POST ${routes.LiabilityBeforeCurrentYearController.onSubmit(NormalMode).url}"  should {
+  s"POST ${routes.LiabilityBeforeCurrentYearController.onSubmit(CheckMode).url}"   should {
     behave like authorisedActionWithEnrolmentCheckRoute(
-      routes.LiabilityBeforeCurrentYearController.onSubmit(NormalMode)
+      routes.LiabilityBeforeCurrentYearController.onSubmit(CheckMode)
     )
 
     "save the selected address option then redirect to the address lookup frontend journey" in {
@@ -52,15 +52,9 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
-      val liabilityYear = (registration.carriedOutAmlRegulatedActivityInCurrentFy, liableBeforeCurrentYear) match {
-        case (Some(_), true)     => Some(LiabilityYear(TaxYear.current.previous.startYear))
-        case (Some(true), false) => Some(LiabilityYear(TaxYear.current.currentYear))
-        case _                   => None
-      }
-
       val info = RegistrationAdditionalInfo(
         registration.internalId,
-        liabilityYear,
+        None,
         None
       )
 
@@ -68,19 +62,13 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       stubUpsertRegistration(registration)
 
       val result = callRoute(
-        FakeRequest(routes.LiabilityBeforeCurrentYearController.onSubmit(NormalMode))
+        FakeRequest(routes.LiabilityBeforeCurrentYearController.onSubmit(CheckMode))
           .withFormUrlEncodedBody(("value", liableBeforeCurrentYear.toString))
       )
 
       status(result) shouldBe SEE_OTHER
 
-      val call: Call = if (liableBeforeCurrentYear) {
-        routes.AmlSupervisorController.onPageLoad(NormalMode, Initial)
-      } else {
-        routes.NotLiableController.youDoNotNeedToRegister()
-      }
-
-      redirectLocation(result) shouldBe Some(call.url)
+      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
     }
   }
 }
