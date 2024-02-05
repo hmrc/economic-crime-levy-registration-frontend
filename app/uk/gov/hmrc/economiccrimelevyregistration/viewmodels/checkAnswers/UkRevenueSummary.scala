@@ -29,8 +29,10 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 
 object UkRevenueSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.relevantApRevenue.map { answer =>
+  def row(
+    relevantApRevenue: Option[BigDecimal]
+  )(implicit messages: Messages): Option[SummaryListRow] =
+    relevantApRevenue.map { answer =>
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.ukRevenue.label"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(s"£${ViewUtils.formatMoney(answer)}"))),

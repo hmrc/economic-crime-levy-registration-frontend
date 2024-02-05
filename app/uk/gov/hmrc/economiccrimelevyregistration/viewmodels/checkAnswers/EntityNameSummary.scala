@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{GeneralPartnership, ScottishPartnership}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -29,11 +29,13 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Key, 
 
 object EntityNameSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.entityName.map { answer =>
+  def row(entityName: Option[String], entityType: Option[EntityType])(implicit
+    messages: Messages
+  ): Option[SummaryListRow] =
+    entityName.map { answer =>
       val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(answer))))
 
-      val changeAction: Seq[ActionItem] = request.registration.entityType match {
+      val changeAction: Seq[ActionItem] = entityType match {
         case Some(GeneralPartnership | ScottishPartnership) =>
           Seq(
             ActionItemViewModel("site.change", routes.PartnershipNameController.onPageLoad(CheckMode).url)

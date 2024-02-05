@@ -26,8 +26,10 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 
 object AmlRegulatedActivitySummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.carriedOutAmlRegulatedActivityInCurrentFy.map { answer =>
+  def row(
+    carriedOutAmlRegulatedActivityInCurrentFy: Option[Boolean]
+  )(implicit messages: Messages): Option[SummaryListRow] =
+    carriedOutAmlRegulatedActivityInCurrentFy.map { answer =>
       val value = if (answer) "site.yes" else "site.no"
 
       SummaryListRowViewModel(

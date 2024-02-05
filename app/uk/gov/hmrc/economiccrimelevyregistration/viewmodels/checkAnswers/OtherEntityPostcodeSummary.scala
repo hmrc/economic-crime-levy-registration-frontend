@@ -28,8 +28,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
 
 object OtherEntityPostcodeSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.otherEntityJourneyData.postcode.map { answer =>
+  def row(postcode: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+    postcode.map { answer =>
       val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(answer))))
 
       SummaryListRowViewModel(

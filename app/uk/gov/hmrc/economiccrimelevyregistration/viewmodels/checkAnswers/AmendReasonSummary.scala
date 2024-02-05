@@ -27,8 +27,8 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 
 object AmendReasonSummary {
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.amendReason.map { answer =>
+  def row(amendReason: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+    amendReason.map { answer =>
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.amendReason.label"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),

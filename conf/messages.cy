@@ -378,6 +378,11 @@ checkYourAnswers.eclReferenceNumber.label = Cyfeirnod ECL
 checkYourAnswers.liabilityDate.label = Dyddiad cychwyn atebolrwydd
 checkYourAnswers.amendReason.title = Rheswm dros ddiwygio
 checkYourAnswers.amendReason.label = Gwybodaeth ychwanegol
+checkYourAnswers.amendedAnswers = Atebion sydd wedi’u diwygio
+checkYourAnswers.nowSend = Ewch ati i anfon eich cofrestriad diwygiedig nawr
+checkYourAnswers.bySending = Drwy gyflwyno’r cais hwn i ddiwygio’ch cofrestriad, rydych yn cadarnhau, hyd eithaf eich gwybodaeth, fod y manylion a rowch yn gywir.
+checkYourAnswers.submittingRequest = Wrthi’n cyflwyno’ch cais i ddiwygio’ch cofrestriad
+checkYourAnswers.notMadeChanges = Ni allwch gyflwyno'r cais hwn gan nad ydych wedi gwneud unrhyw newidiadau.
 
 submitted.title = Cofrestriad wedi’i gyflwyno
 submitted.heading = Cofrestriad wedi’i gyflwyno

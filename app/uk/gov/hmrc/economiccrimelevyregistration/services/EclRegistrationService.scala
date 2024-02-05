@@ -51,6 +51,11 @@ class EclRegistrationService @Inject() (
   def upsertRegistration(registration: Registration)(implicit hc: HeaderCarrier): Future[Registration] =
     eclRegistrationConnector.upsertRegistration(registration)
 
+  def deleteRegistration(internalId: String)(implicit hc: HeaderCarrier) =
+    eclRegistrationConnector.deleteRegistration(internalId)
+
+  def submitRegistration(internalId: String)(implicit hc: HeaderCarrier)                                    =
+    eclRegistrationConnector.submitRegistration(internalId)
   def getSubscription(eclRegistration: String)(implicit hc: HeaderCarrier): Future[GetSubscriptionResponse] =
     eclRegistrationConnector.getSubscription(eclRegistration)
 
