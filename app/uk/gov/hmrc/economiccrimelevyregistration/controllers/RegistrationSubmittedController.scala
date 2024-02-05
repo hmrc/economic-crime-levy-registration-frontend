@@ -50,18 +50,26 @@ class RegistrationSubmittedController @Inject() (
         sessionService.get(request.session, request.internalId, SessionKeys.LiabilityYear).asResponseError
       amlRegulatedActivity <-
         sessionService.get(request.session, request.internalId, SessionKeys.AmlRegulatedActivity).asResponseError
-    } yield (liabilityYear, amlRegulatedActivity)).fold(
+      firstContactEmail    <-
+        sessionService.get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress).asResponseError
+      secondContactEmail   <- sessionService
+                                .getOptional(request.session, request.internalId, SessionKeys.SecondContactEmailAddress)
+                                .asResponseError
+      eclReference         <-
+        sessionService.getOptional(request.session, request.internalId, SessionKeys.EclReference).asResponseError
+    } yield (liabilityYear, amlRegulatedActivity, firstContactEmail, secondContactEmail, eclReference)).fold(
       _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
       data => {
-        val liabilityYear = Some(LiabilityYear(data._1.toInt))
-        (request.session.get(SessionKeys.EclReference), request.eclRegistrationReference) match {
+        val liabilityYear        = Some(LiabilityYear(data._1.toInt))
+        val amlRegulatedActivity = data._2
+        val firstContactEmail    = data._3
+        val secondContactEmail   = data._4
+        val eclReference         = data._5
+        (eclReference, request.eclRegistrationReference) match {
           case (Some(eclReference), _) =>
-            val secondContactEmailAddress: Option[String] =
-              request.session.get(SessionKeys.SecondContactEmailAddress)
-            val firstContactEmailAddress                  = request.session(SessionKeys.FirstContactEmailAddress)
-            Ok(view(eclReference, firstContactEmailAddress, secondContactEmailAddress, liabilityYear, Some(data._2)))
+            Ok(view(eclReference, firstContactEmail, secondContactEmail, liabilityYear, Some(amlRegulatedActivity)))
           case (_, Some(eclReference)) =>
-            Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear, Some(data._2)))
+            Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear, Some(amlRegulatedActivity)))
           case _                       =>
             Redirect(routes.NotableErrorController.answersAreInvalid())
         }

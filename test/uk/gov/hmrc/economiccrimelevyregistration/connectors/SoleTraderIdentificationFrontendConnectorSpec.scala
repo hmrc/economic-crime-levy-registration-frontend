@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.{Arbitrary, Gen}
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
@@ -78,20 +79,22 @@ class SoleTraderIdentificationFrontendConnectorSpec extends SpecBase {
   }
 
   "getJourneyData" should {
-    "return journey data for a given journey id" in forAll {
-      (soleTraderEntityJourneyData: SoleTraderEntityJourneyData, journeyId: String) =>
-        val expectedUrl = s"$apiUrl/journey/$journeyId"
+    "return journey data for a given journey id" in forAll(
+      Arbitrary.arbitrary[SoleTraderEntityJourneyData],
+      Gen.uuid.map(_.toString)
+    ) { (soleTraderEntityJourneyData, journeyId) =>
+      val expectedUrl = s"$apiUrl/journey/$journeyId"
 
-        when(mockHttpClient.get(ArgumentMatchers.eq(url"$expectedUrl"))(any()))
-          .thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
-          .thenReturn(
-            Future.successful(HttpResponse.apply(OK, Json.stringify(Json.toJson(soleTraderEntityJourneyData))))
-          )
+      when(mockHttpClient.get(ArgumentMatchers.eq(url"$expectedUrl"))(any()))
+        .thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+        .thenReturn(
+          Future.successful(HttpResponse.apply(OK, Json.stringify(Json.toJson(soleTraderEntityJourneyData))))
+        )
 
-        val result = await(connector.getJourneyData(journeyId))
+      val result = await(connector.getJourneyData(journeyId))
 
-        result shouldBe soleTraderEntityJourneyData
+      result shouldBe soleTraderEntityJourneyData
     }
   }
 }

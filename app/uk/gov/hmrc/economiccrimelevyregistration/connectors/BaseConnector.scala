@@ -78,6 +78,7 @@ trait BaseConnector {
         .flatMap { response =>
           (response.status, response.header(HeaderNames.LOCATION)) match {
             case (OK | CREATED | ACCEPTED, Some(journeyUrl)) => Future.successful(journeyUrl)
+            case (OK | CREATED | ACCEPTED, None)             => Future.failed(new Exception("No location header found"))
             case _                                           => response.error
           }
         }

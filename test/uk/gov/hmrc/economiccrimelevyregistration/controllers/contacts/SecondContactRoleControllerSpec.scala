@@ -93,11 +93,9 @@ class SecondContactRoleControllerSpec extends SpecBase {
           updatedRegistration
         ) {
 
-          val result = await(controller.onPageLoad(NormalMode)(fakeRequest))
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
-          result shouldBe Redirect(
-            uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid()
-          )
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
     }
 

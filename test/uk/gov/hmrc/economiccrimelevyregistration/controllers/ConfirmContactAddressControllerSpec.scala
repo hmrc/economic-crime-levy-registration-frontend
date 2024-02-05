@@ -95,7 +95,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
         }
     }
 
-    "throw an IllegalStateException when there is no registered office address in the registration data" in forAll {
+    "return a DataRetrievalError when there is no registered office address in the registration data" in forAll {
       (
         registration: Registration
       ) =>
@@ -108,11 +108,10 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
         new TestContext(
           updatedRegistration
         ) {
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onPageLoad(NormalMode)(fakeRequest))
-          }
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
-          result.getMessage shouldBe "No registered office address found in registration data"
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+
         }
     }
 
@@ -154,8 +153,17 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
             registration.copy(useRegisteredOfficeAddressAsContactAddress =
               Some(useRegisteredOfficeAddressAsContactAddress)
             )
+          val cleanedUpRegistration             = dataCleanup.cleanup(updatedRegistration)
+          val modifiedRegistration              =
+            if (useRegisteredOfficeAddressAsContactAddress) {
+              cleanedUpRegistration.copy(
+                contactAddress = cleanedUpRegistration.grsAddressToEclAddress
+              )
+            } else {
+              cleanedUpRegistration
+            }
 
-          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(modifiedRegistration))(any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] =
