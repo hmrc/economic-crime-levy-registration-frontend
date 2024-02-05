@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
-import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{RegistrationAdditionalInfo, SessionData, SessionKeys}
 
 class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -32,8 +32,14 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the registration submitted HTML view" in forAll { sessionData: SessionData =>
       stubAuthorisedWithEclEnrolment()
+      stubDeleteRegistrationAdditionalInfo()
+      stubDeleteRegistration()
 
-      stubGetSession(sessionData)
+      val session = sessionData.copy(values =
+        Map((SessionKeys.LiabilityYear -> "2020"), (SessionKeys.AmlRegulatedActivity -> "yes"))
+      )
+
+      stubGetSession(session)
 
       val eclReference             = random[String]
       val firstContactEmailAddress = emailAddress(EmailMaxLength).sample.get

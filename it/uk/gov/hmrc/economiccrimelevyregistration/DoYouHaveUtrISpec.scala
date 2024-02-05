@@ -17,8 +17,10 @@ class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the do you have utr HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(routes.DoYouHaveUtrController.onPageLoad(NormalMode)))
@@ -46,7 +48,9 @@ class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
         }
       )
       val updatedRegistration    = registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+      val additionalInfo         = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
       stubUpsertRegistration(updatedRegistration)
 

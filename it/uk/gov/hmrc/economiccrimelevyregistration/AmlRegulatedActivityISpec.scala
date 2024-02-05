@@ -20,7 +20,9 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       val expectedTaxYearStart = EclTaxYear.currentFyStartYear
       val expectedTaxYearEnd   = EclTaxYear.currentFyEndYear
+      val additionalInfo       = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val registration = random[Registration]
 
       stubGetRegistration(registration)
@@ -48,7 +50,9 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
       val updatedRegistration = validRegistration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
 
       stubUpsertRegistration(updatedRegistration)
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val result = callRoute(
         FakeRequest(routes.AmlRegulatedActivityController.onSubmit(NormalMode))
           .withFormUrlEncodedBody(("value", "true"))
@@ -65,7 +69,9 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
       val registration = random[Registration].copy(internalId = testInternalId)
 
       stubGetRegistration(registration)
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val updatedRegistration =
         Registration
           .empty(testInternalId)
@@ -81,7 +87,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(
-        routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode).url
+        routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode).url
       )
     }
   }

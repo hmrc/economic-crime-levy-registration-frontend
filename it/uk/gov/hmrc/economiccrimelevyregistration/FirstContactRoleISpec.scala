@@ -19,9 +19,11 @@ class FirstContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the first contact role HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val name         = random[String]
+      val registration   = random[Registration]
+      val name           = random[String]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(
         registration.copy(contacts =
           registration.contacts.copy(firstContactDetails =
@@ -44,10 +46,12 @@ class FirstContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
     "save the provided role then redirect to the first contact email page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val name         = random[String]
-      val role         = stringsWithMaxLength(RoleMaxLength).sample.get
+      val registration   = random[Registration]
+      val name           = random[String]
+      val role           = stringsWithMaxLength(RoleMaxLength).sample.get
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val updatedRegistration = registration.copy(contacts =
         registration.contacts.copy(firstContactDetails =
           registration.contacts.firstContactDetails.copy(name = Some(name), role = Some(role))

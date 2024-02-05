@@ -19,9 +19,11 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the first contact number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val name         = random[String]
+      val registration   = random[Registration]
+      val name           = random[String]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(
         registration.copy(contacts =
           registration.contacts.copy(firstContactDetails =
@@ -52,10 +54,12 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
     "save the provided telephone number then redirect to the add another contact page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val name         = random[String]
-      val number       = telephoneNumber(TelephoneNumberMaxLength).sample.get
+      val registration   = random[Registration]
+      val name           = random[String]
+      val number         = telephoneNumber(TelephoneNumberMaxLength).sample.get
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val updatedRegistration = registration.copy(contacts =
         registration.contacts.copy(firstContactDetails =
           registration.contacts.firstContactDetails.copy(name = Some(name), telephoneNumber = Some(number))

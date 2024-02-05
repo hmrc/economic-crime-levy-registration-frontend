@@ -9,22 +9,25 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import RegistrationType.Initial
+import uk.gov.hmrc.time.TaxYear
 
 class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode).url}" should {
+  s"GET ${routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(
-      routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode)
+      routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode)
     )
 
     "respond with 200 status and the liability before current year HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.LiabilityBeforeCurrentYearController.onPageLoad(false, NormalMode)))
+      val result = callRoute(FakeRequest(routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
@@ -32,9 +35,9 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
     }
   }
 
-  s"POST ${routes.LiabilityBeforeCurrentYearController.onSubmit(false, NormalMode).url}"  should {
+  s"POST ${routes.LiabilityBeforeCurrentYearController.onSubmit(NormalMode).url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(
-      routes.LiabilityBeforeCurrentYearController.onSubmit(false, NormalMode)
+      routes.LiabilityBeforeCurrentYearController.onSubmit(NormalMode)
     )
 
     "save the selected address option then redirect to the address lookup frontend journey" in {
@@ -44,20 +47,35 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       val registration            = random[Registration].copy(
         registrationType = Some(Initial)
       )
+      val additionalInfo          = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
+      val liabilityYear = (registration.carriedOutAmlRegulatedActivityInCurrentFy, liableBeforeCurrentYear) match {
+        case (Some(_), true)     => Some(LiabilityYear(TaxYear.current.previous.startYear))
+        case (Some(true), false) => Some(LiabilityYear(TaxYear.current.currentYear))
+        case _                   => None
+      }
+
+      val info = RegistrationAdditionalInfo(
+        registration.internalId,
+        liabilityYear,
+        None
+      )
+
+      stubUpsertRegistrationAdditionalInfo(info)
       stubUpsertRegistration(registration)
 
       val result = callRoute(
-        FakeRequest(routes.LiabilityBeforeCurrentYearController.onSubmit(false, NormalMode))
+        FakeRequest(routes.LiabilityBeforeCurrentYearController.onSubmit(NormalMode))
           .withFormUrlEncodedBody(("value", liableBeforeCurrentYear.toString))
       )
 
       status(result) shouldBe SEE_OTHER
 
       val call: Call = if (liableBeforeCurrentYear) {
-        routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, true)
+        routes.AmlSupervisorController.onPageLoad(NormalMode, Initial)
       } else {
         routes.NotLiableController.youDoNotNeedToRegister()
       }

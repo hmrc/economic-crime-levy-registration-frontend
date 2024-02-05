@@ -22,7 +22,7 @@ import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.SessionError
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, SessionError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
@@ -62,7 +62,6 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             (SessionKeys.EclReference, eclReference),
             (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
           )
-
         } else {
           fakeRequest.withSession(
             (SessionKeys.EclReference, eclReference),
@@ -70,6 +69,12 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             (SessionKeys.AmlRegulatedActivity, amlRegulatedActivity.get)
           )
         }
+
+        when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+        when(mockEclRegistrationService.deleteRegistration(anyString())(any(), any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
         when(
           mockSessionService.get(
@@ -126,6 +131,12 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             (SessionKeys.AmlRegulatedActivity, amlRegulatedActivity.get)
           )
         }
+
+        when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+        when(mockEclRegistrationService.deleteRegistration(anyString())(any(), any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
         when(
           mockSessionService.get(

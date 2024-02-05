@@ -17,8 +17,10 @@ class PartnershipNameISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the partnership name HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(routes.PartnershipNameController.onPageLoad(NormalMode)))
@@ -37,7 +39,9 @@ class PartnershipNameISpec extends ISpecBase with AuthorisedBehaviour {
 
       val registration    = random[Registration]
       val partnershipName = stringsWithMaxLength(OrganisationNameMaxLength).sample.get
+      val additionalInfo  = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val updatedRegistration = registration.copy(partnershipName = Some(partnershipName))

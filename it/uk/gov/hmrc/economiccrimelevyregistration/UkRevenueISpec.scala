@@ -23,8 +23,10 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the UK revenue view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(routes.UkRevenueController.onPageLoad(NormalMode)))
@@ -41,9 +43,11 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
     "save the UK revenue then redirect to the liability before current year page if the amount due is more than 0" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val ukRevenue    = revenueGen.sample.get
+      val registration   = random[Registration]
+      val ukRevenue      = revenueGen.sample.get
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration.copy(relevantAp12Months = Some(true)))
 
       val updatedRegistration = registration.copy(
@@ -65,7 +69,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(
-        routes.LiabilityBeforeCurrentYearController.onPageLoad(true, NormalMode).url
+        routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode).url
       )
     }
 
@@ -74,7 +78,6 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
       val registration = random[Registration].copy(internalId = testInternalId)
       val ukRevenue    = revenueGen.sample.get
-
       stubGetRegistration(registration.copy(relevantAp12Months = Some(true)))
 
       val updatedRegistration = registration.copy(
@@ -82,6 +85,9 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
         relevantApRevenue = Some(ukRevenue),
         revenueMeetsThreshold = Some(false)
       )
+      val additionalInfo      = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubUpsertRegistration(updatedRegistration)
 
@@ -98,7 +104,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(
-        routes.LiabilityBeforeCurrentYearController.onPageLoad(true, NormalMode).url
+        routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode).url
       )
     }
   }

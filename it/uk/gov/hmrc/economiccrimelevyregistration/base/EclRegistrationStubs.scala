@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status.{NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, Registration}
 
 import java.time.Instant
@@ -46,7 +47,7 @@ trait EclRegistrationStubs { self: WireMockStubs =>
         .withBody(Json.toJson(eclSubscriptionStatus).toString())
     )
 
-  def stubGetRegistrationValidationErrors(valid: Boolean, errors: DataValidationErrors): StubMapping =
+  def stubGetRegistrationValidationErrors(valid: Boolean, errors: DataValidationError): StubMapping =
     stub(
       get(urlEqualTo(s"/economic-crime-levy-registration/registrations/$testInternalId/validation-errors")),
       if (valid) {
@@ -55,7 +56,7 @@ trait EclRegistrationStubs { self: WireMockStubs =>
       } else {
         aResponse()
           .withStatus(OK)
-          .withBody(Json.toJson(errors).toString())
+          .withBody(Json.toJson(errors.message).toString())
       }
     )
 

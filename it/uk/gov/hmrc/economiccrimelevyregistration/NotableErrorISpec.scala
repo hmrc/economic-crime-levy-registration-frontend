@@ -22,7 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration, RegistrationAdditionalInfo}
 
 class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -31,7 +31,9 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the answers are invalid HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val registration = random[Registration]
 
       stubGetRegistration(registration)
@@ -48,7 +50,9 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the user already enrolled HTML view" in {
       stubAuthorisedWithEclEnrolment()
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val result = callRoute(FakeRequest(routes.NotableErrorController.userAlreadyEnrolled()))
 
       status(result) shouldBe OK
@@ -60,7 +64,7 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
     behave like authorisedActionWithoutEnrolmentCheckRoute(routes.NotableErrorController.groupAlreadyEnrolled())
 
     "respond with 200 status and the org already registered HTML view" in {
-      stubAuthorised()
+      stubAuthorisedWithEclEnrolment()
       stubWithGroupEclEnrolment()
 
       val result = callRoute(FakeRequest(routes.NotableErrorController.groupAlreadyEnrolled()))
@@ -145,9 +149,11 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the details do not match HTML view" in {
       stubAuthorised()
 
-      val registration = random[Registration]
-      val entityType   = random[EntityType]
+      val registration   = random[Registration]
+      val entityType     = random[EntityType]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration.copy(entityType = Some(entityType)))
 
       val result = callRoute(FakeRequest(routes.NotableErrorController.verificationFailed()))

@@ -92,6 +92,7 @@ class SecondContactRoleControllerSpec extends SpecBase {
         new TestContext(
           updatedRegistration
         ) {
+
           val result = await(controller.onPageLoad(NormalMode)(fakeRequest))
 
           result shouldBe Redirect(

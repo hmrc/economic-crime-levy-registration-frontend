@@ -13,6 +13,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, Non
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationError
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
@@ -26,9 +27,11 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the Check your answers HTML view when the registration data is valid" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration].copy(registrationType = Some(Amendment))
-      val errors       = random[DataValidationErrors]
+      val registration   = random[Registration].copy(registrationType = Some(Amendment))
+      val errors         = random[DataValidationError]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
       stubGetRegistrationValidationErrors(valid = true, errors)
 
@@ -42,9 +45,11 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     "redirect to the journey recovery page when the registration data is invalid" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val errors       = random[DataValidationErrors]
+      val registration   = random[Registration]
+      val errors         = random[DataValidationError]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
       stubGetRegistrationValidationErrors(valid = false, errors)
 
@@ -88,6 +93,10 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       entityType = Some(entityType),
       registrationType = Some(Initial)
     )
+
+    val additionalInfo = random[RegistrationAdditionalInfo]
+
+    stubGetRegistrationAdditionalInfo(additionalInfo)
 
     stubGetRegistration(registrationWithOneContact)
 

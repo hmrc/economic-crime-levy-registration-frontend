@@ -22,8 +22,10 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the select entity type HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = randomRegistration()
+      val registration   = randomRegistration()
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(routes.EntityTypeController.onPageLoad(NormalMode)))
@@ -49,6 +51,9 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
         case RegisteredSociety                   => "registered-society-journey"
         case e                                   => fail(s"$e is not a valid incorporated entity type")
       }
+      val additionalInfo                    = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubGetRegistration(registration)
 
@@ -77,8 +82,10 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected entity type then redirect to the GRS Sole Trader journey when the Sole Trader option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = randomRegistration()
+      val registration   = randomRegistration()
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
       stubCreateGrsJourney("/sole-trader-identification/api/sole-trader-journey")
 
@@ -116,7 +123,9 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       case LimitedLiabilityPartnership => "limited-liability-partnership-journey"
       case e                           => fail(s"$e is not a valid partnership type")
     }
+    val additionalInfo             = random[RegistrationAdditionalInfo]
 
+    stubGetRegistrationAdditionalInfo(additionalInfo)
     stubGetRegistration(registration)
     stubCreateGrsJourney(s"/partnership-identification/api/$urlPartnershipType")
 
