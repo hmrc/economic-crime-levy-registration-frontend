@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkyouranswers
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, GetSubscriptionResponse, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers.TrackRegistrationChanges
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.BusinessSector.{InsolvencyPractitioner, TaxAdviser}
@@ -154,6 +154,364 @@ class TrackRegistrationChangesSpec extends SpecBase {
         )
 
         sut.hasBusinessSectorChanged shouldBe false
+    }
+  }
+
+  "hasAddressLine1Changed" should {
+    "return false if getSubscriptionResponse is not present" in forAll { (registration: Registration) =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+
+      sut.hasAddressLine1Changed shouldBe false
+      sut.hasAddressChanged      shouldBe false
+    }
+    "return false if contactAddress is not present" in forAll {
+      (response: GetSubscriptionResponse, registration: Registration) =>
+        val invalidRegistration = registration.copy(contactAddress = None)
+        val sut                 = TestTrackEclReturnChanges(
+          defaultEclRegistration(invalidRegistration),
+          Some(response)
+        )
+
+        sut.hasAddressLine1Changed shouldBe false
+        sut.hasAddressChanged      shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is present but values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val address           = "Address line"
+        val validRegistration =
+          registration.copy(contactAddress =
+            Some(
+              EclAddress(
+                addressLine1 = Some(address),
+                countryCode = "GB",
+                organisation = None,
+                addressLine3 = None,
+                addressLine2 = None,
+                addressLine4 = None,
+                region = None,
+                postCode = None,
+                poBox = None
+              )
+            )
+          )
+
+        val validResponse =
+          response.copy(correspondenceAddressDetails =
+            response.correspondenceAddressDetails.copy(addressLine1 = address)
+          )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasAddressLine1Changed shouldBe false
+        sut.hasAddressChanged      shouldBe false
+    }
+    "return true if getSubscriptionResponse is present but values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val address           = "Address line"
+        val validRegistration =
+          registration.copy(contactAddress =
+            Some(
+              EclAddress(
+                addressLine1 = Some(address),
+                countryCode = "GB",
+                organisation = None,
+                addressLine3 = None,
+                addressLine2 = None,
+                addressLine4 = None,
+                region = None,
+                postCode = None,
+                poBox = None
+              )
+            )
+          )
+
+        val validResponse =
+          response.copy(correspondenceAddressDetails =
+            response.correspondenceAddressDetails.copy(addressLine1 = "Valid address line")
+          )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasAddressLine1Changed shouldBe true
+        sut.hasAddressChanged      shouldBe true
+    }
+  }
+
+  "hasAddressLine2Changed" should {
+    "return false if getSubscriptionResponse is not present" in forAll { (registration: Registration) =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+
+      sut.hasAddressLine2Changed shouldBe false
+      sut.hasAddressChanged      shouldBe false
+    }
+    "return false if contactAddress is not present" in forAll {
+      (response: GetSubscriptionResponse, registration: Registration) =>
+        val invalidRegistration = registration.copy(contactAddress = None)
+        val invalidResponse     =
+          response.copy(correspondenceAddressDetails = response.correspondenceAddressDetails.copy(addressLine2 = None))
+        val sut                 = TestTrackEclReturnChanges(
+          defaultEclRegistration(invalidRegistration),
+          Some(invalidResponse)
+        )
+
+        sut.hasAddressLine2Changed shouldBe false
+        sut.hasAddressChanged      shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is present but values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val address           = "Address line"
+        val validRegistration =
+          registration.copy(contactAddress =
+            Some(
+              EclAddress(
+                addressLine1 = None,
+                countryCode = "GB",
+                organisation = None,
+                addressLine3 = None,
+                addressLine2 = Some(address),
+                addressLine4 = None,
+                region = None,
+                postCode = None,
+                poBox = None
+              )
+            )
+          )
+
+        val validResponse =
+          response.copy(correspondenceAddressDetails =
+            response.correspondenceAddressDetails.copy(addressLine2 = Some(address))
+          )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasAddressLine2Changed shouldBe false
+        sut.hasAddressChanged      shouldBe false
+    }
+    "return true if getSubscriptionResponse is present but values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val address           = "Address line"
+        val validRegistration =
+          registration.copy(contactAddress =
+            Some(
+              EclAddress(
+                addressLine1 = None,
+                countryCode = "GB",
+                organisation = None,
+                addressLine3 = None,
+                addressLine2 = Some(address),
+                addressLine4 = None,
+                region = None,
+                postCode = None,
+                poBox = None
+              )
+            )
+          )
+
+        val validResponse =
+          response.copy(correspondenceAddressDetails =
+            response.correspondenceAddressDetails.copy(addressLine2 = Some("Valid address line"))
+          )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasAddressLine2Changed shouldBe true
+        sut.hasAddressChanged      shouldBe true
+    }
+  }
+
+  "hasAddressLine3Changed" should {
+    "return false if getSubscriptionResponse is not present" in forAll { (registration: Registration) =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+
+      sut.hasAddressLine3Changed shouldBe false
+      sut.hasAddressChanged      shouldBe false
+    }
+    "return false if contactAddress is not present" in forAll {
+      (response: GetSubscriptionResponse, registration: Registration) =>
+        val invalidRegistration = registration.copy(contactAddress = None)
+        val invalidResponse     =
+          response.copy(correspondenceAddressDetails = response.correspondenceAddressDetails.copy(addressLine3 = None))
+        val sut                 = TestTrackEclReturnChanges(
+          defaultEclRegistration(invalidRegistration),
+          Some(invalidResponse)
+        )
+
+        sut.hasAddressLine3Changed shouldBe false
+        sut.hasAddressChanged      shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is present but values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val address           = "Address line"
+        val validRegistration =
+          registration.copy(contactAddress =
+            Some(
+              EclAddress(
+                addressLine1 = None,
+                countryCode = "GB",
+                organisation = None,
+                addressLine3 = Some(address),
+                addressLine2 = None,
+                addressLine4 = None,
+                region = None,
+                postCode = None,
+                poBox = None
+              )
+            )
+          )
+
+        val validResponse =
+          response.copy(correspondenceAddressDetails =
+            response.correspondenceAddressDetails.copy(addressLine3 = Some(address))
+          )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasAddressLine3Changed shouldBe false
+        sut.hasAddressChanged      shouldBe false
+    }
+    "return true if getSubscriptionResponse is present but values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val address           = "Address line"
+        val validRegistration =
+          registration.copy(contactAddress =
+            Some(
+              EclAddress(
+                addressLine1 = None,
+                countryCode = "GB",
+                organisation = None,
+                addressLine3 = Some(address),
+                addressLine2 = None,
+                addressLine4 = None,
+                region = None,
+                postCode = None,
+                poBox = None
+              )
+            )
+          )
+
+        val validResponse =
+          response.copy(correspondenceAddressDetails =
+            response.correspondenceAddressDetails.copy(addressLine3 = Some("Valid address line"))
+          )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasAddressLine3Changed shouldBe true
+        sut.hasAddressChanged      shouldBe true
+    }
+  }
+
+  "hasAddressLine4Changed" should {
+    "return false if getSubscriptionResponse is not present" in forAll { (registration: Registration) =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+
+      sut.hasAddressLine4Changed shouldBe false
+      sut.hasAddressChanged      shouldBe false
+    }
+    "return false if contactAddress is not present" in forAll {
+      (response: GetSubscriptionResponse, registration: Registration) =>
+        val invalidRegistration = registration.copy(contactAddress = None)
+        val invalidResponse     =
+          response.copy(correspondenceAddressDetails = response.correspondenceAddressDetails.copy(addressLine4 = None))
+        val sut                 = TestTrackEclReturnChanges(
+          defaultEclRegistration(invalidRegistration),
+          Some(invalidResponse)
+        )
+
+        sut.hasAddressLine4Changed shouldBe false
+        sut.hasAddressChanged      shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is present but values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val address           = "Address line"
+        val validRegistration =
+          registration.copy(contactAddress =
+            Some(
+              EclAddress(
+                addressLine1 = None,
+                countryCode = "GB",
+                organisation = None,
+                addressLine3 = None,
+                addressLine2 = None,
+                addressLine4 = Some(address),
+                region = None,
+                postCode = None,
+                poBox = None
+              )
+            )
+          )
+
+        val validResponse =
+          response.copy(correspondenceAddressDetails =
+            response.correspondenceAddressDetails.copy(addressLine4 = Some(address))
+          )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasAddressLine4Changed shouldBe false
+        sut.hasAddressChanged      shouldBe false
+    }
+    "return true if getSubscriptionResponse is present but values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val address           = "Address line"
+        val validRegistration =
+          registration.copy(contactAddress =
+            Some(
+              EclAddress(
+                addressLine1 = None,
+                countryCode = "GB",
+                organisation = None,
+                addressLine3 = None,
+                addressLine2 = None,
+                addressLine4 = Some(address),
+                region = None,
+                postCode = None,
+                poBox = None
+              )
+            )
+          )
+
+        val validResponse =
+          response.copy(correspondenceAddressDetails =
+            response.correspondenceAddressDetails.copy(addressLine4 = Some("Valid address line"))
+          )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasAddressLine4Changed shouldBe true
+        sut.hasAddressChanged      shouldBe true
     }
   }
 }
