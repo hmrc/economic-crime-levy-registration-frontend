@@ -25,15 +25,25 @@ sealed trait BusinessSector
 
 object BusinessSector {
   case object CreditInstitution extends BusinessSector
+
   case object FinancialInstitution extends BusinessSector
+
   case object Auditor extends BusinessSector
+
   case object InsolvencyPractitioner extends BusinessSector
+
   case object ExternalAccountant extends BusinessSector
+
   case object TaxAdviser extends BusinessSector
+
   case object IndependentLegalProfessional extends BusinessSector
+
   case object TrustOrCompanyServiceProvider extends BusinessSector
+
   case object EstateAgentOrLettingAgent extends BusinessSector
+
   case object HighValueDealer extends BusinessSector
+
   case object CryptoAssetExchangeProvider extends BusinessSector
 
   val values: Seq[BusinessSector] = Seq(
@@ -83,4 +93,20 @@ object BusinessSector {
 
     override def writes(o: BusinessSector): JsValue = JsString(o.toString)
   }
+
+  def transformFromSubscriptionResponse(businessSector: String): BusinessSector =
+    businessSector.filterNot(_.isWhitespace).toLowerCase() match {
+      case "creditinstitution"             => CreditInstitution
+      case "financialinstitution"          => FinancialInstitution
+      case "auditor"                       => Auditor
+      case "insolvencypractitioner"        => InsolvencyPractitioner
+      case "externalaccountant"            => ExternalAccountant
+      case "taxadviser"                    => TaxAdviser
+      case "independentlegalprofessional"  => IndependentLegalProfessional
+      case "trustorcompanyserviceprovider" => TrustOrCompanyServiceProvider
+      case "estateagentorlettingagent"     => EstateAgentOrLettingAgent
+      case "highvaluedealer"               => HighValueDealer
+      case "cryptoassetexchangeprovider"   => CryptoAssetExchangeProvider
+      case s                               => throw new IllegalStateException(s"$s is not a valid BusinessSector")
+    }
 }

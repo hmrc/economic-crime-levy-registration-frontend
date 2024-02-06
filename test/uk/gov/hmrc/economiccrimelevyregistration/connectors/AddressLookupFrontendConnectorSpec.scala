@@ -19,18 +19,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.scalacheck.Gen.uuid
-import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.http.HeaderNames._
 import org.scalacheck.{Arbitrary, Gen}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import play.api.libs.json.Json
-import play.api.mvc.ResponseHeader
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
-import uk.gov.hmrc.http.HttpResponse.unapply
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{HttpResponse, StringContextOps, UpstreamErrorResponse}
 

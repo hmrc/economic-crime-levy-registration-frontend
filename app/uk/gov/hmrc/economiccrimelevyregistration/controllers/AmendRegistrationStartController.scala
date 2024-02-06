@@ -20,13 +20,18 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationAdditionalInfo
+import play.api.mvc._
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationStartView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.BaseController
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AmendRegistrationStartController @Inject() (
@@ -34,7 +39,8 @@ class AmendRegistrationStartController @Inject() (
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   authorise: AuthorisedActionWithEnrolmentCheck,
   view: AmendRegistrationStartView,
-  registrationService: EclRegistrationService
+  registrationService: EclRegistrationService,
+  appConfig: AppConfig
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
@@ -49,9 +55,28 @@ class AmendRegistrationStartController @Inject() (
       additionalInfo              = RegistrationAdditionalInfo(request.internalId, None, Some(eclReference))
       createOrUpdateRegistration <-
         registrationAdditionalInfoService.upsert(additionalInfo).asResponseError
-    } yield createOrUpdateRegistration).fold(
-      error => routeError(error),
-      _ => Ok(view(eclReference))
+    } yield createOrUpdateRegistration).foldF(
+      error => Future.successful(routeError(error)),
+      _ =>
+        if (appConfig.getSubscriptionEnabled) {
+          routeToAmendReason(eclReference, request.internalId)
+        } else {
+          Future.successful(Ok(view(eclReference)))
+        }
     )
   }
+
+  private def routeToAmendReason(eclRegistrationReference: String, internalId: String)(implicit
+    hc: HeaderCarrier,
+    request: Request[_]
+  ): Future[Result] =
+    (for {
+      registration            <- registrationService.getOrCreate(internalId).asResponseError
+      getSubscriptionResponse <- registrationService.getSubscription(eclRegistrationReference).asResponseError
+      transformedRegistration  = registrationService.transformToRegistration(registration, getSubscriptionResponse)
+      upsertedRegistration    <- registrationService.upsertRegistration(transformedRegistration).asResponseError
+    } yield upsertedRegistration).fold(
+      error => routeError(error),
+      _ => Redirect(routes.AmendReasonController.onPageLoad(CheckMode).url)
+    )
 }

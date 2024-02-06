@@ -23,10 +23,9 @@ import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR, NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, Registration}
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, GetSubscriptionResponse, Registration}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -202,4 +201,38 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
     }
   }
+
+  "getSubscription" should {
+    "return a subscription response with answers that user already provided during the registration" in forAll(
+      Arbitrary.arbitrary[GetSubscriptionResponse],
+      nonEmptyString
+    ) { (getSubscriptionResponse: GetSubscriptionResponse, eclReference: String) =>
+      val expectedUrl = url"$eclRegistrationUrl/subscription/$eclReference"
+
+      when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, Json.toJson(getSubscriptionResponse).toString())))
+
+      val result = await(connector.getSubscription(eclReference))
+
+      result shouldBe getSubscriptionResponse
+    }
+
+    "throw an UpstreamErrorResponse exception when the http client returns a error response for getSubscription call" in forAll {
+      eclReference: String =>
+        val expectedUrl = url"$eclRegistrationUrl/subscription/$eclReference"
+        val msg         = "Internal server error"
+
+        when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, msg)))
+
+        Try(await(connector.getSubscription(eclReference))) match {
+          case Failure(thr) => thr.getMessage shouldBe msg
+          case Success(_)   => fail("expected exception to be thrown")
+        }
+
+    }
+  }
+
 }

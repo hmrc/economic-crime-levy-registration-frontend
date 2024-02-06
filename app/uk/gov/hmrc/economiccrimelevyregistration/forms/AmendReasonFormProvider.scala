@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-object SessionKeys {
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
-  val EclReference: String      = "eclReference"
-  val FirstContactEmailAddress  = "firstContactEmailAddress"
-  val SecondContactEmailAddress = "secondContactEmailAddress"
-  val LiabilityYear             = "liabilityYear"
-  val AmlRegulatedActivity      = "amlRegulatedActivity"
-  val ContactAddress            = "contactAddress"
+class AmendReasonFormProvider extends Mappings {
+
+  def apply(): Form[String] =
+    Form("value" -> text("amendReason.error.required", removeAllWhitespace = false))
 }

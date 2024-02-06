@@ -118,6 +118,11 @@ amlSupervisor.LawSociety = Law Society
 amlSupervisor.LawSocietyOfNorthernIreland = Law Society of Northern Ireland
 amlSupervisor.LawSocietyOfScotland = Law Society of Scotland
 
+amendReason.title = Why are you requesting to amend your registration?
+amendReason.h1 = Why are you requesting to amend your registration?
+amendReason.p1 = Enter any information relating to your request to amend your registration. Do not include personal or financial information, like your National Insurance number or credit card details.
+amendReason.error.required = Enter the reason why you are requesting to amend your registration
+
 relevantAp12Months.title = Relevant accounting period
 relevantAp12Months.heading = Relevant accounting period
 relevantAp12Months.p1 = Your relevant accounting period is any that ends in the financial year. It is based on the accounting period you use for your Company Tax Return.
@@ -370,6 +375,9 @@ checkYourAnswers.overseasTaxIdentifier.label = Overseas Tax Identifier
 checkYourAnswers.eclDetails = ECL details
 checkYourAnswers.eclReferenceNumber.label = ECL reference number
 checkYourAnswers.liabilityDate.label = Liability start date
+checkYourAnswers.amendReason.title = Reason for amending
+checkYourAnswers.amendReason.label = Additional Information
+checkYourAnswers.cancel = <a href="{0}" class="govuk-link">Cancel this amendment</a>
 
 submitted.title = Registration submitted
 submitted.heading = Registration submitted
@@ -527,11 +535,11 @@ registration.received.h2 = How to submit a return
 registration.received.p5 = You will need to complete a return and pay the levy on a yearly basis.
 registration.received.p6 = You will not receive an email or notification from HMRC to remind you to submit a return.
 registration.received.p7.previous.p1 = You need to submit a return for the 2022 to 2023 financial year as soon as possible.
-registration.received.p7.previous.p2 = The return will show as overdue because it's in the previous financial year.
+registration.received.p7.previous.p2 = The return will show as overdue because it''s in the previous financial year.
 registration.received.p7.current = The next deadline for submitting a return and making a payment is 30 September 2024. You will be charged interest if you make a late payment.
 registration.received.p7.both.years.p1 = The next deadline for submitting a return and making a payment is 30 September 2024. You will be charged interest if you make a late payment.
 registration.received.p7.both.years.p2 = You need to submit a return for the 2022 to 2023 financial year as soon as possible.
-registration.received.p7.both.years.p3 = The return will show as overdue because it's in the previous financial year.
+registration.received.p7.both.years.p3 = The return will show as overdue because it''s in the previous financial year.
 registration.received.p8 = When you complete your yearly return, you will need to tell us about:
 registration.received.b1 = the relevant accounting periods for your organisation
 registration.received.b2 = your UK revenue for the relevant accounting periods
@@ -570,7 +578,8 @@ amendmentRequested.body.p3 = You will not receive an email or notification from 
 amendmentRequested.body.p4 = When you complete your yearly return, you will need to tell us:
 amendmentRequested.body.p5 = We will review your answers. We may contact you using the details you provided if we need any more information. This process will take up to 15 working days.
 amendmentRequested.body.p6 = We will send you a letter once we''ve amended your registration.
-amendmentRequested.body.p7  = {0} (takes 30 seconds)
+amendmentRequested.body.address.heading = We will send the letter to:
+amendmentRequested.body.p7 = {0} (takes 30 seconds)
 amendmentRequested.body.p7.link = <a href="{0}" class="govuk-link">What did you think of this service?</a>
 amendmentRequested.list.b1 = the relevant accounting period for your organisation
 amendmentRequested.list.b2 = your UK revenue for the relevant accounting period
@@ -607,3 +616,8 @@ otherEntityType.addUtr.error.required = Enter a Unique Taxpayer Reference (UTR)
 otherEntityType.addUtr.error.length = Unique Taxpayer Reference (UTR) must be {0} numbers
 
 otherEntityType.utr.question.label = Do you have a Unique Taxpayer Reference?
+
+cancelRegistrationAmendment.title = Are you sure you want to cancel your request to amend your registration?
+cancelRegistrationAmendment.heading = Are you sure you want to cancel your request to amend your registration?
+cancelRegistrationAmendment.body = Your answers will be deleted.
+cancelRegistrationAmendment.error.required = Select yes if you want to cancel your request to amend your registration

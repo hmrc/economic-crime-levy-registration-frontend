@@ -14,7 +14,7 @@ trait RegistrationAdditionalInfoStubs { self: WireMockStubs =>
       get(urlEqualTo(s"/economic-crime-levy-registration/registration-additional-info/$testInternalId")),
       aResponse()
         .withStatus(OK)
-        .withBody(Json.toJson(registrationAdditionalInfo).toString())
+        .withBody(Json.toJson(registrationAdditionalInfo.copy(internalId = testInternalId)).toString())
     )
 
   def stubUpsertRegistrationAdditionalInfo(registrationAdditionalInfo: RegistrationAdditionalInfo): StubMapping =

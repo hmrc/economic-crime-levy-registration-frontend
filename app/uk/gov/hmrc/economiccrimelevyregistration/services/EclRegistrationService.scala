@@ -24,6 +24,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, DataValidationError}
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, BusinessSector, ContactDetails, Contacts, EclAddress, GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationStartedEvent
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +41,8 @@ class EclRegistrationService @Inject() (
   incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
   soleTraderIdentificationFrontendConnector: SoleTraderIdentificationFrontendConnector,
   partnershipIdentificationFrontendConnector: PartnershipIdentificationFrontendConnector,
-  auditService: AuditService
+  auditService: AuditService,
+  appConfig: AppConfig
 )(implicit
   ec: ExecutionContext
 ) {
@@ -215,4 +222,86 @@ class EclRegistrationService @Inject() (
           case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
+
+  def getSubscription(
+    eclRegistration: String
+  )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, GetSubscriptionResponse] =
+    EitherT {
+      eclRegistrationConnector
+        .getSubscription(eclRegistration)
+        .map(Right(_))
+        .recover {
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse
+                .unapply(error)
+                .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            Left(DataRetrievalError.BadGateway(message, code))
+          case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+        }
+    }
+
+  def transformToRegistration(
+    registration: Registration,
+    getSubscriptionResponse: GetSubscriptionResponse
+  ): Registration = {
+    val primaryContact      = getSubscriptionResponse.primaryContactDetails
+    val secondaryContact    = getSubscriptionResponse.secondaryContactDetails
+    val subscriptionAddress = getSubscriptionResponse.correspondenceAddressDetails
+
+    val firstContactDetails: ContactDetails = ContactDetails(
+      Some(primaryContact.name),
+      Some(primaryContact.positionInCompany),
+      Some(primaryContact.emailAddress),
+      Some(primaryContact.telephone)
+    )
+    val secondContactDetails                = secondaryContact match {
+      case Some(value) =>
+        ContactDetails(
+          Some(value.name),
+          Some(value.positionInCompany),
+          Some(value.emailAddress),
+          Some(value.telephone)
+        )
+      case _           => ContactDetails.empty
+    }
+    val secondContactPresent                = Some(secondaryContact.isDefined)
+
+    val contacts: Contacts = Contacts(firstContactDetails, secondContactPresent, secondContactDetails)
+
+    val businessSector: BusinessSector =
+      BusinessSector.transformFromSubscriptionResponse(getSubscriptionResponse.additionalDetails.businessSector)
+    val address: EclAddress            = EclAddress(
+      None,
+      Some(subscriptionAddress.addressLine1),
+      subscriptionAddress.addressLine2,
+      subscriptionAddress.addressLine3,
+      subscriptionAddress.addressLine4,
+      None,
+      subscriptionAddress.postCode,
+      None,
+      subscriptionAddress.countryCode.get
+    )
+    registration.copy(
+      contacts = contacts,
+      businessSector = Some(businessSector),
+      contactAddress = Some(address),
+      partnershipName = getSubscriptionResponse.legalEntityDetails.organisationName,
+      amlSupervisor = Some(getAmlSupervisor(getSubscriptionResponse.additionalDetails.amlSupervisor))
+    )
+  }
+
+  private def getAmlSupervisor(amlSupervisor: String): AmlSupervisor = {
+    val sanitisedAmlSupervisor                         = amlSupervisor.filterNot(_.isWhitespace).toLowerCase
+    val amlProfessionalBodySupervisors: Option[String] =
+      appConfig.amlProfessionalBodySupervisors.find(p => p.toLowerCase() == sanitisedAmlSupervisor)
+
+    if (amlProfessionalBodySupervisors.isEmpty) {
+      sanitisedAmlSupervisor match {
+        case "hmrc" => AmlSupervisor(AmlSupervisorType.Hmrc, None)
+        case e      => throw new IllegalStateException(s"AML supervisor returned in GetSubscriptionResponse not valid: $e")
+      }
+    } else {
+      AmlSupervisor(AmlSupervisorType.Other, Some(amlSupervisor))
+    }
+  }
 }

@@ -16,17 +16,16 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.i18n.I18nSupport
-import play.api.mvc._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendmentRequestedView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.BaseController
+import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EclAddress
 
 @Singleton
 class AmendmentRequestedController @Inject() (
@@ -47,9 +46,21 @@ class AmendmentRequestedController @Inject() (
       _                        <- registrationService.deleteRegistration(request.internalId).asResponseError
       firstContactEmailAddress <-
         sessionService.get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress).asResponseError
-    } yield firstContactEmailAddress).fold(
+      contactAddress           <-
+        sessionService.get(request.session, request.internalId, SessionKeys.ContactAddress).asResponseError
+    } yield (firstContactEmailAddress, contactAddress)).fold(
       error => routeError(error),
-      success => Ok(view(success, request.eclRegistrationReference))
+      emailAndAddress => {
+        val firstContactEmail = emailAndAddress._1
+        val contactAddress    = Json.fromJson[EclAddress](Json.parse(emailAndAddress._2)).asOpt
+        Ok(
+          view(
+            firstContactEmail,
+            request.eclRegistrationReference,
+            contactAddress
+          )
+        )
+      }
     )
   }
 }

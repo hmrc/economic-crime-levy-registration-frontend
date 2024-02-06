@@ -118,6 +118,11 @@ amlSupervisor.LawSociety = Cymdeithas y Cyfreithwyr
 amlSupervisor.LawSocietyOfNorthernIreland = Cymdeithas Cyfreithwyr Gogledd Iwerddon
 amlSupervisor.LawSocietyOfScotland = Cymdeithas Cyfreithwyr yr Alban
 
+amendReason.title = Pam ydych chi'n gwneud cais i newid eich cofrestriad?
+amendReason.h1 = Pam ydych chi'n gwneud cais i newid eich cofrestriad?
+amendReason.p1 = Nodwch unrhyw wybodaeth sy’n berthnasol i’ch cais i ddiwygio’ch cofrestriad. Peidiwch â chynnwys gwybodaeth bersonol nac ariannol, megis eich rhif Yswiriant Gwladol neu fanylion eich cerdyn credyd.
+amendReason.error.required = Nodwch y rheswm dros wneud cais i newid eich cofrestriad
+
 relevantAp12Months.title = Cyfnod cyfrifyddu perthnasol
 relevantAp12Months.heading = Cyfnod cyfrifyddu perthnasol
 relevantAp12Months.p1 = Eich cyfnod cyfrifyddu perthnasol yw unrhyw gyfnod sy’n dod i ben yn ystod y flwyddyn ariannol. Mae’n seiliedig ar y cyfnod cyfrifyddu rydych yn ei ddefnyddio ar gyfer eich Ffurflen Dreth y Cwmni.
@@ -371,6 +376,9 @@ checkYourAnswers.overseasTaxIdentifier.label = Dynodydd treth tramor
 checkYourAnswers.eclDetails = Manylion ECL
 checkYourAnswers.eclReferenceNumber.label = Cyfeirnod ECL
 checkYourAnswers.liabilityDate.label = Dyddiad cychwyn atebolrwydd
+checkYourAnswers.amendReason.title = Rheswm dros ddiwygio
+checkYourAnswers.amendReason.label = Gwybodaeth ychwanegol
+checkYourAnswers.cancel = <a href="{0}" class="govuk-link">Canslo’r diwygiad hwn</a>
 
 submitted.title = Cofrestriad wedi’i gyflwyno
 submitted.heading = Cofrestriad wedi’i gyflwyno
@@ -571,6 +579,7 @@ amendmentRequested.body.p3 = Ni fyddwch yn cael e-bost na hysbysiad oddi wrth CT
 amendmentRequested.body.p4 = Pan fyddwch yn llenwi’ch datganiad blynyddol, bydd angen i chi roi gwybod i ni am y canlynol:
 amendmentRequested.body.p5 = Byddwn yn adolygu’ch atebion. Os oes angen rhagor o wybodaeth arnom mae’n bosibl byddwn yn cysylltu â chi drwy ddefnyddio’r manylion yr ydych wedi eu rhoi. Bydd y broses hon yn cymryd 15 diwrnod gwaith.
 amendmentRequested.body.p6 = Byddwn yn anfon llythyr atoch ar ôl i ni ddiwygio’ch datganiad. Ni fyddwch yn gallu bwrw golwg dros y newidiadau hyn nes eich bod wedi cael y llythyr hwn.
+amendmentRequested.body.address.heading = Byddwn yn anfon llythyr at:
 amendmentRequested.body.p7 = {0} (mae’n cymryd 30 eiliad)
 amendmentRequested.body.p7.link = <a href="{0}" class="govuk-link">Beth oedd eich barn am y gwasanaeth hwn?</a>
 amendmentRequested.list.b1 = y cyfnod cyfrifyddu perthnasol ar gyfer eich sefydliad
@@ -608,3 +617,8 @@ otherEntityType.addUtr.error.required = Nodwch eich Cyfeirnod Unigryw y Trethdal
 otherEntityType.addUtr.error.length = Mae’n rhaid i Gyfeirnod Unigryw y Trethdalwr fod yn {0} digid.
 
 otherEntityType.utr.question.label = A oes gennych Gyfeirnod Unigryw y Trethdalwr?
+
+cancelRegistrationAmendment.title = Ydych chi'n siŵr eich bod am ganslo'ch cais i newid eich cofrestriad?
+cancelRegistrationAmendment.heading = Ydych chi'n siŵr eich bod am ganslo'ch cais i newid eich cofrestriad?
+cancelRegistrationAmendment.body = Bydd eich atebion yn cael eu dileu.
+cancelRegistrationAmendment.error.required = Dewiswch 'Iawn' os ydych yn dymuno canslo eich cais i newid eich cofrestriad

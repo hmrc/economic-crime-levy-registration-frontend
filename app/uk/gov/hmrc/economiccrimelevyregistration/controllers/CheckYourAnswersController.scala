@@ -21,6 +21,7 @@ import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Session}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
@@ -101,12 +102,19 @@ class CheckYourAnswersController @Inject() (
     ).flatten
   ).withCssClass("govuk-!-margin-bottom-9")
 
+  private def amendReasonDetails()(implicit request: RegistrationDataRequest[_]): SummaryList = SummaryListViewModel(
+    rows = Seq(
+      AmendReasonSummary.row()
+    ).flatten
+  ).withCssClass("govuk-!-margin-bottom-9")
+
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getRegistrationData).async { implicit request =>
       registrationService
         .getRegistrationValidationErrors(request.internalId)
+        .asResponseError
         .fold(
-          x => Redirect(routes.NotableErrorController.answersAreInvalid()),
+          error => routeError(error),
           {
             case Some(error) =>
               Redirect(routes.NotableErrorController.answersAreInvalid())
@@ -117,6 +125,7 @@ class CheckYourAnswersController @Inject() (
                   organisationDetails(),
                   contactDetails(),
                   otherEntityDetails(),
+                  amendReasonDetails,
                   request.registration.registrationType,
                   request.eclRegistrationReference
                 )
@@ -145,6 +154,7 @@ class CheckYourAnswersController @Inject() (
       organisationDetails(),
       contactDetails(),
       otherEntityDetails(),
+      amendReasonDetails(),
       request.registration.registrationType,
       request.eclRegistrationReference
     )
@@ -174,15 +184,18 @@ class CheckYourAnswersController @Inject() (
             )
         }
 
-        val sessionWithFirstContactEmail = session ++ Seq(
+        val updatedSession = session ++ Seq(
           SessionKeys.FirstContactEmailAddress -> registration.contacts.firstContactDetails.emailAddress
-            .getOrElse(throw new IllegalStateException("First contact email address not found in registration data"))
+            .getOrElse(throw new IllegalStateException("First contact email address not found in registration data")),
+          SessionKeys.ContactAddress           -> Json
+            .toJson(
+              registration.contactAddress
+                .getOrElse(throw new IllegalStateException("Contact address not found in registration data"))
+            )
+            .toString
+        ) ++ registration.contacts.secondContactDetails.emailAddress.fold(Seq.empty[(String, String)])(email =>
+          Seq(SessionKeys.SecondContactEmailAddress -> email)
         )
-
-        val updatedSession =
-          registration.contacts.secondContactDetails.emailAddress.fold(sessionWithFirstContactEmail)(email =>
-            sessionWithFirstContactEmail ++ Seq(SessionKeys.SecondContactEmailAddress -> email)
-          )
 
         sessionService.upsert(SessionData(request.internalId, updatedSession.data))
 
@@ -258,6 +271,7 @@ class CheckYourAnswersController @Inject() (
     val organisation = organisationDetails(LiabilityYearSummary.row())
     val contact      = contactDetails()
     val otherEntity  = otherEntityDetails()
+    val amendReason  = amendReasonDetails()
 
     registrationType match {
       case Some(Amendment) =>
@@ -266,7 +280,11 @@ class CheckYourAnswersController @Inject() (
             ViewUtils.formatLocalDate(date),
             eclDetails(),
             organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
-            contact.copy(rows = contact.rows.map(_.copy(actions = None)))
+            contact.copy(rows = contact.rows.map(_.copy(actions = None))),
+            amendReason.copy(
+              rows = amendReason.rows.map(_.copy(actions = None)),
+              attributes = Map("id" -> "amendReason")
+            )
           ).toString()
         )
       case _               =>
@@ -275,7 +293,9 @@ class CheckYourAnswersController @Inject() (
             ViewUtils.formatLocalDate(date),
             organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
             contact.copy(rows = contact.rows.map(_.copy(actions = None))),
-            otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None)))
+            otherEntity.copy(
+              rows = otherEntity.rows.map(_.copy(actions = None))
+            )
           ).toString()
         )
     }

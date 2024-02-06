@@ -42,7 +42,8 @@ final case class Registration(
   privateBetaAccessCode: Option[String],
   optOtherEntityJourneyData: Option[OtherEntityJourneyData],
   base64EncodedFields: Option[Base64EncodedFields],
-  registrationType: Option[RegistrationType]
+  registrationType: Option[RegistrationType],
+  amendReason: Option[String]
 ) {
 
   val grsAddressToEclAddress: Option[EclAddress] = {
@@ -126,6 +127,7 @@ object Registration {
     privateBetaAccessCode = None,
     optOtherEntityJourneyData = None,
     base64EncodedFields = None,
-    registrationType = None
+    registrationType = None,
+    amendReason = None
   )
 }
