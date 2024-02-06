@@ -18,9 +18,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkyouranswers
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, EclAddress, GetSubscriptionResponse, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers.TrackRegistrationChanges
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Hmrc, Other}
 import uk.gov.hmrc.economiccrimelevyregistration.models.BusinessSector.{InsolvencyPractitioner, TaxAdviser}
 
 class TrackRegistrationChangesSpec extends SpecBase {
@@ -512,6 +513,267 @@ class TrackRegistrationChangesSpec extends SpecBase {
 
         sut.hasAddressLine4Changed shouldBe true
         sut.hasAddressChanged      shouldBe true
+    }
+  }
+
+  "hasAmlSupervisorChanged" should {
+    "return false if getSubscriptionResponse is not present" in forAll { registration: Registration =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+      sut.hasAmlSupervisorChanged shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is present but values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration = registration.copy(amlSupervisor = Some(AmlSupervisor(Hmrc, None)))
+        val validResponse     = response.copy(additionalDetails = response.additionalDetails.copy(amlSupervisor = "HMRC"))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasAmlSupervisorChanged shouldBe false
+
+    }
+
+    "return true if getSubscriptionResponse is present but values are not the same, one value is other professional body" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration =
+          registration.copy(amlSupervisor = Some(AmlSupervisor(Other, Some("GeneralCouncilOfTheBar"))))
+        val validResponse     = response.copy(additionalDetails = response.additionalDetails.copy(amlSupervisor = "HMRC"))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasAmlSupervisorChanged shouldBe true
+    }
+
+    "return true if getSubscriptionResponse is present but values are not the same, both values are other professional body" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration =
+          registration.copy(amlSupervisor = Some(AmlSupervisor(Other, Some("GeneralCouncilOfTheBar"))))
+        val validResponse     = response.copy(additionalDetails =
+          response.additionalDetails.copy(amlSupervisor = "AssociationOfTaxationTechnicians")
+        )
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasAmlSupervisorChanged shouldBe true
+    }
+
+    "return false if getSubscriptionResponse is present but amlSupervisor in registration object is not present" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration =
+          registration.copy(amlSupervisor = None)
+        val validResponse     = response.copy(additionalDetails = response.additionalDetails.copy(amlSupervisor = "HMRC"))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasAmlSupervisorChanged shouldBe false
+    }
+  }
+
+  "hasFirstContactNameChanged" should {
+    "return false when getSubscriptionResponse is not present" in forAll { registration: Registration =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+
+      sut.hasFirstContactNameChanged shouldBe false
+    }
+
+    "return true when getSubscriptionResponse is present but values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val firstName         = "John"
+        val validRegistration = registration.copy(contacts =
+          registration.contacts.copy(firstContactDetails =
+            registration.contacts.firstContactDetails.copy(name = Some(firstName))
+          )
+        )
+        val validResponse     = response.copy(primaryContactDetails = response.primaryContactDetails.copy(name = "George"))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasFirstContactNameChanged shouldBe true
+    }
+
+    "return false when getSubscriptionResponse is present and values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val firstName         = "John"
+        val validRegistration = registration.copy(contacts =
+          registration.contacts.copy(firstContactDetails =
+            registration.contacts.firstContactDetails.copy(name = Some(firstName))
+          )
+        )
+        val validResponse     = response.copy(primaryContactDetails = response.primaryContactDetails.copy(name = firstName))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasFirstContactNameChanged shouldBe false
+    }
+  }
+
+  "hasFirstContactRoleChanged" should {
+    "return false when getSubscriptionResponse is not present" in forAll { registration: Registration =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+
+      sut.hasFirstContactRoleChanged shouldBe false
+    }
+
+    "return true when getSubscriptionResponse is present but values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val role              = "Compliance officer"
+        val validRegistration = registration.copy(contacts =
+          registration.contacts.copy(firstContactDetails =
+            registration.contacts.firstContactDetails.copy(role = Some(role))
+          )
+        )
+        val validResponse     =
+          response.copy(primaryContactDetails = response.primaryContactDetails.copy(positionInCompany = "Accountant"))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasFirstContactRoleChanged shouldBe true
+    }
+
+    "return false when getSubscriptionResponse is present and values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val role              = "Compliance officer"
+        val validRegistration = registration.copy(contacts =
+          registration.contacts.copy(firstContactDetails =
+            registration.contacts.firstContactDetails.copy(role = Some(role))
+          )
+        )
+        val validResponse     =
+          response.copy(primaryContactDetails = response.primaryContactDetails.copy(positionInCompany = role))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasFirstContactRoleChanged shouldBe false
+    }
+  }
+
+  "hasFirstContactEmailChanged" should {
+    "return false when getSubscriptionResponse is not present" in forAll { registration: Registration =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+
+      sut.hasFirstContactEmailChanged shouldBe false
+    }
+
+    "return true when getSubscriptionResponse is present but values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val email             = "email@provider.com"
+        val validRegistration = registration.copy(contacts =
+          registration.contacts.copy(firstContactDetails =
+            registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
+          )
+        )
+        val validResponse     =
+          response.copy(primaryContactDetails =
+            response.primaryContactDetails.copy(emailAddress = "other_email@provider.com")
+          )
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasFirstContactEmailChanged shouldBe true
+    }
+
+    "return false when getSubscriptionResponse is present and values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val email             = "email@provider.com"
+        val validRegistration = registration.copy(contacts =
+          registration.contacts.copy(firstContactDetails =
+            registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
+          )
+        )
+        val validResponse     =
+          response.copy(primaryContactDetails = response.primaryContactDetails.copy(emailAddress = email))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasFirstContactEmailChanged shouldBe false
+    }
+  }
+
+  "hasFirstContactPhoneChanged" should {
+    "return false when getSubscriptionResponse is not present" in forAll { registration: Registration =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+
+      sut.hasFirstContactPhoneChanged shouldBe false
+    }
+
+    "return true when getSubscriptionResponse is present but values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val phone             = "1234567890"
+        val validRegistration = registration.copy(contacts =
+          registration.contacts.copy(firstContactDetails =
+            registration.contacts.firstContactDetails.copy(telephoneNumber = Some(phone))
+          )
+        )
+        val validResponse     =
+          response.copy(primaryContactDetails = response.primaryContactDetails.copy(telephone = "0987654321"))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasFirstContactPhoneChanged shouldBe true
+    }
+
+    "return false when getSubscriptionResponse is present and values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val phone             = "1234567890"
+        val validRegistration = registration.copy(contacts =
+          registration.contacts.copy(firstContactDetails =
+            registration.contacts.firstContactDetails.copy(telephoneNumber = Some(phone))
+          )
+        )
+        val validResponse     =
+          response.copy(primaryContactDetails = response.primaryContactDetails.copy(telephone = phone))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasFirstContactPhoneChanged shouldBe false
     }
   }
 }

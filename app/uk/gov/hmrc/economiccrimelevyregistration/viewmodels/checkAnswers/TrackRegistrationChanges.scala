@@ -144,7 +144,8 @@ trait TrackRegistrationChanges {
     case Some(response) =>
       registration.amlSupervisor match {
         case Some(amlSupervisor) =>
-          !amlSupervisor.supervisorType.toString.equalsIgnoreCase(response.additionalDetails.amlSupervisor)
+          !(amlSupervisor.supervisorType.toString.equalsIgnoreCase(response.additionalDetails.amlSupervisor) ||
+            amlSupervisor.otherProfessionalBody.contains(response.additionalDetails.amlSupervisor))
         case None                => false
       }
     case None           => false
