@@ -21,6 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendm
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers.TrackRegistrationChanges
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.BusinessSector.{InsolvencyPractitioner, TaxAdviser}
 
 class TrackRegistrationChangesSpec extends SpecBase {
 
@@ -94,6 +95,65 @@ class TrackRegistrationChangesSpec extends SpecBase {
         )
 
         sut.getFullName("John", "Smith") shouldBe "John Smith"
+    }
+  }
+
+  "hasBusinessSectorChanged" should {
+    "return false if getSubscriptionResponse is missing due to journey being initial journey or getSubscriptionEnabled flag being set to false" in forAll {
+      (
+        registration: Registration
+      ) =>
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(registration),
+          None
+        )
+
+        sut.hasBusinessSectorChanged shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is present but business sector has not changed" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration = registration.copy(businessSector = Some(InsolvencyPractitioner))
+
+        val validResponse: GetSubscriptionResponse =
+          response.copy(additionalDetails = response.additionalDetails.copy(businessSector = "InsolvencyPractitioner"))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasBusinessSectorChanged shouldBe false
+    }
+
+    "return true if getSubscriptionResponse is present and business sector has  changed" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration = registration.copy(businessSector = Some(TaxAdviser))
+
+        val validResponse: GetSubscriptionResponse =
+          response.copy(additionalDetails = response.additionalDetails.copy(businessSector = "InsolvencyPractitioner"))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasBusinessSectorChanged shouldBe true
+    }
+
+    "return false if getSubscriptionResponse is present but business sector is not present" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration = registration.copy(businessSector = None)
+
+        val validResponse: GetSubscriptionResponse =
+          response.copy(additionalDetails = response.additionalDetails.copy(businessSector = "InsolvencyPractitioner"))
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasBusinessSectorChanged shouldBe false
     }
   }
 }
