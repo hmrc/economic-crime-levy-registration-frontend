@@ -6,6 +6,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviour {
@@ -16,9 +17,9 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
     )
 
     "respond with 200 status and the cancel registration view" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      stubAuthorisedWithEclEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = random[Registration].copy(registrationType = Some(Amendment))
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistration(registration)
@@ -38,11 +39,13 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
     )
 
     "delete the registration when the Yes option is selected" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      stubAuthorisedWithEclEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration].copy(registrationType = Some(Amendment))
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistration(registration)
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubDeleteRegistration()
 
       val result = callRoute(

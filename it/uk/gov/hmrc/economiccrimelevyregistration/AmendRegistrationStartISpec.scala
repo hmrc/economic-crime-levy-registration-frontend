@@ -31,15 +31,18 @@ class AmendRegistrationStartISpec extends ISpecBase {
 
       stubAuthorisedWithEclEnrolment()
 
-      val registration            = random[Registration].copy(registrationType = Some(Amendment))
-      val additionalDetails       = random[GetAdditionalDetails]
-      val getSubscriptionResponse = random[GetSubscriptionResponse].copy(additionalDetails =
+      val registration                           = random[Registration].copy(registrationType = Some(Amendment))
+      val additionalDetails                      = random[GetAdditionalDetails]
+      val getSubscriptionResponse                = random[GetSubscriptionResponse].copy(additionalDetails =
         additionalDetails.copy(businessSector = "HighValueDealer", amlSupervisor = "Hmrc")
+      )
+      val getSubscriptionResponseWithCountryCode = getSubscriptionResponse.copy(correspondenceAddressDetails =
+        getSubscriptionResponse.correspondenceAddressDetails.copy(countryCode = Some("GB"))
       )
 
       stubGetRegistration(registration)
       stubUpsertRegistrationWithoutRequestMatching(registration)
-      stubGetSubscription(getSubscriptionResponse)
+      stubGetSubscription(getSubscriptionResponseWithCountryCode)
 
       stubUpsertRegistrationAdditionalInfo(RegistrationAdditionalInfo(testInternalId, None, None))
 

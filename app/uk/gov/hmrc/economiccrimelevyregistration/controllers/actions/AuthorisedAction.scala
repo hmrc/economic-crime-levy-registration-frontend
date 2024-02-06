@@ -192,7 +192,7 @@ abstract class BaseAuthorisedAction @Inject() (
   )(implicit hc: HeaderCarrier): Future[Result] =
     eclEnrolment match {
       case Some(_) =>
-        if (request.uri.toLowerCase.contains("amend")) {
+        if (request.uri.toLowerCase.contains("amend-")) {
           block(
             AuthorisedRequest(
               request,
@@ -207,7 +207,14 @@ abstract class BaseAuthorisedAction @Inject() (
           } yield registration).foldF(
             _ => Future.successful(Redirect(routes.NotableErrorController.registrationFailed())),
             registration =>
-              processRegistrationType(request, internalId, block, groupId, eclRegistrationReference, registration)
+              registration.registrationType match {
+                case None            =>
+                  Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
+                case Some(Amendment) =>
+                  block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
+                case Some(Initial)   =>
+                  Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
+              }
           )
         }
       case None    =>
