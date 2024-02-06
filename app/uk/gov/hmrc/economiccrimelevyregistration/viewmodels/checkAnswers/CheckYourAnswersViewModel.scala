@@ -112,10 +112,6 @@ case class CheckYourAnswersViewModel(
     SummaryListViewModel(
       rows = (
         addIf(isInitialRegistration, EntityTypeSummary.row(registration.entityType))
-          ++ addIfNot(
-            hasPartnershipNameChanged,
-            EntityNameSummary.row(registration.entityName, registration.entityType)
-          )
           ++ addIf(isInitialRegistration, CompanyNumberSummary.row(registration.companyNumber))
           ++ addIf(isInitialRegistration, CtUtrSummary.row(registration.ctUtr))
           ++ addIf(isInitialRegistration, SaUtrSummary.row(registration.saUtr))
@@ -148,7 +144,6 @@ case class CheckYourAnswersViewModel(
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 
-  //TODO: Missing 'organisationName'
   def amendedAnswersDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = (

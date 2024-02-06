@@ -104,7 +104,6 @@ class EclRegistrationService @Inject() (
       contacts = contacts,
       businessSector = Some(businessSector),
       contactAddress = Some(address),
-      partnershipName = getSubscriptionResponse.legalEntityDetails.organisationName,
       amlSupervisor = Some(getAmlSupervisor(getSubscriptionResponse.additionalDetails.amlSupervisor))
     )
   }

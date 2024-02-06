@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkyouranswers
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, EclAddress, GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, ContactDetails, EclAddress, GetSecondaryContactDetails, GetSubscriptionResponse, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers.TrackRegistrationChanges
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Hmrc, Other}
@@ -728,7 +728,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
     }
   }
 
-  "hasFirstContactPhoneChanged" should {
+  "hasFirstContactPhoneChanged"           should {
     "return false when getSubscriptionResponse is not present" in forAll { registration: Registration =>
       val sut = TestTrackEclReturnChanges(
         defaultEclRegistration(registration),
@@ -774,6 +774,344 @@ class TrackRegistrationChangesSpec extends SpecBase {
         )
 
         sut.hasFirstContactPhoneChanged shouldBe false
+    }
+  }
+  "hasSecondContactDetailsPresentChanged" should {
+    "return false when getSubscriptionResponse is not set" in forAll { registration: Registration =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+
+      sut.hasSecondContactDetailsPresentChanged shouldBe false
+    }
+    "return false when getSubscriptionResponse is set and values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(true)))
+        val validResponse     = response.copy(secondaryContactDetails =
+          Some(
+            GetSecondaryContactDetails(
+              "Test name",
+              "Test position",
+              "Test phone",
+              "Test email"
+            )
+          )
+        )
+        val sut               = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasSecondContactDetailsPresentChanged shouldBe false
+    }
+
+    "return true when getSubscriptionResponse is set and values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(true)))
+        val validResponse     = response.copy(secondaryContactDetails = None)
+        val sut               = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+
+        sut.hasSecondContactDetailsPresentChanged shouldBe true
+    }
+  }
+
+  "hasSecondContactNameChanged" should {
+    "return false if getSubscriptionResponse is not set" in forAll { registration: Registration =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+      sut.hasSecondContactNameChanged shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is set and values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val name              = "Test name"
+        val validRegistration =
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails = ContactDetails(Some(name), None, None, None))
+          )
+
+        val validResponse = response.copy(secondaryContactDetails =
+          Some(
+            GetSecondaryContactDetails(
+              name,
+              "Test position",
+              "Test phone",
+              "Test email"
+            )
+          )
+        )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasSecondContactNameChanged shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is set and both values are None" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration =
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails = ContactDetails(None, None, None, None))
+          )
+
+        val validResponse = response.copy(secondaryContactDetails = None)
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasSecondContactNameChanged shouldBe false
+    }
+    "return true if getSubscriptionResponse is set and values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val name              = "Test name"
+        val validRegistration =
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails = ContactDetails(Some(name), None, None, None))
+          )
+
+        val validResponse = response.copy(secondaryContactDetails =
+          Some(
+            GetSecondaryContactDetails(
+              "Other test name",
+              "Test position",
+              "Test phone",
+              "Test email"
+            )
+          )
+        )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasSecondContactNameChanged shouldBe true
+    }
+  }
+
+  "hasSecondContactRoleChanged" should {
+    "return false if getSubscriptionResponse is not set" in forAll { registration: Registration =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+      sut.hasSecondContactRoleChanged shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is set and values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val role              = "Test role"
+        val validRegistration =
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails = ContactDetails(None, Some(role), None, None))
+          )
+
+        val validResponse = response.copy(secondaryContactDetails =
+          Some(
+            GetSecondaryContactDetails(
+              "Test name",
+              role,
+              "Test phone",
+              "Test email"
+            )
+          )
+        )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasSecondContactRoleChanged shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is set and both values are None" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration =
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails = ContactDetails(None, None, None, None))
+          )
+
+        val validResponse = response.copy(secondaryContactDetails = None)
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasSecondContactRoleChanged shouldBe false
+    }
+    "return true if getSubscriptionResponse is set and values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val role              = "Test role"
+        val validRegistration =
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails = ContactDetails(None, Some(role), None, None))
+          )
+
+        val validResponse = response.copy(secondaryContactDetails =
+          Some(
+            GetSecondaryContactDetails(
+              "Other test name",
+              "Test position",
+              "Test phone",
+              "Test email"
+            )
+          )
+        )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasSecondContactRoleChanged shouldBe true
+    }
+  }
+
+  "hasSecondContactPhoneChanged" should {
+    "return false if getSubscriptionResponse is not set" in forAll { registration: Registration =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+      sut.hasSecondContactPhoneChanged shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is set and values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val phone             = "Test phone"
+        val validRegistration =
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails = ContactDetails(None, None, None, Some(phone)))
+          )
+
+        val validResponse = response.copy(secondaryContactDetails =
+          Some(
+            GetSecondaryContactDetails(
+              "Test name",
+              "Test role",
+              phone,
+              "Test email"
+            )
+          )
+        )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasSecondContactPhoneChanged shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is set and both values are None" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration =
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails = ContactDetails(None, None, None, None))
+          )
+
+        val validResponse = response.copy(secondaryContactDetails = None)
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasSecondContactPhoneChanged shouldBe false
+    }
+    "return true if getSubscriptionResponse is set and values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val phone             = "Test phone"
+        val validRegistration =
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails = ContactDetails(None, None, None, Some(phone)))
+          )
+
+        val validResponse = response.copy(secondaryContactDetails =
+          Some(
+            GetSecondaryContactDetails(
+              "Other test name",
+              "Test position",
+              "Other test phone",
+              "Test email"
+            )
+          )
+        )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasSecondContactPhoneChanged shouldBe true
+    }
+  }
+
+  "hasSecondContactEmailChanged" should {
+    "return false if getSubscriptionResponse is not set" in forAll { registration: Registration =>
+      val sut = TestTrackEclReturnChanges(
+        defaultEclRegistration(registration),
+        None
+      )
+      sut.hasSecondContactEmailChanged shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is set and values are the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val email             = "Test email"
+        val validRegistration =
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails = ContactDetails(None, None, Some(email), None))
+          )
+
+        val validResponse = response.copy(secondaryContactDetails =
+          Some(
+            GetSecondaryContactDetails(
+              "Test name",
+              "Test role",
+              "Test phone",
+              email
+            )
+          )
+        )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasSecondContactEmailChanged shouldBe false
+    }
+
+    "return false if getSubscriptionResponse is set and both values are None" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val validRegistration =
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails = ContactDetails(None, None, None, None))
+          )
+
+        val validResponse = response.copy(secondaryContactDetails = None)
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasSecondContactEmailChanged shouldBe false
+    }
+    "return true if getSubscriptionResponse is set and values are not the same" in forAll {
+      (registration: Registration, response: GetSubscriptionResponse) =>
+        val email             = "Test email"
+        val validRegistration =
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails = ContactDetails(None, None, Some(email), None))
+          )
+
+        val validResponse = response.copy(secondaryContactDetails =
+          Some(
+            GetSecondaryContactDetails(
+              "Other test name",
+              "Test position",
+              "Test phone",
+              "Other test email"
+            )
+          )
+        )
+        val sut           = TestTrackEclReturnChanges(
+          defaultEclRegistration(validRegistration),
+          Some(validResponse)
+        )
+        sut.hasSecondContactEmailChanged shouldBe true
     }
   }
 }

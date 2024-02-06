@@ -112,34 +112,6 @@ trait TrackRegistrationChanges {
   val hasAddressChanged: Boolean =
     hasAddressLine1Changed && hasAddressLine2Changed && hasAddressLine3Changed && hasAddressLine4Changed
 
-  val hasPartnershipNameChanged: Boolean = getSubscriptionResponse match {
-    case Some(response) =>
-      if (response.legalEntityDetails.customerType.equalsIgnoreCase("02")) {
-        response.legalEntityDetails.organisationName match {
-          case Some(organisationName) =>
-            registration.partnershipName match {
-              case Some(partnershipName) =>
-                !(organisationName.equalsIgnoreCase(partnershipName) || registration.entityName.contains(
-                  organisationName
-                ))
-              case None                  => true
-            }
-          case None                   =>
-            registration.partnershipName match {
-              case Some(_) => true
-              case None    => false
-            }
-        }
-      } else {
-        (response.legalEntityDetails.firstName, response.legalEntityDetails.lastName) match {
-          case (Some(firstName), Some(lastName)) =>
-            !(registration.entityName.contains(getFullName(firstName, lastName)))
-          case (_, _)                            => false
-        }
-      }
-    case None           => false
-  }
-
   val hasAmlSupervisorChanged: Boolean = getSubscriptionResponse match {
     case Some(response) =>
       registration.amlSupervisor match {
@@ -233,7 +205,6 @@ trait TrackRegistrationChanges {
   val hasAnyAmends: Boolean = Seq(
     hasBusinessSectorChanged,
     hasAddressChanged,
-    hasPartnershipNameChanged,
     hasAmlSupervisorChanged,
     hasFirstContactNameChanged,
     hasFirstContactRoleChanged,
