@@ -67,7 +67,6 @@ class PartnershipIdentificationFrontendConnectorImpl @Inject() (
       case LimitedPartnership          => url"$apiUrl/limited-partnership-journey"
       case ScottishLimitedPartnership  => url"$apiUrl/scottish-limited-partnership-journey"
       case LimitedLiabilityPartnership => url"$apiUrl/limited-liability-partnership-journey"
-      case _                           => url""
     }
 
     retryFor[GrsCreateJourneyResponse]("Partnership identification - Create journey")(retryCondition) {

@@ -52,13 +52,9 @@ class FirstContactNumberController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     (for {
-      firstContactName <- request.firstContactNameOrError
+      firstContactName <- request.firstContactNameOrError.asResponseError
     } yield firstContactName).fold(
-      _ =>
-        Redirect(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController
-            .answersAreInvalid() //TODO - routeError instead
-        ),
+      error => routeError(error),
       name =>
         Ok(
           view(
@@ -78,15 +74,12 @@ class FirstContactNumberController @Inject() (
       .fold(
         formWithErrors =>
           (for {
-            firstContactName <- request.firstContactNameOrError
+            firstContactName <- request.firstContactNameOrError.asResponseError
           } yield firstContactName)
             .fold(
-              _ =>
+              error =>
                 Future.successful(
-                  Redirect(
-                    uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController
-                      .answersAreInvalid()
-                  )
+                  routeError(error)
                 ),
               name =>
                 Future.successful(

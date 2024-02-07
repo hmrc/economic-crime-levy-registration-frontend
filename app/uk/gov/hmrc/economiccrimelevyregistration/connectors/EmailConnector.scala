@@ -51,7 +51,7 @@ class EmailConnector @Inject() (
   )(implicit
     hc: HeaderCarrier
   ): Future[Unit] =
-    retryFor[Unit]("HMRC email - Send registration")(retryCondition) { //TODO - do we need a limit for the amount of retries?
+    retryFor[Unit]("HMRC email - Send registration")(retryCondition) {
       httpClient
         .post(sendEmailUrl)
         .withBody(

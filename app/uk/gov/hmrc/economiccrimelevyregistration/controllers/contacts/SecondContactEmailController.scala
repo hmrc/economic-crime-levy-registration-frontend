@@ -53,12 +53,9 @@ class SecondContactEmailController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     (for {
-      secondContactName <- request.secondContactNameOrError
+      secondContactName <- request.secondContactNameOrError.asResponseError
     } yield secondContactName).fold(
-      _ =>
-        Redirect(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid()
-        ),
+      error => routeError(error),
       name =>
         Ok(
           view(
@@ -78,15 +75,12 @@ class SecondContactEmailController @Inject() (
       .fold(
         formWithErrors =>
           (for {
-            secondContactName <- request.secondContactNameOrError
+            secondContactName <- request.secondContactNameOrError.asResponseError
           } yield secondContactName)
             .fold(
-              _ =>
+              error =>
                 Future.successful(
-                  Redirect(
-                    uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController
-                      .answersAreInvalid()
-                  )
+                  routeError(error)
                 ),
               name =>
                 Future.successful(

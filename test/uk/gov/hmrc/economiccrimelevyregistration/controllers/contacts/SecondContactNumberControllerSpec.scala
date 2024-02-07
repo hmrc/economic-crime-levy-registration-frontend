@@ -87,16 +87,14 @@ class SecondContactNumberControllerSpec extends SpecBase {
         }
     }
 
-    "redirect to AnswersAreInvalidPage when there is no second contact name in the registration data" in forAll {
+    "return INTERNAL_SERVER_ERROR when there is no second contact name in the registration data" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(contacts = Contacts.empty)
 
         new TestContext(updatedRegistration) {
-          val result: Result = await(controller.onPageLoad(NormalMode)(fakeRequest))
+          val result = controller.onPageLoad(NormalMode)(fakeRequest)
 
-          result shouldBe Redirect(
-            uk.gov.hmrc.economiccrimelevyregistration.controllers.routes.NotableErrorController.answersAreInvalid()
-          )
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
     }
 

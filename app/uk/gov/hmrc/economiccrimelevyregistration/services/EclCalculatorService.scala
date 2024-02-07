@@ -32,7 +32,6 @@ class EclCalculatorService @Inject() (
   eclCalculatorConnector: EclCalculatorConnector
 )(implicit ec: ExecutionContext) {
 
-//  TODO: separate calculateLiability logic from this method
   def checkIfRevenueMeetsThreshold(
     registration: Registration
   )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, Option[Boolean]] =
