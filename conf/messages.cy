@@ -578,7 +578,7 @@ amendmentRequested.body.p2 = Rydym wedi anfon e-bost cadarnhau i {0}. Cadwch hwn
 amendmentRequested.body.p3 = Ni fyddwch yn cael e-bost na hysbysiad oddi wrth CThEF i’ch atgoffa i gyflwyno datganiad.
 amendmentRequested.body.p4 = Pan fyddwch yn llenwi’ch datganiad blynyddol, bydd angen i chi roi gwybod i ni am y canlynol:
 amendmentRequested.body.p5 = Byddwn yn adolygu’ch atebion. Os oes angen rhagor o wybodaeth arnom mae’n bosibl byddwn yn cysylltu â chi drwy ddefnyddio’r manylion yr ydych wedi eu rhoi. Bydd y broses hon yn cymryd 15 diwrnod gwaith.
-amendmentRequested.body.p6 = Byddwn yn anfon llythyr atoch ar ôl i ni ddiwygio’ch datganiad. Ni fyddwch yn gallu bwrw golwg dros y newidiadau hyn nes eich bod wedi cael y llythyr hwn.
+amendmentRequested.body.p6 = Byddwn yn anfon llythyr atoch ar ôl i ni ddiwygio’ch datganiad.
 amendmentRequested.body.address.heading = Byddwn yn anfon llythyr at:
 amendmentRequested.body.p7 = {0} (mae’n cymryd 30 eiliad)
 amendmentRequested.body.p7.link = <a href="{0}" class="govuk-link">Beth oedd eich barn am y gwasanaeth hwn?</a>
