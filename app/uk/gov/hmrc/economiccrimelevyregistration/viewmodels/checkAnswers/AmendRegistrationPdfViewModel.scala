@@ -26,7 +26,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 
 case class AmendRegistrationPdfViewModel(
   registration: Registration,
-  getSubscriptionResponse: Option[GetSubscriptionResponse]
+  getSubscriptionResponse: Option[GetSubscriptionResponse],
+  eclReference: Option[String]
 ) extends TrackRegistrationChanges {
 
   def contactDetails()(implicit messages: Messages): SummaryList =
@@ -156,10 +157,10 @@ case class AmendRegistrationPdfViewModel(
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 
-  def eclDetails()(implicit request: RegistrationDataRequest[_], messages: Messages): SummaryList =
+  def eclDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = (
-        addIf(isAmendRegistration, formatRow(EclReferenceNumberSummary.row()))
+        addIf(isAmendRegistration, formatRow(EclReferenceNumberSummary.row(eclReference)))
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 

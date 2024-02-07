@@ -15,8 +15,6 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
-@import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-@import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 
 @this(
         layout: templates.Layout,
@@ -25,7 +23,7 @@
         govukButton: GovukButton
 )
 
-@(viewModel: CheckYourAnswersViewModel)(implicit request: RegistrationDataRequest[_], messages: Messages)
+@(viewModel: CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages)
 
 
 @layout(pageTitle = title(messages("checkYourAnswers.title")),
@@ -36,11 +34,11 @@
     @formHelper(action = CheckYourAnswersController.onSubmit()) {
         <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
-        @if(viewModel.amendReasonDetails().rows.nonEmpty) {
+        @if(viewModel.amendReasonDetails.rows.nonEmpty) {
 
             <h2 class="govuk-heading-m">@messages("checkYourAnswers.amendReason.title")</h2>
 
-            @govukSummaryList(viewModel.amendReasonDetails())
+            @govukSummaryList(viewModel.amendReasonDetails)
 
         }
 
@@ -48,7 +46,7 @@
 
             <h2 class="govuk-heading-m">@messages("checkYourAnswers.eclDetails")</h2>
 
-            @govukSummaryList(viewModel.eclDetails())
+            @govukSummaryList(viewModel.eclDetails)
         }
 
         @if(viewModel.organisationDetails().rows.nonEmpty) {

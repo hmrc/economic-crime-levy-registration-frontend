@@ -19,8 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 import play.api.http._
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 
@@ -100,8 +99,11 @@ case class CheckYourAnswersViewModel(
             DoYouHaveCtUtrSummary.row(registration.otherEntityJourneyData.isCtUtrPresent, registration.entityType)
           )
           ++ addIf(isInitialRegistration, UtrTypeSummary.row(registration.otherEntityJourneyData.utrType))
-          ++ addIf(isInitialRegistration, OtherEntitySaUtrSummary.row(registration.saUtr))
-          ++ addIf(isInitialRegistration, OtherEntityCtUtrSummary.row(registration.ctUtr, registration.entityType))
+          ++ addIf(isInitialRegistration, OtherEntitySaUtrSummary.row(registration.otherEntityJourneyData.saUtr))
+          ++ addIf(
+            isInitialRegistration,
+            OtherEntityCtUtrSummary.row(registration.otherEntityJourneyData.ctUtr, registration.entityType)
+          )
           ++ addIf(isInitialRegistration, OtherEntityPostcodeSummary.row(registration.otherEntityJourneyData.postcode))
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
@@ -130,14 +132,12 @@ case class CheckYourAnswersViewModel(
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 
-  def eclDetails()(implicit request: RegistrationDataRequest[_], messages: Messages): SummaryList =
+  def eclDetails(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
-      rows = (
-        addIf(isAmendRegistration, EclReferenceNumberSummary.row())
-      ).flatten
+      rows = addIf(isAmendRegistration, EclReferenceNumberSummary.row(eclReference)).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 
-  def amendReasonDetails()(implicit messages: Messages): SummaryList =
+  def amendReasonDetails(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = Seq(
         AmendReasonSummary.row(registration.amendReason)
@@ -195,7 +195,7 @@ case class CheckYourAnswersViewModel(
   private def addIf[T](condition: Boolean, value: T): Seq[T]    = if (condition) Seq(value) else Seq.empty
   private def addIfNot[T](condition: Boolean, value: T): Seq[T] = if (!condition) Seq(value) else Seq.empty
 
-  val registrationType = registration.registrationType
+  val registrationType: Option[RegistrationType] = registration.registrationType
 
 }
 

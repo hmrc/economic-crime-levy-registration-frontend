@@ -136,7 +136,8 @@ class CheckYourAnswersController @Inject() (
           getSubscriptionResponse,
           request.eclRegistrationReference
         )
-      amendRegistrationPdfViewModel = AmendRegistrationPdfViewModel(registration, getSubscriptionResponse)
+      amendRegistrationPdfViewModel =
+        AmendRegistrationPdfViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference)
       base64EncodedHtmlViewForPdf   = getBase64EncodedPdf(checkYourAnswersModel, amendRegistrationPdfViewModel)
       _                            <- registrationService.upsertRegistration(registration =
                                         registration.copy(
