@@ -17,8 +17,10 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the business name HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(routes.BusinessNameController.onPageLoad(NormalMode)))
@@ -38,7 +40,9 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
       val registration: Registration = random[Registration].copy(
         entityType = Some(Charity)
       )
+      val additionalInfo             = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val otherEntityJourneyData = registration.otherEntityJourneyData.copy(businessName = Some("Test"))

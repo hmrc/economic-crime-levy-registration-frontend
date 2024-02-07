@@ -17,7 +17,10 @@ class UtrTypeISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the company registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubGetRegistration(registration)
 
@@ -35,8 +38,10 @@ class UtrTypeISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected UTR type then redirect to correct page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val utrType = random[UtrType]
 
       stubGetRegistration(registration)

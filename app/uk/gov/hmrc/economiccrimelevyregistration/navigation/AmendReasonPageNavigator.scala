@@ -22,7 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registratio
 
 class AmendReasonPageNavigator extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
-    routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get, false)
+    routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get)
 
   override protected def navigateInCheckMode(registration: Registration): Call =
     routes.CheckYourAnswersController.onPageLoad()

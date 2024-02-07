@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
@@ -25,10 +26,11 @@ import play.api.test.Helpers.{contentAsString, redirectLocation, status}
 import uk.gov.hmrc.economiccrimelevyregistration.RegistrationWithUnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UtrFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UtrView
 
 import scala.concurrent.Future
@@ -41,19 +43,19 @@ class UtrControllerSpec extends SpecBase {
   override val appConfig: AppConfig = mock[AppConfig]
 
   val pageNavigator: UtrPageNavigator = new UtrPageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
 
-    override protected def navigateInCheckMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInCheckMode(navigationData: Registration): Call = onwardRoute
   }
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   class TestContext(registration: Registration) {
     val controller = new UtrController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registration.internalId),
       fakeDataRetrievalAction(registration),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       view
@@ -93,9 +95,15 @@ class UtrControllerSpec extends SpecBase {
     "redirect to the next page" in { (registration: RegistrationWithUnincorporatedAssociation) =>
       new TestContext(registration.registration) {
         val updatedRegistration: Registration = registration.registration
-        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-          .thenReturn(Future.successful(updatedRegistration))
-        val utr: String                       = registration.registration.otherEntityJourneyData.ctUtr.getOrElse("")
+
+        when(
+          mockEclRegistrationService.upsertRegistration(
+            ArgumentMatchers.eq(updatedRegistration)
+          )(any())
+        )
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+        val utr: String = registration.registration.otherEntityJourneyData.ctUtr.getOrElse("")
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", utr)))

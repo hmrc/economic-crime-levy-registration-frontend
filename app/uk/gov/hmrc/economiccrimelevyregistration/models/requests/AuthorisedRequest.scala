@@ -17,10 +17,19 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models.requests
 
 import play.api.mvc.{Request, WrappedRequest}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 
 case class AuthorisedRequest[A](
   request: Request[A],
   internalId: String,
   groupId: String,
   eclRegistrationReference: Option[String]
-) extends WrappedRequest[A](request)
+) extends WrappedRequest[A](request) {
+
+  val eclReferenceOrError: Either[DataRetrievalError, String] =
+    eclRegistrationReference match {
+      case Some(value) => Right(value)
+      case None        =>
+        Left(DataRetrievalError.InternalUnexpectedError("ECL registration reference not found in request", None))
+    }
+}

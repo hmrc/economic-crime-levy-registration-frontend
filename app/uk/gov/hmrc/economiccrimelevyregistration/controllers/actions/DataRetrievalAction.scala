@@ -16,44 +16,51 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
-import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{ActionRefiner, Result}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegistrationDataRetrievalAction @Inject() (
-  val eclRegistrationService: EclRegistrationService,
-  val registrationAdditionalInfoService: RegistrationAdditionalInfoService
+  eclRegistrationService: EclRegistrationService,
+  registrationAdditionalInfoService: RegistrationAdditionalInfoService
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalAction
-    with FrontendHeaderCarrierProvider {
+    with FrontendHeaderCarrierProvider
+    with ErrorHandler {
 
-  override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
-    eclRegistrationService
-      .getOrCreateRegistration(request.internalId)(hc(request))
-      .flatMap { registration =>
-        registrationAdditionalInfoService
-          .get(request.internalId)(hc(request))
-          .map(info =>
-            Right(
-              RegistrationDataRequest(
-                request.request,
-                request.internalId,
-                registration,
-                info,
-                request.eclRegistrationReference
-              )
+  override protected def refine[A](
+    request: AuthorisedRequest[A]
+  ): Future[Either[Result, RegistrationDataRequest[A]]] = {
+    implicit val hcFromRequest: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
+    (for {
+      registration <- eclRegistrationService.getOrCreate(request.internalId).asResponseError
+      info         <- registrationAdditionalInfoService
+                        .getOrCreate(request.internalId, request.eclRegistrationReference)
+                        .asResponseError
+    } yield (registration, info)).foldF(
+      error => Future.failed(new Exception(error.message)),
+      data =>
+        Future.successful(
+          Right(
+            RegistrationDataRequest(
+              request.request,
+              request.internalId,
+              data._1,
+              Some(data._2),
+              request.eclRegistrationReference
             )
           )
-      }
-      .recover { case _ =>
-        Left(InternalServerError)
-      }
-
+        )
+    )
+  }
 }
 
 trait DataRetrievalAction extends ActionRefiner[AuthorisedRequest, RegistrationDataRequest]

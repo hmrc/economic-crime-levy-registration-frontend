@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 
 class FirstContactNumberPageNavigatorSpec extends SpecBase {
@@ -35,10 +35,8 @@ class FirstContactNumberPageNavigatorSpec extends SpecBase {
             )
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe contacts.routes.AddAnotherContactController
-          .onPageLoad(
-            NormalMode
-          )
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+          contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)
     }
 
     "return a Call to the check your answers page in CheckMode" in forAll {
@@ -50,7 +48,8 @@ class FirstContactNumberPageNavigatorSpec extends SpecBase {
             )
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
     }
   }
 

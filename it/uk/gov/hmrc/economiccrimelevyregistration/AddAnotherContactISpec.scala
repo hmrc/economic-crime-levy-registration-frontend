@@ -17,7 +17,9 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the Add another contact HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val registration = random[Registration]
 
       stubGetRegistration(registration)
@@ -38,10 +40,11 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected answer then redirect the second contact name page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-
+      val registration   = random[Registration]
       stubGetRegistration(registration)
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(true)))
 
       stubUpsertRegistration(updatedRegistration)
@@ -63,6 +66,9 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
       val incorporatedEntityJourneyDataWithValidCompanyProfile =
         random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
 
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val updatedRegistration = registration.copy(
         contacts = registration.contacts.copy(secondContact = Some(false), secondContactDetails = ContactDetails.empty),
         incorporatedEntityJourneyData =

@@ -20,13 +20,13 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantApLengthDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantApLengthFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantApLengthPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantApLengthView
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RelevantApLengthView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -37,14 +37,16 @@ class RelevantApLengthController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: RelevantApLengthFormProvider,
   pageNavigator: RelevantApLengthPageNavigator,
   dataCleanup: RelevantApLengthDataCleanup,
   view: RelevantApLengthView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[Int] = formProvider()
 
@@ -57,15 +59,15 @@ class RelevantApLengthController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-        relevantApLength =>
-          eclRegistrationConnector
-            .upsertRegistration(
-              dataCleanup.cleanup(request.registration.copy(relevantApLength = Some(relevantApLength)))
-            )
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
-            }
+        relevantApLength => {
+          val updatedRegistration = dataCleanup.cleanup(
+            request.registration
+              .copy(relevantApLength = Some(relevantApLength))
+          )
+          (for {
+            _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+        }
       )
   }
-
 }

@@ -6,7 +6,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, NormalMode, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -20,8 +20,10 @@ class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
     "retrieve the ALF address data, update the registration with the address and continue the registration journey" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val alfAddressData = random[AlfAddressData]

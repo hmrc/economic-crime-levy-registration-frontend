@@ -17,8 +17,10 @@ class SaUtrISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the company registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(routes.SaUtrController.onPageLoad(NormalMode)))
@@ -37,8 +39,10 @@ class SaUtrISpec extends ISpecBase with AuthorisedBehaviour {
 
       val registration = random[Registration]
 
-      val saUtr = numStringsWithConcreteLength(UtrLength).sample.get
+      val saUtr          = numStringsWithConcreteLength(UtrLength).sample.get
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val otherEntityJourneyData = OtherEntityJourneyData

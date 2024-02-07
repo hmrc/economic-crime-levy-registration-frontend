@@ -16,40 +16,36 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.{Call, RequestHeader}
+import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
-class UkRevenuePageNavigator @Inject() ()(implicit ec: ExecutionContext)
-    extends AsyncPageNavigator
-    with FrontendHeaderCarrierProvider {
-  override protected def navigateInNormalMode(registration: Registration)(implicit
-    request: RequestHeader
-  ): Future[Call] = navigate(NormalMode, registration)
+class UkRevenuePageNavigator @Inject() () extends PageNavigator {
 
-  override protected def navigateInCheckMode(registration: Registration)(implicit
-    request: RequestHeader
-  ): Future[Call] = navigate(CheckMode, registration)
+  override protected def navigateInNormalMode(registration: Registration): Call =
+    navigate(registration, NormalMode)
 
-  private def navigate(mode: Mode, registration: Registration)(implicit hc: HeaderCarrier): Future[Call] =
+  override protected def navigateInCheckMode(registration: Registration): Call =
+    navigate(registration, CheckMode)
+
+  private def navigate(registration: Registration, mode: Mode): Call =
     registration.relevantApRevenue match {
-      case Some(relevantApRevenue) =>
+      case Some(_) =>
         registration.revenueMeetsThreshold match {
-          case Some(true)                          =>
+          case Some(true)  =>
             mode match {
-              case NormalMode => Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad(true, mode))
-              case CheckMode  => Future.successful(routes.CheckYourAnswersController.onPageLoad())
+              case NormalMode => routes.LiabilityBeforeCurrentYearController.onPageLoad(mode)
+              case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
             }
-          case Some(revenueMeetsThreshold @ false) =>
-            Future.successful(routes.LiabilityBeforeCurrentYearController.onPageLoad(true, mode))
-          case _                                   => Future.successful(routes.NotableErrorController.answersAreInvalid())
+          case Some(false) =>
+            routes.LiabilityBeforeCurrentYearController.onPageLoad(mode)
+          case _           =>
+            routes.NotableErrorController.answersAreInvalid()
         }
-      case _                       => Future.successful(routes.NotableErrorController.answersAreInvalid())
+      case _       =>
+        routes.NotableErrorController.answersAreInvalid()
     }
 
 }

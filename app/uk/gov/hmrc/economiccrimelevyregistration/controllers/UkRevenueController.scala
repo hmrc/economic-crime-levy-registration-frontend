@@ -19,14 +19,13 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclCalculatorService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclCalculatorService, EclRegistrationService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, UkRevenueView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -37,14 +36,16 @@ class UkRevenueController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   eclCalculatorService: EclCalculatorService,
   formProvider: UkRevenueFormProvider,
   pageNavigator: UkRevenuePageNavigator,
   view: UkRevenueView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[BigDecimal] = formProvider()
 
@@ -58,14 +59,20 @@ class UkRevenueController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         revenue => {
-          val updatedRegistration = request.registration.copy(relevantApRevenue = Some(revenue))
-          eclCalculatorService.checkIfRevenueMeetsThreshold(updatedRegistration).flatMap { revenueMeetsThreshold =>
-            eclRegistrationConnector
-              .upsertRegistration(updatedRegistration.copy(revenueMeetsThreshold = revenueMeetsThreshold))
-              .flatMap { updatedRegistration =>
-                pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
-              }
-          }
+          val updatedRegistration = request.registration.copy(
+            relevantApRevenue = Some(revenue)
+          )
+
+          (for {
+            revenueMeetsThreshold <-
+              eclCalculatorService.checkIfRevenueMeetsThreshold(updatedRegistration).asResponseError
+            revenueWithThreshold   = updatedRegistration.copy(revenueMeetsThreshold = revenueMeetsThreshold)
+            _                     <- eclRegistrationService
+                                       .upsertRegistration(
+                                         revenueWithThreshold
+                                       )
+                                       .asResponseError
+          } yield revenueWithThreshold).convertToResult(mode, pageNavigator)
         }
       )
   }

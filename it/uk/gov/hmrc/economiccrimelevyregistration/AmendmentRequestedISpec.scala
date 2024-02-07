@@ -34,6 +34,8 @@ class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the registration submitted HTML view" in forAll { sessionData: SessionData =>
       stubAuthorisedWithEclEnrolment()
+      stubDeleteRegistration()
+      stubDeleteRegistrationAdditionalInfo()
 
       val eclAddress               = random[EclAddress]
       val firstContactEmailAddress = emailAddress(EmailMaxLength).sample.get

@@ -46,7 +46,7 @@ final case class Registration(
   amendReason: Option[String]
 ) {
 
-  def grsAddressToEclAddress: Option[EclAddress] = {
+  val grsAddressToEclAddress: Option[EclAddress] = {
     val incorporatedEntityAddress: Option[IncorporatedEntityAddress] =
       (incorporatedEntityJourneyData, soleTraderEntityJourneyData, partnershipEntityJourneyData) match {
         case (Some(d), None, None) => Some(d.companyProfile.unsanitisedCHROAddress)

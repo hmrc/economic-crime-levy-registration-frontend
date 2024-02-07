@@ -17,7 +17,10 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the company registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubGetRegistration(registration)
 
@@ -35,7 +38,10 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
     "save the company registration number then redirect to the UTR type page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
 
       val companyNumber = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
 

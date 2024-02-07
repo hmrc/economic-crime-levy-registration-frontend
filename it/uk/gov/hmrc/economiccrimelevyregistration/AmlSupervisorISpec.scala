@@ -13,19 +13,21 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, false).url}" should {
+  s"GET ${routes.AmlSupervisorController.onPageLoad(NormalMode, Initial).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(
-      routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, false)
+      routes.AmlSupervisorController.onPageLoad(NormalMode, Initial)
     )
 
     "respond with 200 status and the AML supervisor HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, false)))
+      val result = callRoute(FakeRequest(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial)))
 
       status(result) shouldBe OK
 
@@ -33,16 +35,23 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.AmlSupervisorController.onSubmit(NormalMode, Initial, false).url}"  should {
+  s"POST ${routes.AmlSupervisorController.onSubmit(NormalMode, Initial).url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(
-      routes.AmlSupervisorController.onPageLoad(NormalMode, Initial, false)
+      routes.AmlSupervisorController.onPageLoad(NormalMode, Initial)
     )
 
     "save the selected option then redirect to the relevant AP 12 months page when the answer is either HMRC or another professional body" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration      = random[Registration]
-      val validRegistration = registration.copy(registrationType = Some(Initial))
+      val carriedOutAmlRegulatedActivityInCurrentFy = random[Boolean]
+      val registration                              =
+        random[Registration].copy(carriedOutAmlRegulatedActivityInCurrentFy =
+          Some(carriedOutAmlRegulatedActivityInCurrentFy)
+        )
+      val validRegistration                         = registration.copy(registrationType = Some(Initial))
+      val additionalInfo                            = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
 
       val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
       val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample.get
@@ -62,19 +71,27 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.AmlSupervisorController.onSubmit(NormalMode, Initial, false))
+        FakeRequest(routes.AmlSupervisorController.onSubmit(NormalMode, Initial))
           .withFormUrlEncodedBody(formData: _*)
       )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.RelevantAp12MonthsController.onPageLoad(NormalMode).url)
+      registration.carriedOutAmlRegulatedActivityInCurrentFy match {
+        case Some(true)  =>
+          redirectLocation(result) shouldBe Some(routes.RelevantAp12MonthsController.onPageLoad(NormalMode).url)
+        case Some(false) =>
+          redirectLocation(result) shouldBe Some(routes.EntityTypeController.onPageLoad(NormalMode).url)
+      }
     }
 
     "save the selected option then redirect to the register with GC page when the answer is GC" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration].copy(internalId = testInternalId, registrationType = Some(Initial))
+      val registration   = random[Registration].copy(internalId = testInternalId, registrationType = Some(Initial))
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
 
       val amlSupervisor =
         AmlSupervisor(GamblingCommission, None)
@@ -86,7 +103,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.AmlSupervisorController.onSubmit(NormalMode, Initial, false))
+        FakeRequest(routes.AmlSupervisorController.onSubmit(NormalMode, Initial))
           .withFormUrlEncodedBody("value" -> GamblingCommission.toString)
       )
 
@@ -100,9 +117,11 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
       val registration = random[Registration].copy(internalId = testInternalId, registrationType = Some(Initial))
 
-      val amlSupervisor =
+      val amlSupervisor  =
         AmlSupervisor(FinancialConductAuthority, None)
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val updatedRegistration = registration.copy(amlSupervisor = Some(amlSupervisor))
@@ -110,7 +129,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.AmlSupervisorController.onSubmit(NormalMode, Initial, false))
+        FakeRequest(routes.AmlSupervisorController.onSubmit(NormalMode, Initial))
           .withFormUrlEncodedBody("value" -> FinancialConductAuthority.toString)
       )
 

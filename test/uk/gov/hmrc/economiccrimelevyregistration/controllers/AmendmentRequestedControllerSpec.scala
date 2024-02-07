@@ -16,28 +16,35 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, RegistrationAdditionalInfo, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendmentRequestedView
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, SessionError}
+
 import scala.concurrent.Future
 
 class AmendmentRequestedControllerSpec extends SpecBase {
 
-  val view: AmendmentRequestedView       = app.injector.instanceOf[AmendmentRequestedView]
-  val mockSessionService: SessionService = mock[SessionService]
+  val view: AmendmentRequestedView                    = app.injector.instanceOf[AmendmentRequestedView]
+  val mockSessionService: SessionService              = mock[SessionService]
+  val mockRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockAdditionalInfoService                       = mock[RegistrationAdditionalInfoService]
 
   val controller = new AmendmentRequestedController(
     mcc,
     view,
     fakeAuthorisedActionWithEnrolmentCheck("test-internal-id"),
-    mockSessionService
+    mockSessionService,
+    mockAdditionalInfoService,
+    mockRegistrationService
   )
 
   "onPageLoad" should {
@@ -52,6 +59,20 @@ class AmendmentRequestedControllerSpec extends SpecBase {
           (SessionKeys.ContactAddress, json),
           (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
         )
+        when(mockAdditionalInfoService.delete(anyString())(any(), any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+        when(mockRegistrationService.deleteRegistration(anyString())(any(), any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+        when(
+          mockSessionService.get(
+            ArgumentMatchers.eq(request.session),
+            anyString(),
+            ArgumentMatchers.eq(SessionKeys.FirstContactEmailAddress)
+          )(any())
+        )
+          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(firstContactEmailAddress))))
 
         when(
           mockSessionService.get(
@@ -60,18 +81,7 @@ class AmendmentRequestedControllerSpec extends SpecBase {
             ArgumentMatchers.eq(SessionKeys.ContactAddress)
           )(any())
         )
-          .thenReturn(Future.successful(Some(json)))
-
-        when(
-          mockSessionService.get(
-            ArgumentMatchers.eq(request.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.FirstContactEmailAddress)
-          )(
-            any()
-          )
-        )
-          .thenReturn(Future.successful(Some(firstContactEmailAddress)))
+          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(json))))
 
         val result: Future[Result] = controller.onPageLoad()(
           request

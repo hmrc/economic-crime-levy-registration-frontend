@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 
+import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EnrolmentStoreProxyConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.KeyValue
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import javax.inject.Inject
 import scala.concurrent.Future
@@ -28,7 +29,7 @@ import scala.concurrent.Future
 class StubEnrolmentStoreProxyConnector @Inject() (appConfig: AppConfig) extends EnrolmentStoreProxyConnector {
   override def getEnrolmentsForGroup(groupId: String)(implicit
     hc: HeaderCarrier
-  ): Future[Option[GroupEnrolmentsResponse]] =
+  ): Future[GroupEnrolmentsResponse] =
     if (appConfig.enrolmentStoreProxyStubReturnsEclReference) {
       val groupEnrolmentsWithEcl = GroupEnrolmentsResponse(
         Seq(
@@ -39,9 +40,9 @@ class StubEnrolmentStoreProxyConnector @Inject() (appConfig: AppConfig) extends 
         )
       )
 
-      Future.successful(Some(groupEnrolmentsWithEcl))
+      Future.successful(groupEnrolmentsWithEcl)
     } else {
-      Future.successful(None)
+      Future.failed(UpstreamErrorResponse.apply("", NOT_FOUND))
     }
 
 }

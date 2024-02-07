@@ -16,44 +16,56 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import cats.data.EitherT
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclCalculatorConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 @Singleton
 class EclCalculatorService @Inject() (
   eclCalculatorConnector: EclCalculatorConnector
-)(implicit
-  ec: ExecutionContext
-) {
-  def checkIfRevenueMeetsThreshold(registration: Registration)(implicit hc: HeaderCarrier): Future[Option[Boolean]] =
+)(implicit ec: ExecutionContext) {
+
+  def checkIfRevenueMeetsThreshold(
+    registration: Registration
+  )(implicit hc: HeaderCarrier): EitherT[Future, DataRetrievalError, Option[Boolean]] =
     registration.relevantApRevenue match {
       case Some(revenue) =>
-        val f: Int => Future[Option[Boolean]] = eclCalculatorConnector
-          .calculateLiability(_, revenue)
-          .map(liability =>
-            if (liability.amountDue.amount > 0) {
-              Some(true)
-            } else {
-              Some(false)
-            }
-          )
-
         registration.relevantAp12Months match {
-          case Some(true)  => f(EclTaxYear.YearInDays)
+          case Some(true)  => calculateLiabilityAmount(EclTaxYear.YearInDays, revenue)
           case Some(false) =>
             registration.relevantApLength match {
-              case Some(relevantApLength) => f(relevantApLength)
-              case _                      => Future.successful(None)
+              case Some(relevantApLength) => calculateLiabilityAmount(relevantApLength, revenue)
+              case _                      => EitherT.fromEither[Future](Right(None))
             }
-          case _           => Future.successful(None)
+          case _           => EitherT.fromEither[Future](Right(None))
         }
-
-      case _ => Future.successful(None)
+      case _             => EitherT.fromEither[Future](Right(None))
     }
 
+  private def calculateLiabilityAmount(relevantApLength: Int, revenue: BigDecimal)(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, DataRetrievalError, Option[Boolean]] =
+    EitherT {
+      eclCalculatorConnector
+        .calculateLiability(relevantApLength, revenue)
+        .map { liability =>
+          val revenueMoreThanZero = liability.amountDue.amount > 0
+          Right(Some(revenueMoreThanZero))
+        }
+        .recover {
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse
+                .unapply(error)
+                .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            Left(DataRetrievalError.BadGateway(message, code))
+          case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+        }
+    }
 }

@@ -19,13 +19,13 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.BusinessSectorFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.BusinessSectorPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.BusinessSectorView
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{BusinessSectorView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -36,13 +36,15 @@ class BusinessSectorController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: BusinessSectorFormProvider,
   pageNavigator: BusinessSectorPageNavigator,
   view: BusinessSectorView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[BusinessSector] = formProvider()
 
@@ -67,12 +69,13 @@ class BusinessSectorController @Inject() (
               view(formWithErrors, request.registration.registrationType, mode, request.eclRegistrationReference)
             )
           ),
-        businessSector =>
-          eclRegistrationConnector
-            .upsertRegistration(request.registration.copy(businessSector = Some(businessSector)))
-            .map { updatedRegistration =>
-              Redirect(pageNavigator.nextPage(mode, updatedRegistration))
-            }
+        businessSector => {
+          val updatedRegistration = request.registration.copy(businessSector = Some(businessSector))
+
+          (for {
+            _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+        }
       )
   }
 }
