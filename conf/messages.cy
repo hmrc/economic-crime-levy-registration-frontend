@@ -572,8 +572,8 @@ start.amend.list.b6 = manylion rhywun yn eich sefydliad sy’n gallu gweithredu 
 start.amend.button = Dechrau nawr
 
 amendmentRequested.title = Datganiad Ardoll Troseddau Economaidd wedi’i ddiwygio - Cyflwyno eich datganiad ECL - GOV.UK
-amendmentRequested.panel.title = Datganiad Ardoll Troseddau Economaidd wedi’i ddiwygio
-amendmentRequested.body.p1 = Rydych wedi diwygio datganiad ar gyfer yr Ardoll Troseddau Economaidd (ECL) ar gyfer blwyddyn ariannol {0}.
+amendmentRequested.panel.title = Cais am ddiwygiad i gofrestriad yr Ardoll Troseddau Economaidd
+amendmentRequested.body.p1 = Rydych wedi gwneud cais i ddiwygio’ch cofrestriad ar gyfer yr Ardoll Troseddau Economaidd (ECL) ar {0}.
 amendmentRequested.body.p2 = Rydym wedi anfon e-bost cadarnhau i {0}. Cadwch hwn ar gyfer eich cofnodion.
 amendmentRequested.body.p3 = Ni fyddwch yn cael e-bost na hysbysiad oddi wrth CThEF i’ch atgoffa i gyflwyno datganiad.
 amendmentRequested.body.p4 = Pan fyddwch yn llenwi’ch datganiad blynyddol, bydd angen i chi roi gwybod i ni am y canlynol:
