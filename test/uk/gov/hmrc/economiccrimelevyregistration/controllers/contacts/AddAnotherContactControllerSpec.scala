@@ -16,21 +16,23 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AddAnotherContactDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContactFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.AddAnotherContactView
+import org.mockito.ArgumentMatchers.any
 
 import scala.concurrent.Future
 
@@ -40,12 +42,12 @@ class AddAnotherContactControllerSpec extends SpecBase {
   val formProvider: AddAnotherContactFormProvider = new AddAnotherContactFormProvider()
   val form: Form[Boolean]                         = formProvider()
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: AddAnotherContactPageNavigator = new AddAnotherContactPageNavigator {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
 
-    override protected def navigateInCheckMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInCheckMode(navigationData: Registration): Call = onwardRoute
   }
 
   val dataCleanup: AddAnotherContactDataCleanup = new AddAnotherContactDataCleanup {
@@ -57,7 +59,7 @@ class AddAnotherContactControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       dataCleanup,
@@ -106,11 +108,11 @@ class AddAnotherContactControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, secondContact: Boolean) =>
         new TestContext(registration) {
-          val updatedRegistration: Registration =
-            registration.copy(contacts = registration.contacts.copy(secondContact = Some(secondContact)))
+          val contacts            = registration.contacts.copy(secondContact = Some(secondContact))
+          val updatedRegistration = dataCleanup.cleanup(registration).copy(contacts = contacts)
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", secondContact.toString)))

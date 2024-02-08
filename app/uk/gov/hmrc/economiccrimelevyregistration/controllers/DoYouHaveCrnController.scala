@@ -20,13 +20,13 @@ import com.google.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveCrnFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveCrnPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveCrnView
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{DoYouHaveCrnView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Singleton
@@ -38,43 +38,46 @@ class DoYouHaveCrnController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   formProvider: DoYouHaveCrnFormProvider,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   pageNavigator: DoYouHaveCrnPageNavigator,
   view: DoYouHaveCrnView
 )(implicit
-  ec: ExecutionContext
+  ec: ExecutionContext,
+  errorTemplate: ErrorTemplate
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
-  val form: Form[Boolean] = formProvider()
+  private val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.isUkCrnPresent), mode))
     }
 
-  def onSubmit(mode: Mode): Action[AnyContent] =
-    (authorise andThen getRegistrationData).async { implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          answer => {
-            val companyRegistrationNumber = answer match {
-              case true  => request.registration.otherEntityJourneyData.companyRegistrationNumber
-              case false => None
-            }
-            val otherEntityJourneyData    =
-              request.registration.otherEntityJourneyData.copy(
-                isUkCrnPresent = Some(answer),
-                companyRegistrationNumber = companyRegistrationNumber
-              )
-            eclRegistrationConnector
-              .upsertRegistration(
-                request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
-              )
-              .map(updatedRegistration => Redirect(pageNavigator.nextPage(mode, updatedRegistration)))
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+        answer => {
+          val companyRegistrationNumber = if (answer) {
+            request.registration.otherEntityJourneyData.companyRegistrationNumber
+          } else {
+            None
           }
-        )
-    }
+          val otherEntityJourneyData    = request.registration.otherEntityJourneyData
+            .copy(
+              isUkCrnPresent = Some(answer),
+              companyRegistrationNumber = companyRegistrationNumber
+            )
+          val updatedRegistration       = request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+
+          (for {
+            _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+        }
+      )
+  }
 }

@@ -19,81 +19,62 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR}
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.NormalEntityTemplateId
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
-import uk.gov.hmrc.http.{HttpClient, HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
+import uk.gov.hmrc.http.{HttpClient, HttpResponse, StringContextOps, UpstreamErrorResponse}
 
 import scala.concurrent.Future
 
 class EmailConnectorSpec extends SpecBase {
 
-  val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new EmailConnector(appConfig, mockHttpClient)
-  val sendEmailUrl: String       = s"${appConfig.emailBaseUrl}/hmrc/email"
+  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
+  val mockRequestBuilder           = mock[RequestBuilder]
+  val connector                    = new EmailConnector(appConfig, mockHttpClient, config, actorSystem)
+  val sendEmailUrl                 = url"${appConfig.emailBaseUrl}/hmrc/email"
+
+  override def beforeEach() = {
+    reset(mockHttpClient)
+    reset(mockRequestBuilder)
+  }
 
   "sendRegistrationSubmittedEmail" should {
-    val expectedUrl = sendEmailUrl
-
     "return unit when the http client returns a successful http response" in forAll {
       (to: String, registrationSubmittedEmailParameters: RegistrationSubmittedEmailParameters) =>
+        beforeEach()
+        val body =
+          RegistrationSubmittedEmailRequest(Seq(to), NormalEntityTemplateId, registrationSubmittedEmailParameters)
+
         val response = HttpResponse(ACCEPTED, "")
 
-        when(
-          mockHttpClient
-            .POST[RegistrationSubmittedEmailRequest, Either[UpstreamErrorResponse, HttpResponse]](
-              ArgumentMatchers.eq(expectedUrl),
-              ArgumentMatchers.eq(
-                RegistrationSubmittedEmailRequest(
-                  Seq(to),
-                  templateId = NormalEntityTemplateId,
-                  registrationSubmittedEmailParameters,
-                  force = false,
-                  None
-                )
-              ),
-              any()
-            )(any(), any(), any(), any())
-        )
-          .thenReturn(Future.successful(Right(response)))
+        when(mockHttpClient.post(ArgumentMatchers.eq(sendEmailUrl))(any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(body)))(any(), any(), any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(response))
 
-        val result: Unit =
-          await(connector.sendRegistrationSubmittedEmail(to, registrationSubmittedEmailParameters, None))
+        val result = await(connector.sendRegistrationSubmittedEmail(to, registrationSubmittedEmailParameters, None))
 
         result shouldBe ()
-
-        verify(mockHttpClient, times(1))
-          .POST[RegistrationSubmittedEmailRequest, Either[UpstreamErrorResponse, HttpResponse]](
-            ArgumentMatchers.eq(expectedUrl),
-            any(),
-            any()
-          )(any(), any(), any(), any())
-
-        reset(mockHttpClient)
     }
 
     "throw an exception when the http client returns an upstream error response" in forAll {
       (to: String, registrationSubmittedEmailParameters: RegistrationSubmittedEmailParameters) =>
-        val response = UpstreamErrorResponse("Internal server error", INTERNAL_SERVER_ERROR)
+        beforeEach()
+        val body     =
+          RegistrationSubmittedEmailRequest(Seq(to), NormalEntityTemplateId, registrationSubmittedEmailParameters)
+        val response = HttpResponse(INTERNAL_SERVER_ERROR, "Internal server error")
 
-        when(
-          mockHttpClient
-            .POST[RegistrationSubmittedEmailRequest, Either[UpstreamErrorResponse, HttpResponse]](
-              ArgumentMatchers.eq(expectedUrl),
-              ArgumentMatchers.eq(
-                RegistrationSubmittedEmailRequest(
-                  Seq(to),
-                  templateId = NormalEntityTemplateId,
-                  registrationSubmittedEmailParameters,
-                  force = false,
-                  None
-                )
-              ),
-              any()
-            )(any(), any(), any(), any())
-        )
-          .thenReturn(Future.successful(Left(response)))
+        when(mockHttpClient.post(ArgumentMatchers.eq(sendEmailUrl))(any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(body)))(any(), any(), any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(response))
 
         val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
           await(connector.sendRegistrationSubmittedEmail(to, registrationSubmittedEmailParameters, None))
@@ -101,22 +82,6 @@ class EmailConnectorSpec extends SpecBase {
 
         result.getMessage shouldBe "Internal server error"
 
-        verify(mockHttpClient, times(1))
-          .POST[RegistrationSubmittedEmailRequest, Either[UpstreamErrorResponse, HttpResponse]](
-            ArgumentMatchers.eq(expectedUrl),
-            ArgumentMatchers.eq(
-              RegistrationSubmittedEmailRequest(
-                Seq(to),
-                templateId = NormalEntityTemplateId,
-                registrationSubmittedEmailParameters,
-                force = false,
-                None
-              )
-            ),
-            any()
-          )(any(), any(), any(), any())
-
-        reset(mockHttpClient)
     }
   }
 }

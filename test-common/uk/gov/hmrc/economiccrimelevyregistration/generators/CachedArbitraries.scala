@@ -25,8 +25,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddress
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.NotLiableReason.RevenueDoesNotMeetThreshold
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResponse
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailParameters
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationError
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
+import uk.gov.hmrc.http.Authorization
 
 object CachedArbitraries extends EclTestData {
 
@@ -45,7 +46,7 @@ object CachedArbitraries extends EclTestData {
   implicit lazy val arbGrsCreateJourneyResponse: Arbitrary[GrsCreateJourneyResponse]                    = mkArb
   implicit lazy val arbGroupEnrolmentsResponse: Arbitrary[GroupEnrolmentsResponse]                      = mkArb
   implicit lazy val arbEclSubscriptionStatus: Arbitrary[EclSubscriptionStatus]                          = mkArb
-  implicit lazy val arbDataValidationErrors: Arbitrary[DataValidationErrors]                            = mkArb
+  implicit lazy val arbDataValidationError: Arbitrary[DataValidationError]                              = mkArb
   implicit lazy val arbAlfAddressData: Arbitrary[AlfAddressData]                                        = mkArb
   implicit lazy val arbCalculatedLiability: Arbitrary[CalculatedLiability]                              = mkArb
   implicit lazy val arbCalculateLiabilityRequest: Arbitrary[CalculateLiabilityRequest]                  = mkArb
@@ -56,7 +57,8 @@ object CachedArbitraries extends EclTestData {
   implicit lazy val arbMode: Arbitrary[Mode]                                                            = mkArb
   implicit lazy val arbRevenueDoesNotMeetThreshold: Arbitrary[RevenueDoesNotMeetThreshold]              = mkArb
   implicit lazy val arbUtrType: Arbitrary[UtrType]                                                      = mkArb
+  implicit lazy val arbAuthorization: Arbitrary[Authorization]                                          = mkArb
   implicit lazy val arbGetSubscriptionResponse: Arbitrary[GetSubscriptionResponse]                      = mkArb
   implicit lazy val arbGetAdditionalDetails: Arbitrary[GetAdditionalDetails]                            = mkArb
-
+  implicit lazy val arbEclAddress: Arbitrary[EclAddress]                                                = mkArb
 }

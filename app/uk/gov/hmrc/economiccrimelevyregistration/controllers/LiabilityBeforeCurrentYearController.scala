@@ -16,17 +16,20 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import com.google.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Mode, RegistrationAdditionalInfo, SessionData, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityBeforeCurrentYearPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.{RegistrationAdditionalInfoService, SessionService}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
+import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityBeforeCurrentYearView}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.time.TaxYear
 
@@ -39,74 +42,118 @@ class LiabilityBeforeCurrentYearController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   formProvider: LiabilityBeforeCurrentYearFormProvider,
-  service: RegistrationAdditionalInfoService,
+  additionalInfoService: RegistrationAdditionalInfoService,
   sessionService: SessionService,
-  pageNavigator: LiabilityBeforeCurrentYearPageNavigator,
-  view: LiabilityBeforeCurrentYearView
+  view: LiabilityBeforeCurrentYearView,
+  auditService: AuditService
 )(implicit
-  ec: ExecutionContext
+  ec: ExecutionContext,
+  errorTemplate: ErrorTemplate
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(fromRevenuePage: Boolean, mode: Mode): Action[AnyContent] =
+  def onPageLoad(mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData) { implicit request =>
-      Ok(view(form.prepare(isLiableForPreviousFY(request.additionalInfo)), mode, fromRevenuePage))
+      Ok(view(form.prepare(isLiableForPreviousFY(request.additionalInfo)), mode))
     }
 
-  def onSubmit(fromRevenuePage: Boolean, mode: Mode): Action[AnyContent] =
+  def onSubmit(mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData).async { implicit request =>
+      val registration = request.registration
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fromRevenuePage))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           liableBeforeCurrentYear => {
             val liabilityYear = getFirstLiabilityYear(
-              request.registration.carriedOutAmlRegulatedActivityInCurrentFy,
+              registration.carriedOutAmlRegulatedActivityInCurrentFy,
               liableBeforeCurrentYear
             )
 
             val info = RegistrationAdditionalInfo(
-              request.registration.internalId,
+              registration.internalId,
               liabilityYear,
               request.eclRegistrationReference
             )
 
-            liabilityYear
-              .map { year =>
-                val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> year.asString)
+            additionalInfoService
+              .upsert(info)
+              .asResponseError
+              .fold(
+                err => routeError(err),
+                _ =>
+                  liabilityYear match {
+                    case Some(year) =>
+                      val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> year.asString)
 
-                sessionService
-                  .upsert(
-                    SessionData(
-                      request.internalId,
-                      liabilityYearSessionData
-                    )
-                  )
-
-                service
-                  .createOrUpdate(info)
-                  .map(_ =>
-                    Redirect(
-                      pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode, fromRevenuePage)
-                    )
-                      .withSession(
-                        request.session ++ liabilityYearSessionData
+                      sessionService.upsert(
+                        SessionData(
+                          registration.internalId,
+                          liabilityYearSessionData
+                        )
                       )
-                  )
-              }
-              .getOrElse {
-                service
-                  .createOrUpdate(info)
-                  .map(_ =>
-                    Redirect(
-                      pageNavigator.nextPage(liableBeforeCurrentYear, request.registration, mode, fromRevenuePage)
-                    )
-                  )
-              }
+
+                      Redirect(navigateByMode(mode, registration, liableBeforeCurrentYear)).withSession(
+                        request.session ++ Seq(SessionKeys.LiabilityYear -> year.asString)
+                      )
+                    case None       =>
+                      Redirect(navigateByMode(mode, registration, liableBeforeCurrentYear))
+                  }
+              )
+
           }
         )
+    }
+
+  private def navigateByMode(mode: Mode, registration: Registration, liableBeforeCurrentYear: Boolean)(implicit
+    hc: HeaderCarrier
+  ): Call =
+    mode match {
+      case NormalMode => navigateInNormalMode(liableBeforeCurrentYear, registration, mode)
+      case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
+    }
+
+  private def navigateInNormalMode(liableBeforeCurrentYear: Boolean, registration: Registration, mode: Mode)(implicit
+    hc: HeaderCarrier
+  ): Call =
+    (liableBeforeCurrentYear, registration.revenueMeetsThreshold) match {
+      case (false, Some(false)) =>
+        sendNotLiableAuditEvent(registration)
+        routes.NotLiableController.youDoNotNeedToRegister()
+      case (_, Some(_))         => routes.EntityTypeController.onPageLoad(mode)
+      case (false, None)        =>
+        sendNotLiableAuditEvent(registration)
+        routes.NotLiableController.youDoNotNeedToRegister()
+      case (true, None)         =>
+        routes.AmlSupervisorController
+          .onPageLoad(mode, registration.registrationType.get)
+    }
+
+  private def sendNotLiableAuditEvent(registration: Registration)(implicit hc: HeaderCarrier) =
+    registration.revenueMeetsThreshold match {
+      case Some(true)  =>
+        val event = RegistrationNotLiableAuditEvent(
+          registration.internalId,
+          NotLiableReason.DidNotCarryOutAmlRegulatedActivity
+        ).extendedDataEvent
+        auditService.sendEvent(event)
+      case Some(false) =>
+        val event = RegistrationNotLiableAuditEvent(
+          registration.internalId,
+          NotLiableReason.RevenueDoesNotMeetThreshold.apply(
+            registration.relevantAp12Months,
+            registration.relevantApLength,
+            registration.relevantApRevenue.get.toLong,
+            registration.revenueMeetsThreshold.get
+          )
+        ).extendedDataEvent
+        auditService.sendEvent(event)
+
+      case None => EitherT[Future, AuditError, Unit](Future.successful(Right(())))
     }
 
   private def getFirstLiabilityYear(
@@ -114,11 +161,14 @@ class LiabilityBeforeCurrentYearController @Inject() (
     liableForPreviousFY: Boolean
   ): Option[LiabilityYear] =
     (liableForCurrentFY, liableForPreviousFY) match {
-      case (Some(true), true) | (Some(false), true) => Some(LiabilityYear(TaxYear.current.previous.startYear))
-      case (Some(true), false)                      => Some(LiabilityYear(TaxYear.current.currentYear))
-      case _                                        => None
+      case (Some(_), true)     => Some(LiabilityYear(TaxYear.current.previous.startYear))
+      case (Some(true), false) => Some(LiabilityYear(TaxYear.current.currentYear))
+      case _                   => None
     }
 
   private def isLiableForPreviousFY(info: Option[RegistrationAdditionalInfo]) =
-    info.map(_.liabilityYear.exists(_.isNotCurrentFY))
+    info.get.liabilityYear match {
+      case Some(value) => Some(value.isNotCurrentFY)
+      case _           => None
+    }
 }

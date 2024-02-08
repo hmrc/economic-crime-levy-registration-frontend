@@ -16,17 +16,17 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{CtUtrView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,13 +36,15 @@ class CtUtrController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: CtUtrFormProvider,
   pageNavigator: CtUtrPageNavigator,
   view: CtUtrView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[String] = formProvider()
 
@@ -58,15 +60,11 @@ class CtUtrController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           ctutr => {
-            val otherEntity = request.registration.otherEntityJourneyData.copy(
-              ctUtr = Some(ctutr),
-              saUtr = None
-            );
-            eclRegistrationConnector
-              .upsertRegistration(
-                request.registration.copy(optOtherEntityJourneyData = Some(otherEntity))
-              )
-              .map(updatedRegistration => Redirect(pageNavigator.nextPage(mode, updatedRegistration)))
+            val otherEntity         = request.registration.otherEntityJourneyData.copy(ctUtr = Some(ctutr), saUtr = None)
+            val updatedRegistration = request.registration.copy(optOtherEntityJourneyData = Some(otherEntity))
+            (for {
+              _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            } yield updatedRegistration).convertToResult(mode, pageNavigator)
           }
         )
     }

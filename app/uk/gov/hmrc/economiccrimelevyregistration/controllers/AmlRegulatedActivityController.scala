@@ -19,15 +19,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlRegulatedActivityView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -38,13 +37,15 @@ class AmlRegulatedActivityController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   sessionService: SessionService,
   formProvider: AmlRegulatedActivityFormProvider,
   pageNavigator: AmlRegulatedActivityPageNavigator,
   view: AmlRegulatedActivityView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
+    with ErrorHandler
+    with BaseController
     with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
@@ -58,42 +59,32 @@ class AmlRegulatedActivityController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-        amlRegulatedActivity =>
-          eclRegistrationConnector
-            .upsertRegistration(
-              request.registration.copy(
-                carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity),
-                registrationType = Some(Initial)
+        amlRegulatedActivity => {
+          val updatedRegistration = request.registration.copy(
+            carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity),
+            registrationType = Some(Initial)
+          )
+
+          (for {
+            _          <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            sessionData =
+              SessionData(
+                updatedRegistration.internalId,
+                Map(SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString)
               )
-            )
-            .flatMap { updatedRegistration =>
-              if (amlRegulatedActivity) {
-                val amlActivitySessionData = Map(
+            _           = sessionService
+                            .upsert(sessionData)
+                            .asResponseError
+          } yield updatedRegistration)
+            .convertToResult(mode, pageNavigator)
+            .map(
+              _.withSession(
+                request.session ++ Seq(
                   SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString
                 )
-
-                sessionService
-                  .upsert(
-                    SessionData(
-                      request.internalId,
-                      amlActivitySessionData
-                    )
-                  )
-
-                pageNavigator
-                  .nextPage(mode, updatedRegistration)
-                  .map(
-                    Redirect(_).withSession(
-                      request.session ++
-                        amlActivitySessionData
-                    )
-                  )
-              } else {
-                pageNavigator
-                  .nextPage(mode, updatedRegistration)
-                  .map(Redirect)
-              }
-            }
+              )
+            )
+        }
       )
   }
 }

@@ -18,14 +18,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import play.api.mvc._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactEmailFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode, SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactEmailPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactEmailView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -37,26 +38,34 @@ class FirstContactEmailController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: FirstContactEmailFormProvider,
   pageNavigator: FirstContactEmailPageNavigator,
   view: FirstContactEmailView,
   sessionService: SessionService
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController
+    with ErrorHandler {
 
   val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(
-      view(
-        form.prepare(request.registration.contacts.firstContactDetails.emailAddress),
-        firstContactName(request),
-        mode,
-        request.registration.registrationType,
-        request.eclRegistrationReference
-      )
+    (for {
+      firstContactName <- request.firstContactNameOrError.asResponseError
+    } yield firstContactName).fold(
+      error => routeError(error),
+      name =>
+        Ok(
+          view(
+            form.prepare(request.registration.contacts.firstContactDetails.emailAddress),
+            name,
+            mode,
+            request.registration.registrationType,
+            request.eclRegistrationReference
+          )
+        )
     )
   }
 
@@ -65,39 +74,47 @@ class FirstContactEmailController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors =>
-          Future.successful(
-            BadRequest(
-              view(
-                formWithErrors,
-                firstContactName(request),
-                mode,
-                request.registration.registrationType,
-                request.eclRegistrationReference
-              )
-            )
-          ),
+          (for {
+            firstContactName <- request.firstContactNameOrError.asResponseError
+          } yield firstContactName)
+            .fold(
+              error => Future.successful(routeError(error)),
+              name =>
+                Future.successful(
+                  BadRequest(
+                    view(
+                      formWithErrors,
+                      name,
+                      mode,
+                      request.registration.registrationType,
+                      request.eclRegistrationReference
+                    )
+                  )
+                )
+            ),
         email => {
           val updatedContacts: Contacts = request.registration.contacts
             .copy(firstContactDetails =
               request.registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
             )
-
-          sessionService
-            .upsert(
-              SessionData(
-                request.internalId,
-                Map(SessionKeys.FirstContactEmailAddress -> email)
+          val updatedRegistration       = request.registration.copy(contacts = updatedContacts)
+          (for {
+            _ <-
+              eclRegistrationService
+                .upsertRegistration(updatedRegistration)
+                .asResponseError
+            _  =
+              sessionService
+                .upsert(SessionData(request.internalId, Map(SessionKeys.FirstContactEmailAddress -> email)))
+                .asResponseError
+          } yield updatedRegistration)
+            .convertToResult(mode, pageNavigator)
+            .map(
+              _.withSession(
+                request.session ++ Seq(SessionKeys.FirstContactEmailAddress -> email)
               )
-            )
-            .flatMap(_ =>
-              eclRegistrationConnector
-                .upsertRegistration(request.registration.copy(contacts = updatedContacts))
-                .map { updatedRegistration =>
-                  Redirect(pageNavigator.nextPage(mode, updatedRegistration))
-                }
             )
         }
       )
   }
-
 }

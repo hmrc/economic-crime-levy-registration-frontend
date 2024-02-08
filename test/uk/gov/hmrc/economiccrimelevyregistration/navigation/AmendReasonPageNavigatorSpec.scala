@@ -35,7 +35,7 @@ class AmendReasonPageNavigatorSpec extends SpecBase {
       val updatedRegistration = registration.copy(amendReason = Some(reason), registrationType = Some(Amendment))
 
       pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.AmlSupervisorController
-        .onPageLoad(NormalMode, Amendment, false)
+        .onPageLoad(NormalMode, Amendment)
     }
     "return a Call to the check your answers page in CheckMode" in forAll(
       Arbitrary.arbitrary[Registration],

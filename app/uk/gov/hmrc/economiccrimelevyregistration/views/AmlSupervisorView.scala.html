@@ -30,7 +30,6 @@
 @(form: Form[AmlSupervisor],
         mode: Mode,
         registrationType: Option[RegistrationType],
-        fromLiableBeforeCurrentYearPage: Boolean,
         eclReference: Option[String]
 )(implicit request: Request[_], messages: Messages)
 
@@ -52,7 +51,7 @@
 
     <h2 class="govuk-heading-m">@messages("amlSupervisor.h2")</h2>
 
-    @formHelper(action = AmlSupervisorController.onSubmit(mode, registrationType.getOrElse(Initial), fromLiableBeforeCurrentYearPage)) {
+    @formHelper(action = AmlSupervisorController.onSubmit(mode, registrationType.getOrElse(Initial))) {
         @{
             registrationType match {
                 case Some(Initial) => {

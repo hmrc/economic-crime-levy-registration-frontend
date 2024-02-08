@@ -16,20 +16,22 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWithValidCompanyProfile
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.ConfirmContactAddressDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ConfirmContactAddressView
 
@@ -41,14 +43,10 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
   val formProvider: ConfirmContactAddressFormProvider = new ConfirmContactAddressFormProvider()
   val form: Form[Boolean]                             = formProvider()
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
-  val pageNavigator: ConfirmContactAddressPageNavigator = new ConfirmContactAddressPageNavigator(
-    mockEclRegistrationConnector
-  ) {
-    override protected def navigateInNormalMode(
-      registration: Registration
-    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
+  val pageNavigator: ConfirmContactAddressPageNavigator = new ConfirmContactAddressPageNavigator() {
+    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
   }
 
   val dataCleanup: ConfirmContactAddressDataCleanup = new ConfirmContactAddressDataCleanup {
@@ -60,7 +58,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       dataCleanup,
@@ -97,7 +95,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
         }
     }
 
-    "throw an IllegalStateException when there is no registered office address in the registration data" in forAll {
+    "return a DataRetrievalError when there is no registered office address in the registration data" in forAll {
       (
         registration: Registration
       ) =>
@@ -110,11 +108,10 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
         new TestContext(
           updatedRegistration
         ) {
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onPageLoad(NormalMode)(fakeRequest))
-          }
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
-          result.getMessage shouldBe "No registered office address found in registration data"
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+
         }
     }
 
@@ -156,9 +153,18 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
             registration.copy(useRegisteredOfficeAddressAsContactAddress =
               Some(useRegisteredOfficeAddressAsContactAddress)
             )
+          val cleanedUpRegistration             = dataCleanup.cleanup(updatedRegistration)
+          val modifiedRegistration              =
+            if (useRegisteredOfficeAddressAsContactAddress) {
+              cleanedUpRegistration.copy(
+                contactAddress = cleanedUpRegistration.grsAddressToEclAddress
+              )
+            } else {
+              cleanedUpRegistration
+            }
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(modifiedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(

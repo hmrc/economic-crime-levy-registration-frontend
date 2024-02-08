@@ -16,13 +16,17 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import akka.actor.ActorSystem
+import com.typesafe.config.Config
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, ServiceNameLabels, SoleTraderEntityCreateJourneyRequest, SoleTraderEntityJourneyData}
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, Retries, StringContextOps}
 
+import java.net.URL
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,32 +40,50 @@ trait SoleTraderIdentificationFrontendConnector {
 
 class SoleTraderIdentificationFrontendConnectorImpl @Inject() (
   appConfig: AppConfig,
-  httpClient: HttpClient
+  httpClient: HttpClientV2,
+  override val configuration: Config,
+  override val actorSystem: ActorSystem
 )(implicit
   val messagesApi: MessagesApi,
   ec: ExecutionContext
-) extends SoleTraderIdentificationFrontendConnector {
-  private val apiUrl = s"${appConfig.soleTraderEntityIdentificationFrontendBaseUrl}/sole-trader-identification/api"
+) extends SoleTraderIdentificationFrontendConnector
+    with BaseConnector
+    with Retries {
+
+  private val apiUrl: URL =
+    url"${appConfig.soleTraderEntityIdentificationFrontendBaseUrl}/sole-trader-identification/api"
 
   def createSoleTraderJourney(mode: Mode)(implicit
     hc: HeaderCarrier
   ): Future[GrsCreateJourneyResponse] = {
     val serviceNameLabels = ServiceNameLabels()
 
-    httpClient.POST[SoleTraderEntityCreateJourneyRequest, GrsCreateJourneyResponse](
-      s"$apiUrl/sole-trader-journey",
-      SoleTraderEntityCreateJourneyRequest(
-        continueUrl = s"${appConfig.grsContinueUrl}/${mode.toString.toLowerCase}",
-        businessVerificationCheck = appConfig.soleTraderBvEnabled,
-        optServiceName = Some(serviceNameLabels.en.optServiceName),
-        deskProServiceId = appConfig.appName,
-        signOutUrl = appConfig.eclSignOutUrl,
-        accessibilityUrl = appConfig.accessibilityStatementPath,
-        labels = serviceNameLabels
-      )
-    )
+    retryFor[GrsCreateJourneyResponse]("Sole trader identification - Create journey")(retryCondition) {
+      httpClient
+        .post(url"$apiUrl/sole-trader-journey")
+        .withBody(Json.toJson(toSoleTraderEntityCreateJourneyRequest(mode, serviceNameLabels)))
+        .executeAndDeserialise[GrsCreateJourneyResponse]
+    }
   }
 
   def getJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[SoleTraderEntityJourneyData] =
-    httpClient.GET[SoleTraderEntityJourneyData](s"$apiUrl/journey/$journeyId")
+    retryFor[SoleTraderEntityJourneyData]("Sole trader identification - Get journey data")(retryCondition) {
+      httpClient
+        .get(url"$apiUrl/journey/$journeyId")
+        .executeAndDeserialise[SoleTraderEntityJourneyData]
+    }
+
+  private def toSoleTraderEntityCreateJourneyRequest(
+    mode: Mode,
+    serviceNameLabels: ServiceNameLabels
+  ): SoleTraderEntityCreateJourneyRequest =
+    SoleTraderEntityCreateJourneyRequest(
+      continueUrl = s"${appConfig.grsContinueUrl}/${mode.toString.toLowerCase}",
+      businessVerificationCheck = appConfig.soleTraderBvEnabled,
+      optServiceName = Some(serviceNameLabels.en.optServiceName),
+      deskProServiceId = appConfig.appName,
+      signOutUrl = appConfig.eclSignOutUrl,
+      accessibilityUrl = appConfig.accessibilityStatementPath,
+      labels = serviceNameLabels
+    )
 }

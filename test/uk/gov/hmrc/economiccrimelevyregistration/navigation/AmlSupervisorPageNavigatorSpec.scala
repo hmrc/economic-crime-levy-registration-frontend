@@ -17,7 +17,6 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
-import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Gen
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
@@ -25,13 +24,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{FinancialConductAuthority, GamblingCommission, Hmrc, Other}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 class AmlSupervisorPageNavigatorSpec extends SpecBase {
 
-  val mockAuditConnector: AuditConnector = mock[AuditConnector]
-
-  val pageNavigator = new AmlSupervisorPageNavigator(mockAuditConnector)
+  val pageNavigator = new AmlSupervisorPageNavigator()
 
   "nextPage" should {
     "return a Call to the register with GC page in NormalMode when the Gambling Commission option is selected" in forAll {
@@ -41,14 +37,8 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           registrationType = Some(Initial)
         )
 
-        await(
-          pageNavigator.nextPage(NormalMode, updatedRegistration, random[Boolean])(fakeRequest)
-        ) shouldBe routes.RegisterWithGcController
-          .onPageLoad()
-
-        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
-
-        reset(mockAuditConnector)
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+          routes.RegisterWithGcController.onPageLoad()
     }
 
     "return a Call to the register with GC page in CheckMode when the Gambling Commission option is selected" in forAll {
@@ -58,14 +48,8 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
           registrationType = Some(Initial)
         )
 
-        await(
-          pageNavigator.nextPage(CheckMode, updatedRegistration, random[Boolean])(fakeRequest)
-        ) shouldBe routes.RegisterWithGcController
-          .onPageLoad()
-
-        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
-
-        reset(mockAuditConnector)
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+          routes.RegisterWithGcController.onPageLoad()
     }
 
     "return a Call to the register with FCA page in NormalMode when the Financial Conduct Authority option is selected" in forAll {
@@ -76,14 +60,8 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
             registrationType = Some(Initial)
           )
 
-        await(
-          pageNavigator.nextPage(NormalMode, updatedRegistration, random[Boolean])(fakeRequest)
-        ) shouldBe routes.RegisterWithFcaController
-          .onPageLoad()
-
-        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
-
-        reset(mockAuditConnector)
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+          routes.RegisterWithFcaController.onPageLoad()
     }
 
     "return a Call to the register with FCA page in CheckMode when the Financial Conduct Authority option is selected" in forAll {
@@ -94,30 +72,26 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
             registrationType = Some(Initial)
           )
 
-        await(
-          pageNavigator.nextPage(CheckMode, updatedRegistration, random[Boolean])(fakeRequest)
-        ) shouldBe routes.RegisterWithFcaController
-          .onPageLoad()
-
-        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
-
-        reset(mockAuditConnector)
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+          routes.RegisterWithFcaController.onPageLoad()
     }
 
-    "return a Call to the relevant AP 12 months page in NormalMode when either the HMRC or Other AML Supervisor option is selected" in forAll {
-      registration: Registration =>
+    "return a Call to the relevant AP 12 months page in NormalMode when either the HMRC or Other AML Supervisor option is selected" +
+      "and the user has carried out Aml regulated activity in current FY" in forAll { registration: Registration =>
         val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
         val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample
         val amlSupervisor         =
           AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = otherProfessionalBody)
         val updatedRegistration   =
-          registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
+          registration.copy(
+            carriedOutAmlRegulatedActivityInCurrentFy = Some(true),
+            amlSupervisor = Some(amlSupervisor),
+            registrationType = Some(Initial)
+          )
 
-        await(
-          pageNavigator.nextPage(NormalMode, updatedRegistration, false)(fakeRequest)
-        ) shouldBe routes.RelevantAp12MonthsController
-          .onPageLoad(NormalMode)
-    }
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+          routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
+      }
 
     "return a Call to the check your answers page in CheckMode when either the HMRC or Other AML Supervisor option is selected" in forAll {
       registration: Registration =>
@@ -128,26 +102,26 @@ class AmlSupervisorPageNavigatorSpec extends SpecBase {
         val updatedRegistration   =
           registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
-        await(
-          pageNavigator.nextPage(CheckMode, updatedRegistration, false)(fakeRequest)
-        ) shouldBe routes.CheckYourAnswersController
-          .onPageLoad()
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
     }
   }
 
-  "return a Call to the entity type page when from is liable before current year page" in forAll {
-    registration: Registration =>
+  "return a Call to the entity type page in NormalMode when either the HMRC or Other AML Supervisor option is selected" +
+    "and the user has NOT carried out Aml regulated activity in current FY" in forAll { registration: Registration =>
       val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
       val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample
       val amlSupervisor         =
         AmlSupervisor(supervisorType = supervisorType, otherProfessionalBody = otherProfessionalBody)
       val updatedRegistration   =
-        registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
+        registration.copy(
+          carriedOutAmlRegulatedActivityInCurrentFy = Some(false),
+          amlSupervisor = Some(amlSupervisor),
+          registrationType = Some(Initial)
+        )
 
-      await(
-        pageNavigator.nextPage(NormalMode, updatedRegistration, true)(fakeRequest)
-      ) shouldBe routes.EntityTypeController
-        .onPageLoad(NormalMode)
-  }
+      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        routes.EntityTypeController.onPageLoad(NormalMode)
+    }
 
 }

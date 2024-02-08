@@ -19,8 +19,10 @@ class FirstContactNameISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the first contact name HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(contacts.routes.FirstContactNameController.onPageLoad(NormalMode)))
@@ -37,9 +39,11 @@ class FirstContactNameISpec extends ISpecBase with AuthorisedBehaviour {
     "save the provided name then redirect to the first contact role page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val name         = stringsWithMaxLength(NameMaxLength).sample.get
+      val registration   = random[Registration]
+      val name           = stringsWithMaxLength(NameMaxLength).sample.get
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val updatedRegistration = registration.copy(contacts =

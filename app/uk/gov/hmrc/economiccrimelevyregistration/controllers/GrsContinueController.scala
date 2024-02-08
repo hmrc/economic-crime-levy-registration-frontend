@@ -16,16 +16,18 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.ResponseError
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -41,27 +43,39 @@ class GrsContinueController @Inject() (
   soleTraderIdentificationFrontendConnector: SoleTraderIdentificationFrontendConnector,
   partnershipIdentificationFrontendConnector: PartnershipIdentificationFrontendConnector,
   eclRegistrationConnector: EclRegistrationConnector
-)(implicit ec: ExecutionContext)
-    extends FrontendBaseController {
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
+    extends FrontendBaseController
+    with BaseController
+    with ErrorHandler {
 
   def continue(mode: Mode, journeyId: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
     implicit request =>
       request.registration.entityType match {
         case Some(e @ (UkLimitedCompany | UnlimitedCompany | RegisteredSociety)) =>
-          incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
-            updateRegistrationWithJourneyData(incorporatedEntityJourneyData = Some(jd))
-              .flatMap(_ =>
-                handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, e, mode)
-              )
-          }
-
-        case Some(e @ SoleTrader) =>
-          soleTraderIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
-            updateRegistrationWithJourneyData(soleTraderEntityJourneyData = Some(jd))
-              .flatMap(_ =>
-                handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, e, mode)
-              )
-          }
+          for {
+            journeyData: IncorporatedEntityJourneyData <-
+              incorporatedEntityIdentificationFrontendConnector.getJourneyData(journeyId)
+            _                                          <- updateRegistrationWithJourneyData(incorporatedEntityJourneyData = Some(journeyData))
+            result                                     <- handleGrsAndBvResult(
+                                                            journeyData.identifiersMatch,
+                                                            journeyData.businessVerification,
+                                                            journeyData.registration,
+                                                            e,
+                                                            mode
+                                                          )
+          } yield result
+        case Some(e @ SoleTrader)                                                =>
+          for {
+            journeyData <- soleTraderIdentificationFrontendConnector.getJourneyData(journeyId)
+            _           <- updateRegistrationWithJourneyData(soleTraderEntityJourneyData = Some(journeyData))
+            result      <- handleGrsAndBvResult(
+                             journeyData.identifiersMatch,
+                             journeyData.businessVerification,
+                             journeyData.registration,
+                             e,
+                             mode
+                           )
+          } yield result
 
         case Some(
               e @ (GeneralPartnership | ScottishPartnership | LimitedPartnership | ScottishLimitedPartnership |
@@ -74,7 +88,15 @@ class GrsContinueController @Inject() (
               )
           }
 
-        case _ => throw new IllegalStateException("No valid entity type found in registration data")
+        case None =>
+          Future.successful(
+            routeError(ResponseError.badRequestError("No entity type found in registration data"))
+          )
+
+        case _ =>
+          Future.successful(
+            routeError(ResponseError.internalServiceError("No valid entity type found in registration data"))
+          )
       }
   }
 
@@ -82,7 +104,7 @@ class GrsContinueController @Inject() (
     incorporatedEntityJourneyData: Option[IncorporatedEntityJourneyData] = None,
     soleTraderEntityJourneyData: Option[SoleTraderEntityJourneyData] = None,
     partnershipEntityJourneyData: Option[PartnershipEntityJourneyData] = None
-  )(implicit request: RegistrationDataRequest[AnyContent]): Future[Registration] =
+  )(implicit request: RegistrationDataRequest[AnyContent]): Future[Unit] =
     eclRegistrationConnector.upsertRegistration(
       request.registration.copy(
         incorporatedEntityJourneyData = incorporatedEntityJourneyData,
@@ -97,7 +119,7 @@ class GrsContinueController @Inject() (
     grsResult: GrsRegistrationResult,
     entityType: EntityType,
     mode: Mode
-  )(implicit hc: HeaderCarrier): Future[Result] =
+  )(implicit hc: HeaderCarrier, request: Request[_]): Future[Result] =
     (identifiersMatch, bvResult, grsResult.registrationStatus, grsResult.registeredBusinessPartnerId) match {
       case (false, _, _, _)                                  => Future.successful(Redirect(routes.NotableErrorController.verificationFailed()))
       case (_, Some(BusinessVerificationResult(Fail)), _, _) =>
@@ -125,8 +147,12 @@ class GrsContinueController @Inject() (
             Future.successful(Redirect(routes.NotableErrorController.registrationFailed()))
         }
       case _                                                 =>
-        throw new IllegalStateException(
-          s"Invalid result received from GRS: identifiersMatch: $identifiersMatch, registration: $grsResult, businessVerification: $bvResult"
+        Future.successful(
+          routeError(
+            ResponseError.internalServiceError(
+              s"Invalid result received from GRS: identifiersMatch: $identifiersMatch, registration: $grsResult, businessVerification: $bvResult"
+            )
+          )
         )
     }
 }

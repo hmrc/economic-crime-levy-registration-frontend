@@ -2,23 +2,25 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status.{NO_CONTENT, OK}
+import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationError
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, GetSubscriptionResponse, Registration, RegistrationAdditionalInfo}
 
 import java.time.Instant
 
 trait EclRegistrationStubs { self: WireMockStubs =>
 
-  def stubGetRegistration(registration: Registration): StubMapping =
+  def stubGetRegistration(registration: Registration): StubMapping = {
     stub(
       get(urlEqualTo(s"/economic-crime-levy-registration/registrations/$testInternalId")),
       aResponse()
         .withStatus(OK)
         .withBody(Json.toJson(registration).toString())
     )
+    stubGetRegistrationAdditionalInfo(new RegistrationAdditionalInfo(registration.internalId, None, None))
+  }
 
   def stubGetSubscription(getSubscriptionResponse: GetSubscriptionResponse): StubMapping =
     stub(
@@ -55,16 +57,17 @@ trait EclRegistrationStubs { self: WireMockStubs =>
         .withBody(Json.toJson(eclSubscriptionStatus).toString())
     )
 
-  def stubGetRegistrationValidationErrors(valid: Boolean, errors: DataValidationErrors): StubMapping =
+  def stubGetRegistrationValidationErrors(valid: Boolean, errors: DataValidationError): StubMapping =
     stub(
       get(urlEqualTo(s"/economic-crime-levy-registration/registrations/$testInternalId/validation-errors")),
       if (valid) {
         aResponse()
-          .withStatus(NO_CONTENT)
+          .withStatus(OK)
+          .withBody(Json.toJson(None).toString())
       } else {
         aResponse()
           .withStatus(OK)
-          .withBody(Json.toJson(errors).toString())
+          .withBody(Json.toJson(errors.message).toString())
       }
     )
 

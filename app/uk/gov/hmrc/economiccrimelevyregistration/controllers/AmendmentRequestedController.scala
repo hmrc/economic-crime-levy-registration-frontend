@@ -16,44 +16,51 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.Logging
-import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendmentRequestedView
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendmentRequestedView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
+import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EclAddress
 
 @Singleton
 class AmendmentRequestedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: AmendmentRequestedView,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  sessionService: SessionService
-)(implicit ec: ExecutionContext)
+  sessionService: SessionService,
+  registrationAdditionalInfoService: RegistrationAdditionalInfoService,
+  registrationService: EclRegistrationService
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    with BaseController
+    with ErrorHandler {
 
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
-    sessionService
-      .get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress)
-      .map {
-        case Some(firstContactEmailAddress) =>
-          Ok(view(firstContactEmailAddress, request.eclRegistrationReference))
-        case None                           =>
-          logger.error("Failed to retrieve first contact email address from session and database")
-          InternalServerError
-      }
-      .recover { case e =>
-        logger.error(
-          s"Unable to retrieve first contact email address from session: ${e.getMessage}"
+    (for {
+      _                        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
+      _                        <- registrationService.deleteRegistration(request.internalId).asResponseError
+      firstContactEmailAddress <-
+        sessionService.get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress).asResponseError
+      contactAddress           <-
+        sessionService.get(request.session, request.internalId, SessionKeys.ContactAddress).asResponseError
+    } yield (firstContactEmailAddress, contactAddress)).fold(
+      error => routeError(error),
+      emailAndAddress => {
+        val firstContactEmail = emailAndAddress._1
+        val contactAddress    = Json.fromJson[EclAddress](Json.parse(emailAndAddress._2)).asOpt
+        Ok(
+          view(
+            firstContactEmail,
+            request.eclRegistrationReference,
+            contactAddress
+          )
         )
-        InternalServerError
       }
+    )
   }
 }

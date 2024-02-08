@@ -16,38 +16,31 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import play.api.mvc.{Call, RequestHeader}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 
-class ConfirmContactAddressPageNavigator @Inject() (eclRegistrationConnector: EclRegistrationConnector)(implicit
-  ec: ExecutionContext
-) extends AsyncPageNavigator
-    with FrontendHeaderCarrierProvider {
+class ConfirmContactAddressPageNavigator @Inject() () extends PageNavigator {
 
-  override protected def navigateInNormalMode(
-    registration: Registration
-  )(implicit request: RequestHeader): Future[Call] =
+  override protected def navigateInNormalMode(registration: Registration): Call =
     navigate(registration, NormalMode)
 
-  override protected def navigateInCheckMode(registration: Registration)(implicit
-    request: RequestHeader
-  ): Future[Call] =
+  override protected def navigateInCheckMode(registration: Registration): Call =
     navigate(registration, CheckMode)
 
-  private def navigate(registration: Registration, mode: Mode)(implicit request: RequestHeader): Future[Call] =
+  private def navigate(
+    registration: Registration,
+    mode: Mode
+  ): Call =
     registration.useRegisteredOfficeAddressAsContactAddress match {
       case Some(true)  =>
-        eclRegistrationConnector
-          .upsertRegistration(registration = registration.copy(contactAddress = registration.grsAddressToEclAddress))
-          .map(_ => routes.CheckYourAnswersController.onPageLoad())
-      case Some(false) => Future.successful(routes.IsUkAddressController.onPageLoad(mode))
-      case _           => Future.successful(routes.NotableErrorController.answersAreInvalid())
+        routes.CheckYourAnswersController.onPageLoad()
+      case Some(false) =>
+        routes.IsUkAddressController.onPageLoad(mode)
+      case _           =>
+        routes.NotableErrorController.answersAreInvalid()
     }
 
 }

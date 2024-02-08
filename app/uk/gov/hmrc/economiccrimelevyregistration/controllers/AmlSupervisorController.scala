@@ -16,46 +16,55 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
+import cats.instances.unit
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.{AmendAmlSupervisorFormProvider, AmlSupervisorFormProvider}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
+import uk.gov.hmrc.economiccrimelevyregistration.forms.{AmendAmlSupervisorFormProvider, AmlSupervisorFormProvider}
+import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{FinancialConductAuthority, GamblingCommission}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlSupervisorView, ErrorTemplate}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.postfixOps
 
 @Singleton
 class AmlSupervisorController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: AmlSupervisorFormProvider,
   amendFormProvider: AmendAmlSupervisorFormProvider,
   appConfig: AppConfig,
   pageNavigator: AmlSupervisorPageNavigator,
-  view: AmlSupervisorView
-)(implicit ec: ExecutionContext)
+  view: AmlSupervisorView,
+  auditService: AuditService
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
-  val form: Form[AmlSupervisor] = formProvider(appConfig)
+  private val form: Form[AmlSupervisor] = formProvider(appConfig)
 
-  val amendForm: Form[AmlSupervisor] = amendFormProvider(appConfig)
+  private val amendForm: Form[AmlSupervisor] = amendFormProvider(appConfig)
 
   def onPageLoad(
     mode: Mode,
-    registrationType: RegistrationType = Initial,
-    fromLiableBeforeCurrentYearPage: Boolean = false
+    registrationType: RegistrationType = Initial
   ): Action[AnyContent] =
     (authorise andThen getRegistrationData) { implicit request =>
       registrationType match {
@@ -65,7 +74,6 @@ class AmlSupervisorController @Inject() (
               form.prepare(request.registration.amlSupervisor),
               mode,
               Some(registrationType),
-              fromLiableBeforeCurrentYearPage,
               request.eclRegistrationReference
             )
           )
@@ -75,7 +83,6 @@ class AmlSupervisorController @Inject() (
               amendForm.prepare(request.registration.amlSupervisor),
               mode,
               Some(registrationType),
-              fromLiableBeforeCurrentYearPage,
               request.eclRegistrationReference
             )
           )
@@ -84,35 +91,55 @@ class AmlSupervisorController @Inject() (
 
   def onSubmit(
     mode: Mode,
-    registrationType: RegistrationType = Initial,
-    fromLiableBeforeCurrentYearPage: Boolean
+    registrationType: RegistrationType = Initial
   ): Action[AnyContent] =
     (authorise andThen getRegistrationData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future
-              .successful(
-                BadRequest(
-                  view(
-                    formWithErrors,
-                    mode,
-                    Some(registrationType),
-                    fromLiableBeforeCurrentYearPage,
-                    request.eclRegistrationReference
-                  )
+            Future.successful(
+              BadRequest(
+                view(
+                  formWithErrors,
+                  mode,
+                  Some(registrationType),
+                  request.eclRegistrationReference
                 )
-              ),
-          amlSupervisor =>
-            eclRegistrationConnector
-              .upsertRegistration(
-                request.registration
-                  .copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(registrationType))
               )
-              .flatMap { updatedRegistration =>
-                pageNavigator.nextPage(mode, updatedRegistration, fromLiableBeforeCurrentYearPage).map(Redirect)
-              }
+            ),
+          amlSupervisor => {
+            val updatedRegistration =
+              request.registration.copy(
+                amlSupervisor = Some(amlSupervisor),
+                registrationType = Some(registrationType)
+              )
+
+            (for {
+              _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+              _  = registerWithGcOrFca(updatedRegistration).asResponseError
+            } yield updatedRegistration).convertToResult(mode, pageNavigator)
+          }
         )
+    }
+
+  private def registerWithGcOrFca(registration: Registration)(implicit
+    hc: HeaderCarrier
+  ) =
+    registration.amlSupervisor.map(_.supervisorType) match {
+      case Some(GamblingCommission)        =>
+        val event = RegistrationNotLiableAuditEvent(
+          registration.internalId,
+          NotLiableReason.SupervisedByGamblingCommission
+        ).extendedDataEvent
+        auditService.sendEvent(event)
+      case Some(FinancialConductAuthority) =>
+        val event = RegistrationNotLiableAuditEvent(
+          registration.internalId,
+          NotLiableReason.SupervisedByFinancialConductAuthority
+        ).extendedDataEvent
+        auditService.sendEvent(event)
+      case _                               =>
+        EitherT[Future, AuditError, Unit](Future.successful(Right(())))
     }
 }

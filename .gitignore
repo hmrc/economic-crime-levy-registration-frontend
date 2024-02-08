@@ -35,3 +35,4 @@ bin
 .bsp
 /migrations
 /generated-test
+/.g8

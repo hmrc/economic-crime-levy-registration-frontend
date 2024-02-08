@@ -26,7 +26,9 @@ class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
         partnershipEntityJourneyData = None,
         soleTraderEntityJourneyData = None
       )
+      val additionalInfo      = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(updatedRegistration)
 
       val result = callRoute(FakeRequest(routes.ConfirmContactAddressController.onPageLoad(NormalMode)))
@@ -54,7 +56,9 @@ class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
         partnershipEntityJourneyData = None,
         soleTraderEntityJourneyData = None
       )
+      val additionalInfo      = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(updatedRegistration)
 
       stubUpsertRegistration(updatedRegistration)
@@ -76,6 +80,9 @@ class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
       val registration = random[Registration]
 
       stubGetRegistration(registration)
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
 
       val updatedRegistration =
         registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(false), contactAddress = None)

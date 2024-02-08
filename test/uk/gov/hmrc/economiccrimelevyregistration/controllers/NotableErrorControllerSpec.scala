@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.mvc.Result
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
@@ -147,11 +148,12 @@ class NotableErrorControllerSpec extends SpecBase {
   "registrationFailed" should {
     "return OK and the correct view" in forAll { registration: Registration =>
       new TestContext(registration) {
-        val result: Future[Result] = controller.registrationFailed()(fakeRequest)
+        val request                = FakeRequest(GET, "/registration-failed")
+        val result: Future[Result] = controller.registrationFailed(request)
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe registrationFailedView()(fakeRequest, messages).toString
+        contentAsString(result) shouldBe registrationFailedView()(request, messages).toString
       }
     }
   }

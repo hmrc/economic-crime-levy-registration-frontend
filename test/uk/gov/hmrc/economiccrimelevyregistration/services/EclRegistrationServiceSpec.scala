@@ -16,48 +16,56 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
+import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConnector, IncorporatedEntityIdentificationFrontendConnector, PartnershipIdentificationFrontendConnector, SoleTraderIdentificationFrontendConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
 
 class EclRegistrationServiceSpec extends SpecBase {
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
-  val service                                                = new EclRegistrationService(mockEclRegistrationConnector, mockAuditConnector, appConfig)
+  val mockAuditService: AuditService                         = mock[AuditService]
+  val mockIncorporatedEntityIdentificationFrontendConnector  = mock[IncorporatedEntityIdentificationFrontendConnector]
+  val mockSoleTraderIdentificationFrontendConnector          = mock[SoleTraderIdentificationFrontendConnector]
+  val mockPartnershipIdentificationFrontendConnector         = mock[PartnershipIdentificationFrontendConnector]
+  val service                                                = new EclRegistrationService(
+    mockEclRegistrationConnector,
+    mockIncorporatedEntityIdentificationFrontendConnector,
+    mockSoleTraderIdentificationFrontendConnector,
+    mockPartnershipIdentificationFrontendConnector,
+    mockAuditService,
+    appConfig
+  )
 
   "getOrCreateRegistration" should {
     "return a created registration when one does not exist" in forAll {
       (internalId: String, registration: Registration) =>
+        val emptyRegistration = Registration.empty(internalId)
         when(mockEclRegistrationConnector.getRegistration(any())(any()))
-          .thenReturn(Future.successful(None))
+          .thenReturn(Future.failed(UpstreamErrorResponse("Not found", NOT_FOUND)))
 
         when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-          .thenReturn(Future.successful(registration))
+          .thenReturn(Future.successful(emptyRegistration))
 
-        val result = await(service.getOrCreateRegistration(internalId))
-        result shouldBe registration
-
-        verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
-
-        reset(mockAuditConnector)
-        reset(mockEclRegistrationConnector)
-
+        val result = await(service.getOrCreate(internalId).value)
+        result shouldBe Right(emptyRegistration)
     }
 
     "return an existing registration" in forAll { (internalId: String, registration: Registration) =>
       when(mockEclRegistrationConnector.getRegistration(any())(any()))
-        .thenReturn(Future.successful(Some(registration)))
+        .thenReturn(Future.successful(registration))
 
-      val result = await(service.getOrCreateRegistration(internalId))
-      result shouldBe registration
-      reset(mockEclRegistrationConnector)
+      val result = await(service.getOrCreate(internalId).value)
+      result shouldBe Right(registration)
 
     }
   }
@@ -70,29 +78,24 @@ class EclRegistrationServiceSpec extends SpecBase {
       when(mockEclRegistrationConnector.getSubscription(eclReference))
         .thenReturn(Future.successful(getSubscriptionResponse))
 
-      val result = await(service.getSubscription(eclReference))
+      val result = await(service.getSubscription(eclReference).value)
 
-      result shouldBe getSubscriptionResponse
-      reset(mockEclRegistrationConnector)
-
+      result shouldBe Right(getSubscriptionResponse)
     }
 
     "return error when call to connector fails" in forAll(
       nonEmptyString
     ) { (eclReference: String) =>
       when(mockEclRegistrationConnector.getSubscription(ArgumentMatchers.eq(eclReference))(any()))
-        .thenReturn(Future.failed(new IllegalStateException("Error")))
+        .thenReturn((Future.failed(UpstreamErrorResponse("Error", INTERNAL_SERVER_ERROR))))
 
-      val result = intercept[IllegalStateException] {
-        await(
-          service
-            .getSubscription(eclReference)
-        )
-      }
-      result.getMessage shouldBe "Error"
-      result            shouldBe a[IllegalStateException]
+      val result = await(
+        service
+          .getSubscription(eclReference)
+          .value
+      )
 
-      reset(mockEclRegistrationConnector)
+      result shouldBe Left(DataRetrievalError.BadGateway("Error", 500))
     }
   }
 }

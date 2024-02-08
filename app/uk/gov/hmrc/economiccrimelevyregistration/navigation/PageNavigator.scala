@@ -28,5 +28,4 @@ trait PageNavigator {
   protected def navigateInNormalMode(registration: Registration): Call
 
   protected def navigateInCheckMode(registration: Registration): Call
-
 }

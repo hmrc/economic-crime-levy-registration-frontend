@@ -16,23 +16,28 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
+import cats.data.EitherT
 import play.api.Logging
 import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EntityType, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, RegistrationSubmittedEmailParameters}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EntityType, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.time.TaxYear
 
 import java.time.{LocalDate, ZoneOffset}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 
 class EmailService @Inject() (emailConnector: EmailConnector)(implicit
   ec: ExecutionContext
 ) extends Logging {
+
+  type ServiceResult[T] = EitherT[Future, DataRetrievalError, T]
 
   def sendRegistrationSubmittedEmails(
     contacts: Contacts,
@@ -43,13 +48,12 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
   )(implicit
     hc: HeaderCarrier,
     messages: Messages
-  ): Future[Unit] = {
+  ): ServiceResult[Unit] = {
     val eclDueDate       = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)
     val registrationDate = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)
-
-    val previousFY =
+    val previousFY       =
       additionalInfo.flatMap(_.liabilityYear.flatMap(year => if (year.isNotCurrentFY) Some(year.asString) else None))
-    val currentFY  =
+    val currentFY        =
       liableForCurrentFY.map(_ => TaxYear.current.currentYear.toString)
 
     def sendEmail(
@@ -57,21 +61,33 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
       email: String,
       isPrimaryContact: Boolean,
       secondContactEmail: Option[String]
-    ): Future[Unit] =
-      emailConnector.sendRegistrationSubmittedEmail(
-        email,
-        RegistrationSubmittedEmailParameters(
-          name = name,
-          eclRegistrationReference = eclRegistrationReference,
-          eclRegistrationDate = registrationDate,
-          eclDueDate,
-          isPrimaryContact = isPrimaryContact.toString,
-          secondContactEmail = secondContactEmail,
-          previousFY = previousFY,
-          currentFY = currentFY
-        ),
-        entityType
-      )
+    ): ServiceResult[Unit] =
+      EitherT {
+        emailConnector
+          .sendRegistrationSubmittedEmail(
+            email,
+            RegistrationSubmittedEmailParameters(
+              name = name,
+              eclRegistrationReference = eclRegistrationReference,
+              eclRegistrationDate = registrationDate,
+              eclDueDate,
+              isPrimaryContact = isPrimaryContact.toString,
+              secondContactEmail = secondContactEmail,
+              previousFY = previousFY,
+              currentFY = currentFY
+            ),
+            entityType
+          )
+          .map(Right(_))
+          .recover {
+            case error @ UpstreamErrorResponse(message, code, _, _)
+                if UpstreamErrorResponse.Upstream5xxResponse
+                  .unapply(error)
+                  .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+              Left(DataRetrievalError.BadGateway(message, code))
+            case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+          }
+      }
 
     ((
       contacts.firstContactDetails.name,
@@ -101,24 +117,51 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
           isPrimaryContact = true,
           secondContactEmail = None
         )
-      case _                                                                                                    => throw new IllegalStateException("Invalid contact details")
-    }).recover { case e: Throwable =>
-      logger.error(s"Failed to send email: ${e.getMessage}")
-      throw e
-    }
+      case _                                                                                                    =>
+        EitherT.fromEither[Future](
+          Left(DataRetrievalError.InternalUnexpectedError("Invalid contact details", None))
+        )
+    })
 
   }
 
-  def sendAmendRegistrationSubmitted(contacts: Contacts)(implicit hc: HeaderCarrier, messages: Messages): Future[Unit] =
+  private def getContactData(
+    contacts: Contacts
+  ): Either[DataRetrievalError, (String, String)] =
     (contacts.firstContactDetails.emailAddress, contacts.firstContactDetails.name) match {
-      case (Some(emailAddress), Some(name)) =>
-        emailConnector.sendAmendRegistrationSubmittedEmail(
+      case (Some(emailAddress), Some(name)) => Right((emailAddress, name))
+      case _                                => Left(DataRetrievalError.InternalUnexpectedError("Invalid contact details", None))
+    }
+
+  private def sendEmail(emailAddress: String, name: String)(implicit
+    hc: HeaderCarrier,
+    messages: Messages
+  ): ServiceResult[Unit] =
+    EitherT {
+      emailConnector
+        .sendAmendRegistrationSubmittedEmail(
           to = emailAddress,
           AmendRegistrationSubmittedEmailParameters(
             name = name,
             dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now())
           )
         )
-      case _                                => throw new IllegalStateException("Invalid contact details")
+        .map(Right(_))
+        .recover {
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse
+                .unapply(error)
+                .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            Left(DataRetrievalError.BadGateway(message, code))
+          case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+        }
     }
+
+  def sendAmendRegistrationSubmitted(
+    contacts: Contacts
+  )(implicit hc: HeaderCarrier, messages: Messages): ServiceResult[Unit] =
+    for {
+      data   <- EitherT.fromEither[Future](getContactData(contacts))
+      result <- sendEmail(data._1, data._2)
+    } yield result
 }

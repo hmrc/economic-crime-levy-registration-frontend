@@ -11,10 +11,10 @@ POST        /aml-regulated-activity-question                                    
 GET         /change-answer/aml-regulated-activity-question                      uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/aml-regulated-activity-question                      uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onSubmit(mode: Mode = CheckMode)
 
-GET         /your-aml-supervisor/:registrationType                              uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = NormalMode, registrationType: RegistrationType, fromLiableBeforeCurrentYearPage: Boolean)
-POST        /your-aml-supervisor/:registrationType                              uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = NormalMode, registrationType: RegistrationType, fromLiableBeforeCurrentYearPage: Boolean)
-GET         /change-answer/your-aml-supervisor/:registrationType                uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = CheckMode, registrationType: RegistrationType, fromLiableBeforeCurrentYearPage: Boolean)
-POST        /change-answer/your-aml-supervisor/:registrationType                uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = CheckMode, registrationType: RegistrationType, fromLiableBeforeCurrentYearPage: Boolean)
+GET         /your-aml-supervisor/:registrationType                              uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = NormalMode, registrationType: RegistrationType)
+POST        /your-aml-supervisor/:registrationType                              uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = NormalMode, registrationType: RegistrationType)
+GET         /change-answer/your-aml-supervisor/:registrationType                uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onPageLoad(mode: Mode = CheckMode, registrationType: RegistrationType)
+POST        /change-answer/your-aml-supervisor/:registrationType                uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlSupervisorController.onSubmit(mode: Mode = CheckMode, registrationType: RegistrationType)
 
 GET         /accounting-period-question                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onPageLoad(mode: Mode = NormalMode)
 POST        /accounting-period-question                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.RelevantAp12MonthsController.onSubmit(mode: Mode = NormalMode)
@@ -192,10 +192,10 @@ POST        /change-answer/what-is-your-self-assessment-utr                     
 GET         /amend-economic-crime-levy-registration/:eclReference               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendRegistrationStartController.onPageLoad(eclReference)
 GET         /amend-economic-crime-levy-registration/success/confirmation        uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendmentRequestedController.onPageLoad()
 
-GET         /previous-financial-year                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onPageLoad(fromRevenuePage: Boolean, mode: Mode = NormalMode)
-POST        /previous-financial-year                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onSubmit(fromRevenuePage: Boolean, mode: Mode = NormalMode)
-GET         /check-answer/previous-financial-year                               uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onPageLoad(fromRevenuePage: Boolean, mode: Mode = CheckMode)
-POST        /check-answer/previous-financial-year                               uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onSubmit(fromRevenuePage: Boolean, mode: Mode = CheckMode)
+GET         /previous-financial-year                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onPageLoad(mode: Mode = NormalMode)
+POST        /previous-financial-year                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onSubmit(mode: Mode = NormalMode)
+GET         /check-answer/previous-financial-year                               uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onPageLoad(mode: Mode = CheckMode)
+POST        /check-answer/previous-financial-year                               uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityBeforeCurrentYearController.onSubmit(mode: Mode = CheckMode)
 
 GET         /do-you-have-a-crn                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCrnController.onPageLoad(mode: Mode = NormalMode)
 POST        /do-you-have-a-crn                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.DoYouHaveCrnController.onSubmit(mode: Mode = NormalMode)
@@ -216,3 +216,6 @@ GET         /why-are-you-amending-your-registration                             
 POST        /why-are-you-amending-your-registration                             uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendReasonController.onSubmit(mode: Mode = NormalMode)
 GET         /change-answer/why-are-you-amending-your-registration               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendReasonController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/why-are-you-amending-your-registration               uk.gov.hmrc.economiccrimelevyregistration.controllers.AmendReasonController.onSubmit(mode: Mode = CheckMode)
+
+GET         /cancel-registration-amendment                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.CancelRegistrationAmendmentController.onPageLoad()
+POST        /cancel-registration-amendment                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.CancelRegistrationAmendmentController.onSubmit()

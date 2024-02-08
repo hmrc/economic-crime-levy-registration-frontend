@@ -19,9 +19,11 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
     "respond with 200 status and the company registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistration(registration)
+      stubGetRegistrationAdditionalInfo(additionalInfo)
 
       val result = callRoute(FakeRequest(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)))
 
@@ -37,11 +39,13 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
     "save the company registration number then redirect to the check your answers page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
       val companyNumber = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
 
       stubGetRegistration(registration)
+      stubGetRegistrationAdditionalInfo(additionalInfo)
 
       val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))
       val updatedRegistration    = registration.copy(

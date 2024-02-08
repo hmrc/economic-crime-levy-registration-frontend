@@ -20,14 +20,14 @@ import com.google.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveCtUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveCtUtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{DoYouHaveCtUtrView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveCtUtrView
 
 import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,13 +38,16 @@ class DoYouHaveCtUtrController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   formProvider: DoYouHaveCtUtrFormProvider,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   pageNavigator: DoYouHaveCtUtrPageNavigator,
   view: DoYouHaveCtUtrView
 )(implicit
-  ec: ExecutionContext
+  ec: ExecutionContext,
+  errorTemplate: ErrorTemplate
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[Boolean] = formProvider()
 
@@ -60,23 +63,23 @@ class DoYouHaveCtUtrController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           answer => {
-            val userChangedIsCtutrPresentAnswer = checckIfUserHasCtUtr(request.registration, answer)
-            val otherEntityJourneyData          =
-              request.registration.otherEntityJourneyData.copy(
+            val userChangedIsCtutrPresentAnswer = checkIfUserHasCtUtr(request.registration, answer)
+            val otherEntityJourneyData          = request.registration.otherEntityJourneyData
+              .copy(
                 isCtUtrPresent = Some(answer),
                 postcode = userChangedIsCtutrPresentAnswer._1,
                 ctUtr = userChangedIsCtutrPresentAnswer._2
               )
-            eclRegistrationConnector
-              .upsertRegistration(
-                request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
-              )
-              .map(updatedRegistration => Redirect(pageNavigator.nextPage(mode, updatedRegistration)))
+            val updatedRegistration             =
+              request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+            (for {
+              _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            } yield updatedRegistration).convertToResult(mode, pageNavigator)
           }
         )
     }
 
-  private def checckIfUserHasCtUtr(
+  private def checkIfUserHasCtUtr(
     registration: Registration,
     answer: Boolean
   ): (Option[String], Option[String]) =

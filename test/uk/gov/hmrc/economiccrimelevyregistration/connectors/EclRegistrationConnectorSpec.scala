@@ -21,277 +21,184 @@ import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR, NO_CONTENT, OK}
 import play.api.libs.json.Json
-import play.api.test.Helpers.status
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
+import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, GetSubscriptionResponse, Registration}
-import uk.gov.hmrc.http.{HttpClient, HttpException, HttpResponse, UpstreamErrorResponse}
 
 import scala.concurrent.Future
+import scala.util.{Failure, Success, Try}
 
 class EclRegistrationConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClient = mock[HttpClient]
-  val connector                  = new EclRegistrationConnector(appConfig, mockHttpClient)
-  val eclRegistrationUrl         = "http://localhost:14001/economic-crime-levy-registration"
+  val mockHttpClient: HttpClientV2       = mock[HttpClientV2]
+  val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
+  val connector                          = new EclRegistrationConnector(appConfig, mockHttpClient)
+  val eclRegistrationUrl                 = "http://localhost:14001/economic-crime-levy-registration"
+
+  override def beforeEach() = {
+    reset(mockHttpClient)
+    reset(mockRequestBuilder)
+  }
 
   "getRegistration" should {
 
     "return a registration when the http client returns a registration" in forAll {
-      (internalId: String, registration: Registration) =>
-        val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId"
+      (internalId: String, registration: Registration, authorization: Authorization) =>
+        beforeEach()
+        val bigDecimal          = BigDecimal(20000000.00)
+        val updatedRegistration = registration.copy(relevantApRevenue = Some(bigDecimal))
+        val hc: HeaderCarrier   = HeaderCarrier(Some(authorization))
+        val expectedUrl         = url"$eclRegistrationUrl/registrations/$internalId"
+        val response            = HttpResponse(ACCEPTED, Json.toJson(updatedRegistration).toString())
 
-        when(
-          mockHttpClient.GET[Option[Registration]](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
-        )
-          .thenReturn(Future.successful(Some(registration)))
+        when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.setHeader(ArgumentMatchers.eq("Authorization" -> hc.authorization.get.value)))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(response))
 
-        val result = await(connector.getRegistration(internalId))
+        val result = await(connector.getRegistration(internalId)(hc))
 
-        result shouldBe Some(registration)
+        result shouldBe updatedRegistration
 
-        verify(mockHttpClient, times(1))
-          .GET[Option[Registration]](
-            ArgumentMatchers.eq(expectedUrl),
-            any(),
-            any()
-          )(any(), any(), any())
-
-        reset(mockHttpClient)
     }
 
-    "return none when the http client returns none" in forAll { internalId: String =>
-      val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId"
-
-      when(
-        mockHttpClient.GET[Option[Registration]](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
-      )
-        .thenReturn(Future.successful(None))
-
-      val result = await(connector.getRegistration(internalId))
-      result shouldBe None
-
-      verify(mockHttpClient, times(1))
-        .GET[Option[Registration]](
-          ArgumentMatchers.eq(expectedUrl),
-          any(),
-          any()
-        )(any(), any(), any())
-
-      reset(mockHttpClient)
-    }
   }
 
   "deleteRegistration" should {
     "return unit when the http client successfully returns a http response" in forAll { internalId: String =>
-      val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId"
+      beforeEach()
+      val expectedUrl = url"$eclRegistrationUrl/registrations/$internalId"
+      val response    = HttpResponse(NO_CONTENT, "")
 
-      val response = HttpResponse(NO_CONTENT, "", Map.empty)
-
-      when(
-        mockHttpClient.DELETE[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any())(
-          any(),
-          any(),
-          any()
-        )
-      )
-        .thenReturn(Future.successful(Right(response)))
+      when(mockHttpClient.delete(ArgumentMatchers.eq(expectedUrl))(any()))
+        .thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+        .thenReturn(Future.successful(response))
 
       val result: Unit = await(connector.deleteRegistration(internalId))
       result shouldBe ()
 
-      verify(mockHttpClient, times(1))
-        .DELETE[Either[UpstreamErrorResponse, HttpResponse]](
-          ArgumentMatchers.eq(expectedUrl),
-          any()
-        )(any(), any(), any())
-
-      reset(mockHttpClient)
     }
 
     "throw an UpstreamErrorResponse exception when the http client returns a error response" in forAll {
       internalId: String =>
-        val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId"
+        beforeEach()
+        val expectedUrl = url"$eclRegistrationUrl/registrations/$internalId"
+        val msg         = "Internal server error"
 
-        val response = UpstreamErrorResponse("Internal server error", INTERNAL_SERVER_ERROR)
+        when(mockHttpClient.delete(ArgumentMatchers.eq(expectedUrl))(any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, msg)))
 
-        when(
-          mockHttpClient.DELETE[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any())(
-            any(),
-            any(),
-            any()
-          )
-        )
-          .thenReturn(Future.successful(Left(response)))
-
-        val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
-          await(connector.deleteRegistration(internalId))
+        Try(await(connector.deleteRegistration(internalId))) match {
+          case Failure(thr) => thr.getMessage shouldBe msg
+          case Success(_)   => fail("expected exception to be thrown")
         }
-
-        result.getMessage shouldBe "Internal server error"
-
-        verify(mockHttpClient, times(1))
-          .DELETE[Either[UpstreamErrorResponse, HttpResponse]](
-            ArgumentMatchers.eq(expectedUrl),
-            any()
-          )(any(), any(), any())
-
-        reset(mockHttpClient)
     }
   }
 
   "upsertRegistration" should {
-    "return the new or updated registration" in forAll { registration: Registration =>
-      val expectedUrl = s"$eclRegistrationUrl/registrations"
+    "return a unit when registration is successfully upserted" in forAll { registration: Registration =>
+      beforeEach()
+      val expectedUrl = url"$eclRegistrationUrl/registrations"
+      val response    = HttpResponse(NO_CONTENT, "")
 
-      when(
-        mockHttpClient
-          .PUT[Registration, Registration](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any(), any())
-      )
-        .thenReturn(Future.successful(registration))
+      when(mockHttpClient.put(ArgumentMatchers.eq(expectedUrl))(any()))
+        .thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(Json.toJson(registration))).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(response))
 
       val result = await(connector.upsertRegistration(registration))
-      result shouldBe registration
+      result shouldBe ()
 
-      verify(mockHttpClient, times(1))
-        .PUT[Registration, Registration](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any(), any())
-
-      reset(mockHttpClient)
     }
   }
 
   "getSubscriptionStatus" should {
     "return an EclSubscriptionStatus when the http client returns an EclSubscriptionStatus" in forAll {
       (businessPartnerId: String, eclSubscriptionStatus: EclSubscriptionStatus) =>
-        val expectedUrl = s"$eclRegistrationUrl/subscription-status/$businessPartnerId"
+        beforeEach()
+        val expectedUrl = url"$eclRegistrationUrl/subscription-status/$businessPartnerId"
+        val response    = HttpResponse(OK, Json.toJson(eclSubscriptionStatus).toString())
 
-        when(
-          mockHttpClient.GET[EclSubscriptionStatus](ArgumentMatchers.eq(expectedUrl), any(), any())(any(), any(), any())
-        )
-          .thenReturn(Future.successful(eclSubscriptionStatus))
+        when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(response))
 
         val result = await(connector.getSubscriptionStatus(businessPartnerId))
 
         result shouldBe eclSubscriptionStatus
 
-        verify(mockHttpClient, times(1))
-          .GET[EclSubscriptionStatus](
-            ArgumentMatchers.eq(expectedUrl),
-            any(),
-            any()
-          )(any(), any(), any())
-
-        reset(mockHttpClient)
     }
   }
 
   "getRegistrationValidationErrors" should {
     "return None when the http client returns 204 no content with no validation errors" in forAll {
       internalId: String =>
-        val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId/validation-errors"
+        beforeEach()
+        val expectedUrl = url"$eclRegistrationUrl/registrations/$internalId/validation-errors"
+        val response    = HttpResponse(NO_CONTENT, Json.toJson(None).toString())
 
-        val response = HttpResponse(NO_CONTENT, "")
+        when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(response))
 
-        when(
-          mockHttpClient
-            .GET[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any(), any())(
-              any(),
-              any(),
-              any()
-            )
-        ).thenReturn(Future.successful(Right(response)))
-
-        val result = await(connector.getRegistrationValidationErrors(internalId))
+        val result = await(connector.getRegistrationValidationErrors(internalId).value)
 
         result shouldBe None
     }
 
-    "return validation errors when the http client return 200 ok with validation errors" in forAll {
-      (internalId: String, dataValidationErrors: DataValidationErrors) =>
-        val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId/validation-errors"
+    "return Some with DataValidationError when 200 OK is returned with validation error in the body" in forAll {
+      (internalId: String, dataValidationError: String) =>
+        beforeEach()
+        val expectedUrl = url"$eclRegistrationUrl/registrations/$internalId/validation-errors"
 
-        val response = HttpResponse(OK, Json.toJson(dataValidationErrors), Map.empty)
+        when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(HttpResponse.apply(OK, (Json.toJson(dataValidationError).toString()))))
 
-        when(
-          mockHttpClient
-            .GET[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any(), any())(
-              any(),
-              any(),
-              any()
-            )
-        ).thenReturn(Future.successful(Right(response)))
+        val result = await(connector.getRegistrationValidationErrors(internalId).value)
 
-        val result = await(connector.getRegistrationValidationErrors(internalId))
-
-        result shouldBe Some(dataValidationErrors)
-    }
-
-    "throw a HttpException when an unexpected http status is returned by the http client" in forAll {
-      internalId: String =>
-        val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId/validation-errors"
-
-        val response = HttpResponse(ACCEPTED, "")
-
-        when(
-          mockHttpClient
-            .GET[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any(), any())(
-              any(),
-              any(),
-              any()
-            )
-        ).thenReturn(Future.successful(Right(response)))
-
-        val result: HttpException = intercept[HttpException] {
-          await(connector.getRegistrationValidationErrors(internalId))
-        }
-
-        result.getMessage shouldBe s"Unexpected response with HTTP status $ACCEPTED"
+        result shouldBe Some(dataValidationError)
     }
 
     "throw an UpstreamErrorResponse exception when the http client returns a error response" in forAll {
       internalId: String =>
-        val expectedUrl = s"$eclRegistrationUrl/registrations/$internalId/validation-errors"
+        beforeEach()
+        val expectedUrl = url"$eclRegistrationUrl/registrations/$internalId/validation-errors"
+        val msg         = "Internal server error"
 
-        val response = UpstreamErrorResponse("Internal server error", INTERNAL_SERVER_ERROR)
+        when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(HttpResponse.apply(INTERNAL_SERVER_ERROR, msg)))
 
-        when(
-          mockHttpClient
-            .GET[Either[UpstreamErrorResponse, HttpResponse]](ArgumentMatchers.eq(expectedUrl), any(), any())(
-              any(),
-              any(),
-              any()
-            )
-        ).thenReturn(Future.successful(Left(response)))
-
-        val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
-          await(connector.getRegistrationValidationErrors(internalId))
+        Try(await(connector.getRegistrationValidationErrors(internalId).value)) match {
+          case Failure(thr) => thr.getMessage shouldBe msg
+          case Success(_)   => fail("expected exception to be thrown")
         }
-
-        result.getMessage shouldBe "Internal server error"
     }
   }
 
   "submitRegistration" should {
     "return a subscription response when the http client returns a subscription response" in forAll {
-      (internalId: String, subscriptionResponse: CreateEclSubscriptionResponse) =>
-        val expectedUrl = s"$eclRegistrationUrl/submit-registration/$internalId"
+      (internalId: String, subscriptionResponse: CreateEclSubscriptionResponse, authorization: Authorization) =>
+        beforeEach()
+        val hc: HeaderCarrier = HeaderCarrier(Some(authorization))
+        val expectedUrl       = url"$eclRegistrationUrl/submit-registration/$internalId"
+        val response          = HttpResponse(OK, Json.toJson(subscriptionResponse).toString())
 
-        when(
-          mockHttpClient
-            .POSTEmpty[CreateEclSubscriptionResponse](ArgumentMatchers.eq(expectedUrl), any())(any(), any(), any())
-        ).thenReturn(Future.successful(subscriptionResponse))
+        when(mockHttpClient.post(ArgumentMatchers.eq(expectedUrl))(any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.setHeader(ArgumentMatchers.eq("Authorization" -> hc.authorization.get.value)))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(response))
 
-        val result = await(connector.submitRegistration(internalId))
+        val result = await(connector.submitRegistration(internalId)(hc))
 
         result shouldBe subscriptionResponse
 
-        verify(mockHttpClient, times(1))
-          .POSTEmpty[CreateEclSubscriptionResponse](
-            ArgumentMatchers.eq(expectedUrl),
-            any()
-          )(any(), any(), any())
-
-        reset(mockHttpClient)
     }
   }
 
@@ -300,16 +207,11 @@ class EclRegistrationConnectorSpec extends SpecBase {
       Arbitrary.arbitrary[GetSubscriptionResponse],
       nonEmptyString
     ) { (getSubscriptionResponse: GetSubscriptionResponse, eclReference: String) =>
-      val expectedUrl = s"$eclRegistrationUrl/subscription/$eclReference"
+      val expectedUrl = url"$eclRegistrationUrl/subscription/$eclReference"
 
-      when(
-        mockHttpClient
-          .GET[GetSubscriptionResponse](ArgumentMatchers.eq(expectedUrl), any(), any())(
-            any(),
-            any(),
-            any()
-          )
-      ).thenReturn(Future.successful(getSubscriptionResponse))
+      when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+        .thenReturn(Future.successful(HttpResponse(OK, Json.toJson(getSubscriptionResponse).toString())))
 
       val result = await(connector.getSubscription(eclReference))
 
@@ -318,24 +220,18 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
     "throw an UpstreamErrorResponse exception when the http client returns a error response for getSubscription call" in forAll {
       eclReference: String =>
-        val expectedUrl = s"$eclRegistrationUrl/subscription/$eclReference"
+        val expectedUrl = url"$eclRegistrationUrl/subscription/$eclReference"
+        val msg         = "Internal server error"
 
-        val response = UpstreamErrorResponse("Internal server error", INTERNAL_SERVER_ERROR)
+        when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, msg)))
 
-        when(
-          mockHttpClient
-            .GET[GetSubscriptionResponse](ArgumentMatchers.eq(expectedUrl), any(), any())(
-              any(),
-              any(),
-              any()
-            )
-        ).thenReturn(Future.failed(response))
-
-        val result: UpstreamErrorResponse = intercept[UpstreamErrorResponse] {
-          await(connector.getSubscription(eclReference))
+        Try(await(connector.getSubscription(eclReference))) match {
+          case Failure(thr) => thr.getMessage shouldBe msg
+          case Success(_)   => fail("expected exception to be thrown")
         }
 
-        result.getMessage shouldBe "Internal server error"
     }
   }
 

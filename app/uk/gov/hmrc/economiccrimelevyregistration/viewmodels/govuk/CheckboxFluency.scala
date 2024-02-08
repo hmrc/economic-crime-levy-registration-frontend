@@ -19,12 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.twirl.api.Html
+import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.ErrorMessageAwareness
 import uk.gov.hmrc.govukfrontend.views.viewmodels.checkboxes.{CheckboxItem, Checkboxes}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
 import uk.gov.hmrc.govukfrontend.views.viewmodels.fieldset.{Fieldset, Legend}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.hint.Hint
 import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.ErrorMessageAwareness
 
 object checkbox extends CheckboxFluency
 

@@ -16,20 +16,21 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.forms.{AmlRegulatedActivityFormProvider, DoYouHaveCrnFormProvider}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveCrnFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.{AmlRegulatedActivityPageNavigator, DoYouHaveCrnPageNavigator}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlRegulatedActivityView, DoYouHaveCrnView}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveCrnPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveCrnView
 
 import scala.concurrent.Future
 
@@ -39,7 +40,7 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
   val formProvider: DoYouHaveCrnFormProvider = new DoYouHaveCrnFormProvider()
   val form: Form[Boolean]                    = formProvider()
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: DoYouHaveCrnPageNavigator = new DoYouHaveCrnPageNavigator() {
     override protected def navigateInNormalMode(registration: Registration): Call =
@@ -55,7 +56,7 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       formProvider,
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       pageNavigator,
       view
     )
@@ -100,17 +101,23 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, hasUkCrn: Boolean) =>
         new TestContext(registration) {
+          val companyRegistrationNumber                      = if (hasUkCrn) {
+            registration.otherEntityJourneyData.companyRegistrationNumber
+          } else {
+            None
+          }
           val otherEntityJourneyData: OtherEntityJourneyData = registration.otherEntityJourneyData
             .copy(
-              isUkCrnPresent = Some(hasUkCrn)
+              isUkCrnPresent = Some(hasUkCrn),
+              companyRegistrationNumber = companyRegistrationNumber
             )
           val updatedRegistration: Registration              =
             registration.copy(
               optOtherEntityJourneyData = Some(otherEntityJourneyData)
             )
 
-          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(

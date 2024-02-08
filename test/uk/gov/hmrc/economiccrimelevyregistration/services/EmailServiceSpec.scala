@@ -68,13 +68,15 @@ class EmailServiceSpec extends SpecBase {
 
         val result: Unit =
           await(
-            service.sendRegistrationSubmittedEmails(
-              updatedContacts,
-              eclRegistrationReference,
-              entityType,
-              None,
-              None
-            )(hc, messages)
+            service
+              .sendRegistrationSubmittedEmails(
+                updatedContacts,
+                eclRegistrationReference,
+                entityType,
+                None,
+                None
+              )(hc, messages)
+              .value
           )
 
         result shouldBe ()
@@ -147,13 +149,15 @@ class EmailServiceSpec extends SpecBase {
 
         val result: Unit =
           await(
-            service.sendRegistrationSubmittedEmails(
-              updatedContacts,
-              eclRegistrationReference,
-              entityType,
-              None,
-              None
-            )(hc, messages)
+            service
+              .sendRegistrationSubmittedEmails(
+                updatedContacts,
+                eclRegistrationReference,
+                entityType,
+                None,
+                None
+              )(hc, messages)
+              .value
           )
 
         result shouldBe ()
@@ -162,26 +166,6 @@ class EmailServiceSpec extends SpecBase {
           .sendRegistrationSubmittedEmail(any(), any(), any())(any())
 
         reset(mockEmailConnector)
-    }
-
-    "throw an IllegalStateException when the first contact details are missing" in forAll {
-      eclRegistrationReference: String =>
-        when(mockEmailConnector.sendRegistrationSubmittedEmail(any(), any(), any())(any()))
-          .thenReturn(Future.successful(()))
-
-        val result = intercept[IllegalStateException] {
-          await(
-            service.sendRegistrationSubmittedEmails(
-              Contacts.empty,
-              eclRegistrationReference,
-              entityType,
-              None,
-              None
-            )(hc, messages)
-          )
-        }
-
-        result.getMessage shouldBe "Invalid contact details"
     }
   }
 

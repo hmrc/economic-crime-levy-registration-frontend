@@ -17,7 +17,9 @@
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 @import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 @import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
-
+@import uk.gov.hmrc.economiccrimelevyregistration.models.EclAddress
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
+@import java.time.LocalDate
 
 @this(
         layout: templates.Layout,
@@ -25,7 +27,7 @@
         appConfig: AppConfig
 )
 
-@(email: String, eclReference: Option[String])(implicit request: Request[_], messages: Messages)
+@(email: String, eclReference: Option[String], contactAddress: Option[EclAddress])(implicit request: Request[_], messages: Messages)
 
 
 @layout(
@@ -63,5 +65,13 @@
 
     <p class="govuk-body">@messages("amendmentRequested.body.p6")</p>
 
+    <p class="govuk-body">@messages("amendmentRequested.body.address.heading")</p>
+
+    <p class="govuk-body">
+        @{contactAddress.map { answer =>
+            Html(AddressViewModel.html(answer))
+        }}
+    </p>
+
     <p class="govuk-body">@Html(messages("amendmentRequested.body.p7", messages("amendmentRequested.body.p7.link", appConfig.exitSurveyUrl)))</p>
-}@import java.time.LocalDate
+}

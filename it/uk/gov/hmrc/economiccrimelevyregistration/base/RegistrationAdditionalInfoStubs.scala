@@ -2,13 +2,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status.{NO_CONTENT, OK}
+import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, Registration, RegistrationAdditionalInfo}
-
-import java.time.Instant
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationAdditionalInfo
 
 trait RegistrationAdditionalInfoStubs { self: WireMockStubs =>
 
@@ -17,7 +14,7 @@ trait RegistrationAdditionalInfoStubs { self: WireMockStubs =>
       get(urlEqualTo(s"/economic-crime-levy-registration/registration-additional-info/$testInternalId")),
       aResponse()
         .withStatus(OK)
-        .withBody(Json.toJson(registrationAdditionalInfo).toString())
+        .withBody(Json.toJson(registrationAdditionalInfo.copy(internalId = testInternalId)).toString())
     )
 
   def stubUpsertRegistrationAdditionalInfo(registrationAdditionalInfo: RegistrationAdditionalInfo): StubMapping =

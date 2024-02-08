@@ -16,48 +16,42 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AddressLookupContinueError, DataRetrievalError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
 
 import scala.concurrent.Future
 
 class IsUkAddressControllerSpec extends SpecBase {
 
-  val view: IsUkAddressView                 = app.injector.instanceOf[IsUkAddressView]
-  val formProvider: IsUkAddressFormProvider = new IsUkAddressFormProvider()
-  val form: Form[Boolean]                   = formProvider()
+  val view: IsUkAddressView                   = app.injector.instanceOf[IsUkAddressView]
+  val formProvider: IsUkAddressFormProvider   = new IsUkAddressFormProvider()
+  val form: Form[Boolean]                     = formProvider()
+  val mockAddressLookup: AddressLookupService = mock[AddressLookupService]
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-
-  val pageNavigator: IsUkAddressPageNavigator = new IsUkAddressPageNavigator(
-    mock[AddressLookupFrontendConnector]
-  ) {
-    override protected def navigateInNormalMode(registration: Registration)(implicit
-      request: RequestHeader
-    ): Future[Call] = Future.successful(onwardRoute)
-  }
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   class TestContext(registrationData: Registration) {
     val controller = new IsUkAddressController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
-      pageNavigator,
-      view
+      view,
+      mockAddressLookup
     )
   }
 
@@ -107,20 +101,26 @@ class IsUkAddressControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "save the selected answer then redirect to the next page" in forAll {
-      (registration: Registration, contactAddressIsUk: Boolean) =>
+      (registration: Registration, contactAddressIsUk: Boolean, journeyAddress: String) =>
         new TestContext(registration) {
           val updatedRegistration: Registration =
             registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+          when(
+            mockAddressLookup.initJourney(ArgumentMatchers.eq(contactAddressIsUk), ArgumentMatchers.eq(NormalMode))(
+              any()
+            )
+          )
+            .thenReturn(EitherT[Future, AddressLookupContinueError, String](Future.successful(Right(journeyAddress))))
 
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", contactAddressIsUk.toString)))
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(onwardRoute.url)
+          redirectLocation(result) shouldBe Some(journeyAddress)
         }
     }
 

@@ -16,22 +16,15 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWithValidCompanyProfile
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
 
-import scala.concurrent.Future
-
 class ConfirmContactAddressPageNavigatorSpec extends SpecBase {
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-
-  val pageNavigator = new ConfirmContactAddressPageNavigator(mockEclRegistrationConnector)
+  val pageNavigator = new ConfirmContactAddressPageNavigator()
 
   "nextPage" should {
     "return a Call to the UK address question page in either mode when the answer is no" in forAll {
@@ -39,10 +32,8 @@ class ConfirmContactAddressPageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(false))
 
-        await(
-          pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)
-        ) shouldBe routes.IsUkAddressController
-          .onPageLoad(mode)
+        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
+          routes.IsUkAddressController.onPageLoad(mode)
     }
 
     "return a Call to the check your answers page in either mode when the answer is yes" in forAll {
@@ -59,17 +50,8 @@ class ConfirmContactAddressPageNavigatorSpec extends SpecBase {
           soleTraderEntityJourneyData = None
         )
 
-        when(
-          mockEclRegistrationConnector.upsertRegistration(
-            ArgumentMatchers.eq(updatedRegistration.copy(contactAddress = updatedRegistration.grsAddressToEclAddress))
-          )(any())
-        )
-          .thenReturn(Future.successful(updatedRegistration))
-
-        await(
-          pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)
-        ) shouldBe routes.CheckYourAnswersController
-          .onPageLoad()
+        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
     }
   }
 
