@@ -9,7 +9,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
@@ -25,14 +24,15 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onPageLoad())
 
     "respond with 200 status and the Check your answers HTML view when the registration data is valid" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      stubAuthorisedWithEclEnrolment()
 
-      val registration = random[Registration].copy(registrationType = Some(Amendment))
-      val errors       = random[DataValidationErrors]
+      val registration            = random[Registration].copy(registrationType = Some(Amendment))
+      val errors                  = random[DataValidationErrors]
+      val getSubscriptionResponse = random[GetSubscriptionResponse]
 
       stubGetRegistration(registration)
       stubGetRegistrationValidationErrors(valid = true, errors)
-
+      stubGetSubscription(getSubscriptionResponse)
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
 
       status(result) shouldBe OK

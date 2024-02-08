@@ -22,7 +22,7 @@ trait EclRegistrationStubs { self: WireMockStubs =>
 
   def stubGetSubscription(getSubscriptionResponse: GetSubscriptionResponse): StubMapping =
     stub(
-      get(urlEqualTo(s"/economic-crime-levy-registration/subscription/$testInternalId")),
+      get(urlEqualTo(s"/economic-crime-levy-registration/subscription/$testEclRegistrationReference")),
       aResponse()
         .withStatus(OK)
         .withBody(Json.toJson(getSubscriptionResponse).toString())
