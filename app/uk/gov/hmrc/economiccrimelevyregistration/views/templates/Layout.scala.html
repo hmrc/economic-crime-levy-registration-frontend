@@ -46,6 +46,7 @@
 @topPageTitle = @{
     registrationTypeForTopBanner match {
         case Some(Amendment) => Some(messages("start.amend.title"))
+        case Some(Dereg)     => Some(messages("deregister.banner.title"))
         case _ => None
     }
 }
@@ -53,6 +54,7 @@
 @startServiceUrl = @{
     (eclReferenceForStartLink, registrationTypeForTopBanner) match {
         case (Some(reference), Some(Amendment)) => Some(AmendRegistrationStartController.onPageLoad(reference).url)
+        case (_, Some(Dereg)) => Some(uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterStartController.onPageLoad().url)
         case _ => Some(StartController.onPageLoad.url)
     }
 }

@@ -219,3 +219,10 @@ POST        /change-answer/why-are-you-amending-your-registration               
 
 GET         /cancel-registration-amendment                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.CancelRegistrationAmendmentController.onPageLoad()
 POST        /cancel-registration-amendment                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.CancelRegistrationAmendmentController.onSubmit()
+
+GET         /deregister-start                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterStartController.onPageLoad()
+
+GET         /deregister-reason                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterReasonController.onPageLoad(mode: Mode = NormalMode)
+POST        /deregister-reason                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterReasonController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/deregister-reason                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterReasonController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/deregister-reason                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterReasonController.onSubmit(mode: Mode = CheckMode)

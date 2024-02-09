@@ -1,0 +1,86 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+@import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+
+@this(
+        layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
+        summaryList: GovukSummaryList,
+        button: GovukButton,
+        appConfig: AppConfig
+)
+
+@(eclReference: String, companyName: Option[String], registrationType: RegistrationType)(implicit request: Request[_], messages: Messages)
+
+@layout(
+    pageTitle = title(messages("deregister.start.title")),
+    timeout = false,
+    showBackLink = false,
+    showSignOut = false,
+    registrationTypeForTopBanner = Some(registrationType)
+) {
+
+    <h1 class="govuk-heading-l">@messages("deregister.start.heading")</h1>
+
+    <h2 class="govuk-heading-m">@messages("deregister.start.h2")</h2>
+
+    @summaryList(SummaryListViewModel(
+        Seq(
+            SummaryListRowViewModel(
+                key = Key("deregister.start.eclReference"),
+                value = ValueViewModel(HtmlContent(HtmlFormat.escape(eclReference)))
+            ),
+            SummaryListRowViewModel(
+                key = Key("deregister.start.companyName"),
+                value = ValueViewModel(HtmlContent(HtmlFormat.escape(companyName.getOrElse(""))))
+            )
+        )
+    ))
+
+    <p class="govuk-body">@messages("deregister.start.p1")</p>
+
+    <p class="govuk-body">@messages("deregister.start.p2")</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("deregister.start.b1")</li>
+        <li>@messages("deregister.start.b2")</li>
+        <li>@messages("deregister.start.b3")</li>
+    </ul>
+
+    <p class="govuk-body">@Html(messages("deregister.start.p3", messages("deregister.start.p3.link", routes.AmendRegistrationStartController.onPageLoad(eclReference).url)))</p>
+
+    <p class="govuk-body">@Html(messages("deregister.start.p4", messages("deregister.start.p4.link", appConfig.deregisterGuidanceUrl)))</p>
+
+    <h2 class="govuk-heading-m">@messages("deregister.start.beforeYouStart")</h2>
+
+    <p class="govuk-body">@messages("deregister.start.provide")</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("deregister.start.provide.b1")</li>
+        <li>@messages("deregister.start.provide.b2")</li>
+        <li>@messages("deregister.start.provide.b3")</li>
+    </ul>
+
+    @button(
+        ButtonViewModel(messages("site.start"))
+                .asLink(uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterReasonController.onPageLoad(NormalMode).url)
+                .asStartButton()
+                .withAttribute("id" -> "start")
+                .withCssClass("govuk-!-margin-top-2 govuk-!-margin-bottom-8")
+    )
+
+}

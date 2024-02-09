@@ -626,3 +626,39 @@ cancelRegistrationAmendment.title = Are you sure you want to cancel your request
 cancelRegistrationAmendment.heading = Are you sure you want to cancel your request to amend your registration?
 cancelRegistrationAmendment.body = Your answers will be deleted.
 cancelRegistrationAmendment.error.required = Select yes if you want to cancel your request to amend your registration
+
+deregister.banner.title = Deregister from the Economic Crime Levy
+
+deregister.start.title = Request to deregister from HMRC for the Economic Crime Levy
+deregister.start.heading = Request to deregister from HMRC for the Economic Crime Levy
+deregister.start.h2 = ECL details
+deregister.start.eclReference = ECL reference number
+deregister.start.companyName = Company name
+deregister.start.p1 = Use this service to request to deregister your Economic Crime Levy (ECL) account.
+deregister.start.p2 = You can deregister if your organisation:
+deregister.start.b1 = has stopped AML regulated activities
+deregister.start.b2 = has started being regulated by the FCA or the GC
+deregister.start.b3 = no longer meets the revenue threshold for ECL
+deregister.start.p3 = To make any changes to your registration, you do not need to deregister. You can {0}.
+deregister.start.p3.link = <a href="{0}" class="govuk-link">request to amend your registration</a>
+deregister.start.p4 = For more information, read the {0}.
+deregister.start.p4.link = <a href="{0}" class="govuk-link">guidance page</a>
+deregister.start.beforeYouStart = Before you start
+deregister.start.provide = You will need to tell us:
+deregister.start.provide.b1 = the reason why you are deregistering from ECL
+deregister.start.provide.b2 = the date you were no longer liable for ECL
+deregister.start.provide.b3 = the details of someone in your organisation who can act as a point of contact for any activities related to the ECL
+
+deregisterReason.title = Select the reason for deregistering
+deregisterReason.NoAmlActivity = The organisation has stopped anti-money laundering (AML) regulated activities.
+deregisterReason.RegulatedByFcaOrGa = The organisation is now regulated by the Financial Conduct Authority (FCA) or the Gambling Commission (GC).
+deregisterReason.NoLongerMeetsThreshold = The organisation no longer meets the revenue threshold for ECL.
+deregisterReason.error.required = Select the reason for deregistering
+
+deregisterDate.title = Enter the date you were no longer liable
+deregisterDate.heading = Enter the date you were no longer liable
+deregisterDate.p1 = This is the date you stopped AML regulated activities, started being regulated by the FCA or the GC or the date you no longer met the threshold for ECL.
+deregisterDate.hint = For example, 27 3 2024.
+deregisterDate.error.required = Enter the date you were no longer liable for ECL
+deregisterDate.error.past = The date must be after 1 April 2022
+deregisterDate.error.future = The date must be in the past

@@ -627,3 +627,39 @@ cancelRegistrationAmendment.title = Ydych chi'n siŵr eich bod am ganslo'ch cais
 cancelRegistrationAmendment.heading = Ydych chi'n siŵr eich bod am ganslo'ch cais i newid eich cofrestriad?
 cancelRegistrationAmendment.body = Bydd eich atebion yn cael eu dileu.
 cancelRegistrationAmendment.error.required = Dewiswch 'Iawn' os ydych yn dymuno canslo eich cais i newid eich cofrestriad
+
+deregister.banner.title = Dadgofrestru o'r Ardoll Troseddau Economaidd
+
+deregister.start.title = Cais at CThEF i ddatgofrestru rhag yr Ardoll Troseddau Economaidd
+deregister.start.heading = Cais at CThEF i ddatgofrestru rhag yr Ardoll Troseddau Economaidd
+deregister.start.h2 = Manylion ECL
+deregister.start.eclReference = Cyfeirnod ECL
+deregister.start.companyName = Enw’r cwmni
+deregister.start.p1 = Defnyddiwch y gwasanaeth hwn i wneud cais i ddatgofrestru o’ch cyfrif Ardoll Troseddau Economaidd (ECL).
+deregister.start.p2 = Gallwch ddatgofrestru os yw’r canlynol yn berthnasol i’ch sefydliad:
+deregister.start.b1 = mae wedi rhoi’r gorau i weithgareddau a reoleiddir gan reoliadau Gwrth-wyngalchu Arian (AML)
+deregister.start.b2 = mae wedi dechrau cael ei reoleiddio gan yr Awdurdod Ymddygiad Ariannol (FCA) neu’r Comisiwn Hapchwarae (GC)
+deregister.start.b3 = nid yw’n cyrraedd y trothwy refeniw ar gyfer ECL mwyach
+deregister.start.p3 = Nid oes angen i chi dadgofrestru er mwyn neud unrhyw newidiadau i’ch cofrestriad. Gallwch {0}.
+deregister.start.p3.link = <a href="{0}" class="govuk-link">wneud cais i ddiwygio’ch cofrestriad</a>
+deregister.start.p4 = I gael rhagor o wybodaeth, darllenwch {0}.
+deregister.start.p4.link = <a href="{0}" class="govuk-link">yr arweiniad ar datgofrestru</a>
+deregister.start.beforeYouStart = Cyn i chi ddechrau
+deregister.start.provide = ae’n rhaid i chi roi gwybod i ni am y canlynol:
+deregister.start.provide.b1 = y rheswm pam rydych yn dadgofrestru rhag ECL
+deregister.start.provide.b2 = y dyddiad pan nad oeddech yn agored i dalu ECL mwyach
+deregister.start.provide.b3 = manylion rhywun yn eich sefydliad a all weithredu fel pwynt cyswllt ar gyfer unrhyw weithgareddau sy’n berthnasol i’r ECL
+
+deregisterReason.title = Dewiswch y rheswm dros ddadgofrestru
+deregisterReason.NoAmlActivity = Mae’r sefydliad wedi rhoi’r gorau i weithgareddau a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML).
+deregisterReason.RegulatedByFcaOrGa = Mae’r sefydliad bellach yn cael ei reoleiddio gan yr Awdurdod Ymddygiad Ariannol (FCA) neu’r Awdurdod Ymddygiad Ariannol (GC).
+deregisterReason.NoLongerMeetsThreshold = Nid yw’r sefydliad yn cyrraedd y trothwy refeniw ar gyfer ECL mwyach.
+deregisterReason.error.required = Dewiswch y rheswm dros ddatganoli
+
+deregisterDate.title = Nodwch y dyddiad pan nad oeddech yn agored i ECL mwyach
+deregisterDate.heading = Nodwch y dyddiad pan nad oeddech yn agored i ECL mwyach
+deregisterDate.p1 = Dyma’r dyddiad pryd y gwnaethoch roi’r gorau i weithgareddau a reoleiddir gan reoliadau AML, dechrau cael eich rheoleiddio gan yr FCA neu’r GC neu’r dyddiad nad oeddech yn agored i’r trothwy ar gyfer ECL mwyach.
+deregisterDate.hint = Er enghraifft, 27 3 2024.
+deregisterDate.error.required = Nodwch y dyddiad nad oeddech bellach yn atebol am ECL
+deregisterDate.error.past = Rhaid i’r dyddiad fod ar ôl 1 Ebrill 2022
+deregisterDate.error.future = Mae’n rhaid i’r dyddiad fod yn y gorffennol
