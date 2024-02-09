@@ -18,46 +18,41 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister
 
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.DeregisterReasonFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.{DeregisterDateFormProvider, DeregisterReasonFormProvider}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.models.audit.EntityTypeSelectedEvent
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.DeregisterReason
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterReasonView
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{EntityTypeView, ErrorTemplate}
-import uk.gov.hmrc.http.HttpVerbs.GET
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.{DeregisterDateView, DeregisterReasonView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
+import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeregisterReasonController @Inject() (
+class DeregisterDateController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getDeregistrationData: DeregistrationDataRetrievalAction,
   deregistrationService: DeregistrationService,
-  formProvider: DeregisterReasonFormProvider,
-  view: DeregisterReasonView
+  formProvider: DeregisterDateFormProvider,
+  view: DeregisterDateView
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with BaseController
     with ErrorHandler {
 
-  val form: Form[DeregisterReason] = formProvider()
+  val form: Form[LocalDate] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getDeregistrationData) { implicit request =>
-    Ok(view(form.prepare(request.deregistration.reason), mode, request.deregistration.registrationType))
+    Ok(view(form.prepare(request.deregistration.date), mode, request.deregistration.registrationType))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
@@ -66,10 +61,10 @@ class DeregisterReasonController @Inject() (
       .fold(
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors, mode, request.deregistration.registrationType))),
-        reason => {
+        date => {
 
           val updatedDeregistration = request.deregistration.copy(
-            reason = Some(reason)
+            date = Some(date)
           )
 
           (for {
@@ -78,7 +73,7 @@ class DeregisterReasonController @Inject() (
             err => routeError(err),
             _ => {
               val next = mode match {
-                case NormalMode => routes.DeregisterDateController.onPageLoad(mode)
+                case NormalMode => routes.DeregisterStartController.onPageLoad()
                 case CheckMode  => routes.DeregisterStartController.onPageLoad()
               }
               Redirect(next)

@@ -226,3 +226,8 @@ GET         /deregister-reason                                                  
 POST        /deregister-reason                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterReasonController.onSubmit(mode: Mode = NormalMode)
 GET         /change-answer/deregister-reason                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterReasonController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/deregister-reason                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterReasonController.onSubmit(mode: Mode = CheckMode)
+
+GET         /deregister-date                                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterDateController.onPageLoad(mode: Mode = NormalMode)
+POST        /deregister-date                                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterDateController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/deregister-date                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterDateController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/deregister-date                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterDateController.onSubmit(mode: Mode = CheckMode)
