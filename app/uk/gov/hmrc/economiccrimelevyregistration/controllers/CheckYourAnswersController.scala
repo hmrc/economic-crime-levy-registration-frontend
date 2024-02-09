@@ -17,21 +17,21 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
+import cats.implicits.toTraverseOps
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Session}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import play.api.libs.json.Json
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, ErrorTemplate, OtherRegistrationPdfView}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -51,128 +51,103 @@ class CheckYourAnswersController @Inject() (
   emailService: EmailService,
   otherRegistrationPdfView: OtherRegistrationPdfView,
   amendRegistrationPdfView: AmendRegistrationPdfView,
-  sessionService: SessionService
+  sessionService: SessionService,
+  appConfig: AppConfig
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with BaseController
     with ErrorHandler {
 
-  private def eclDetails()(implicit request: RegistrationDataRequest[_]): SummaryList = SummaryListViewModel(
-    rows = Seq(
-      EclReferenceNumberSummary.row()
-    ).flatten
-  ).withCssClass("govuk-!-margin-bottom-9")
-
-  private def organisationDetails(liabilityRow: Option[SummaryListRow] = None)(implicit
-    request: RegistrationDataRequest[_]
-  ): SummaryList =
-    SummaryListViewModel(
-      rows = Seq(
-        EntityTypeSummary.row(),
-        EntityNameSummary.row(),
-        CompanyNumberSummary.row(),
-        CtUtrSummary.row(),
-        SaUtrSummary.row(),
-        NinoSummary.row(),
-        DateOfBirthSummary.row(),
-        AmlRegulatedActivitySummary.row(),
-        liabilityRow,
-        RelevantAp12MonthsSummary.row(),
-        RelevantApLengthSummary.row(),
-        UkRevenueSummary.row(),
-        AmlSupervisorSummary.row(),
-        BusinessSectorSummary.row()
-      ).flatten
-    ).withCssClass("govuk-!-margin-bottom-9")
-
-  private def contactDetails()(implicit request: RegistrationDataRequest[_]): SummaryList = SummaryListViewModel(
-    rows = Seq(
-      FirstContactNameSummary.row(),
-      FirstContactRoleSummary.row(),
-      FirstContactEmailSummary.row(),
-      FirstContactNumberSummary.row(),
-      SecondContactSummary.row(),
-      SecondContactNameSummary.row(),
-      SecondContactRoleSummary.row(),
-      SecondContactEmailSummary.row(),
-      SecondContactNumberSummary.row(),
-      UseRegisteredAddressSummary.row(),
-      ContactAddressSummary.row()
-    ).flatten
-  ).withCssClass("govuk-!-margin-bottom-9")
-
-  private def amendReasonDetails()(implicit request: RegistrationDataRequest[_]): SummaryList = SummaryListViewModel(
-    rows = Seq(
-      AmendReasonSummary.row()
-    ).flatten
-  ).withCssClass("govuk-!-margin-bottom-9")
-
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getRegistrationData).async { implicit request =>
       registrationService
         .getRegistrationValidationErrors(request.internalId)
         .asResponseError
-        .fold(
-          error => routeError(error),
+        .foldF(
+          error => Future.successful(routeError(error)),
           {
-            case Some(error) =>
-              Redirect(routes.NotableErrorController.answersAreInvalid())
-            case None        =>
-              Ok(
-                view(
-                  eclDetails(),
-                  organisationDetails(),
-                  contactDetails(),
-                  otherEntityDetails(),
-                  amendReasonDetails,
-                  request.registration.registrationType,
-                  request.eclRegistrationReference
-                )
-              )
+            case Some(_) =>
+              Future.successful(Redirect(routes.NotableErrorController.answersAreInvalid()))
+            case None    =>
+              if (appConfig.getSubscriptionEnabled && request.registration.registrationType.contains(Amendment)) {
+                routeWithSubscription
+              } else { routeWithoutSubscription }
           }
         )
     }
 
-  private def getBase64EncodedPdf(registration: Registration)(implicit
+  private def getBase64EncodedPdf(
+    checkYourAnswersViewModel: CheckYourAnswersViewModel,
+    amendRegistrationPdfViewModel: AmendRegistrationPdfViewModel
+  )(implicit
     request: RegistrationDataRequest[_]
-  ) =
-    (registration.entityType, registration.registrationType) match {
+  ) = {
+    val registrationType = checkYourAnswersViewModel.registrationType
+    (checkYourAnswersViewModel.registration.entityType, registrationType) match {
       case (Some(_), Some(Amendment))                    =>
-        createAndEncodeHtmlForPdf(registration.registrationType)
+        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, amendRegistrationPdfViewModel)
       case (Some(value), _) if EntityType.isOther(value) =>
-        createAndEncodeHtmlForPdf(registration.registrationType)
+        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, amendRegistrationPdfViewModel)
       case (None, Some(Amendment))                       =>
-        createAndEncodeHtmlForPdf(registration.registrationType)
+        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, amendRegistrationPdfViewModel)
       case _                                             =>
         ""
     }
+  }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
-    val htmlView = view(
-      eclDetails(),
-      organisationDetails(),
-      contactDetails(),
-      otherEntityDetails(),
-      amendReasonDetails(),
-      request.registration.registrationType,
-      request.eclRegistrationReference
+  private def routeWithSubscription(implicit request: RegistrationDataRequest[_]) =
+    registrationService
+      .getSubscription(request.eclRegistrationReference.get)
+      .map { getSubscriptionResponse =>
+        Ok(
+          view(
+            CheckYourAnswersViewModel(
+              request.registration,
+              Some(getSubscriptionResponse),
+              request.eclRegistrationReference
+            )
+          )
+        )
+      }
+      .asResponseError
+      .fold(
+        error => routeError(error),
+        success => success
+      )
+
+  private def routeWithoutSubscription(implicit request: RegistrationDataRequest[_]) =
+    Future.successful(
+      Ok(
+        view(
+          CheckYourAnswersViewModel(
+            request.registration,
+            None,
+            request.eclRegistrationReference
+          )
+        )
+      )
     )
 
+  def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     val registration = request.registration
-
-    val base64EncodedHtmlView: String = base64EncodeHtmlView(htmlView.body)
-    val base64EncodedHtmlViewForPdf   = getBase64EncodedPdf(registration)
-
     (for {
-      _        <- registrationService
-                    .upsertRegistration(
-                      getRegistrationWithEncodedFields(registration, base64EncodedHtmlView, base64EncodedHtmlViewForPdf)
-                    )
-                    .asResponseError
-      response <- registrationService.submitRegistration(request.internalId).asResponseError
-      _        <- sendEmail(registration, request.additionalInfo, response.eclReference).asResponseError
-      email     = registration.contacts.firstContactDetails.emailAddress
+      getSubscriptionResponse      <- fetchSubscription.asResponseError
+      htmlView                      = createHtmlView(getSubscriptionResponse)
+      base64EncodedHtmlView         = base64EncodeHtmlView(htmlView.body)
+      checkYourAnswersModel         =
+        CheckYourAnswersViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference)
+      amendRegistrationPdfViewModel =
+        AmendRegistrationPdfViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference)
+      base64EncodedHtmlViewForPdf   = getBase64EncodedPdf(checkYourAnswersModel, amendRegistrationPdfViewModel)
+      _                            <- registrationService
+                                        .upsertRegistration(
+                                          getRegistrationWithEncodedFields(registration, base64EncodedHtmlView, base64EncodedHtmlViewForPdf)
+                                        )
+                                        .asResponseError
+      response                     <- registrationService.submitRegistration(request.internalId).asResponseError
+      _                            <- sendEmail(registration, request.additionalInfo, response.eclReference).asResponseError
+      email                         = registration.contacts.firstContactDetails.emailAddress
     } yield (response, email)).fold(
       error => routeError(error),
       data => {
@@ -202,6 +177,30 @@ class CheckYourAnswersController @Inject() (
         Redirect(getNextPage(registration)).withSession(updatedSession)
       }
     )
+  }
+
+  private def createHtmlView(
+    getSubscriptionResponse: Option[GetSubscriptionResponse]
+  )(implicit request: RegistrationDataRequest[_]) =
+    view(
+      CheckYourAnswersViewModel(
+        request.registration,
+        getSubscriptionResponse,
+        request.eclRegistrationReference
+      )
+    )
+
+  private def fetchSubscription(implicit request: RegistrationDataRequest[_]) = {
+    val getSubscriptionResponse =
+      (if (appConfig.getSubscriptionEnabled && request.registration.registrationType.contains(Amendment)) {
+         Some(
+           registrationService
+             .getSubscription(request.eclRegistrationReference.get)
+         )
+       } else {
+         None
+       }).traverse(identity)
+    getSubscriptionResponse
   }
 
   private def getNextPage(registration: Registration) =
@@ -265,26 +264,20 @@ class CheckYourAnswersController @Inject() (
     .encodeToString(html.getBytes)
 
   def createAndEncodeHtmlForPdf(
-    registrationType: Option[RegistrationType]
+    checkYourAnswersViewModel: CheckYourAnswersViewModel,
+    amendRegistrationPdfViewModel: AmendRegistrationPdfViewModel
   )(implicit request: RegistrationDataRequest[_]): String = {
     val date         = LocalDate.now
-    val organisation = organisationDetails(LiabilityYearSummary.row())
-    val contact      = contactDetails()
-    val otherEntity  = otherEntityDetails()
-    val amendReason  = amendReasonDetails()
+    val organisation = checkYourAnswersViewModel.organisationDetails(LiabilityYearSummary.row())
+    val contact      = checkYourAnswersViewModel.contactDetails()
+    val otherEntity  = checkYourAnswersViewModel.otherEntityDetails()
 
-    registrationType match {
+    checkYourAnswersViewModel.registrationType match {
       case Some(Amendment) =>
         base64EncodeHtmlView(
           amendRegistrationPdfView(
             ViewUtils.formatLocalDate(date),
-            eclDetails(),
-            organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
-            contact.copy(rows = contact.rows.map(_.copy(actions = None))),
-            amendReason.copy(
-              rows = amendReason.rows.map(_.copy(actions = None)),
-              attributes = Map("id" -> "amendReason")
-            )
+            amendRegistrationPdfViewModel
           ).toString()
         )
       case _               =>
@@ -300,19 +293,4 @@ class CheckYourAnswersController @Inject() (
         )
     }
   }
-
-  def otherEntityDetails()(implicit request: RegistrationDataRequest[_]): SummaryList =
-    SummaryListViewModel(
-      rows = Seq(
-        BusinessNameSummary.row(),
-        CharityRegistrationNumberSummary.row(),
-        DoYouHaveCrnSummary.row(),
-        CompanyRegistrationNumberSummary.row(),
-        DoYouHaveCtUtrSummary.row(),
-        UtrTypeSummary.row(),
-        OtherEntitySaUtrSummary.row(),
-        OtherEntityCtUtrSummary.row(),
-        OtherEntityPostcodeSummary.row()
-      ).flatten
-    ).withCssClass("govuk-!-margin-bottom-9")
 }

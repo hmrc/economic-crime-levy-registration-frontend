@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -26,14 +26,17 @@ import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 object DoYouHaveCtUtrSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.otherEntityJourneyData.isCtUtrPresent.map { answer =>
+  def row(
+    isCtUtrPresent: Option[Boolean],
+    entityType: Option[EntityType]
+  )(implicit messages: Messages): Option[SummaryListRow] =
+    isCtUtrPresent.map { answer =>
       val value = if (answer) "site.yes" else "site.no"
-      val key   = request.registration.entityType match {
+      val key   = entityType match {
         case Some(Charity) => "otherEntityType.utr.question.label"
         case _             => "otherEntityType.ctutr.question.label"
       }
-      val url   = request.registration.entityType match {
+      val url   = entityType match {
         case Some(Charity) => routes.DoYouHaveUtrController.onPageLoad(CheckMode).url
         case _             => routes.DoYouHaveCtUtrController.onPageLoad(CheckMode).url
       }

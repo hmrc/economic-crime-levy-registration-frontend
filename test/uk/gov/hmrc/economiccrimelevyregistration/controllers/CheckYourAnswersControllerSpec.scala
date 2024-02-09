@@ -30,30 +30,27 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.Email
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, DataValidationError, SessionError}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, OtherRegistrationPdfView}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.economiccrimelevyregistration.views.html._
 import uk.gov.hmrc.time.TaxYear
 
 import java.time.LocalDate
 import java.util.Base64
-import scala.concurrent
 import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends SpecBase {
 
-  val view: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
-  val pdfView                    = app.injector.instanceOf[OtherRegistrationPdfView]
-  val amendPdfView               = app.injector.instanceOf[AmendRegistrationPdfView]
+  val view: CheckYourAnswersView             = app.injector.instanceOf[CheckYourAnswersView]
+  val pdfView: OtherRegistrationPdfView      = app.injector.instanceOf[OtherRegistrationPdfView]
+  val amendPdfView: AmendRegistrationPdfView = app.injector.instanceOf[AmendRegistrationPdfView]
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
   val mockEmailService: EmailService                     = mock[EmailService]
-  val mockSessionService                                 = mock[SessionService]
+  val mockSessionService: SessionService                 = mock[SessionService]
 
   class TestContext(registrationData: Registration) {
     val controller = new CheckYourAnswersController(
@@ -66,7 +63,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       mockEmailService,
       pdfView,
       amendPdfView,
-      mockSessionService
+      mockSessionService,
+      appConfig
     )
   }
 
@@ -88,75 +86,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(registrationDataRequest)
 
-        val eclDetails: SummaryList = SummaryListViewModel(
-          rows = Seq(
-            EclReferenceNumberSummary.row()
-          ).flatten
-        ).withCssClass("govuk-!-margin-bottom-9")
-
-        val organisationDetails: SummaryList = SummaryListViewModel(
-          rows = Seq(
-            EntityTypeSummary.row(),
-            EntityNameSummary.row(),
-            CompanyNumberSummary.row(),
-            CtUtrSummary.row(),
-            SaUtrSummary.row(),
-            NinoSummary.row(),
-            DateOfBirthSummary.row(),
-            AmlRegulatedActivitySummary.row(),
-            RelevantAp12MonthsSummary.row(),
-            RelevantApLengthSummary.row(),
-            UkRevenueSummary.row(),
-            AmlSupervisorSummary.row(),
-            BusinessSectorSummary.row()
-          ).flatten
-        ).withCssClass("govuk-!-margin-bottom-9")
-
-        val contactDetails: SummaryList = SummaryListViewModel(
-          rows = Seq(
-            FirstContactNameSummary.row(),
-            FirstContactRoleSummary.row(),
-            FirstContactEmailSummary.row(),
-            FirstContactNumberSummary.row(),
-            SecondContactSummary.row(),
-            SecondContactNameSummary.row(),
-            SecondContactRoleSummary.row(),
-            SecondContactEmailSummary.row(),
-            SecondContactNumberSummary.row(),
-            UseRegisteredAddressSummary.row(),
-            ContactAddressSummary.row()
-          ).flatten
-        ).withCssClass("govuk-!-margin-bottom-9")
-
-        val otherEntityDetails: SummaryList = SummaryListViewModel(
-          rows = Seq(
-            BusinessNameSummary.row(),
-            CharityRegistrationNumberSummary.row(),
-            DoYouHaveCrnSummary.row(),
-            CompanyRegistrationNumberSummary.row(),
-            DoYouHaveCtUtrSummary.row(),
-            UtrTypeSummary.row(),
-            OtherEntitySaUtrSummary.row(),
-            OtherEntityCtUtrSummary.row(),
-            OtherEntityPostcodeSummary.row()
-          ).flatten
-        ).withCssClass("govuk-!-margin-bottom-9")
-
-        val amendReasonDetails: SummaryList = SummaryListViewModel(
-          rows = Seq(
-            AmendReasonSummary.row()
-          ).flatten
-        ).withCssClass("govuk-!-margin-bottom-9")
-
         status(result)          shouldBe OK
         contentAsString(result) shouldBe view(
-          eclDetails,
-          organisationDetails,
-          contactDetails,
-          otherEntityDetails,
-          amendReasonDetails,
-          Some(Initial),
-          None
+          CheckYourAnswersViewModel(
+            validRegistration.registration,
+            None,
+            Some(eclReference)
+          )
         )(
           fakeRequest,
           messages
@@ -485,9 +421,20 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             None
           )
 
-        val date        = LocalDate.of(year, 4, 1)
-        val encodedHtml = controller.createAndEncodeHtmlForPdf(None)(registrationDataRequest)
-        val decodedHtml = new String(Base64.getDecoder.decode(encodedHtml))
+        val date: LocalDate     = LocalDate.of(year, 4, 1)
+        val encodedHtml: String = controller.createAndEncodeHtmlForPdf(
+          CheckYourAnswersViewModel(
+            valid.registration,
+            None,
+            Some(eclReference)
+          ),
+          AmendRegistrationPdfViewModel(
+            valid.registration,
+            None,
+            Some(eclReference)
+          )
+        )(registrationDataRequest)
+        val decodedHtml         = new String(Base64.getDecoder.decode(encodedHtml))
 
         decodedHtml should include(messages("checkYourAnswers.liabilityDate.label"))
         decodedHtml should include(ViewUtils.formatLocalDate(date)(messages))

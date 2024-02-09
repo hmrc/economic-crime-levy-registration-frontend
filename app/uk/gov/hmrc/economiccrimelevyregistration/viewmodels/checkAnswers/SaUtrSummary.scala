@@ -26,8 +26,8 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 
 object SaUtrSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.saUtr.map { answer =>
+  def row(saUtr: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+    saUtr.map { answer =>
       val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(answer))))
 
       SummaryListRowViewModel(

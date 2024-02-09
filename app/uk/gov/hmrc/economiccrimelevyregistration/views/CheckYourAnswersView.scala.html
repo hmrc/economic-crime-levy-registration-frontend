@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType._
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 @import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
 @this(
@@ -24,62 +24,73 @@
         govukButton: GovukButton
 )
 
-@(eclDetails: SummaryList,
-        organisationDetails: SummaryList,
-        contactDetails: SummaryList,
-        otherEntityDetails: SummaryList,
-        amendReason: SummaryList,
-        registrationType: Option[RegistrationType],
-        eclReference: Option[String])(implicit request: Request[_], messages: Messages)
+@(viewModel: CheckYourAnswersViewModel)(implicit request: Request[_], messages: Messages)
+
 
 @layout(pageTitle = title(messages("checkYourAnswers.title")),
-        registrationTypeForTopBanner = registrationType,
-        eclReferenceForStartLink = eclReference
+    registrationTypeForTopBanner = viewModel.registrationType,
+    eclReferenceForStartLink = viewModel.eclReference
 ) {
+
     @formHelper(action = CheckYourAnswersController.onSubmit()) {
         <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
-        @if(amendReason.rows.nonEmpty) {
+        @if(viewModel.amendReasonDetails.rows.nonEmpty) {
 
             <h2 class="govuk-heading-m">@messages("checkYourAnswers.amendReason.title")</h2>
 
-            @govukSummaryList(amendReason)
+            @govukSummaryList(viewModel.amendReasonDetails)
 
         }
 
-
-        @if(registrationType.contains(Amendment)) {
+        @if(viewModel.isAmendRegistration) {
 
             <h2 class="govuk-heading-m">@messages("checkYourAnswers.eclDetails")</h2>
 
-            @govukSummaryList(eclDetails)
+            @govukSummaryList(viewModel.eclDetails)
         }
 
-        <h2 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h2>
-
-        @govukSummaryList(organisationDetails)
+        @if(viewModel.organisationDetails().rows.nonEmpty) {
+            <h2 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h2>
+            @govukSummaryList(viewModel.organisationDetails())
+        }
 
         <h2 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h2>
 
-        @govukSummaryList(contactDetails)
+        @govukSummaryList(viewModel.contactDetails())
 
-        @if(!otherEntityDetails.rows.isEmpty) {
+        @if(viewModel.otherEntityDetails().rows.nonEmpty) {
 
             <h2 class="govuk-heading-m">@messages("checkYourAnswers.otherEntityDetails")</h2>
 
-            @govukSummaryList(otherEntityDetails)
+            @govukSummaryList(viewModel.otherEntityDetails())
         }
 
-        <h2 class="govuk-heading-m">@messages("checkYourAnswers.nowSend")</h2>
+        @if(viewModel.isAmendRegistration) {
+            @if(viewModel.hasAnyAmends) {
+                <h2 class="govuk-heading-m">@messages("checkYourAnswers.amendedAnswers")</h2>
+                @govukSummaryList(viewModel.amendedAnswersDetails())
+                <h2 class="govuk-heading-m">@messages("checkYourAnswers.nowSendAmend")</h2>
+                <div class="govuk-body">@messages("checkYourAnswers.bySending")</div>
+                @govukButton(
+                    ButtonViewModel(messages("checkYourAnswers.confirmAndSend"))
+                )
+            } else {
+                <h2 class="govuk-heading-m">@messages("checkYourAnswers.submittingRequest")</h2>
+                <div class="govuk-body">@messages("checkYourAnswers.notMadeChanges")</div>
+            }
+        } else {
+            <h2 class="govuk-heading-m">@messages("checkYourAnswers.nowSend")</h2>
 
-        <div class="govuk-body">@messages("checkYourAnswers.bySubmitting")</div>
+            <div class="govuk-body">@messages("checkYourAnswers.bySubmitting")</div>
 
-        @govukButton(
-            ButtonViewModel(messages("checkYourAnswers.confirmAndSend"))
-        )
-
-        @if(registrationType.contains(Amendment)) {
-            <p class="govuk-body">@Html(messages("checkYourAnswers.cancel", s"${routes.CancelRegistrationAmendmentController.onPageLoad().url}"))</p>
+            @govukButton(
+                ButtonViewModel(messages("checkYourAnswers.confirmAndSend"))
+            )
         }
     }
+    @if(viewModel.isAmendRegistration) {
+        <p class="govuk-body">@Html(messages("checkYourAnswers.cancel", s"${routes.CancelRegistrationAmendmentController.onPageLoad().url}"))</p>
+    }
 }
+

@@ -26,8 +26,8 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 
 object SecondContactSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.contacts.secondContact.map { answer =>
+  def row(secondContact: Option[Boolean])(implicit messages: Messages): Option[SummaryListRow] =
+    secondContact.map { answer =>
       val value = if (answer) "site.yes" else "site.no"
 
       SummaryListRowViewModel(

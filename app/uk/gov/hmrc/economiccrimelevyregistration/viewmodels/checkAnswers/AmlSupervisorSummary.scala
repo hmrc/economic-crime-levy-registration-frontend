@@ -20,8 +20,7 @@ import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Hmrc, Other}
-import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, CheckMode, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -29,8 +28,10 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 
 object AmlSupervisorSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.amlSupervisor.flatMap { answer =>
+  def row(amlSupervisor: Option[AmlSupervisor], registrationType: Option[RegistrationType])(implicit
+    messages: Messages
+  ): Option[SummaryListRow] =
+    amlSupervisor.flatMap { answer =>
       val supervisor: Option[String] = answer.supervisorType match {
         case Hmrc  => Some(Hmrc.toString)
         case Other => answer.otherProfessionalBody
@@ -47,7 +48,7 @@ object AmlSupervisorSummary {
             ActionItemViewModel(
               "site.change",
               routes.AmlSupervisorController
-                .onPageLoad(CheckMode, request.registration.registrationType.get)
+                .onPageLoad(CheckMode, registrationType.get)
                 .url
             )
               .withVisuallyHiddenText(

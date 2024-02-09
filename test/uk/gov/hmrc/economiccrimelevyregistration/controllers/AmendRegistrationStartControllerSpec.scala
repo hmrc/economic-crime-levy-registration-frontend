@@ -68,7 +68,7 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
 
-        status(result) shouldBe SEE_OTHER
+        status(result) shouldBe OK
 
         reset(mockRegistrationService)
     }

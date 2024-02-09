@@ -26,11 +26,11 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 
 object EclReferenceNumberSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
+  def row(eclReference: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
     Some(
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.eclReferenceNumber.label"),
-        value = ValueViewModel(HtmlContent(HtmlFormat.escape(request.eclRegistrationReference.getOrElse(""))))
+        value = ValueViewModel(HtmlContent(HtmlFormat.escape(eclReference.getOrElse(""))))
       )
     )
 

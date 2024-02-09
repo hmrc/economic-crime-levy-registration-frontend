@@ -28,8 +28,8 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 
 object FirstContactNameSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.contacts.firstContactDetails.name.map { answer =>
+  def row(name: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+    name.map { answer =>
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.firstContactName.label"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),

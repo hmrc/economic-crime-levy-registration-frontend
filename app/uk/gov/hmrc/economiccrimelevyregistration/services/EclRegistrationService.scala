@@ -17,19 +17,13 @@
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import cats.data.EitherT
-import cats.implicits.catsSyntaxApplicativeError
 import play.api.http.Status.NOT_FOUND
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
-import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, DataValidationError}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, BusinessSector, ContactDetails, Contacts, EclAddress, GetSubscriptionResponse, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.models.audit.RegistrationStartedEvent
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -71,15 +65,15 @@ class EclRegistrationService @Inject() (
         .getRegistration(internalId)
         .map(registration => Right(Some(registration)))
         .recover {
-          case err: NotFoundException                          => Right(None)
-          case err @ UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+          case _: NotFoundException                         => Right(None)
+          case _ @UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
             Right(None)
           case error @ UpstreamErrorResponse(message, code, _, _)
               if UpstreamErrorResponse.Upstream5xxResponse
                 .unapply(error)
                 .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
             Left(DataRetrievalError.BadGateway(message, code))
-          case NonFatal(thr)                                   => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+          case NonFatal(thr)                                => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
 
@@ -115,13 +109,12 @@ class EclRegistrationService @Inject() (
           case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
-
   def submitRegistration(
     internalId: String
   )(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext
-  ): EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse] =
+  ): EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse]                          =
     EitherT {
       eclRegistrationConnector
         .submitRegistration(internalId)
@@ -285,7 +278,6 @@ class EclRegistrationService @Inject() (
       contacts = contacts,
       businessSector = Some(businessSector),
       contactAddress = Some(address),
-      partnershipName = getSubscriptionResponse.legalEntityDetails.organisationName,
       amlSupervisor = Some(getAmlSupervisor(getSubscriptionResponse.additionalDetails.amlSupervisor))
     )
   }

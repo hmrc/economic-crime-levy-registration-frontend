@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, UtrType}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
@@ -28,8 +28,10 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 
 object UtrTypeSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.otherEntityJourneyData.utrType.map { answer =>
+  def row(
+    utrType: Option[UtrType]
+  )(implicit messages: Messages): Option[SummaryListRow] =
+    utrType.map { answer =>
       val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(s"utrType.$answer"))))
 
       SummaryListRowViewModel(

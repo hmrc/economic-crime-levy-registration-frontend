@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclAddress}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -27,9 +27,11 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Key, 
 
 object ContactAddressSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] = {
+  def row(useRegisteredOfficeAddressAsContactAddress: Option[Boolean], contactAddress: Option[EclAddress])(implicit
+    messages: Messages
+  ): Option[SummaryListRow] = {
     val changeAction: Seq[ActionItem] =
-      if (request.registration.useRegisteredOfficeAddressAsContactAddress.contains(true)) {
+      if (useRegisteredOfficeAddressAsContactAddress.contains(true)) {
         Seq.empty
       } else {
         Seq(
@@ -40,7 +42,7 @@ object ContactAddressSummary {
         )
       }
 
-    request.registration.contactAddress.map { answer =>
+    contactAddress.map { answer =>
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.address.label"),
         value = ValueViewModel(AddressViewModel.htmlContent(answer)),

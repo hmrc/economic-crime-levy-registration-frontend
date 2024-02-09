@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.NonUKEstablishment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -29,11 +29,14 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 
 object CompanyRegistrationNumberSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.otherEntityJourneyData.companyRegistrationNumber.map { answer =>
+  def row(
+    companyRegistrationNumber: Option[String],
+    entityType: Option[EntityType]
+  )(implicit messages: Messages): Option[SummaryListRow] =
+    companyRegistrationNumber.map { answer =>
       val value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer)))
 
-      val keys = request.registration.entityType match {
+      val keys = entityType match {
         case Some(NonUKEstablishment) =>
           ("checkYourAnswers.nonUkCrn.label", routes.NonUkCrnController.onPageLoad(CheckMode).url)
         case _                        =>
