@@ -65,7 +65,7 @@ case class CheckYourAnswersViewModel(
             hasSecondContactPhoneChanged,
             SecondContactNumberSummary.row(registration.contacts.secondContactDetails.telephoneNumber)
           )
-          ++ addIfNot( // TODO: Check with Dan for using ifNot
+          ++ addIfNot(
             hasAddressChanged,
             ContactAddressSummary.row(
               registration.useRegisteredOfficeAddressAsContactAddress,

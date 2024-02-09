@@ -38,7 +38,7 @@ final case class Registration(
   useRegisteredOfficeAddressAsContactAddress: Option[Boolean],
   contactAddress: Option[EclAddress],
   contactAddressIsUk: Option[Boolean],
-  partnershipName: Option[String], // set it here
+  partnershipName: Option[String],
   privateBetaAccessCode: Option[String],
   optOtherEntityJourneyData: Option[OtherEntityJourneyData],
   base64EncodedFields: Option[Base64EncodedFields],

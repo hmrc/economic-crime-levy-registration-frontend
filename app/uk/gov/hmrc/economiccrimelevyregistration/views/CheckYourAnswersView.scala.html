@@ -15,7 +15,6 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
-@import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 @import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 
 @this(
@@ -90,7 +89,7 @@
             )
         }
     }
-    @if(viewModel.registrationType.contains(Amendment)) {
+    @if(viewModel.isAmendRegistration) {
         <p class="govuk-body">@Html(messages("checkYourAnswers.cancel", s"${routes.CancelRegistrationAmendmentController.onPageLoad().url}"))</p>
     }
 }

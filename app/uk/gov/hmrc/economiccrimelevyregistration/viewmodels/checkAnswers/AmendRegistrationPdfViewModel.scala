@@ -19,8 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 import play.api.http.{ContentTypeOf, ContentTypes, Writeable}
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationType}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 
@@ -66,7 +65,7 @@ case class AmendRegistrationPdfViewModel(
             hasSecondContactPhoneChanged,
             formatRow(SecondContactNumberSummary.row(registration.contacts.secondContactDetails.telephoneNumber))
           )
-          ++ addIfNot( // TODO: Check with Dan for using ifNot
+          ++ addIfNot(
             hasAddressChanged,
             formatRow(
               ContactAddressSummary.row(
@@ -84,7 +83,7 @@ case class AmendRegistrationPdfViewModel(
         addIf(
           isInitialRegistration,
           formatRow(BusinessNameSummary.row(registration.otherEntityJourneyData.businessName))
-        ) // Todo: Is this same as EntityNameSummary.row in organisationDetails ?
+        )
           ++ addIf(
             isInitialRegistration,
             formatRow(
@@ -131,11 +130,11 @@ case class AmendRegistrationPdfViewModel(
         addIf(
           isInitialRegistration,
           formatRow(EntityTypeSummary.row(registration.entityType))
-        ) // TODO: Check with Dan for flag
+        )
           ++ addIf(
             isInitialRegistration,
             formatRow(EntityNameSummary.row(registration.entityName, registration.entityType))
-          ) // Todo: Check if this is regulated by 'hasPartnershipNameChanged' flag
+          )
           ++ addIf(isInitialRegistration, formatRow(CompanyNumberSummary.row(registration.companyNumber)))
           ++ addIf(isInitialRegistration, formatRow(CtUtrSummary.row(registration.ctUtr)))
           ++ addIf(isInitialRegistration, formatRow(SaUtrSummary.row(registration.saUtr)))
@@ -159,9 +158,7 @@ case class AmendRegistrationPdfViewModel(
 
   def eclDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
-      rows = (
-        addIf(isAmendRegistration, formatRow(EclReferenceNumberSummary.row(eclReference)))
-      ).flatten
+      rows = addIf(isAmendRegistration, formatRow(EclReferenceNumberSummary.row(eclReference))).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 
   def amendReasonDetails()(implicit messages: Messages): SummaryList =
@@ -230,7 +227,7 @@ case class AmendRegistrationPdfViewModel(
   private def addIf[T](condition: Boolean, value: T): Seq[T]    = if (condition) Seq(value) else Seq.empty
   private def addIfNot[T](condition: Boolean, value: T): Seq[T] = if (!condition) Seq(value) else Seq.empty
 
-  val registrationType                                                       = registration.registrationType
+  val registrationType: Option[RegistrationType]                             = registration.registrationType
   private def formatRow(row: Option[SummaryListRow]): Option[SummaryListRow] = row.map(_.copy(actions = None))
 }
 

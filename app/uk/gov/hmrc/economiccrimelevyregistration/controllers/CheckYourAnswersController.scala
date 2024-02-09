@@ -128,7 +128,8 @@ class CheckYourAnswersController @Inject() (
         )
       )
     )
-  def onSubmit(): Action[AnyContent]                                                 = (authorise andThen getRegistrationData).async { implicit request =>
+
+  def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     val registration = request.registration
     (for {
       getSubscriptionResponse      <- fetchSubscription.asResponseError
