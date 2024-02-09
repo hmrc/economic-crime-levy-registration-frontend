@@ -59,6 +59,15 @@ trait SpecBase
     with EclTestData
     with Generators {
 
+  val additionalAppConfig: Map[String, Any] = Map(
+    "features.getSubscriptionEnabled" -> false
+  )
+
+  override def fakeApplication(): Application =
+    GuiceApplicationBuilder()
+      .configure(additionalAppConfig)
+      .build()
+
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val ec: ExecutionContext     = scala.concurrent.ExecutionContext.Implicits.global
   implicit val hc: HeaderCarrier        = HeaderCarrier()

@@ -67,9 +67,9 @@ class CheckYourAnswersController @Inject() (
         .foldF(
           error => Future.successful(routeError(error)),
           {
-            case Some(error) =>
+            case Some(_) =>
               Future.successful(Redirect(routes.NotableErrorController.answersAreInvalid()))
-            case None        =>
+            case None    =>
               if (appConfig.getSubscriptionEnabled && request.registration.registrationType.contains(Amendment)) {
                 routeWithSubscription
               } else { routeWithoutSubscription }
@@ -191,7 +191,7 @@ class CheckYourAnswersController @Inject() (
 
   private def fetchSubscription(implicit request: RegistrationDataRequest[_]) = {
     val getSubscriptionResponse =
-      (if (appConfig.getSubscriptionEnabled) {
+      (if (appConfig.getSubscriptionEnabled && request.registration.registrationType.contains(Amendment)) {
          Some(
            registrationService
              .getSubscription(request.eclRegistrationReference.get)
