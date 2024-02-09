@@ -24,12 +24,15 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{ErrorHandler, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -115,86 +118,169 @@ abstract class BaseAuthorisedAction @Inject() (
 )(implicit val executionContext: ExecutionContext)
     extends AuthorisedAction
     with FrontendHeaderCarrierProvider
-    with AuthorisedFunctions {
+    with AuthorisedFunctions
+    with ErrorHandler {
 
   val checkForEclEnrolment: Boolean
   val agentsAllowed: Boolean
   val assistantsAllowed: Boolean
 
-  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
-    authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup and credentialRole) {
-      case optInternalId ~ enrolments ~ optGroupId ~ optAffinityGroup ~ optCredentialRole =>
-        val internalId: String             = optInternalId.getOrElseFail("Unable to retrieve internalId")
-        val groupId: String                = optGroupId.getOrElseFail("Unable to retrieve groupIdentifier")
-        val affinityGroup: AffinityGroup   = optAffinityGroup.getOrElseFail("Unable to retrieve affinityGroup")
-        val credentialRole: CredentialRole = optCredentialRole.getOrElseFail("Unable to retrieve credentialRole")
+  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
+    implicit val hcFromRequest: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
+    authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup and credentialRole) {
+      case Some(internalId) ~ enrolments ~ Some(groupId) ~ Some(affinityGroup) ~ Some(credentialRole) =>
         val eclEnrolment: Option[Enrolment]          = enrolments.enrolments.find(_.key == EclEnrolment.ServiceName)
         val eclRegistrationReference: Option[String] =
           eclEnrolment.flatMap(_.getIdentifier(EclEnrolment.IdentifierKey).map(_.value))
 
         affinityGroup match {
           case Agent =>
-            if (agentsAllowed) {
-              block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
-            } else {
-              Future.successful(Redirect(routes.NotableErrorController.agentCannotRegister()))
-            }
+            processAgent(request, internalId, block, groupId, eclRegistrationReference)
           case _     =>
             credentialRole match {
               case Assistant =>
-                if (assistantsAllowed) {
-                  block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
-                } else {
-                  Future.successful(Redirect(routes.NotableErrorController.assistantCannotRegister()))
-                }
+                processAssistant(request, internalId, block, groupId, eclRegistrationReference)
               case _         =>
                 if (checkForEclEnrolment) {
-                  eclEnrolment match {
-                    case Some(_) =>
-                      if (request.uri.toLowerCase.contains("amend-")) {
-                        block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
-                      } else {
-                        eclRegistrationService.getOrCreateRegistration(internalId)(hc(request)).flatMap {
-                          registration =>
-                            registration.registrationType match {
-                              case None            =>
-                                Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
-                              case Some(Amendment) =>
-                                block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
-                              case Some(Initial)   =>
-                                Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
-                            }
-                        }
-                      }
-                    case None    =>
-                      enrolmentStoreProxyService
-                        .getEclReferenceFromGroupEnrolment(groupId)(hc(request))
-                        .flatMap {
-                          case Some(_) =>
-                            Future.successful(Redirect(routes.NotableErrorController.groupAlreadyEnrolled().url))
-                          case None    => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
-                        }
-                  }
+                  processEnrolment(request, internalId, block, groupId, eclEnrolment, eclRegistrationReference)
                 } else {
-                  eclRegistrationReference match {
-                    case Some(_) => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
-                    case None    =>
-                      enrolmentStoreProxyService
-                        .getEclReferenceFromGroupEnrolment(groupId)(hc(request))
-                        .flatMap { eclReferenceFromGroupEnrolment =>
-                          block(AuthorisedRequest(request, internalId, groupId, eclReferenceFromGroupEnrolment))
-                        }
-                  }
+                  processEclReference(request, internalId, block, groupId, eclRegistrationReference)
                 }
             }
         }
-
-    }(hc(request), executionContext) recover { case _: NoActiveSession =>
+      case _                                                                                          => Future.failed(new Exception("Failed to authorise due to missing data"))
+    } recover { case _: NoActiveSession =>
       Redirect(config.signInUrl, Map("continue" -> Seq(s"${config.host}${request.uri}")))
     }
-
-  implicit class OptionOps[T](o: Option[T]) {
-    def getOrElseFail(failureMessage: String): T = o.getOrElse(throw new IllegalStateException(failureMessage))
   }
+
+  private def processEclReference[A](
+    request: Request[A],
+    internalId: String,
+    block: AuthorisedRequest[A] => Future[Result],
+    groupId: String,
+    eclRegistrationReference: Option[String]
+  )(implicit hc: HeaderCarrier): Future[Result] =
+    eclRegistrationReference match {
+      case Some(_) =>
+        block(
+          AuthorisedRequest(
+            request,
+            internalId,
+            groupId,
+            eclRegistrationReference
+          )
+        )
+      case None    =>
+        (for {
+          eclReferenceFromGroupEnrolment <-
+            enrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(groupId)
+        } yield eclReferenceFromGroupEnrolment).foldF(
+          _ => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference)),
+          _ => Future.successful(Redirect(routes.NotableErrorController.groupAlreadyEnrolled()))
+        )
+    }
+
+  private def processEnrolment[A](
+    request: Request[A],
+    internalId: String,
+    block: AuthorisedRequest[A] => Future[Result],
+    groupId: String,
+    eclEnrolment: Option[Enrolment],
+    eclRegistrationReference: Option[String]
+  )(implicit hc: HeaderCarrier): Future[Result] =
+    eclEnrolment match {
+      case Some(_) =>
+        if (request.uri.toLowerCase.contains("amend-")) {
+          block(
+            AuthorisedRequest(
+              request,
+              internalId,
+              groupId,
+              eclRegistrationReference
+            )
+          )
+        } else {
+          (for {
+            registration <- eclRegistrationService.getOrCreate(internalId).asResponseError
+          } yield registration).foldF(
+            _ => Future.successful(Redirect(routes.NotableErrorController.registrationFailed())),
+            registration =>
+              registration.registrationType match {
+                case None            =>
+                  Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
+                case Some(Amendment) =>
+                  block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
+                case Some(Initial)   =>
+                  Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
+              }
+          )
+        }
+      case None    =>
+        (for {
+          eclReference <-
+            enrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(groupId)
+        } yield eclReference).foldF(
+          _ => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference)),
+          _ => Future.successful(Redirect(routes.NotableErrorController.groupAlreadyEnrolled()))
+        )
+    }
+
+  private def processRegistrationType[A](
+    request: Request[A],
+    internalId: String,
+    block: AuthorisedRequest[A] => Future[Result],
+    groupId: String,
+    eclRegistrationReference: Option[String],
+    registration: Registration
+  ): Future[Result] =
+    registration.registrationType match {
+      case None            =>
+        Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled()))
+      case Some(Amendment) =>
+        block(
+          AuthorisedRequest(
+            request,
+            internalId,
+            groupId,
+            eclRegistrationReference
+          )
+        )
+      case Some(Initial)   =>
+        Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled()))
+    }
+
+  private def processAssistant[A](
+    request: Request[A],
+    internalId: String,
+    block: AuthorisedRequest[A] => Future[Result],
+    groupId: String,
+    eclRegistrationReference: Option[String]
+  ): Future[Result] =
+    if (assistantsAllowed) {
+      block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
+    } else {
+      Future.successful(Redirect(routes.NotableErrorController.assistantCannotRegister()))
+    }
+
+  private def processAgent[A](
+    request: Request[A],
+    internalId: String,
+    block: AuthorisedRequest[A] => Future[Result],
+    groupId: String,
+    eclRegistrationReference: Option[String]
+  ): Future[Result] =
+    if (agentsAllowed) {
+      block(
+        AuthorisedRequest(
+          request,
+          internalId,
+          groupId,
+          eclRegistrationReference
+        )
+      )
+    } else {
+      Future.successful(Redirect(routes.NotableErrorController.agentCannotRegister()))
+    }
 }

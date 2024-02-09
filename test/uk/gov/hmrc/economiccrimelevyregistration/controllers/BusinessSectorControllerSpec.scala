@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
@@ -24,33 +24,38 @@ import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.BusinessSectorFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.BusinessSectorPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.BusinessSectorView
 
 import scala.concurrent.Future
 
 class BusinessSectorControllerSpec extends SpecBase {
 
-  val view: BusinessSectorView                 = app.injector.instanceOf[BusinessSectorView]
-  val formProvider: BusinessSectorFormProvider = new BusinessSectorFormProvider()
-  val form: Form[BusinessSector]               = formProvider()
+  val view: BusinessSectorView                           = app.injector.instanceOf[BusinessSectorView]
+  val formProvider: BusinessSectorFormProvider           = new BusinessSectorFormProvider()
+  val form: Form[BusinessSector]                         = formProvider()
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: BusinessSectorPageNavigator = new BusinessSectorPageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
-  }
+    override protected def navigateInNormalMode(registration: Registration): Call =
+      onwardRoute
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+    override protected def navigateInCheckMode(registration: Registration): Call =
+      onwardRoute
+  }
 
   class TestContext(registrationData: Registration) {
     val controller = new BusinessSectorController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       view
@@ -89,8 +94,8 @@ class BusinessSectorControllerSpec extends SpecBase {
         new TestContext(registration) {
           val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", businessSector.toString)))

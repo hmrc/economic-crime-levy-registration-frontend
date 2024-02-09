@@ -16,17 +16,15 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
-import scala.util.{Failure, Success, Try}
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
+import cats.data.EitherT
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsEmpty, Request, Result}
-import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 
 import scala.concurrent.Future
@@ -55,28 +53,38 @@ class DataRetrievalActionSpec extends SpecBase {
   "refine" should {
     "return internal server error if additional info cannot be retrieved" in forAll {
       (internalId: String, groupId: String, registration: Registration) =>
-        when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
+        when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId))(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Registration](Future.successful(Right(registration))))
 
-        val error = "Error"
-        when(mockRegistrationAdditionalInfoService.get(any())(any())).thenReturn(Future.failed(new Exception(error)))
+        val error = "Internal server error"
+        when(mockRegistrationAdditionalInfoService.getOrCreate(ArgumentMatchers.eq(internalId), any())(any()))
+          .thenReturn(
+            EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo](
+              Future.successful(Left(DataRetrievalError.InternalUnexpectedError(error, None)))
+            )
+          )
 
-        val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
-          dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
+        val result = intercept[Exception] {
+          await(
+            dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
+          )
+        }
 
-        await(result) shouldBe Left(InternalServerError)
+        result.getMessage shouldBe error
     }
 
     "transform an AuthorisedRequest into a RegistrationDataRequest when data retrieval succeeds" in forAll {
       (internalId: String, groupId: String, registration: Registration, liabilityYear: LiabilityYear) =>
-        when(mockEclRegistrationService.getOrCreateRegistration(any())(any())).thenReturn(Future(registration))
+        when(mockEclRegistrationService.getOrCreate(any())(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Registration](Future.successful(Right(registration))))
 
         val info = RegistrationAdditionalInfo(
           registration.internalId,
           Some(liabilityYear),
           None
         )
-
-        when(mockRegistrationAdditionalInfoService.get(any())(any())).thenReturn(Future.successful(Some(info)))
+        when(mockRegistrationAdditionalInfoService.getOrCreate(ArgumentMatchers.eq(internalId), (any()))(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo](Future.successful(Right(info))))
 
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))

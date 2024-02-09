@@ -31,16 +31,20 @@ class PartnershipNamePageNavigatorSpec extends SpecBase {
       (registration: Registration, partnershipName: String) =>
         val updatedRegistration: Registration = registration.copy(partnershipName = Some(partnershipName))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.BusinessSectorController.onPageLoad(
-          NormalMode
-        )
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.BusinessSectorController
+          .onPageLoad(
+            NormalMode
+          )
     }
 
     "return a Call to the check your answers page in CheckMode" in forAll {
       (registration: Registration, partnershipName: String) =>
         val updatedRegistration: Registration = registration.copy(partnershipName = Some(partnershipName))
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(
+          CheckMode,
+          updatedRegistration
+        ) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
   }
 

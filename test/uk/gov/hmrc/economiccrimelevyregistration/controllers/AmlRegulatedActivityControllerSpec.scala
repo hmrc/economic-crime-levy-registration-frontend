@@ -16,20 +16,21 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
 
 import scala.concurrent.Future
@@ -40,14 +41,15 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   val formProvider: AmlRegulatedActivityFormProvider = new AmlRegulatedActivityFormProvider()
   val form: Form[Boolean]                            = formProvider()
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val mockSessionService: SessionService                     = mock[SessionService]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockSessionService: SessionService                 = mock[SessionService]
 
   val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration)(implicit
-      request: RequestHeader
-    ): Future[Call] =
-      Future.successful(onwardRoute)
+    override protected def navigateInNormalMode(navigationData: Registration): Call =
+      onwardRoute
+
+    override protected def navigateInCheckMode(navigationData: Registration): Call =
+      onwardRoute
   }
 
   class TestContext(registrationData: Registration) {
@@ -55,7 +57,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       mockSessionService,
       formProvider,
       pageNavigator,
@@ -102,11 +104,11 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
                 registrationType = Some(Initial)
               )
 
-            when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+            when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+              .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
             when(mockSessionService.upsert(any())(any()))
-              .thenReturn(Future.successful(()))
+              .thenReturn(EitherT.fromEither[Future](Right()))
 
             val result: Future[Result] =
               controller.onSubmit(NormalMode)(
@@ -129,8 +131,8 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
                 registrationType = Some(Initial)
               )
 
-            when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+            when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+              .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
             val result: Future[Result] =
               controller.onSubmit(NormalMode)(

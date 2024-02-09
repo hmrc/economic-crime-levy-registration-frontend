@@ -379,6 +379,11 @@ checkYourAnswers.liabilityDate.label = Dyddiad cychwyn atebolrwydd
 checkYourAnswers.amendReason.title = Rheswm dros ddiwygio
 checkYourAnswers.amendReason.label = Gwybodaeth ychwanegol
 checkYourAnswers.cancel = <a href="{0}" class="govuk-link">Canslo’r diwygiad hwn</a>
+checkYourAnswers.amendedAnswers = Atebion sydd wedi’u diwygio
+checkYourAnswers.nowSend = Ewch ati i anfon eich cofrestriad diwygiedig nawr
+checkYourAnswers.bySending = Drwy gyflwyno’r cais hwn i ddiwygio’ch cofrestriad, rydych yn cadarnhau, hyd eithaf eich gwybodaeth, fod y manylion a rowch yn gywir.
+checkYourAnswers.submittingRequest = Wrthi’n cyflwyno’ch cais i ddiwygio’ch cofrestriad
+checkYourAnswers.notMadeChanges = Ni allwch gyflwyno'r cais hwn gan nad ydych wedi gwneud unrhyw newidiadau.
 
 submitted.title = Cofrestriad wedi’i gyflwyno
 submitted.heading = Cofrestriad wedi’i gyflwyno
@@ -572,13 +577,13 @@ start.amend.list.b6 = manylion rhywun yn eich sefydliad sy’n gallu gweithredu 
 start.amend.button = Dechrau nawr
 
 amendmentRequested.title = Datganiad Ardoll Troseddau Economaidd wedi’i ddiwygio - Cyflwyno eich datganiad ECL - GOV.UK
-amendmentRequested.panel.title = Datganiad Ardoll Troseddau Economaidd wedi’i ddiwygio
-amendmentRequested.body.p1 = Rydych wedi diwygio datganiad ar gyfer yr Ardoll Troseddau Economaidd (ECL) ar gyfer blwyddyn ariannol {0}.
+amendmentRequested.panel.title = Cais am ddiwygiad i gofrestriad yr Ardoll Troseddau Economaidd
+amendmentRequested.body.p1 = Rydych wedi gwneud cais i ddiwygio’ch cofrestriad ar gyfer yr Ardoll Troseddau Economaidd (ECL) ar {0}.
 amendmentRequested.body.p2 = Rydym wedi anfon e-bost cadarnhau i {0}. Cadwch hwn ar gyfer eich cofnodion.
 amendmentRequested.body.p3 = Ni fyddwch yn cael e-bost na hysbysiad oddi wrth CThEF i’ch atgoffa i gyflwyno datganiad.
 amendmentRequested.body.p4 = Pan fyddwch yn llenwi’ch datganiad blynyddol, bydd angen i chi roi gwybod i ni am y canlynol:
 amendmentRequested.body.p5 = Byddwn yn adolygu’ch atebion. Os oes angen rhagor o wybodaeth arnom mae’n bosibl byddwn yn cysylltu â chi drwy ddefnyddio’r manylion yr ydych wedi eu rhoi. Bydd y broses hon yn cymryd 15 diwrnod gwaith.
-amendmentRequested.body.p6 = Byddwn yn anfon llythyr atoch ar ôl i ni ddiwygio’ch datganiad. Ni fyddwch yn gallu bwrw golwg dros y newidiadau hyn nes eich bod wedi cael y llythyr hwn.
+amendmentRequested.body.p6 = Byddwn yn anfon llythyr atoch ar ôl i ni ddiwygio’ch datganiad.
 amendmentRequested.body.address.heading = Byddwn yn anfon llythyr at:
 amendmentRequested.body.p7 = {0} (mae’n cymryd 30 eiliad)
 amendmentRequested.body.p7.link = <a href="{0}" class="govuk-link">Beth oedd eich barn am y gwasanaeth hwn?</a>

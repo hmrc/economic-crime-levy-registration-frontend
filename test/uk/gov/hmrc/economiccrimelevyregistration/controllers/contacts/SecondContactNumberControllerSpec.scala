@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
@@ -25,12 +25,14 @@ import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.TelephoneNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, Mode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNumberPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNumberView
 
 import scala.concurrent.Future
@@ -42,17 +44,17 @@ class SecondContactNumberControllerSpec extends SpecBase {
   val form: Form[String]                            = formProvider()
 
   val pageNavigator: SecondContactNumberPageNavigator = new SecondContactNumberPageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
   }
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   class TestContext(registrationData: Registration) {
     val controller = new SecondContactNumberController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       view
@@ -85,27 +87,19 @@ class SecondContactNumberControllerSpec extends SpecBase {
         }
     }
 
-    "throw an IllegalStateException when there is no second contact name in the registration data" in forAll {
-      (
-        registration: Registration
-      ) =>
-        val updatedRegistration = registration.copy(
-          contacts = Contacts.empty
-        )
+    "return INTERNAL_SERVER_ERROR when there is no second contact name in the registration data" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(contacts = Contacts.empty)
 
-        new TestContext(
-          updatedRegistration
-        ) {
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onPageLoad(NormalMode)(fakeRequest))
-          }
+        new TestContext(updatedRegistration) {
+          val result = controller.onPageLoad(NormalMode)(fakeRequest)
 
-          result.getMessage shouldBe "No second contact name found in registration data"
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
-      (registration: Registration, number: String, name: String) =>
+      (registration: Registration, number: String, name: String, mode: Mode) =>
         new TestContext(
           registration.copy(
             contacts = registration.contacts
@@ -115,17 +109,14 @@ class SecondContactNumberControllerSpec extends SpecBase {
             registrationType = Some(Initial)
           )
         ) {
-          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(
-            form.fill(number),
-            name,
-            NormalMode,
-            None,
-            None
-          )(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(form.fill(number), name, mode, None, None)(
+            fakeRequest,
+            messages
+          ).toString
         }
     }
   }
@@ -143,8 +134,8 @@ class SecondContactNumberControllerSpec extends SpecBase {
             )
           )
 
-        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-          .thenReturn(Future.successful(updatedRegistration))
+        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", number)))

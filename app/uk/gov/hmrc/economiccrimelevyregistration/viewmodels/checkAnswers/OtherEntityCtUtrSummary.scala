@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
@@ -29,10 +29,13 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 
 object OtherEntityCtUtrSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.otherEntityJourneyData.ctUtr.map { answer =>
+  def row(
+    ctUtr: Option[String],
+    entityType: Option[EntityType]
+  )(implicit messages: Messages): Option[SummaryListRow] =
+    ctUtr.map { answer =>
       val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(answer))))
-      val url   = request.registration.entityType match {
+      val url   = entityType match {
         case Some(Charity) => routes.UtrController.onPageLoad(CheckMode).url
         case _             => routes.CtUtrController.onPageLoad(CheckMode).url
       }

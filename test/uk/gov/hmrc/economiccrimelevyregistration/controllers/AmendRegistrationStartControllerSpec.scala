@@ -16,14 +16,16 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import play.twirl.api.Html
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
 
@@ -34,13 +36,11 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
   val view: AmendRegistrationStartView                                         = app.injector.instanceOf[AmendRegistrationStartView]
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
   val mockRegistrationService: EclRegistrationService                          = mock[EclRegistrationService]
-  val mockErrorHandler: ErrorHandler                                           = mock[ErrorHandler]
 
   val controller = new AmendRegistrationStartController(
     mcc,
     mockRegistrationAdditionalInfoService,
     fakeAuthorisedActionWithEnrolmentCheck(testInternalId),
-    mockErrorHandler,
     view,
     mockRegistrationService,
     appConfig
@@ -49,100 +49,43 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK and the correct view" in forAll {
       (registration: Registration, getSubscriptionResponse: GetSubscriptionResponse) =>
-        when(
-          mockRegistrationAdditionalInfoService.createOrUpdate(
-            anyString(),
-            any()
-          )(any())
-        ).thenReturn(
-          Future.successful(())
-        )
+        val updatedRegistration = registration.copy(registrationType = Some(Amendment))
 
-        when(mockRegistrationService.getOrCreateRegistration(any())(any()))
-          .thenReturn(Future.successful(registration))
-
-        when(mockRegistrationService.upsertRegistration(any())(any()))
-          .thenReturn(Future.successful(registration))
+        when(mockRegistrationService.getOrCreate(anyString())(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Registration](Future.successful(Right(registration))))
+        when(mockRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+        when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
         when(mockRegistrationService.getSubscription(any())(any()))
-          .thenReturn(Future.successful(getSubscriptionResponse))
-
-        when(mockRegistrationService.upsertRegistration(any())(any()))
-          .thenReturn(Future.successful(registration))
+          .thenReturn(
+            EitherT[Future, DataRetrievalError, GetSubscriptionResponse](
+              Future.successful(Right(getSubscriptionResponse))
+            )
+          )
+        when(mockRegistrationService.transformToRegistration(any(), any())).thenReturn(updatedRegistration)
 
         val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
 
-        status(result) shouldBe SEE_OTHER
+        status(result) shouldBe OK
 
         reset(mockRegistrationService)
     }
 
-    "return Internal server error and the correct view when call to getSubscriptionFails" in forAll {
-      (registration: Registration, getSubscriptionResponse: GetSubscriptionResponse) =>
-        when(
-          mockRegistrationAdditionalInfoService.createOrUpdate(
-            anyString(),
-            any()
-          )(any())
-        ).thenReturn(
-          Future.successful(())
+    "return Internal server error and the correct view" in {
+      when(mockRegistrationService.getOrCreate(anyString())(any()))
+        .thenReturn(
+          EitherT[Future, DataRetrievalError, Registration](
+            Future.successful(Left(DataRetrievalError.InternalUnexpectedError("", None)))
+          )
         )
-
-        when(mockRegistrationService.getOrCreateRegistration(any())(any()))
-          .thenReturn(Future.successful(registration))
-
-        when(mockRegistrationService.upsertRegistration(any())(any()))
-          .thenReturn(Future.successful(registration))
-
-        when(mockRegistrationService.getSubscription(any())(any()))
-          .thenReturn(Future.failed(new Exception("Error")))
-
-        when(mockRegistrationService.upsertRegistration(any())(any()))
-          .thenReturn(Future.successful(registration))
-
-        when(
-          mockErrorHandler.internalServerErrorTemplate(any())
-        ).thenReturn(
-          Html("error page")
-        )
-
-        val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
-
-        status(result) shouldBe INTERNAL_SERVER_ERROR
-
-        reset(mockRegistrationService)
-        reset(mockErrorHandler)
-
-    }
-
-    "return Internal server error and the correct view" in forAll { registration: Registration =>
-      when(mockRegistrationService.getOrCreateRegistration(any())(any()))
-        .thenReturn(Future.successful(registration))
-
-      when(mockRegistrationService.upsertRegistration(any())(any()))
-        .thenReturn(Future.successful(registration))
-
-      when(
-        mockRegistrationAdditionalInfoService.createOrUpdate(
-          anyString(),
-          any()
-        )(any())
-      ).thenReturn(
-        Future.failed(new Exception("error"))
-      )
-
-      when(
-        mockErrorHandler.internalServerErrorTemplate(any())
-      ).thenReturn(
-        Html("error page")
-      )
 
       val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
 
       status(result) shouldBe INTERNAL_SERVER_ERROR
       reset(mockRegistrationService)
       reset(mockRegistrationAdditionalInfoService)
-      reset(mockErrorHandler)
 
     }
   }

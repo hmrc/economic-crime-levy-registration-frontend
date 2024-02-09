@@ -18,17 +18,17 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.EntityTypeSelectedEvent
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{EntityTypeView, ErrorTemplate}
+import uk.gov.hmrc.http.HttpVerbs.GET
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -39,15 +39,16 @@ class EntityTypeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: EntityTypeFormProvider,
-  pageNavigator: EntityTypePageNavigator,
   dataCleanup: EntityTypeDataCleanup,
-  auditConnector: AuditConnector,
+  auditService: AuditService,
   view: EntityTypeView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController
+    with ErrorHandler {
 
   val form: Form[EntityType] = formProvider()
 
@@ -61,55 +62,76 @@ class EntityTypeController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType => {
-          val previousEntityType = request.registration.entityType
-          auditConnector
-            .sendExtendedEvent(
-              EntityTypeSelectedEvent(
-                request.internalId,
-                entityType
-              ).extendedDataEvent
-            )
+          val event = EntityTypeSelectedEvent(
+            request.internalId,
+            entityType
+          ).extendedDataEvent
 
-          eclRegistrationConnector
-            .upsertRegistration(cleanup(mode, request.registration, entityType, previousEntityType))
-            .flatMap { updatedRegistration =>
-              previousEntityType match {
-                case Some(value) if value == entityType && EntityType.isOther(entityType) && mode == CheckMode =>
-                  pageNavigator.navigateToCheckYourAnswers().map(Redirect)
-                case _                                                                                         =>
-                  pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
+          auditService.sendEvent(event)
+
+          val updatedRegistration = cleanup(request.registration, entityType)
+
+          (for {
+            _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield updatedRegistration).foldF(
+            err => Future.successful(routeError(err)),
+            _ =>
+              mode match {
+                case NormalMode => navigateInNormalMode(entityType)
+                case CheckMode  => navigateInCheckMode(entityType)
               }
-            }
+          )
         }
       )
   }
 
-  private def cleanup(
-    mode: Mode,
-    registration: Registration,
-    entityType: EntityType,
-    previousEntityType: Option[EntityType]
-  ) = {
-    val isOther = EntityType.isOther(entityType)
-    if (previousEntityType.contains(entityType) && mode == CheckMode && isOther) {
-      registration
-    } else if (!isOther) {
-      dataCleanup.cleanup(
-        registration.copy(
-          entityType = Some(entityType)
-        )
-      )
+  private def navigateInNormalMode(newEntityType: EntityType)(implicit request: RegistrationDataRequest[_]) =
+    if (EntityType.isOther(newEntityType)) {
+      Future.successful(Redirect(routes.BusinessNameController.onPageLoad(NormalMode)))
     } else {
-      previousEntityType match {
-        case Some(value) if value == entityType =>
-          dataCleanup.cleanup(
-            registration.copy(entityType = Some(entityType))
-          )
-        case _                                  =>
-          dataCleanup.cleanupOtherEntityData(
-            registration.copy(entityType = Some(entityType))
-          )
-      }
+      redirectToGRS(NormalMode, newEntityType)
+    }
+
+  private def navigateInCheckMode(newEntityType: EntityType)(implicit request: RegistrationDataRequest[_]) = {
+    val sameEntityTypeAsPrevious = request.registration.entityType.contains(newEntityType)
+
+    (sameEntityTypeAsPrevious, EntityType.isOther(newEntityType)) match {
+      case (true, true)   => Future.successful(Redirect(routes.CheckYourAnswersController.onPageLoad()))
+      case (false, true)  =>
+        Future.successful(Redirect(routes.BusinessNameController.onPageLoad(CheckMode)))
+      case (true, false)  =>
+        (for {
+          grsJourneyUrl <- eclRegistrationService.registerEntityType(newEntityType, NormalMode).asResponseError
+        } yield grsJourneyUrl).fold(
+          err => routeError(err),
+          url => Redirect(Call(GET, url))
+        )
+      case (false, false) => redirectToGRS(CheckMode, newEntityType)
     }
   }
+
+  private def redirectToGRS(
+    mode: Mode,
+    newEntityType: EntityType
+  )(implicit request: RegistrationDataRequest[_]) =
+    (for {
+      grsJourneyUrl <- eclRegistrationService.registerEntityType(newEntityType, mode).asResponseError
+    } yield grsJourneyUrl).fold(
+      err => routeError(err),
+      url => Redirect(Call(GET, url))
+    )
+
+  private def cleanup(
+    registration: Registration,
+    newEntityType: EntityType
+  ) =
+    if (EntityType.isOther(newEntityType)) {
+      dataCleanup.cleanupOtherEntityData(
+        registration.copy(entityType = Some(newEntityType))
+      )
+    } else {
+      dataCleanup.cleanup(
+        registration.copy(entityType = Some(newEntityType))
+      )
+    }
 }

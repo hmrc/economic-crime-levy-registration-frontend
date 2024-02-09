@@ -16,30 +16,43 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.http.Status.SEE_OTHER
-import play.api.mvc.Result
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.{AddressLookupFrontendConnector, EclRegistrationConnector}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.AddressLookupContinuePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupService, EclRegistrationService}
 
 import scala.concurrent.Future
 
 class AddressLookupContinueControllerSpec extends SpecBase {
-  val mockAddressLookupFrontendConnector: AddressLookupFrontendConnector = mock[AddressLookupFrontendConnector]
-  val mockEclRegistrationConnector: EclRegistrationConnector             = mock[EclRegistrationConnector]
+  val mockAddressLookupFrontendService: AddressLookupService = mock[AddressLookupService]
+  val mockEclRegistrationService: EclRegistrationService     = mock[EclRegistrationService]
+
+  val pageNavigator: AddressLookupContinuePageNavigator = new AddressLookupContinuePageNavigator {
+    override protected def navigateInNormalMode(
+      navigationData: Registration
+    ): Call = onwardRoute
+
+    override protected def navigateInCheckMode(
+      navigationData: Registration
+    ): Call = onwardRoute
+  }
 
   class TestContext(registrationData: Registration) {
     val controller = new AddressLookupContinueController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockAddressLookupFrontendConnector,
-      mockEclRegistrationConnector
+      mockAddressLookupFrontendService,
+      mockEclRegistrationService,
+      pageNavigator
     )
   }
 
@@ -47,9 +60,8 @@ class AddressLookupContinueControllerSpec extends SpecBase {
     "retrieve the address data, store it then redirect to the check your answers page" in forAll {
       (journeyId: String, alfAddressData: AlfAddressData, registration: Registration) =>
         new TestContext(registration) {
-          when(
-            mockAddressLookupFrontendConnector.getAddress(ArgumentMatchers.eq(journeyId))(any())
-          ).thenReturn(Future.successful(alfAddressData))
+          when(mockAddressLookupFrontendService.getAddress(ArgumentMatchers.eq(journeyId))(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(alfAddressData)))
 
           val updatedRegistration = registration.copy(contactAddress =
             Some(
@@ -68,14 +80,14 @@ class AddressLookupContinueControllerSpec extends SpecBase {
           )
 
           when(
-            mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any())
-          ).thenReturn(Future.successful(updatedRegistration))
+            mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any())
+          ).thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+          redirectLocation(result) shouldBe Some(onwardRoute.url)
         }
     }
   }

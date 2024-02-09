@@ -16,8 +16,10 @@ class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the business sector HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(routes.BusinessSectorController.onPageLoad(NormalMode)))
@@ -36,7 +38,9 @@ class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
 
       val registration   = random[Registration]
       val businessSector = random[BusinessSector]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val updatedRegistration = registration.copy(businessSector = Some(businessSector))

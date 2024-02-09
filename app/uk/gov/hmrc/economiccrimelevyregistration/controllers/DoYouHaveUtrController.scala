@@ -20,13 +20,13 @@ import com.google.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveUtrPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveUtrView
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{DoYouHaveUtrView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Singleton
@@ -38,13 +38,16 @@ class DoYouHaveUtrController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   formProvider: DoYouHaveUtrFormProvider,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   pageNavigator: DoYouHaveUtrPageNavigator,
   view: DoYouHaveUtrView
 )(implicit
-  ec: ExecutionContext
+  ec: ExecutionContext,
+  errorTemplate: ErrorTemplate
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[Boolean] = formProvider()
 
@@ -59,20 +62,21 @@ class DoYouHaveUtrController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-          answer => {
+          hasUtr => {
             val otherEntityJourneyData =
               request.registration.otherEntityJourneyData.copy(
-                isCtUtrPresent = Some(answer),
-                ctUtr = answer match {
+                isCtUtrPresent = Some(hasUtr),
+                ctUtr = hasUtr match {
                   case false => None
                   case true  => request.registration.otherEntityJourneyData.ctUtr
                 }
               )
-            eclRegistrationConnector
-              .upsertRegistration(
-                request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
-              )
-              .map(updatedRegistration => Redirect(pageNavigator.nextPage(mode, updatedRegistration)))
+            val updatedRegistration    =
+              request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+
+            (for {
+              _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            } yield updatedRegistration).convertToResult(mode, pageNavigator)
           }
         )
     }

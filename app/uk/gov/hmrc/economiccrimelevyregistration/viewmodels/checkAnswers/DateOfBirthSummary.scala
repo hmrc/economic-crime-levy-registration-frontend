@@ -25,10 +25,14 @@ import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 
+import java.time.LocalDate
+
 object DateOfBirthSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.registration.dateOfBirth.map { answer =>
+  def row(
+    dateOfBirth: Option[LocalDate]
+  )(implicit messages: Messages): Option[SummaryListRow] =
+    dateOfBirth.map { answer =>
       val value = ValueViewModel(HtmlContent(HtmlFormat.escape(messages(ViewUtils.formatLocalDate(answer)))))
 
       SummaryListRowViewModel(

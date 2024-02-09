@@ -16,17 +16,20 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveUtrPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveUtrView
 
 import scala.concurrent.Future
@@ -37,7 +40,7 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
   val formProvider: DoYouHaveUtrFormProvider = new DoYouHaveUtrFormProvider()
   val form: Form[Boolean]                    = formProvider()
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: DoYouHaveUtrPageNavigator = new DoYouHaveUtrPageNavigator() {
     override protected def navigateInNormalMode(registration: Registration): Call =
@@ -53,7 +56,7 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
       formProvider,
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       pageNavigator,
       view
     )
@@ -98,22 +101,24 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, hasUtr: Boolean) =>
         new TestContext(registration) {
-          val otherEntityJourneyData: OtherEntityJourneyData = registration.otherEntityJourneyData
-            .copy(
-              isCtUtrPresent = Some(hasUtr)
+          val otherEntityJourneyData            =
+            registration.otherEntityJourneyData.copy(
+              isCtUtrPresent = Some(hasUtr),
+              ctUtr = hasUtr match {
+                case false => None
+                case true  => registration.otherEntityJourneyData.ctUtr
+              }
             )
-          val updatedRegistration: Registration              =
+          val updatedRegistration: Registration =
             registration.copy(
               optOtherEntityJourneyData = Some(otherEntityJourneyData)
             )
 
-          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] =
-            controller.onSubmit(NormalMode)(
-              fakeRequest.withFormUrlEncodedBody(("value", hasUtr.toString))
-            )
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", hasUtr.toString)))
 
           status(result) shouldBe SEE_OTHER
 

@@ -31,10 +31,8 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(true))
 
-        await(
-          pageNavigator.nextPage(NormalMode, updatedRegistration)(fakeRequest)
-        ) shouldBe routes.LiabilityBeforeCurrentYearController
-          .onPageLoad(true, NormalMode)
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+          routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode)
     }
 
     "return a Call to the check your answers page in CheckMode when the revenue meets threshold flag is true" in forAll {
@@ -42,9 +40,8 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(true))
 
-        await(
-          pageNavigator.nextPage(CheckMode, updatedRegistration)(fakeRequest)
-        ) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
     }
 
     "return a Call to the liable in previous year page in either mode when the revenue meets threshold flag is false" in forAll {
@@ -52,10 +49,11 @@ class UkRevenuePageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(false))
 
-        await(
-          pageNavigator.nextPage(mode, updatedRegistration)(fakeRequest)
+        pageNavigator.nextPage(
+          mode,
+          updatedRegistration
         ) shouldBe routes.LiabilityBeforeCurrentYearController
-          .onPageLoad(true, mode)
+          .onPageLoad(mode)
     }
   }
 

@@ -19,9 +19,11 @@ class SecondContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the second contact role HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val name         = random[String]
+      val registration   = random[Registration]
+      val name           = random[String]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(
         registration.copy(contacts =
           registration.contacts.copy(secondContactDetails =
@@ -45,7 +47,9 @@ class SecondContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
 
     "save the provided role then redirect to the second contact email page" in {
       stubAuthorisedWithNoGroupEnrolment()
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val registration = random[Registration]
       val name         = random[String]
       val role         = stringsWithMaxLength(RoleMaxLength).sample.get

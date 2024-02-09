@@ -17,8 +17,10 @@ class UtrISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the company registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
       stubGetRegistrationAdditionalInfo(
         RegistrationAdditionalInfo.apply(
@@ -42,8 +44,10 @@ class UtrISpec extends ISpecBase with AuthorisedBehaviour {
     "save the UTR then redirect to the company registration number page page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val Utr = numStringsWithConcreteLength(UtrLength).sample.get
 
       stubGetRegistration(registration)

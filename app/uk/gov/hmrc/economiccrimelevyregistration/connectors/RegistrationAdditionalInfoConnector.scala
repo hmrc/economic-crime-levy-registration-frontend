@@ -16,37 +16,37 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
-import play.api.Logging
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationAdditionalInfo
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
+import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RegistrationAdditionalInfoConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit
+class RegistrationAdditionalInfoConnector @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
-) extends Logging {
+) extends BaseConnector {
 
-  private val eclRegistrationUrl: String =
-    s"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
+  private val eclRegistrationUrl: URL =
+    url"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
 
-  def get(internalId: String)(implicit hc: HeaderCarrier): Future[Option[RegistrationAdditionalInfo]] =
-    httpClient.GET[Option[RegistrationAdditionalInfo]](
-      s"$eclRegistrationUrl/registration-additional-info/$internalId"
-    )
+  def get(internalId: String)(implicit hc: HeaderCarrier): Future[RegistrationAdditionalInfo] =
+    httpClient
+      .get(url"$eclRegistrationUrl/registration-additional-info/$internalId")
+      .executeAndDeserialise[RegistrationAdditionalInfo]
 
   def upsert(registration: RegistrationAdditionalInfo)(implicit hc: HeaderCarrier): Future[Unit] =
-    httpClient.PUT[RegistrationAdditionalInfo, Unit](
-      s"$eclRegistrationUrl/registration-additional-info",
-      registration
-    )
+    httpClient
+      .put(url"$eclRegistrationUrl/registration-additional-info")
+      .withBody(Json.toJson(registration))
+      .executeAndContinue
 
   def delete(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
     httpClient
-      .DELETE[Unit](
-        s"$eclRegistrationUrl/registration-additional-info/$internalId"
-      )
+      .delete(url"$eclRegistrationUrl/registration-additional-info/$internalId")
+      .executeAndContinue
 }

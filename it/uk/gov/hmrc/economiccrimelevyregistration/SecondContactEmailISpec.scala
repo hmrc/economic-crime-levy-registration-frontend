@@ -19,9 +19,11 @@ class SecondContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the second contact email HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val name         = random[String]
+      val registration   = random[Registration]
+      val name           = random[String]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(
         registration.copy(contacts =
           registration.contacts.copy(secondContactDetails =
@@ -46,10 +48,12 @@ class SecondContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
     "save the provided email address then redirect to the second contact telephone number page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val name         = random[String]
-      val email        = emailAddress(EmailMaxLength).sample.get
+      val registration   = random[Registration]
+      val name           = random[String]
+      val email          = emailAddress(EmailMaxLength).sample.get
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       val updatedRegistration = registration.copy(contacts =
         registration.contacts.copy(secondContactDetails =
           registration.contacts.secondContactDetails.copy(name = Some(name), emailAddress = Some(email.toLowerCase))

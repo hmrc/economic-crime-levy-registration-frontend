@@ -20,8 +20,7 @@ import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, OtherEntityJourneyData, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class DoYouHaveCrnPageNavigatorSpec extends SpecBase {
 

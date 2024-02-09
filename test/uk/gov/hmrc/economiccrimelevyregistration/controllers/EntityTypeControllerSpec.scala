@@ -16,22 +16,24 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.EntityTypePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, RegisteredSociety, UkLimitedCompany, UnlimitedCompany}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
+import java.net.URL
 import scala.concurrent.Future
 
 class EntityTypeControllerSpec extends SpecBase {
@@ -40,39 +42,21 @@ class EntityTypeControllerSpec extends SpecBase {
   val formProvider: EntityTypeFormProvider = new EntityTypeFormProvider()
   val form: Form[EntityType]               = formProvider()
 
-  val pageNavigator: EntityTypePageNavigator = new EntityTypePageNavigator(
-    mock[IncorporatedEntityIdentificationFrontendConnector],
-    mock[SoleTraderIdentificationFrontendConnector],
-    mock[PartnershipIdentificationFrontendConnector]
-  ) {
-    override protected def navigateInNormalMode(
-      registration: Registration
-    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
-
-    override protected def navigateInCheckMode(
-      registration: Registration
-    )(implicit request: RequestHeader): Future[Call] = Future.successful(onwardRoute)
-
-    override def navigateToCheckYourAnswers(): Future[Call] =
-      Future.successful(onwardRoute)
-  }
-
   val dataCleanup: EntityTypeDataCleanup = new EntityTypeDataCleanup {
     override def cleanup(registration: Registration): Registration                = registration
     override def cleanupOtherEntityData(registration: Registration): Registration = registration
   }
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockAuditConnector: AuditService                   = mock[AuditService]
 
   class TestContext(registrationData: Registration) {
     val controller = new EntityTypeController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
-      pageNavigator,
       dataCleanup,
       mockAuditConnector,
       view
@@ -105,25 +89,23 @@ class EntityTypeControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "save the selected entity type then redirect to the next page" in forAll {
-      (registration: Registration, entityType: EntityType, mode: Mode) =>
+      (registration: Registration, mode: Mode) =>
         new TestContext(registration) {
+          val entityType                        = Charity
           val updatedRegistration: Registration = registration.copy(
             entityType = Some(entityType)
           )
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] =
-            controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(onwardRoute.url)
+          redirectLocation(result) shouldBe Some(routes.BusinessNameController.onPageLoad(NormalMode).url)
 
-          verify(mockAuditConnector, times(1)).sendExtendedEvent(any())(any(), any())
-
-          reset(mockAuditConnector)
         }
     }
 

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
@@ -24,14 +25,14 @@ import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactEmailFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration, SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactEmailPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactEmailView
 
 import scala.concurrent.Future
@@ -44,17 +45,17 @@ class FirstContactEmailControllerSpec extends SpecBase {
   val mockSessionService: SessionService          = mock[SessionService]
 
   val pageNavigator: FirstContactEmailPageNavigator = new FirstContactEmailPageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
   }
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   class TestContext(registrationData: Registration) {
     val controller = new FirstContactEmailController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       view,
@@ -86,22 +87,14 @@ class FirstContactEmailControllerSpec extends SpecBase {
         }
     }
 
-    "throw an IllegalStateException when there is no first contact name in the registration data" in forAll {
-      (
-        registration: Registration
-      ) =>
-        val updatedRegistration = registration.copy(
-          contacts = Contacts.empty
-        )
+    "return INTERNAL_SERVER_ERROR when there is no first contact name in the registration data" in forAll {
+      (registration: Registration) =>
+        val updatedRegistration = registration.copy(contacts = Contacts.empty)
 
-        new TestContext(
-          updatedRegistration
-        ) {
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onPageLoad(NormalMode)(fakeRequest))
-          }
+        new TestContext(updatedRegistration) {
+          val result = controller.onPageLoad(NormalMode)(fakeRequest)
 
-          result.getMessage shouldBe "No first contact name found in registration data"
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
     }
 
@@ -157,10 +150,10 @@ class FirstContactEmailControllerSpec extends SpecBase {
             )
           )(any())
         )
-          .thenReturn(Future.successful(()))
+          .thenReturn(EitherT.fromEither[Future](Right()))
 
-        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-          .thenReturn(Future.successful(updatedRegistration))
+        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", email)))

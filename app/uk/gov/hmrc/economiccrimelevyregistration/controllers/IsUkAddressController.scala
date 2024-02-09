@@ -18,14 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.IsUkAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.IsUkAddressPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
+import uk.gov.hmrc.http.HttpVerbs.GET
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -36,13 +36,15 @@ class IsUkAddressController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationConnector: EclRegistrationConnector,
+  eclRegistrationService: EclRegistrationService,
   formProvider: IsUkAddressFormProvider,
-  pageNavigator: IsUkAddressPageNavigator,
-  view: IsUkAddressView
+  view: IsUkAddressView,
+  addressLookupService: AddressLookupService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler
+    with BaseController {
 
   val form: Form[Boolean] = formProvider()
 
@@ -67,14 +69,16 @@ class IsUkAddressController @Inject() (
               view(formWithErrors, mode, request.registration.registrationType, request.eclRegistrationReference)
             )
           ),
-        contactAddressIsUk =>
-          eclRegistrationConnector
-            .upsertRegistration(
-              request.registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
-            )
-            .flatMap { updatedRegistration =>
-              pageNavigator.nextPage(mode, updatedRegistration).map(Redirect)
-            }
+        contactAddressIsUk => {
+          val updatedRegistration = request.registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
+          (for {
+            _                <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+            addressLookupUrl <- addressLookupService.initJourney(contactAddressIsUk, mode).asResponseError
+          } yield addressLookupUrl).fold(
+            err => Redirect(routes.NotableErrorController.answersAreInvalid()),
+            url => Redirect(Call(GET, url))
+          )
+        }
       )
   }
 }

@@ -29,13 +29,15 @@ class RelevantApLengthPageNavigatorSpec extends SpecBase {
     "return a Call to the UK revenue page in NormalMode" in forAll { (registration: Registration, length: Int) =>
       val updatedRegistration = registration.copy(relevantApLength = Some(length))
 
-      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.UkRevenueController.onPageLoad(NormalMode)
+      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        routes.UkRevenueController.onPageLoad(NormalMode)
     }
 
     "return a Call to the UK revenue page in CheckMode" in forAll { (registration: Registration, length: Int) =>
       val updatedRegistration = registration.copy(relevantApLength = Some(length))
 
-      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.UkRevenueController.onPageLoad(CheckMode)
+      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        routes.UkRevenueController.onPageLoad(CheckMode)
     }
   }
 

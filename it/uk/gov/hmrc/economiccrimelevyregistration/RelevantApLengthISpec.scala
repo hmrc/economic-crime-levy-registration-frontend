@@ -20,8 +20,10 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the relevant AP length view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(routes.RelevantApLengthController.onPageLoad(NormalMode)))
@@ -40,7 +42,9 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
 
       val registration     = random[Registration]
       val relevantApLength = Gen.chooseNum[Int](minDays, maxDays).sample.get
+      val additionalInfo   = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val updatedRegistration =

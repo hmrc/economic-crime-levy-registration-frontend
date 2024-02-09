@@ -16,6 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.base
 
+import akka.actor.ActorSystem
+import akka.http.scaladsl.model.headers.Authorization
+import com.typesafe.config.Config
 import org.mockito.MockitoSugar
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -33,8 +36,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
 import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpVerbs.GET
 
@@ -56,6 +59,15 @@ trait SpecBase
     with EclTestData
     with Generators {
 
+  val additionalAppConfig: Map[String, Any] = Map(
+    "features.getSubscriptionEnabled" -> false
+  )
+
+  override def fakeApplication(): Application =
+    GuiceApplicationBuilder()
+      .configure(additionalAppConfig)
+      .build()
+
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val ec: ExecutionContext     = scala.concurrent.ExecutionContext.Implicits.global
   implicit val hc: HeaderCarrier        = HeaderCarrier()
@@ -65,6 +77,10 @@ trait SpecBase
   val appConfig: AppConfig                             = app.injector.instanceOf[AppConfig]
   val messages: Messages                               = messagesApi.preferred(fakeRequest)
   val bodyParsers: PlayBodyParsers                     = app.injector.instanceOf[PlayBodyParsers]
+  implicit val errorTemplate: ErrorTemplate            = app.injector.instanceOf[ErrorTemplate]
+  val config: Config                                   = app.injector.instanceOf[Config]
+  val actorSystem: ActorSystem                         = ActorSystem("actor")
+  val eclReference: String                             = "ECLRefNumber12345"
 
   def fakeAuthorisedActionWithEnrolmentCheck(internalId: String)                                                     =
     new FakeAuthorisedActionWithEnrolmentCheck(internalId, bodyParsers)
@@ -74,8 +90,8 @@ trait SpecBase
     new FakeAuthorisedActionAgentsAllowed(bodyParsers)
   def fakeAuthorisedActionAssistantsAllowed                                                                          =
     new FakeAuthorisedActionAssistantsAllowed(bodyParsers)
-  def fakeDataRetrievalAction(data: Registration)                                                                    =
-    new FakeDataRetrievalAction(data)
+  def fakeDataRetrievalAction(data: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None)         =
+    new FakeDataRetrievalAction(data, additionalInfo)
 
   def onwardRoute: Call = Call(GET, "/foo")
 

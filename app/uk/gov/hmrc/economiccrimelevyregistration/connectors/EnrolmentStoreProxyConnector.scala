@@ -16,28 +16,39 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
+import akka.actor.ActorSystem
+import com.typesafe.config.Config
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResponse
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, Retries, StringContextOps}
 
+import java.net.URL
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 trait EnrolmentStoreProxyConnector {
-  def getEnrolmentsForGroup(groupId: String)(implicit hc: HeaderCarrier): Future[Option[GroupEnrolmentsResponse]]
+  def getEnrolmentsForGroup(groupId: String)(implicit hc: HeaderCarrier): Future[GroupEnrolmentsResponse]
 }
 
-class EnrolmentStoreProxyConnectorImpl @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit
+class EnrolmentStoreProxyConnectorImpl @Inject() (
+  appConfig: AppConfig,
+  httpClient: HttpClientV2,
+  override val configuration: Config,
+  override val actorSystem: ActorSystem
+)(implicit
   ec: ExecutionContext
-) extends EnrolmentStoreProxyConnector {
+) extends EnrolmentStoreProxyConnector
+    with BaseConnector
+    with Retries {
 
-  private val enrolmentStoreUrl: String =
-    s"${appConfig.enrolmentStoreProxyBaseUrl}/enrolment-store-proxy/enrolment-store"
+  private val enrolmentStoreUrl: URL =
+    url"${appConfig.enrolmentStoreProxyBaseUrl}/enrolment-store-proxy/enrolment-store"
 
-  def getEnrolmentsForGroup(groupId: String)(implicit hc: HeaderCarrier): Future[Option[GroupEnrolmentsResponse]] =
-    httpClient.GET[Option[GroupEnrolmentsResponse]](
-      s"$enrolmentStoreUrl/groups/$groupId/enrolments"
-    )(readOptionOfNotFoundOrNoContent[GroupEnrolmentsResponse], hc, ec)
-
+  def getEnrolmentsForGroup(groupId: String)(implicit hc: HeaderCarrier): Future[GroupEnrolmentsResponse] =
+    retryFor[GroupEnrolmentsResponse]("Enrolment store - Get group enrolments")(retryCondition) {
+      httpClient
+        .get(url"$enrolmentStoreUrl/groups/$groupId/enrolments")
+        .executeAndDeserialise[GroupEnrolmentsResponse]
+    }
 }

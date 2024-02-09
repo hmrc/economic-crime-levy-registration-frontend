@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import org.mockito.ArgumentMatchers.any
+import cats.data.EitherT
+import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.scalacheck.Arbitrary
 import org.scalacheck.Gen.choose
@@ -25,19 +26,16 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.ValidRegistrationWithRegistrationType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeValidatedRegistrationAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EmailService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.services._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, OtherRegistrationPdfView}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.economiccrimelevyregistration.views.html._
 import uk.gov.hmrc.time.TaxYear
 
 import java.time.LocalDate
@@ -46,27 +44,27 @@ import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends SpecBase {
 
-  val view: CheckYourAnswersView = app.injector.instanceOf[CheckYourAnswersView]
-  val pdfView                    = app.injector.instanceOf[OtherRegistrationPdfView]
-  val amendPdfView               = app.injector.instanceOf[AmendRegistrationPdfView]
+  val view: CheckYourAnswersView             = app.injector.instanceOf[CheckYourAnswersView]
+  val pdfView: OtherRegistrationPdfView      = app.injector.instanceOf[OtherRegistrationPdfView]
+  val amendPdfView: AmendRegistrationPdfView = app.injector.instanceOf[AmendRegistrationPdfView]
 
-  val mockEclRegistrationConnector: EclRegistrationConnector                   = mock[EclRegistrationConnector]
-  val mockEmailService: EmailService                                           = mock[EmailService]
-  val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockEmailService: EmailService                     = mock[EmailService]
+  val mockSessionService: SessionService                 = mock[SessionService]
 
   class TestContext(registrationData: Registration) {
     val controller = new CheckYourAnswersController(
       messagesApi,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
-      mockRegistrationAdditionalInfoService,
+      mockEclRegistrationService,
       mcc,
       view,
-      new FakeValidatedRegistrationAction(registrationData),
       mockEmailService,
       pdfView,
-      amendPdfView
+      amendPdfView,
+      mockSessionService,
+      appConfig
     )
   }
 
@@ -79,81 +77,22 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             validRegistration.registration.internalId,
             validRegistration.registration,
             None,
-            Some("ECLRefNumber12345")
+            Some(eclReference)
           )
         implicit val messages: Messages                                                       = messagesApi.preferred(registrationDataRequest)
 
+        when(mockEclRegistrationService.getRegistrationValidationErrors(anyString())(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Option[DataValidationError]](Future.successful(Right(None))))
+
         val result: Future[Result] = controller.onPageLoad()(registrationDataRequest)
-
-        val eclDetails: SummaryList = SummaryListViewModel(
-          rows = Seq(
-            EclReferenceNumberSummary.row()
-          ).flatten
-        ).withCssClass("govuk-!-margin-bottom-9")
-
-        val organisationDetails: SummaryList = SummaryListViewModel(
-          rows = Seq(
-            EntityTypeSummary.row(),
-            EntityNameSummary.row(),
-            CompanyNumberSummary.row(),
-            CtUtrSummary.row(),
-            SaUtrSummary.row(),
-            NinoSummary.row(),
-            DateOfBirthSummary.row(),
-            AmlRegulatedActivitySummary.row(),
-            RelevantAp12MonthsSummary.row(),
-            RelevantApLengthSummary.row(),
-            UkRevenueSummary.row(),
-            AmlSupervisorSummary.row(),
-            BusinessSectorSummary.row()
-          ).flatten
-        ).withCssClass("govuk-!-margin-bottom-9")
-
-        val contactDetails: SummaryList = SummaryListViewModel(
-          rows = Seq(
-            FirstContactNameSummary.row(),
-            FirstContactRoleSummary.row(),
-            FirstContactEmailSummary.row(),
-            FirstContactNumberSummary.row(),
-            SecondContactSummary.row(),
-            SecondContactNameSummary.row(),
-            SecondContactRoleSummary.row(),
-            SecondContactEmailSummary.row(),
-            SecondContactNumberSummary.row(),
-            UseRegisteredAddressSummary.row(),
-            ContactAddressSummary.row()
-          ).flatten
-        ).withCssClass("govuk-!-margin-bottom-9")
-
-        val otherEntityDetails: SummaryList = SummaryListViewModel(
-          rows = Seq(
-            BusinessNameSummary.row(),
-            CharityRegistrationNumberSummary.row(),
-            DoYouHaveCrnSummary.row(),
-            CompanyRegistrationNumberSummary.row(),
-            DoYouHaveCtUtrSummary.row(),
-            UtrTypeSummary.row(),
-            OtherEntitySaUtrSummary.row(),
-            OtherEntityCtUtrSummary.row(),
-            OtherEntityPostcodeSummary.row()
-          ).flatten
-        ).withCssClass("govuk-!-margin-bottom-9")
-
-        val amendReasonDetails: SummaryList = SummaryListViewModel(
-          rows = Seq(
-            AmendReasonSummary.row()
-          ).flatten
-        ).withCssClass("govuk-!-margin-bottom-9")
 
         status(result)          shouldBe OK
         contentAsString(result) shouldBe view(
-          eclDetails,
-          organisationDetails,
-          contactDetails,
-          otherEntityDetails,
-          amendReasonDetails,
-          Some(Initial),
-          None
+          CheckYourAnswersViewModel(
+            validRegistration.registration,
+            None,
+            Some(eclReference)
+          )
         )(
           fakeRequest,
           messages
@@ -185,25 +124,21 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             secondContactDetails = ContactDetails.empty
           )
         )
-
         new TestContext(updatedRegistration) {
-          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-            .thenReturn(Future.successful(updatedRegistration))
-
+          when(mockEclRegistrationService.upsertRegistration(any())(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
           when(
-            mockEclRegistrationConnector.submitRegistration(
-              ArgumentMatchers.eq(updatedRegistration.internalId)
-            )(any())
+            mockEclRegistrationService
+              .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
+          ).thenReturn(
+            EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse](
+              Future.successful(Right(createEclSubscriptionResponse))
+            )
           )
-            .thenReturn(Future.successful(createEclSubscriptionResponse))
-
-          when(
-            mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
-          )
-            .thenReturn(Future.successful(()))
-
-          when(mockRegistrationAdditionalInfoService.delete(any())(any()))
-            .thenReturn(Future.successful(()))
+          when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+          when(mockSessionService.upsert(any())(any()))
+            .thenReturn(EitherT[Future, SessionError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
@@ -221,9 +156,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             ArgumentMatchers.eq(updatedRegistration.carriedOutAmlRegulatedActivityInCurrentFy)
           )(any(), any())
 
-          reset(mockEclRegistrationConnector)
+          reset(mockEclRegistrationService)
           reset(mockEmailService)
-          reset(mockRegistrationAdditionalInfoService)
         }
     }
 
@@ -251,23 +185,16 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         )
 
         new TestContext(updatedRegistration) {
-          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-            .thenReturn(Future.successful(updatedRegistration))
-
+          when(mockEclRegistrationService.upsertRegistration(any())(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
           when(
-            mockEclRegistrationConnector.submitRegistration(
-              ArgumentMatchers.eq(updatedRegistration.internalId)
-            )(any())
-          )
-            .thenReturn(Future.successful(createEclSubscriptionResponse))
-
-          when(
-            mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
-          )
-            .thenReturn(Future.successful(()))
-
-          when(mockRegistrationAdditionalInfoService.delete(any())(any()))
-            .thenReturn(Future.successful(()))
+            mockEclRegistrationService
+              .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
+          ).thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
+          when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+          when(mockSessionService.upsert(any())(any()))
+            .thenReturn(EitherT[Future, SessionError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
@@ -285,14 +212,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )(any(), any())
 
           val argCaptor                           = ArgumentCaptor.forClass(classOf[Registration])
-          verify(mockEclRegistrationConnector, times(1))
+          verify(mockEclRegistrationService, times(1))
             .upsertRegistration(argCaptor.capture())(any())
           val submittedRegistration: Registration = argCaptor.getValue
           submittedRegistration.base64EncodedFields.flatMap(_.dmsSubmissionHtml).getOrElse("").isBlank shouldBe false
 
-          reset(mockEclRegistrationConnector)
+          reset(mockEclRegistrationService)
           reset(mockEmailService)
-          reset(mockRegistrationAdditionalInfoService)
         }
     }
 
@@ -322,23 +248,17 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         )
 
         new TestContext(updatedRegistration) {
-          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-            .thenReturn(Future.successful(updatedRegistration))
-
+          when(mockEclRegistrationService.upsertRegistration(any())(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(())))
           when(
-            mockEclRegistrationConnector.submitRegistration(
-              ArgumentMatchers.eq(updatedRegistration.internalId)
-            )(any())
+            mockEclRegistrationService
+              .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
           )
-            .thenReturn(Future.successful(createEclSubscriptionResponse))
-
-          when(
-            mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
-          )
-            .thenReturn(Future.successful(()))
-
-          when(mockRegistrationAdditionalInfoService.delete(any())(any()))
-            .thenReturn(Future.successful(()))
+            .thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
+          when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+          when(mockSessionService.upsert(any())(any()))
+            .thenReturn(EitherT[Future, SessionError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
@@ -356,9 +276,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             ArgumentMatchers.eq(updatedRegistration.carriedOutAmlRegulatedActivityInCurrentFy)
           )(any(), any())
 
-          reset(mockEclRegistrationConnector)
+          reset(mockEclRegistrationService)
           reset(mockEmailService)
-          reset(mockRegistrationAdditionalInfoService)
         }
     }
 
@@ -388,23 +307,19 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         )
 
         new TestContext(updatedRegistration) {
-          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(any())(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           when(
-            mockEclRegistrationConnector.submitRegistration(
+            mockEclRegistrationService.submitRegistration(
               ArgumentMatchers.eq(updatedRegistration.internalId)
-            )(any())
+            )(any(), any())
           )
-            .thenReturn(Future.successful(createEclSubscriptionResponse))
-
-          when(
-            mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
-          )
-            .thenReturn(Future.successful(()))
-
-          when(mockRegistrationAdditionalInfoService.delete(any())(any()))
-            .thenReturn(Future.successful(()))
+            .thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
+          when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+          when(mockSessionService.upsert(any())(any()))
+            .thenReturn(EitherT[Future, SessionError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
@@ -422,14 +337,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )(any(), any())
 
           val argCaptor                           = ArgumentCaptor.forClass(classOf[Registration])
-          verify(mockEclRegistrationConnector, times(1))
+          verify(mockEclRegistrationService, times(1))
             .upsertRegistration(argCaptor.capture())(any())
           val submittedRegistration: Registration = argCaptor.getValue
           submittedRegistration.base64EncodedFields.flatMap(_.dmsSubmissionHtml).getOrElse("").isBlank shouldBe false
 
-          reset(mockEclRegistrationConnector)
+          reset(mockEclRegistrationService)
           reset(mockEmailService)
-          reset(mockRegistrationAdditionalInfoService)
         }
     }
 
@@ -451,23 +365,20 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         )
 
         new TestContext(updatedRegistration) {
-          when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(any())(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
 
           when(
-            mockEclRegistrationConnector.submitRegistration(
+            mockEclRegistrationService.submitRegistration(
               ArgumentMatchers.eq(updatedRegistration.internalId)
-            )(any())
+            )(any(), any())
           )
-            .thenReturn(Future.successful(createEclSubscriptionResponse))
+            .thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
 
-          when(
-            mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any())
-          )
-            .thenReturn(Future.successful(()))
-
-          when(mockRegistrationAdditionalInfoService.delete(any())(any()))
-            .thenReturn(Future.successful(()))
+          when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+          when(mockSessionService.upsert(any())(any()))
+            .thenReturn(EitherT[Future, SessionError, Unit](Future.successful(Right(()))))
 
           val result: IllegalStateException = intercept[IllegalStateException] {
             await(controller.onSubmit()(fakeRequest))
@@ -483,9 +394,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             ArgumentMatchers.eq(updatedRegistration.carriedOutAmlRegulatedActivityInCurrentFy)
           )(any(), any())
 
-          reset(mockEclRegistrationConnector)
+          reset(mockEclRegistrationService)
           reset(mockEmailService)
-          reset(mockRegistrationAdditionalInfoService)
         }
     }
   }
@@ -511,9 +421,20 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             None
           )
 
-        val date        = LocalDate.of(year, 4, 1)
-        val encodedHtml = controller.createAndEncodeHtmlForPdf(None)(registrationDataRequest)
-        val decodedHtml = new String(Base64.getDecoder.decode(encodedHtml))
+        val date: LocalDate     = LocalDate.of(year, 4, 1)
+        val encodedHtml: String = controller.createAndEncodeHtmlForPdf(
+          CheckYourAnswersViewModel(
+            valid.registration,
+            None,
+            Some(eclReference)
+          ),
+          AmendRegistrationPdfViewModel(
+            valid.registration,
+            None,
+            Some(eclReference)
+          )
+        )(registrationDataRequest)
+        val decodedHtml         = new String(Base64.getDecoder.decode(encodedHtml))
 
         decodedHtml should include(messages("checkYourAnswers.liabilityDate.label"))
         decodedHtml should include(ViewUtils.formatLocalDate(date)(messages))

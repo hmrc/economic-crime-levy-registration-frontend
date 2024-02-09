@@ -16,77 +16,69 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
-import play.api.Logging
-import play.api.http.Status._
+import cats.data.OptionT
+import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationErrors
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, GetSubscriptionResponse, Registration}
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpResponse, UpstreamErrorResponse}
 
+import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: HttpClient)(implicit ec: ExecutionContext)
-    extends Logging {
+class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(implicit ec: ExecutionContext)
+    extends BaseConnector {
 
-  private val eclRegistrationUrl: String =
-    s"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
+  private val eclRegistrationUrl: URL =
+    url"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
 
-  def getRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Option[Registration]] =
-    httpClient.GET[Option[Registration]](
-      s"$eclRegistrationUrl/registrations/$internalId"
-    )
+  def getRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Registration] = {
+    val request = httpClient
+      .get(url"$eclRegistrationUrl/registrations/$internalId")
 
-  def upsertRegistration(registration: Registration)(implicit hc: HeaderCarrier): Future[Registration] =
-    httpClient.PUT[Registration, Registration](
-      s"$eclRegistrationUrl/registrations",
-      registration
-    )
+    hc.authorization
+      .map(auth => request.setHeader(HeaderNames.AUTHORIZATION -> auth.value))
+      .getOrElse(request)
+      .executeAndDeserialise[Registration]
+  }
+
+  def upsertRegistration(registration: Registration)(implicit hc: HeaderCarrier): Future[Unit] =
+    httpClient
+      .put(url"$eclRegistrationUrl/registrations")
+      .withBody(Json.toJson(registration))
+      .executeAndContinue
 
   def deleteRegistration(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
     httpClient
-      .DELETE[Either[UpstreamErrorResponse, HttpResponse]](
-        s"$eclRegistrationUrl/registrations/$internalId"
-      )
-      .map {
-        case Left(e)  => throw e
-        case Right(_) => ()
-      }
+      .delete(url"$eclRegistrationUrl/registrations/$internalId")
+      .executeAndContinue
 
   def getSubscriptionStatus(businessPartnerId: String)(implicit hc: HeaderCarrier): Future[EclSubscriptionStatus] =
-    httpClient.GET[EclSubscriptionStatus](
-      s"$eclRegistrationUrl/subscription-status/$businessPartnerId"
-    )
+    httpClient
+      .get(url"$eclRegistrationUrl/subscription-status/$businessPartnerId")
+      .executeAndDeserialise[EclSubscriptionStatus]
 
   def getRegistrationValidationErrors(
     internalId: String
-  )(implicit hc: HeaderCarrier): Future[Option[DataValidationErrors]] =
+  )(implicit hc: HeaderCarrier): OptionT[Future, String] =
     httpClient
-      .GET[Either[UpstreamErrorResponse, HttpResponse]](
-        s"$eclRegistrationUrl/registrations/$internalId/validation-errors"
-      )
-      .map {
-        case Right(httpResponse) =>
-          httpResponse.status match {
-            case NO_CONTENT => None
-            case OK         =>
-              logger.warn(s"Data validation errors:\n${Json.prettyPrint(httpResponse.json)}")
-              Some(httpResponse.json.as[DataValidationErrors])
-            case s          => throw new HttpException(s"Unexpected response with HTTP status $s", s)
-          }
-        case Left(e)             => throw e
-      }
+      .get(url"$eclRegistrationUrl/registrations/$internalId/validation-errors")
+      .executeAndDeserialiseOption[String]
 
   def submitRegistration(internalId: String)(implicit
     hc: HeaderCarrier
   ): Future[CreateEclSubscriptionResponse] =
-    httpClient.POSTEmpty[CreateEclSubscriptionResponse](s"$eclRegistrationUrl/submit-registration/$internalId")
+    httpClient
+      .post(url"$eclRegistrationUrl/submit-registration/$internalId")
+      .setHeader("Authorization" -> hc.authorization.get.value)
+      .executeAndDeserialise[CreateEclSubscriptionResponse]
 
   def getSubscription(eclReference: String)(implicit hc: HeaderCarrier): Future[GetSubscriptionResponse] =
-    httpClient.GET[GetSubscriptionResponse](
-      s"$eclRegistrationUrl/subscription/$eclReference"
-    )
+    httpClient
+      .get(url"$eclRegistrationUrl/subscription/$eclReference")
+      .executeAndDeserialise[GetSubscriptionResponse]
+
 }

@@ -16,24 +16,25 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{Call, RequestHeader, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.forms.{AmendAmlSupervisorFormProvider, AmlSupervisorFormProvider}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AuditError, DataRetrievalError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.services.AuditService
 
 import scala.concurrent.Future
 
@@ -44,29 +45,33 @@ class AmlSupervisorControllerSpec extends SpecBase {
   val amendFormProvider: AmendAmlSupervisorFormProvider = new AmendAmlSupervisorFormProvider()
   val form: Form[AmlSupervisor]                         = formProvider(appConfig)
 
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  val mockAuditConnector: AuditConnector                     = mock[AuditConnector]
-
-  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator(mockAuditConnector) {
-    override protected def navigateInNormalMode(registration: Registration, extraFlag: Boolean)(implicit
-      request: RequestHeader
-    ): Future[Call] =
-      Future.successful(onwardRoute)
-  }
+  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockAuditService: AuditService                     = mock[AuditService]
 
   implicit val arbAmlSupervisor: Arbitrary[AmlSupervisor] = arbAmlSupervisor(appConfig)
+
+  val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator {
+    override protected def navigateInNormalMode(
+      navigationData: Registration
+    ): Call = onwardRoute
+
+    override protected def navigateInCheckMode(
+      navigationData: Registration
+    ): Call = onwardRoute
+  }
 
   class TestContext(registrationData: Registration) {
     val controller = new AmlSupervisorController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       amendFormProvider,
       appConfig,
       pageNavigator,
-      view
+      view,
+      mockAuditService
     )
   }
 
@@ -77,7 +82,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode, Some(RegistrationType.Initial), false, None)(
+        contentAsString(result) shouldBe view(form, NormalMode, Some(RegistrationType.Initial), None)(
           fakeRequest,
           messages
         ).toString
@@ -95,7 +100,6 @@ class AmlSupervisorControllerSpec extends SpecBase {
             form.fill(amlSupervisor),
             NormalMode,
             Some(RegistrationType.Initial),
-            false,
             None
           )(
             fakeRequest,
@@ -112,8 +116,10 @@ class AmlSupervisorControllerSpec extends SpecBase {
           val updatedRegistration: Registration =
             registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
-          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+          when(mockAuditService.sendEvent(any())(any()))
+            .thenReturn(EitherT[Future, AuditError, Unit](Future.successful(Right(()))))
 
           val formData: Seq[(String, String)] = amlSupervisor match {
             case AmlSupervisor(Other, Some(otherProfessionalBody)) =>
@@ -122,7 +128,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
           }
 
           val result: Future[Result] =
-            controller.onSubmit(NormalMode, RegistrationType.Initial, false)(
+            controller.onSubmit(NormalMode, RegistrationType.Initial)(
               fakeRequest.withFormUrlEncodedBody(formData: _*)
             )
 
@@ -134,14 +140,14 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
       new TestContext(registration) {
-        val result: Future[Result]              = controller.onSubmit(NormalMode, RegistrationType.Initial, false)(
+        val result: Future[Result]              = controller.onSubmit(NormalMode, RegistrationType.Initial)(
           fakeRequest.withFormUrlEncodedBody(("value", ""))
         )
         val formWithErrors: Form[AmlSupervisor] = form.bind(Map("value" -> ""))
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, NormalMode, Some(RegistrationType.Initial), false, None)(
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode, Some(RegistrationType.Initial), None)(
           fakeRequest,
           messages
         ).toString

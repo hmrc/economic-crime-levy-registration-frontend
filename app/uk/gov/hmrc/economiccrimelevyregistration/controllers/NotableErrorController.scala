@@ -45,7 +45,8 @@ class NotableErrorController @Inject() (
   partyTypeMismatchView: PartyTypeMismatchView,
   verificationFailedView: VerfificationFailedView
 ) extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with ErrorHandler {
 
   def answersAreInvalid: Action[AnyContent] = (authoriseWithEnrolmentCheck andThen getRegistrationData) {
     implicit request =>
@@ -53,23 +54,26 @@ class NotableErrorController @Inject() (
   }
 
   def userAlreadyEnrolled: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
-    Ok(
-      userAlreadyEnrolledView(
-        request.eclRegistrationReference.getOrElse(
-          throw new IllegalStateException("ECL registration reference not found in request")
-        )
+    (for {
+      eclReference <-
+        request.eclReferenceOrError
+    } yield eclReference)
+      .fold(
+        _ => Ok(answersAreInvalidView()),
+        success => Ok(userAlreadyEnrolledView(success))
       )
-    )
   }
 
   def groupAlreadyEnrolled: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
-    val eclRegistrationReference  = request.eclRegistrationReference.getOrElse(
-      throw new IllegalStateException("ECL registration reference not found in request")
-    )
-    val taxAndSchemeManagementUrl =
-      s"${appConfig.taxAndSchemeManagementUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclRegistrationReference/users"
+    def taxAndSchemeManagementUrl(eclReference: String) =
+      s"${appConfig.taxAndSchemeManagementUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclReference/users"
 
-    Ok(groupAlreadyEnrolledView(eclRegistrationReference, taxAndSchemeManagementUrl))
+    (for {
+      eclReference <- request.eclReferenceOrError
+    } yield eclReference).fold(
+      _ => Ok(answersAreInvalidView()),
+      success => Ok(groupAlreadyEnrolledView(success, taxAndSchemeManagementUrl(success)))
+    )
   }
 
   def agentCannotRegister: Action[AnyContent] = authoriseAgentsAllowed { implicit request =>
@@ -95,10 +99,12 @@ class NotableErrorController @Inject() (
 
   def verificationFailed: Action[AnyContent] = (authoriseWithoutEnrolmentCheck andThen getRegistrationData) {
     implicit request =>
-      request.registration.entityType match {
-        case Some(_) => Ok(verificationFailedView())
-        case _       => throw new IllegalStateException("Entity type not found in registration data")
-      }
+      (for {
+        entityType <- request.entityTypeOrError
+      } yield entityType).fold(
+        _ => Ok(answersAreInvalidView()),
+        _ => Ok(verificationFailedView())
+      )
   }
 
 }

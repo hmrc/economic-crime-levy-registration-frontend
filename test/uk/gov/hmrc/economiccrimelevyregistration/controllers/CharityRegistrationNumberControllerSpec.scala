@@ -16,21 +16,23 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.{BodyParsers, Call, Result}
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CharityRegistrationNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CharityRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.CharityRegistrationNumberPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CharityRegistrationNumberView
 
 import scala.concurrent.Future
@@ -41,26 +43,19 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
   val formProvider: CharityRegistrationNumberFormProvider = new CharityRegistrationNumberFormProvider()
   val form: Form[String]                                  = formProvider()
 
-  val pageNavigator: CharityRegistrationNumberPageNavigator = new CharityRegistrationNumberPageNavigator(
-  ) {
-    override protected def navigateInNormalMode(
-      registration: Registration
-    ): Call = onwardRoute
-
-    override protected def navigateInCheckMode(
-      registration: Registration
-    ): Call = onwardRoute
+  val mockEclRegistrationService: EclRegistrationService    = mock[EclRegistrationService]
+  val pageNavigator: CharityRegistrationNumberPageNavigator = new CharityRegistrationNumberPageNavigator() {
+    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
+    override protected def navigateInCheckMode(navigationData: Registration): Call  = onwardRoute
   }
-
-  val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
-  override val appConfig: AppConfig                          = mock[AppConfig]
+  override val appConfig: AppConfig                         = mock[AppConfig]
 
   class TestContext(registrationData: Registration) {
     val controller = new CharityRegistrationNumberController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
-      mockEclRegistrationConnector,
+      mockEclRegistrationService,
       formProvider,
       pageNavigator,
       view
@@ -100,15 +95,15 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
       stringsWithMaxLength(CharityRegistrationNumberMaxLength),
       Arbitrary.arbitrary[Mode]
     ) { (registration: Registration, charityNumber: String, mode: Mode) =>
-      val otherEntityJourneyData =
-        registration.otherEntityJourneyData.copy(charityRegistrationNumber = Some(charityNumber))
       new TestContext(registration) {
-        val updatedRegistration: Registration = registration.copy(
-          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        val otherEntityJourneyData = registration.otherEntityJourneyData.copy(
+          charityRegistrationNumber = Some(charityNumber)
         )
+        val updatedRegistration    =
+          registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
-        when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-          .thenReturn(Future.successful(updatedRegistration))
+        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
         val result: Future[Result] =
           controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", charityNumber)))

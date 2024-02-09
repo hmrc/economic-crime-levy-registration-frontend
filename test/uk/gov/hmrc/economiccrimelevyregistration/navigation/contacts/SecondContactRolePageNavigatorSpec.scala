@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 
 class SecondContactRolePageNavigatorSpec extends SpecBase {
@@ -35,8 +35,8 @@ class SecondContactRolePageNavigatorSpec extends SpecBase {
             )
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe contacts.routes.SecondContactEmailController
-          .onPageLoad(NormalMode)
+        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+          contacts.routes.SecondContactEmailController.onPageLoad(NormalMode)
     }
 
     "return a Call to the second contact email page in CheckMode when a second contact email is not already present" in forAll {
@@ -46,8 +46,8 @@ class SecondContactRolePageNavigatorSpec extends SpecBase {
             registration.contacts.copy(secondContactDetails = validContactDetails.copy(emailAddress = None))
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe contacts.routes.SecondContactEmailController
-          .onPageLoad(CheckMode)
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+          contacts.routes.SecondContactEmailController.onPageLoad(CheckMode)
     }
 
     "return a Call to the check your answers page in CheckMode when second contact details are already present" in forAll {
@@ -55,7 +55,8 @@ class SecondContactRolePageNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(contacts = registration.contacts.copy(secondContactDetails = validContactDetails))
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
     }
   }
 

@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmendReasonPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendReasonView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendReasonView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
@@ -40,9 +40,11 @@ class AmendReasonController @Inject() (
   formProvider: AmendReasonFormProvider,
   registrationService: EclRegistrationService,
   pageNavigator: AmendReasonPageNavigator
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with BaseController
+    with ErrorHandler {
   val form: Form[String]                         = formProvider()
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(
@@ -67,9 +69,11 @@ class AmendReasonController @Inject() (
           val updatedRegistration = request.registration.copy(amendReason = Some(input))
           registrationService
             .upsertRegistration(updatedRegistration)
-            .map { savedRegistration =>
-              Redirect(pageNavigator.nextPage(mode, savedRegistration))
-            }
+            .asResponseError
+            .fold(
+              err => routeError(err),
+              _ => Redirect(pageNavigator.nextPage(mode, updatedRegistration))
+            )
         }
       )
   }

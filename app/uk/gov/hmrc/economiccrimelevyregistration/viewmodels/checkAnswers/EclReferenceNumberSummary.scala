@@ -19,19 +19,18 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 
 object EclReferenceNumberSummary {
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
+  def row(eclReference: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
     Some(
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.eclReferenceNumber.label"),
-        value = ValueViewModel(HtmlContent(HtmlFormat.escape(request.eclRegistrationReference.getOrElse(""))))
+        value = ValueViewModel(HtmlContent(HtmlFormat.escape(eclReference.getOrElse(""))))
       )
     )
 

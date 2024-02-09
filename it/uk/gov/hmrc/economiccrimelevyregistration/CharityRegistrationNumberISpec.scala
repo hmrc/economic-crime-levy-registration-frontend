@@ -19,8 +19,10 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
     "respond with 200 status and the charity registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val result = callRoute(FakeRequest(routes.CharityRegistrationNumberController.onPageLoad(NormalMode)))
@@ -39,8 +41,10 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       val charityNumber = stringsWithMaxLength(CharityRegistrationNumberMaxLength).sample.get
 
-      val registration = random[Registration]
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
       val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(charityRegistrationNumber = Some(charityNumber))

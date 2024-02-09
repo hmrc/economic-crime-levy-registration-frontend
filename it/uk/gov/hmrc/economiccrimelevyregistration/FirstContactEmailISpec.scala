@@ -19,9 +19,11 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the first contact email HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
-      val name         = random[String]
+      val registration   = random[Registration]
+      val name           = random[String]
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(
         registration.copy(contacts =
           registration.contacts.copy(firstContactDetails =
@@ -55,7 +57,9 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
           registration.contacts.firstContactDetails.copy(name = Some(name), emailAddress = Some(email.toLowerCase))
         )
       )
+      val additionalInfo      = random[RegistrationAdditionalInfo]
 
+      stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(updatedRegistration)
       stubUpsertRegistration(updatedRegistration)
 

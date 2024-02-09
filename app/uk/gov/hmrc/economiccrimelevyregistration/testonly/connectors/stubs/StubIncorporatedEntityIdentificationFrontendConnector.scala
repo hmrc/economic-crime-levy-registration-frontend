@@ -18,8 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.stubs
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.IncorporatedEntityIdentificationFrontendConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{GrsCreateJourneyResponse, IncorporatedEntityJourneyData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.utils.Base64Utils
 import uk.gov.hmrc.http.HeaderCarrier
 
