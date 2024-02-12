@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, Er
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.{DeregisterDateFormProvider, DeregisterReasonFormProvider}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.DeregisterReason
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.deregister.Navigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.{DeregisterDateView, DeregisterReasonView}
@@ -47,7 +47,8 @@ class DeregisterDateController @Inject() (
     extends FrontendBaseController
     with I18nSupport
     with BaseController
-    with ErrorHandler {
+    with ErrorHandler
+    with Navigator {
 
   val form: Form[LocalDate] = formProvider()
 
@@ -69,15 +70,9 @@ class DeregisterDateController @Inject() (
 
           (for {
             _ <- deregistrationService.upsert(updatedDeregistration).asResponseError
-          } yield updatedDeregistration).fold(
+          } yield ()).fold(
             err => routeError(err),
-            _ => {
-              val next = mode match {
-                case NormalMode => routes.DeregisterStartController.onPageLoad()
-                case CheckMode  => routes.DeregisterStartController.onPageLoad()
-              }
-              Redirect(next)
-            }
+            _ => toNextPage(mode, routes.DeregisterStartController.onPageLoad())
           )
         }
       )
