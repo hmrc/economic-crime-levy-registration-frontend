@@ -40,7 +40,7 @@
 
     <p class="govuk-body">@messages("deregisterContactEmail.use", name)</p>
 
-    @formHelper(action = FirstContactEmailController.onSubmit(mode)) {
+    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactEmailController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),

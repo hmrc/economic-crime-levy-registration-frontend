@@ -231,3 +231,23 @@ GET         /deregister-date                                                    
 POST        /deregister-date                                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterDateController.onSubmit(mode: Mode = NormalMode)
 GET         /change-answer/deregister-date                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterDateController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-answer/deregister-date                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterDateController.onSubmit(mode: Mode = CheckMode)
+
+GET         /deregister-name                                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNameController.onPageLoad(mode: Mode = NormalMode)
+POST        /deregister-name                                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNameController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/deregister-name                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNameController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/deregister-name                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNameController.onSubmit(mode: Mode = CheckMode)
+
+GET         /deregister-role                                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactRoleController.onPageLoad(mode: Mode = NormalMode)
+POST        /deregister-role                                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactRoleController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/deregister-role                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactRoleController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/deregister-role                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactRoleController.onSubmit(mode: Mode = CheckMode)
+
+GET         /deregister-email                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactEmailController.onPageLoad(mode: Mode = NormalMode)
+POST        /deregister-email                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactEmailController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/deregister-email                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactEmailController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/deregister-email                                     uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactEmailController.onSubmit(mode: Mode = CheckMode)
+
+GET         /deregister-number                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /deregister-number                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/deregister-number                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/deregister-number                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNumberController.onSubmit(mode: Mode = CheckMode)

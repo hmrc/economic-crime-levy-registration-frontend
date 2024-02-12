@@ -39,7 +39,7 @@
     <p class="govuk-body">@messages("deregisterContactName.legend.p1")</p>
     <p class="govuk-body">@messages("deregisterContactName.legend.p2")</p>
 
-    @formHelper(action = FirstContactNameController.onSubmit(mode)) {
+    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactNameController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),

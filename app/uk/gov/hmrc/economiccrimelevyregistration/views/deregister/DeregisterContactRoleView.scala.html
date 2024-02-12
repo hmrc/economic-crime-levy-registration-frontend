@@ -40,7 +40,7 @@
     <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("deregisterContactRole.heading", name))</h1>
     <p class="govuk-body">@messages("deregisterContactRole.legend")</p>
 
-    @formHelper(action = FirstContactRoleController.onSubmit(mode)) {
+    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactRoleController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),
