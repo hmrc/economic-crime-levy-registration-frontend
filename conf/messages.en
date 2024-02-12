@@ -662,3 +662,36 @@ deregisterDate.hint = For example, 27 3 2024.
 deregisterDate.error.required = Enter the date you were no longer liable for ECL
 deregisterDate.error.past = The date must be after 1 April 2022
 deregisterDate.error.future = The date must be in the past
+
+deregisterContactName.title = Provide a contact name
+deregisterContactName.heading = Provide a contact name
+deregisterContactName.legend.p1 = Provide the name of a person in your organisation who can act as a point of contact. They do not have to be part of your tax or accounting departments.
+deregisterContactName.legend.p2 = You can add a second contact name and their details after you have added the deregister contact.
+deregisterContactName.hint = For example, ''John Jones'' or ''Laura Smith''.
+deregisterContactName.error.required = Enter a full name
+deregisterContactName.error.length = Full name must be {0} characters or less
+
+deregisterContactRole.title = What is {0}''s role?
+deregisterContactRole.heading = What is {0}''s role?
+deregisterContactRole.legend = Tell us about their role in your organisation.
+deregisterContactRole.hint = For example, ''Compliance officer''.
+deregisterContactRole.error.required = Enter a role
+deregisterContactRole.error.length = Role must be {0} characters or less
+
+deregisterContactEmail.title = What is {0}''s email address?
+deregisterContactEmail.heading = What is {0}''s email address?
+deregisterContactEmail.legend = This is the email address of your named contact.
+deregisterContactEmail.error.required = Enter an email address
+deregisterContactEmail.error.length = Email address must be {0} characters or less
+deregisterContactEmail.error.invalid = Enter an email address in the correct format, like name@example.com
+deregisterContactEmail.use = We will only use this email address to contact them about the Economic Crime Levy.
+
+deregisterContactNumber.title = What is {0}''s telephone number?
+deregisterContactNumber.heading = What is {0}''s telephone number?
+deregisterContactNumber.label = Telephone number
+deregisterContactNumber.legend = This is the telephone number of your named contact.
+deregisterContactNumber.hint = For international numbers include the country code.
+deregisterContactNumber.error.required = Enter a telephone number
+deregisterContactNumber.error.length = Telephone number must be {0} characters or less
+deregisterContactNumber.error.invalid = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
+deregisterContactNumber.use = We will only use this telephone number to contact them about the Economic Crime Levy.

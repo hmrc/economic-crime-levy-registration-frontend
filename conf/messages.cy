@@ -663,3 +663,36 @@ deregisterDate.hint = Er enghraifft, 27 3 2024.
 deregisterDate.error.required = Nodwch y dyddiad nad oeddech bellach yn atebol am ECL
 deregisterDate.error.past = Rhaid i’r dyddiad fod ar ôl 1 Ebrill 2022
 deregisterDate.error.future = Mae’n rhaid i’r dyddiad fod yn y gorffennol
+
+deregisterContactName.title = Rhowch enw cyswllt
+deregisterContactName.heading = Rhowch enw cyswllt
+deregisterContactName.legend.p1 = Rhowch fanylion person yn eich sefydliad a all gweithredu fel pwynt cyswllt. Nid yw’n gorfod fod yn rhan o’ch adran gyfrifyddu na’ch adran dreth.
+deregisterContactName.legend.p2 = Gallwch ychwanegu enw a manylion ail gyswllt ar ôl i chi ychwanegu manylion y cyswllt cyntaf.
+deregisterContactName.hint = Er enghraifft, ''John Jones'' neu ''Laura Smith''.
+deregisterContactName.error.required = Nodwch enw llawn
+deregisterContactName.error.length = Dewiswch sector busnes
+
+deregisterContactRole.title = Beth yw rôl {0}?
+deregisterContactRole.heading = Beth yw rôl {0}?
+deregisterContactRole.legend = Rhowch fanylion i ni am ei rôl yn eich sefydliad.
+deregisterContactRole.hint = Er enghraifft, ''Swyddog Cydymffurfiad''.
+deregisterContactRole.error.required = Nodwch rôl
+deregisterContactRole.error.length = Mae’n rhaid i’r rôl fod yn {0} o gymeriadau neu lai
+
+deregisterContactEmail.title = Beth yw cyfeiriad e-bost {0}?
+deregisterContactEmail.heading = Beth yw cyfeiriad e-bost {0}?
+deregisterContactEmail.legend = Dyma gyfeiriad e-bost y cyswllt a enwyd gennych.
+deregisterContactEmail.error.required = Nodwch gyfeiriad e-bost
+deregisterContactEmail.error.length = Mae’n rhaid i’r cyfeiriad e-bost fod yn {0} o gymeriadau neu lai
+deregisterContactEmail.error.invalid = Nodwch gyfeiriad e-bost yn y fformat cywir, megis enw@enghraifft.com
+deregisterContactEmail.use = Byddwn ond yn defnyddio’r cyfeiriad e-bost hwn i gysylltu â’ch cyswllt ynghylch yr Ardoll Troseddau Economaidd.
+
+deregisterContactNumber.title = Beth yw rhif ffôn {0}?
+deregisterContactNumber.heading = Beth yw rhif ffôn {0}?
+deregisterContactNumber.label = Rhif ffôn
+deregisterContactNumber.legend = Dyma’r rhif ffôn ar gyfer y cyswllt a enwyd gennych.
+deregisterContactNumber.hint = Ar gyfer rhifau rhyngwladol, cofiwch nodi cod y wlad
+deregisterContactNumber.error.required = Nodwch rif ffôn
+deregisterContactNumber.error.length = Mae’n rhaid i’r rhif ffôn gynnwys {0} o gymeriadau neu lai
+deregisterContactNumber.error.invalid = Nodwch rif ffôn, megis 01632 960 001, 07700 900 982 neu +44 808 157 0192
+deregisterContactNumber.use = Byddwn ond yn defnyddio’r rhif ffôn hwn i gysylltu â’ch cyswllt ynghylch yr Ardoll Troseddau Economaidd.
