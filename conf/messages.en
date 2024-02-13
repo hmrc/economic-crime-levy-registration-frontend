@@ -631,7 +631,7 @@ deregister.banner.title = Deregister from the Economic Crime Levy
 
 deregister.start.title = Request to deregister from HMRC for the Economic Crime Levy
 deregister.start.heading = Request to deregister from HMRC for the Economic Crime Levy
-deregister.start.h2 = ECL details
+deregister.start.h2 = Organisation details
 deregister.start.eclReference = ECL reference number
 deregister.start.companyName = Company name
 deregister.start.p1 = Use this service to request to deregister your Economic Crime Levy (ECL) account.

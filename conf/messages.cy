@@ -632,7 +632,7 @@ deregister.banner.title = Dadgofrestru o'r Ardoll Troseddau Economaidd
 
 deregister.start.title = Cais at CThEF i ddatgofrestru rhag yr Ardoll Troseddau Economaidd
 deregister.start.heading = Cais at CThEF i ddatgofrestru rhag yr Ardoll Troseddau Economaidd
-deregister.start.h2 = Manylion ECL
+deregister.start.h2 = Manylion y sefydliad
 deregister.start.eclReference = Cyfeirnod ECL
 deregister.start.companyName = Enw’r cwmni
 deregister.start.p1 = Defnyddiwch y gwasanaeth hwn i wneud cais i ddatgofrestru o’ch cyfrif Ardoll Troseddau Economaidd (ECL).
