@@ -36,8 +36,8 @@
     }
 
     <h1 class="govuk-heading-l">@messages("deregisterContactName.heading")</h1>
+
     <p class="govuk-body">@messages("deregisterContactName.legend.p1")</p>
-    <p class="govuk-body">@messages("deregisterContactName.legend.p2")</p>
 
     @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactNameController.onSubmit(mode)) {
         @govukInput(

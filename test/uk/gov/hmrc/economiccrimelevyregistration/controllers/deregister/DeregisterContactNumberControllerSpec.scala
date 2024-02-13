@@ -98,7 +98,7 @@ class DeregisterContactNumberControllerSpec extends SpecBase {
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> number))
 
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.DeregisterStartController.onPageLoad().url)
+        redirectLocation(result) shouldBe Some(routes.DeregisterCheckYourAnswersController.onPageLoad().url)
 
         verify(mockDeregistrationService, times(1)).upsert(any())(any())
         reset(mockDeregistrationService)

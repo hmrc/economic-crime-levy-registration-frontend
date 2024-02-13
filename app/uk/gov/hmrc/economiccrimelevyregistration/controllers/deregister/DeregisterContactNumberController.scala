@@ -89,7 +89,7 @@ class DeregisterContactNumberController @Inject() (
             _ <- deregistrationService.upsert(updatedDeregistration).asResponseError
           } yield ()).fold(
             err => routeError(err),
-            _ => toNextPage(mode, routes.DeregisterStartController.onPageLoad())
+            _ => toNextPage(mode, routes.DeregisterCheckYourAnswersController.onPageLoad())
           )
         }
       )
