@@ -31,7 +31,7 @@ object DeregisterEmailSummary {
       val value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer)))
 
       SummaryListRowViewModel(
-        key = Key("deregisterCys.t3.l3"),
+        key = Key("deregisterCya.t3.l3"),
         value = value,
         actions = Seq(
           ActionItemViewModel(
@@ -41,7 +41,7 @@ object DeregisterEmailSummary {
               .url
           )
             .withVisuallyHiddenText(
-              messages("deregisterCys.t3.l3")
+              messages("deregisterCya.t3.l3")
             )
         )
       )

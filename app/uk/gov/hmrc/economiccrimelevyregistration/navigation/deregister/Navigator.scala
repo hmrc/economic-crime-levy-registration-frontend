@@ -25,6 +25,6 @@ trait Navigator {
   def toNextPage(mode: Mode, nextPage: Call) =
     Redirect(mode match {
       case NormalMode => nextPage
-      case CheckMode  => routes.DeregisterStartController.onPageLoad()
+      case CheckMode  => routes.DeregisterCheckYourAnswersController.onPageLoad()
     })
 }

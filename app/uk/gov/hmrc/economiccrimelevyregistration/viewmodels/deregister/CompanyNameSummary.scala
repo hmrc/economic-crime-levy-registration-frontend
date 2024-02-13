@@ -27,7 +27,7 @@ object CompanyNameSummary {
   def row(companyName: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
     companyName.map { answer =>
       SummaryListRowViewModel(
-        key = Key("deregisterCys.t1.l2"),
+        key = Key("deregisterCya.t1.l2"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),
         actions = Seq()
       )

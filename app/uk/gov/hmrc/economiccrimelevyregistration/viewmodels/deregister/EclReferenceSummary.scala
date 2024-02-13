@@ -29,7 +29,7 @@ object EclReferenceSummary {
   def row(eclReference: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
     eclReference.map { answer =>
       SummaryListRowViewModel(
-        key = Key("deregisterCys.t1.l1"),
+        key = Key("deregisterCya.t1.l1"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),
         actions = Seq()
       )
