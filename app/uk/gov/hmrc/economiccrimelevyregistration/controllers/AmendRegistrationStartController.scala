@@ -61,7 +61,7 @@ class AmendRegistrationStartController @Inject() (
         if (appConfig.getSubscriptionEnabled) {
           routeToAmendReason(eclReference, request.internalId)
         } else {
-          Future.successful(Ok(view(eclReference.value)))
+          Future.successful(Ok(view(eclReference)))
         }
     )
   }
