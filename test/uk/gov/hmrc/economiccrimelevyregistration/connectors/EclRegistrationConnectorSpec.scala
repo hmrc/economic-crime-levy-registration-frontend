@@ -120,7 +120,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
     "return an EclSubscriptionStatus when the http client returns an EclSubscriptionStatus" in forAll {
       (businessPartnerId: String, eclSubscriptionStatus: EclSubscriptionStatus) =>
         beforeEach()
-        val expectedUrl = url"$eclRegistrationUrl/subscription-status/$businessPartnerId"
+        val expectedUrl = url"$eclRegistrationUrl/subscription-status/SAFE/$businessPartnerId"
         val response    = HttpResponse(OK, Json.toJson(eclSubscriptionStatus).toString())
 
         when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)

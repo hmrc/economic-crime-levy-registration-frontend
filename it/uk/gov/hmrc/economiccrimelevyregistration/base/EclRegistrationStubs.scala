@@ -51,7 +51,7 @@ trait EclRegistrationStubs { self: WireMockStubs =>
 
   def stubGetSubscriptionStatus(businessPartnerId: String, eclSubscriptionStatus: EclSubscriptionStatus): StubMapping =
     stub(
-      get(urlEqualTo(s"/economic-crime-levy-registration/subscription-status/$businessPartnerId")),
+      get(urlEqualTo(s"/economic-crime-levy-registration/subscription-status/SAFE/$businessPartnerId")),
       aResponse()
         .withStatus(OK)
         .withBody(Json.toJson(eclSubscriptionStatus).toString())
