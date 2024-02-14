@@ -40,7 +40,6 @@ class DeregistrationConnector @Inject() (
   def getDeregistration(internalId: String)(implicit hc: HeaderCarrier): Future[Deregistration] =
     httpClient
       .get(url"$deregistrationUrl/deregistration/$internalId")
-      .setHeader("Authorization" -> hc.authorization.get.value)
       .executeAndDeserialise[Deregistration]
 
   def upsertDeregistration(deregistration: Deregistration)(implicit hc: HeaderCarrier): Future[Unit] =
