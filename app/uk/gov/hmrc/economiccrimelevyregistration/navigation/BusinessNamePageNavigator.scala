@@ -31,7 +31,7 @@ class BusinessNamePageNavigator extends PageNavigator {
       case Some(value) =>
         value match {
           case Charity                   => routes.CharityRegistrationNumberController.onPageLoad(mode)
-          case UnincorporatedAssociation => routes.DoYouHaveCtUtrController.onPageLoad(mode)
+          case UnincorporatedAssociation => routes.DoYouHaveCrnController.onPageLoad(mode)
           case Trust                     => routes.CtUtrController.onPageLoad(mode)
           case NonUKEstablishment        => routes.DoYouHaveCrnController.onPageLoad(mode)
           case _                         => error()
@@ -45,7 +45,7 @@ class BusinessNamePageNavigator extends PageNavigator {
       case Some(value) =>
         value match {
           case Charity                   => otherEntityJourneyData.charityRegistrationNumber.isEmpty
-          case UnincorporatedAssociation => otherEntityJourneyData.isCtUtrPresent.isEmpty
+          case UnincorporatedAssociation => otherEntityJourneyData.companyRegistrationNumber.isEmpty
           case Trust                     => otherEntityJourneyData.ctUtr.isEmpty
           case NonUKEstablishment        => otherEntityJourneyData.companyRegistrationNumber.isEmpty
           case _                         => false

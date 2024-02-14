@@ -31,7 +31,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
   val nextPage: Map[EntityType, Call] = Map(
     Charity                   -> routes.CharityRegistrationNumberController.onPageLoad(NormalMode),
-    UnincorporatedAssociation -> routes.DoYouHaveCtUtrController.onPageLoad(NormalMode),
+    UnincorporatedAssociation -> routes.DoYouHaveCrnController.onPageLoad(NormalMode),
     Trust                     -> routes.CtUtrController.onPageLoad(NormalMode),
     NonUKEstablishment        -> routes.DoYouHaveCrnController.onPageLoad(NormalMode)
   )
