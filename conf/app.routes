@@ -219,3 +219,9 @@ POST        /change-answer/why-are-you-amending-your-registration               
 
 GET         /cancel-registration-amendment                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.CancelRegistrationAmendmentController.onPageLoad()
 POST        /cancel-registration-amendment                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.CancelRegistrationAmendmentController.onSubmit()
+
+GET         /register-for-current-financial-year                                uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterForCurrentYearController.onPageLoad(mode: Mode = NormalMode)
+POST        /register-for-current-financial-year                                uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterForCurrentYearController.onSubmit(mode: Mode = NormalMode)
+
+GET         /change-answer/register-for-current-financial-year                  uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterForCurrentYearController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/register-for-current-financial-year                  uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterForCurrentYearController.onSubmit(mode: Mode = CheckMode)

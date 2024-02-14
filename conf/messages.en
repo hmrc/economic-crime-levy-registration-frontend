@@ -626,3 +626,6 @@ cancelRegistrationAmendment.title = Are you sure you want to cancel your request
 cancelRegistrationAmendment.heading = Are you sure you want to cancel your request to amend your registration?
 cancelRegistrationAmendment.body = Your answers will be deleted.
 cancelRegistrationAmendment.error.required = Select yes if you want to cancel your request to amend your registration
+register.currentYear.h1 = Are you registering for the {0} financial year?
+register.currentYear.title = Are you registering for the {0} financial year?
+register.currentYear.error = Select yes if you are registering for {0}

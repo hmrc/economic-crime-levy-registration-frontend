@@ -627,3 +627,5 @@ cancelRegistrationAmendment.title = Ydych chi'n siŵr eich bod am ganslo'ch cais
 cancelRegistrationAmendment.heading = Ydych chi'n siŵr eich bod am ganslo'ch cais i newid eich cofrestriad?
 cancelRegistrationAmendment.body = Bydd eich atebion yn cael eu dileu.
 cancelRegistrationAmendment.error.required = Dewiswch 'Iawn' os ydych yn dymuno canslo eich cais i newid eich cofrestriad
+register.currentYear.h1 = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0}?
+register.currentYear.title = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0}?
