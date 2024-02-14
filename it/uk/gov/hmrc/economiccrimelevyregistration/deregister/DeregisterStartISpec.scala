@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 
-class DeregusterStartISpec extends ISpecBase with AuthorisedBehaviour {
+class DeregisterStartISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterStartController.onPageLoad().url}" should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(

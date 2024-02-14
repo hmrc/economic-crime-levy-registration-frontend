@@ -45,7 +45,7 @@ class DeregistrationConnectorSpec extends SpecBase {
       (deregistration: Deregistration, authorization: Authorization) =>
         beforeEach()
         val hc: HeaderCarrier = HeaderCarrier(Some(authorization))
-        val expectedUrl       = url"$deregistrationUrl/deregistrations/${deregistration.internalId}"
+        val expectedUrl       = url"$deregistrationUrl/deregistration/${deregistration.internalId}"
         val response          = HttpResponse(ACCEPTED, Json.toJson(deregistration).toString())
 
         when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
@@ -62,7 +62,7 @@ class DeregistrationConnectorSpec extends SpecBase {
   "deleteDeregistration" should {
     "return unit when the http client successfully returns a http response" in forAll { internalId: String =>
       beforeEach()
-      val expectedUrl = url"$deregistrationUrl/deregistrations/$internalId"
+      val expectedUrl = url"$deregistrationUrl/deregistration/$internalId"
       val response    = HttpResponse(NO_CONTENT, "")
 
       when(mockHttpClient.delete(ArgumentMatchers.eq(expectedUrl))(any()))
@@ -77,7 +77,7 @@ class DeregistrationConnectorSpec extends SpecBase {
     "throw an UpstreamErrorResponse exception when the http client returns a error response" in forAll {
       internalId: String =>
         beforeEach()
-        val expectedUrl = url"$deregistrationUrl/deregistrations/$internalId"
+        val expectedUrl = url"$deregistrationUrl/deregistration/$internalId"
         val msg         = "Internal server error"
 
         when(mockHttpClient.delete(ArgumentMatchers.eq(expectedUrl))(any()))
@@ -95,7 +95,7 @@ class DeregistrationConnectorSpec extends SpecBase {
   "upsertDeregistration" should {
     "return a unit when registration is successfully upserted" in forAll { deregistration: Deregistration =>
       beforeEach()
-      val expectedUrl = url"$deregistrationUrl/deregistrations"
+      val expectedUrl = url"$deregistrationUrl/deregistration"
       val response    = HttpResponse(NO_CONTENT, "")
 
       when(mockHttpClient.put(ArgumentMatchers.eq(expectedUrl))(any()))

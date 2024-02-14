@@ -39,19 +39,19 @@ class DeregistrationConnector @Inject() (
 
   def getDeregistration(internalId: String)(implicit hc: HeaderCarrier): Future[Deregistration] =
     httpClient
-      .get(url"$deregistrationUrl/deregistrations/$internalId")
+      .get(url"$deregistrationUrl/deregistration/$internalId")
       .setHeader("Authorization" -> hc.authorization.get.value)
       .executeAndDeserialise[Deregistration]
 
   def upsertDeregistration(deregistration: Deregistration)(implicit hc: HeaderCarrier): Future[Unit] =
     httpClient
-      .put(url"$deregistrationUrl/deregistrations")
+      .put(url"$deregistrationUrl/deregistration")
       .withBody(Json.toJson(deregistration))
       .executeAndContinue
 
   def deleteDeregistration(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
     httpClient
-      .delete(url"$deregistrationUrl/deregistrations/$internalId")
+      .delete(url"$deregistrationUrl/deregistration/$internalId")
       .executeAndContinue
 
 }

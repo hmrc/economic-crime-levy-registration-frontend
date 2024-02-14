@@ -44,6 +44,6 @@ class NavigatorSpec extends SpecBase {
     val result = Future.successful(navigator.toNextPage(CheckMode, call))
 
     status(result)           shouldBe SEE_OTHER
-    redirectLocation(result) shouldBe Some(routes.DeregisterStartController.onPageLoad().url)
+    redirectLocation(result) shouldBe Some(routes.DeregisterCheckYourAnswersController.onPageLoad().url)
   }
 }
