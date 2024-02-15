@@ -18,26 +18,52 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.RegisterForCurrentYear
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegisterForCurrentYear}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterForCurrentYearController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: RegisterForCurrentYear,
-  formProvider: RegisterForCurrentYearFormProvider
-) extends FrontendBaseController
-    with I18nSupport {
+  authorise: AuthorisedActionWithEnrolmentCheck,
+  getRegistrationData: DataRetrievalAction,
+  formProvider: RegisterForCurrentYearFormProvider,
+  eclRegistrationService: EclRegistrationService,
+  pageNavigator: RegisterForCurrentYearPageNavigator
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
+    extends FrontendBaseController
+    with I18nSupport
+    with BaseController
+    with ErrorHandler {
 
   val form                                       = formProvider()
   def onPageLoad(mode: Mode): Action[AnyContent] = Action { implicit request =>
-    Ok(view(form, mode, "2023 to 2024"))
+    Ok(view(form, mode, s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = Action { implicit request =>
-    Ok(view(form, mode, "2023-2024"))
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors =>
+          Future.successful(
+            BadRequest(view(formWithErrors, mode, s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
+          ),
+        answer => {
+          val updatedRegistration = request.registration.copy(registeringForCurrentYear = Some(answer))
+
+          (for {
+            _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+        }
+      )
   }
 }

@@ -24,6 +24,7 @@
         errorSummary: GovukErrorSummary
 )
 @(form: Form[Boolean], mode: Mode, currentYear: String)(implicit messages: Messages, request: Request[_])
+
 @layout(
     pageTitle = title(messages("register.currentYear.title")),
     showBackLink = true
@@ -33,7 +34,7 @@
         @messages("register.currentYear.h1", currentYear)
         </h1>
     </legend>
-  
+
     @formHelper(action = RegisterForCurrentYearController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
@@ -60,4 +61,5 @@
             ButtonViewModel(messages("site.saveAndContinue"))
         )
     }
+
 }

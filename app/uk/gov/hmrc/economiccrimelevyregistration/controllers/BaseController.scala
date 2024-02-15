@@ -17,14 +17,13 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
-import play.api.Logger
 import play.api.http.HeaderNames.CACHE_CONTROL
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.Results.{InternalServerError, Redirect}
-import play.api.mvc.{Request, RequestHeader, Result, Results}
+import play.api.mvc._
 import play.twirl.api.Html
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{ErrorCode, ResponseError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, ErrorCode, ResponseError}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 

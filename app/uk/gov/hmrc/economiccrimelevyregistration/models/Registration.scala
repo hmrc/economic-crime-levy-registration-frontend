@@ -39,11 +39,11 @@ final case class Registration(
   contactAddress: Option[EclAddress],
   contactAddressIsUk: Option[Boolean],
   partnershipName: Option[String],
-  privateBetaAccessCode: Option[String],
   optOtherEntityJourneyData: Option[OtherEntityJourneyData],
   base64EncodedFields: Option[Base64EncodedFields],
   registrationType: Option[RegistrationType],
-  amendReason: Option[String]
+  amendReason: Option[String],
+  registeringForCurrentYear: Option[Boolean]
 ) {
 
   val grsAddressToEclAddress: Option[EclAddress] = {
@@ -124,10 +124,10 @@ object Registration {
     contactAddress = None,
     contactAddressIsUk = None,
     partnershipName = None,
-    privateBetaAccessCode = None,
     optOtherEntityJourneyData = None,
     base64EncodedFields = None,
     registrationType = None,
-    amendReason = None
+    amendReason = None,
+    registeringForCurrentYear = None
   )
 }

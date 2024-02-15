@@ -32,9 +32,9 @@ object EclTaxYear {
   def dueDate: LocalDate =
     LocalDate.of(calculateYearDue(), MonthDue, DayDue)
 
-  def yearDue: String                      = calculateYearDue().toString
-  private def currentFinancialYear: String = (yearDue.toInt - 1).toString
-  val YearInDays: Int                      = 365
+  def yearDue: String              = calculateYearDue().toString
+  def currentFinancialYear: String = (yearDue.toInt - 1).toString
+  val YearInDays: Int              = 365
 
   @tailrec
   def calculateYearDue(yearDue: Int = startYear, currentDate: LocalDate = LocalDate.now()): Int =
