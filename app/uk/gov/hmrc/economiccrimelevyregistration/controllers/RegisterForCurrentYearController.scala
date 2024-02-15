@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegisterForCurrentYear}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegisterForCurrentYearView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterForCurrentYearController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  view: RegisterForCurrentYear,
+  view: RegisterForCurrentYearView,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   formProvider: RegisterForCurrentYearFormProvider,
@@ -45,7 +45,7 @@ class RegisterForCurrentYearController @Inject() (
     with ErrorHandler {
 
   val form                                       = formProvider()
-  def onPageLoad(mode: Mode): Action[AnyContent] = Action { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = authorise { implicit request =>
     Ok(view(form, mode, s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
   }
 
