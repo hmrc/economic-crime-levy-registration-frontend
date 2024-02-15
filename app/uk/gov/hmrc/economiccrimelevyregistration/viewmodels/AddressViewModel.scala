@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.viewmodels
 
 import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.economiccrimelevyregistration.models.EclAddress
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, GetCorrespondenceAddressDetails}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.insettext.InsetText
 
@@ -33,6 +33,20 @@ object AddressViewModel {
     eclAddress.region,
     eclAddress.postCode
   )
+
+  private def eclAddressToSeq(address: GetCorrespondenceAddressDetails): Seq[Option[String]] = Seq(
+    Some(address.addressLine1),
+    address.addressLine2,
+    address.addressLine3,
+    address.addressLine4,
+    address.postCode,
+    address.countryCode
+  )
+
+  def html(eclAddress: GetCorrespondenceAddressDetails): String = eclAddressToSeq(eclAddress)
+    .filter(_.isDefined)
+    .map(value => HtmlFormat.escape(value.get))
+    .mkString("<br/>")
 
   def html(eclAddress: EclAddress): String = eclAddressToSeq(eclAddress)
     .filter(_.isDefined)

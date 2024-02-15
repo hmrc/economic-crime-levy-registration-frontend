@@ -32,10 +32,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait BaseController extends I18nSupport {
 
+  def valueOrError[T](value: Option[T], message: String = "Missing value") =
+    EitherT {
+      Future.successful(value.map(Right(_)).getOrElse(Left(ResponseError.internalServiceError(message))))
+    }
   private def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
     request: Request[_],
     errorTemplate: ErrorTemplate
-  ): Html =
+  ): Html                                                                  =
     errorTemplate(pageTitle, heading, message)
 
   private def internalServerErrorTemplate(implicit request: Request[_], errorTemplate: ErrorTemplate): Html =

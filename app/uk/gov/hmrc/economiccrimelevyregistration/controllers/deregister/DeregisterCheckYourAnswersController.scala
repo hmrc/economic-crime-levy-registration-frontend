@@ -78,7 +78,7 @@ class DeregisterCheckYourAnswersController @Inject() (
       _ <- deregistrationService.delete(request.internalId).asResponseError
     } yield ()).fold(
       err => routeError(err),
-      _ => Redirect(appConfig.yourEclAccountUrl)
+      _ => Redirect(routes.DeregistrationRequestedController.onPageLoad())
     )
   }
 

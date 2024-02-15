@@ -18,10 +18,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.deregister
 
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Dereg
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Registration, RegistrationType}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, RegistrationType}
 
 import java.time.{Instant, LocalDate}
-
 case class Deregistration(
   internalId: String,
   eclReference: Option[String],
