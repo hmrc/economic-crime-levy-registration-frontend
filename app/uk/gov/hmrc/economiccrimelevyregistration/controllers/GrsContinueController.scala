@@ -126,7 +126,7 @@ class GrsContinueController @Inject() (
         Future.successful(Redirect(routes.NotableErrorController.verificationFailed()))
       case (_, _, _, Some(businessPartnerId))                =>
         eclRegistrationConnector.getSubscriptionStatus(businessPartnerId).map {
-          case EclSubscriptionStatus(NotSubscribed)                        =>
+          case EclSubscriptionStatus(NotSubscribed)                          =>
             mode match {
               case NormalMode =>
                 entityType match {
@@ -136,8 +136,14 @@ class GrsContinueController @Inject() (
                 }
               case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad())
             }
-          case EclSubscriptionStatus(Subscribed(eclRegistrationReference)) =>
+          case EclSubscriptionStatus(Subscribed(eclRegistrationReference))   =>
             Redirect(routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference))
+          case EclSubscriptionStatus(DeRegistered(eclRegistrationReference)) =>
+            routeError(
+              ResponseError.internalServiceError(
+                s"ECL Subscription is deregistered for $eclRegistrationReference"
+              )
+            )
         }
       case (_, _, RegistrationFailed, _)                     =>
         grsResult.failures match {
