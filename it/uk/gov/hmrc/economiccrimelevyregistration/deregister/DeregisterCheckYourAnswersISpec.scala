@@ -20,6 +20,7 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
@@ -60,12 +61,11 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
         .onSubmit()
     )
 
-    "delete the deregistration then redirect the account dashboard" in {
+    "delete the deregistration then redirect the the deregistration requested page" in {
       stubAuthorisedWithEclEnrolment()
       val deregistration = random[Deregistration].copy(internalId = testInternalId)
       val role           = stringsWithMaxLength(RoleMaxLength).sample.get
       stubGetDeregistration(deregistration)
-      stubDeleteDeregistration()
 
       val result = callRoute(
         FakeRequest(
@@ -77,7 +77,7 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(appConfig.yourEclAccountUrl)
+      redirectLocation(result) shouldBe Some(routes.DeregistrationRequestedController.onPageLoad().url)
     }
   }
 

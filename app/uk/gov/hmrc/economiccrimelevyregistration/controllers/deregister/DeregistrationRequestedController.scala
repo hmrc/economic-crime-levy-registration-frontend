@@ -18,11 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregistrationRequestedView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -32,12 +33,12 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class DeregistrationRequestedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  authorise: AuthorisedActionWithoutEnrolmentCheck,
+  authorise: AuthorisedActionWithEnrolmentCheck,
   getDeregistrationData: DeregistrationDataRetrievalAction,
   deregistrationService: DeregistrationService,
   registrationService: EclRegistrationService,
   view: DeregistrationRequestedView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with BaseController
@@ -51,7 +52,7 @@ class DeregistrationRequestedController @Inject() (
       address               = subscriptionResponse.correspondenceAddressDetails
       email                <- valueOrError(request.deregistration.contactDetails.emailAddress)
     } yield (eclReference, email, address)).fold(
-      _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
+      error => routeError(error),
       tuple => {
         val eclReference = tuple._1
         val email        = tuple._2

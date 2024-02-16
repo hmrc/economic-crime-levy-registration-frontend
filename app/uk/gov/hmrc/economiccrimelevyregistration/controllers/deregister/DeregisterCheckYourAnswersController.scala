@@ -73,13 +73,8 @@ class DeregisterCheckYourAnswersController @Inject() (
     )
   }
 
-  def onSubmit(): Action[AnyContent] = authorise.async { implicit request =>
-    (for {
-      _ <- deregistrationService.delete(request.internalId).asResponseError
-    } yield ()).fold(
-      err => routeError(err),
-      _ => Redirect(routes.DeregistrationRequestedController.onPageLoad())
-    )
+  def onSubmit(): Action[AnyContent] = authorise { implicit request =>
+    Redirect(routes.DeregistrationRequestedController.onPageLoad())
   }
 
   def organisation(eclReference: Option[String], companyName: Option[String])(implicit

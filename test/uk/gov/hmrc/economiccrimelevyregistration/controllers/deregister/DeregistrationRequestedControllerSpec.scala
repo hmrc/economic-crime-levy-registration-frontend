@@ -17,19 +17,18 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister
 
 import cats.data.EitherT
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, SessionError}
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
+import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregistrationRequestedView
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.FakeDeregistrationRetrievalAction
+import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 
 import scala.concurrent.Future
 
@@ -40,134 +39,115 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
   val mockDeregistrationService: DeregistrationService   = mock[DeregistrationService]
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
-  val controller = new DeregistrationRequestedController(
-    mcc,
-    fakeAuthorisedActionWithoutEnrolmentCheck("test-internal-id"),
-    new DeregistrationDataRetrievalAction(mockDeregistrationService),
-    mockDeregistrationService,
-    mockEclRegistrationService,
-    view
-  )
+  class TestContext(deregistration: Deregistration, eclReference: Option[String]) {
+    val controller = new DeregistrationRequestedController(
+      mcc,
+      fakeAuthorisedActionWithEnrolmentCheck("test-internal-id", eclReference),
+      new FakeDeregistrationRetrievalAction(mockDeregistrationService, deregistration),
+      mockDeregistrationService,
+      mockEclRegistrationService,
+      view
+    )
+  }
 
   "onPageLoad" should {
-    "return OK and the correct view when there is one contact email address and aml activity in the session" in forAll {
+    "return OK and the correct view when the call to get subscription succeeds" in forAll {
       (
-        liabilityYear: LiabilityYear,
-        firstContactEmailAddress: String,
-        secondContactEmailAddress: Option[String],
-        amlRegulatedActivity: Boolean
+        email: String,
+        subscriptionResponse: GetSubscriptionResponse,
+        deregistration: Deregistration
       ) =>
-        when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
-          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+        val updatedDeregistration =
+          deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email)))
+        new TestContext(updatedDeregistration, Some(eclReference)) {
+          when(mockDeregistrationService.delete(anyString())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
-        when(mockEclRegistrationService.deleteRegistration(anyString())(any(), any()))
-          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+          when(mockEclRegistrationService.getSubscription(anyString())(any()))
+            .thenReturn(
+              EitherT[Future, DataRetrievalError, GetSubscriptionResponse](
+                Future.successful(Right(subscriptionResponse))
+              )
+            )
 
-        val request = fakeRequest.withSession(
-          (SessionKeys.EclReference, eclReference),
-          (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress),
-          (SessionKeys.AmlRegulatedActivity, amlRegulatedActivity.toString)
-        )
-
-        when(
-          mockSessionService.get(
-            ArgumentMatchers.eq(request.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.LiabilityYear)
-          )(any())
-        )
-          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(liabilityYear.value.toString))))
-        when(
-          mockSessionService.get(
-            ArgumentMatchers.eq(request.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.AmlRegulatedActivity)
-          )(any())
-        )
-          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(amlRegulatedActivity.toString))))
-        when(
-          mockSessionService.get(
-            ArgumentMatchers.eq(request.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.FirstContactEmailAddress)
-          )(any())
-        )
-          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(firstContactEmailAddress))))
-        when(
-          mockSessionService.getOptional(
-            ArgumentMatchers.eq(request.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.SecondContactEmailAddress)
-          )(any())
-        )
-          .thenReturn(
-            EitherT[Future, SessionError, Option[String]](Future.successful(Right(secondContactEmailAddress)))
+          val result: Future[Result] = controller.onPageLoad()(
+            fakeRequest
           )
-        when(
-          mockSessionService.getOptional(
-            ArgumentMatchers.eq(request.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.EclReference)
-          )(any())
-        )
-          .thenReturn(EitherT[Future, SessionError, Option[String]](Future.successful(Right(Some(eclReference)))))
 
-        val result: Future[Result] = controller.onPageLoad()(
-          request
-        )
+          status(result) shouldBe OK
 
-        status(result) shouldBe OK
-
-        contentAsString(result) shouldBe view(
-          eclReference,
-          firstContactEmailAddress,
-          secondContactEmailAddress,
-          Some(liabilityYear),
-          Some(amlRegulatedActivity.toString)
-        )(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(
+            eclReference,
+            email,
+            subscriptionResponse.correspondenceAddressDetails
+          )(fakeRequest, messages).toString
+        }
     }
 
-    "return OK and the correct view when information is not gathered from session" in {
+    "return InternalServerError when the call to get subscription fails" in forAll {
       (
-        internalId: String,
-        groupId: String,
-        eclReference: String,
-        liabilityYear: LiabilityYear,
-        amlRegulatedActivity: Option[String]
+        email: String,
+        subscriptionResponse: GetSubscriptionResponse,
+        deregistration: Deregistration
       ) =>
-        when(
-          mockSessionService.get(
-            ArgumentMatchers.eq(fakeRequest.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.LiabilityYear)
-          )(any())
-        )
-          .thenReturn(EitherT.fromEither[Future](Right(liabilityYear.asString)))
+        val updatedDeregistration =
+          deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email)))
+        new TestContext(updatedDeregistration, None) {
+          when(mockDeregistrationService.delete(anyString())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
-        when(
-          mockSessionService.get(
-            ArgumentMatchers.eq(fakeRequest.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.AmlRegulatedActivity)
-          )(
-            any()
+          when(mockEclRegistrationService.getSubscription(anyString())(any()))
+            .thenReturn(
+              EitherT[Future, DataRetrievalError, GetSubscriptionResponse](
+                Future.successful(Right(subscriptionResponse))
+              )
+            )
+
+          val result: Future[Result] = controller.onPageLoad()(
+            fakeRequest
           )
-        )
-          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(amlRegulatedActivity.toString))))
 
-        val result =
-          controller.onPageLoad()(AuthorisedRequest(fakeRequest, internalId, groupId, Some(eclReference)))
-
-        status(result) shouldBe OK
-
-        contentAsString(result) shouldBe outOfSessionRegistrationSubmittedView(
-          "eclReference",
-          Some(liabilityYear),
-          amlRegulatedActivity
-        )(fakeRequest, messages)
-          .toString()
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
     }
 
+    "return InternalServerError when the eclReference is not available in the request object" in forAll {
+      (
+        email: String,
+        deregistration: Deregistration
+      ) =>
+        val updatedDeregistration =
+          deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email)))
+        new TestContext(updatedDeregistration, None) {
+          when(mockDeregistrationService.delete(anyString())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          val result: Future[Result] = controller.onPageLoad()(
+            fakeRequest
+          )
+
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+    }
+
+    "return InternalServerError when the email address is not present in the deregistration" in forAll {
+      (
+        email: String,
+        deregistration: Deregistration
+      ) =>
+        val updatedDeregistration =
+          deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = None))
+        new TestContext(updatedDeregistration, None) {
+          when(mockDeregistrationService.delete(anyString())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          val result: Future[Result] = controller.onPageLoad()(
+            fakeRequest
+          )
+
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+    }
   }
 
 }

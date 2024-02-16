@@ -43,7 +43,7 @@ class DeregistrationService @Inject() (
   ): EitherT[Future, DataRetrievalError, Deregistration] =
     get(internalId).flatMap {
       case Some(deregistration) =>
-        EitherT.fromEither[Future](Right(deregistration))
+        EitherT[Future, DataRetrievalError, Deregistration](Future.successful(Right(deregistration)))
       case None                 =>
         val deregistration = Deregistration.empty(internalId)
         upsert(deregistration).map(_ => deregistration)

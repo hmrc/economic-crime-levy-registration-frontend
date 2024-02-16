@@ -227,30 +227,6 @@ abstract class BaseAuthorisedAction @Inject() (
         )
     }
 
-  private def processRegistrationType[A](
-    request: Request[A],
-    internalId: String,
-    block: AuthorisedRequest[A] => Future[Result],
-    groupId: String,
-    eclRegistrationReference: Option[String],
-    registration: Registration
-  ): Future[Result] =
-    registration.registrationType match {
-      case None            =>
-        Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled()))
-      case Some(Amendment) =>
-        block(
-          AuthorisedRequest(
-            request,
-            internalId,
-            groupId,
-            eclRegistrationReference
-          )
-        )
-      case Some(Initial)   =>
-        Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled()))
-    }
-
   private def processAssistant[A](
     request: Request[A],
     internalId: String,

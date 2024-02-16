@@ -5,7 +5,7 @@ import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 
@@ -14,7 +14,10 @@ import scala.concurrent.Future
 trait AuthorisedBehaviour {
   self: ISpecBase =>
 
-  def authorisedActionWithEnrolmentCheckRoute(call: Call): Unit =
+  def authorisedActionWithEnrolmentCheckRoute(
+    call: Call,
+    registrationType: RegistrationType = Initial
+  ): Unit =
     "authorisedActionWithEnrolmentCheckRoute" should {
       "redirect to sign in when there is no auth session" in {
         stubUnauthorised()
@@ -30,7 +33,7 @@ trait AuthorisedBehaviour {
 
         val registration = random[Registration]
 
-        stubGetRegistration(registration.copy(registrationType = Some(Initial)))
+        stubGetRegistration(registration.copy(registrationType = Some(registrationType)))
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 

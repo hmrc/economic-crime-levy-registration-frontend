@@ -81,22 +81,13 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "go to ecl account dashboard" in forAll { deregistration: Deregistration =>
+    "go to the deregistration requested page" in forAll { deregistration: Deregistration =>
       new TestContext(deregistration.internalId, "") {
-        when(mockDeregistrationService.getOrCreate(anyString())(any()))
-          .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
-
-        when(mockDeregistrationService.delete(anyString())(any(), any()))
-          .thenReturn(EitherT.fromEither[Future](Right()))
-
         val result: Future[Result] =
           controller.onSubmit()(fakeRequest)
 
         status(result)           shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(appConfig.yourEclAccountUrl)
-
-        verify(mockDeregistrationService, times(1)).delete(anyString())(any(), any())
-        reset(mockDeregistrationService)
+        redirectLocation(result) shouldBe Some(routes.DeregistrationRequestedController.onPageLoad().url)
       }
     }
   }
