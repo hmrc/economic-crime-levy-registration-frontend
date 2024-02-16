@@ -58,7 +58,7 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
 
   def getSubscriptionStatus(businessPartnerId: String)(implicit hc: HeaderCarrier): Future[EclSubscriptionStatus] =
     httpClient
-      .get(url"$eclRegistrationUrl/subscription-status/$businessPartnerId")
+      .get(url"$eclRegistrationUrl/subscription-status/SAFE/$businessPartnerId")
       .executeAndDeserialise[EclSubscriptionStatus]
 
   def getRegistrationValidationErrors(

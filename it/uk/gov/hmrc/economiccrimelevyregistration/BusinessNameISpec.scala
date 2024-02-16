@@ -1,12 +1,13 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
@@ -34,13 +35,20 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
   s"POST ${routes.BusinessNameController.onSubmit(NormalMode).url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.BusinessNameController.onSubmit(NormalMode))
 
+    def nextPage(entityType: EntityType) = entityType match {
+      case Charity                   => routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
+      case UnincorporatedAssociation => routes.DoYouHaveCrnController.onPageLoad(NormalMode)
+      case Trust                     => routes.CtUtrController.onPageLoad(NormalMode)
+      case NonUKEstablishment        => routes.DoYouHaveCrnController.onPageLoad(NormalMode)
+      case _                         => routes.NotableErrorController.answersAreInvalid()
+    }
+
     "save the business name then redirect to the charity registration number page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration: Registration = random[Registration].copy(
-        entityType = Some(Charity)
-      )
-      val additionalInfo             = random[RegistrationAdditionalInfo]
+      val registration: Registration = random[Registration]
+
+      val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
@@ -60,7 +68,7 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(
-        routes.CharityRegistrationNumberController.onPageLoad(mode = NormalMode).url
+        nextPage(registration.entityType.get).url
       )
     }
   }
