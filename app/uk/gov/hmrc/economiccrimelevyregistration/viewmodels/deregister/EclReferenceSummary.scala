@@ -31,7 +31,7 @@ object EclReferenceSummary {
       SummaryListRowViewModel(
         key = Key("deregisterCya.t1.l1"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),
-        actions = Seq()
+        actions = Seq.empty
       )
     }
 }
