@@ -219,3 +219,38 @@ POST        /change-answer/why-are-you-amending-your-registration               
 
 GET         /cancel-registration-amendment                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.CancelRegistrationAmendmentController.onPageLoad()
 POST        /cancel-registration-amendment                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.CancelRegistrationAmendmentController.onSubmit()
+
+GET         /deregister-start                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterStartController.onPageLoad()
+
+GET         /deregister-reason                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterReasonController.onPageLoad(mode: Mode = NormalMode)
+POST        /deregister-reason                                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterReasonController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/deregister-reason                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterReasonController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/deregister-reason                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterReasonController.onSubmit(mode: Mode = CheckMode)
+
+GET         /deregister-date-no-longer-liable                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterDateController.onPageLoad(mode: Mode = NormalMode)
+POST        /deregister-date-no-longer-liable                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterDateController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/deregister-date-no-longer-liable                     uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterDateController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/deregister-date-no-longer-liable                     uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterDateController.onSubmit(mode: Mode = CheckMode)
+
+GET         /deregister-contact-name                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNameController.onPageLoad(mode: Mode = NormalMode)
+POST        /deregister-contact-name                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNameController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/deregister-contact-name                              uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNameController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/deregister-contact-name                              uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNameController.onSubmit(mode: Mode = CheckMode)
+
+GET         /deregister-contact-role                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactRoleController.onPageLoad(mode: Mode = NormalMode)
+POST        /deregister-contact-role                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactRoleController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/deregister-contact-role                              uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactRoleController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/deregister-contact-role                              uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactRoleController.onSubmit(mode: Mode = CheckMode)
+
+GET         /deregister-contact-email-address                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactEmailController.onPageLoad(mode: Mode = NormalMode)
+POST        /deregister-contact-email-address                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactEmailController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/deregister-contact-email-address                     uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactEmailController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/deregister-contact-email-address                     uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactEmailController.onSubmit(mode: Mode = CheckMode)
+
+GET         /deregister-contact-telephone                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /deregister-contact-telephone                                       uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /change-answer/deregister-contact-telephone                         uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/deregister-contact-telephone                         uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterContactNumberController.onSubmit(mode: Mode = CheckMode)
+
+GET         /deregister-check-your-answers                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterCheckYourAnswersController.onPageLoad()
+POST        /deregister-check-your-answers                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterCheckYourAnswersController.onSubmit()

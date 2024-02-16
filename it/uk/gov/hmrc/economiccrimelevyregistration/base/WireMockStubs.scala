@@ -7,6 +7,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
+import uk.gov.hmrc.economiccrimelevyregistration.base.deregister.DeregistrationStubs
 
 trait WireMockStubs
     extends EclTestData
@@ -18,7 +19,8 @@ trait WireMockStubs
     with EclCalculatorStubs
     with EnrolmentStoreProxyStubs
     with EmailStubs
-    with SessionDataStubs {
+    with SessionDataStubs
+    with DeregistrationStubs {
 
   def stubAuthorisedWithNoGroupEnrolment(): StubMapping = {
     stubAuthorised()

@@ -627,3 +627,87 @@ cancelRegistrationAmendment.title = Ydych chi'n siŵr eich bod am ganslo'ch cais
 cancelRegistrationAmendment.heading = Ydych chi'n siŵr eich bod am ganslo'ch cais i newid eich cofrestriad?
 cancelRegistrationAmendment.body = Bydd eich atebion yn cael eu dileu.
 cancelRegistrationAmendment.error.required = Dewiswch 'Iawn' os ydych yn dymuno canslo eich cais i newid eich cofrestriad
+
+deregister.banner.title = Dadgofrestru o'r Ardoll Troseddau Economaidd
+
+deregister.start.title = Cais at CThEF i ddatgofrestru rhag yr Ardoll Troseddau Economaidd
+deregister.start.heading = Cais at CThEF i ddatgofrestru rhag yr Ardoll Troseddau Economaidd
+deregister.start.h2 = Manylion y sefydliad
+deregister.start.eclReference = Cyfeirnod ECL
+deregister.start.companyName = Enw’r cwmni
+deregister.start.p1 = Defnyddiwch y gwasanaeth hwn i wneud cais i ddatgofrestru o’ch cyfrif Ardoll Troseddau Economaidd (ECL).
+deregister.start.p2 = Gallwch ddatgofrestru os yw’r canlynol yn berthnasol i’ch sefydliad:
+deregister.start.b1 = mae wedi rhoi’r gorau i weithgareddau a reoleiddir gan reoliadau Gwrth-wyngalchu Arian (AML)
+deregister.start.b2 = mae wedi dechrau cael ei reoleiddio gan yr Awdurdod Ymddygiad Ariannol (FCA) neu’r Comisiwn Hapchwarae (GC)
+deregister.start.b3 = nid yw’n cyrraedd y trothwy refeniw ar gyfer ECL mwyach
+deregister.start.p3 = Nid oes angen i chi dadgofrestru er mwyn neud unrhyw newidiadau i’ch cofrestriad. Gallwch {0}.
+deregister.start.p3.link = <a href="{0}" class="govuk-link">wneud cais i ddiwygio’ch cofrestriad</a>
+deregister.start.p4 = I gael rhagor o wybodaeth, darllenwch {0}.
+deregister.start.p4.link = <a href="{0}" class="govuk-link">yr arweiniad ar datgofrestru</a>
+deregister.start.beforeYouStart = Cyn i chi ddechrau
+deregister.start.provide = ae’n rhaid i chi roi gwybod i ni am y canlynol:
+deregister.start.provide.b1 = y rheswm pam rydych yn dadgofrestru rhag ECL
+deregister.start.provide.b2 = y dyddiad pan nad oeddech yn agored i dalu ECL mwyach
+deregister.start.provide.b3 = manylion rhywun yn eich sefydliad a all weithredu fel pwynt cyswllt ar gyfer unrhyw weithgareddau sy’n berthnasol i’r ECL
+
+deregisterReason.title = Dewiswch y rheswm dros ddadgofrestru
+deregisterReason.NoAmlActivity = Mae’r sefydliad wedi rhoi’r gorau i weithgareddau a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML).
+deregisterReason.RegulatedByFcaOrGa = Mae’r sefydliad bellach yn cael ei reoleiddio gan yr Awdurdod Ymddygiad Ariannol (FCA) neu’r Awdurdod Ymddygiad Ariannol (GC).
+deregisterReason.NoLongerMeetsThreshold = Nid yw’r sefydliad yn cyrraedd y trothwy refeniw ar gyfer ECL mwyach.
+deregisterReason.error.required = Dewiswch y rheswm dros ddatganoli
+
+deregisterDate.title = Nodwch y dyddiad pan nad oeddech yn agored i ECL mwyach
+deregisterDate.heading = Nodwch y dyddiad pan nad oeddech yn agored i ECL mwyach
+deregisterDate.p1 = Dyma’r dyddiad pryd y gwnaethoch roi’r gorau i weithgareddau a reoleiddir gan reoliadau AML, dechrau cael eich rheoleiddio gan yr FCA neu’r GC neu’r dyddiad nad oeddech yn agored i’r trothwy ar gyfer ECL mwyach.
+deregisterDate.hint = Er enghraifft, 27 3 2024.
+deregisterDate.error.required = Nodwch y dyddiad nad oeddech bellach yn atebol am ECL
+deregisterDate.error.past = Rhaid i’r dyddiad fod ar ôl 1 Ebrill 2022
+deregisterDate.error.future = Mae’n rhaid i’r dyddiad fod yn y gorffennol
+
+deregisterContactName.title = Rhowch enw cyswllt
+deregisterContactName.heading = Rhowch enw cyswllt
+deregisterContactName.legend.p1 = Rhowch fanylion person yn eich sefydliad a all gweithredu fel pwynt cyswllt. Nid yw’n gorfod fod yn rhan o’ch adran gyfrifyddu na’ch adran dreth.
+deregisterContactName.hint = Er enghraifft, ''John Jones'' neu ''Laura Smith''.
+deregisterContactName.error.required = Nodwch enw llawn
+deregisterContactName.error.length = Dewiswch sector busnes
+
+deregisterContactRole.title = Beth yw rôl {0}?
+deregisterContactRole.heading = Beth yw rôl {0}?
+deregisterContactRole.legend = Rhowch fanylion i ni am ei rôl yn eich sefydliad.
+deregisterContactRole.hint = Er enghraifft, ''Swyddog Cydymffurfiad''.
+deregisterContactRole.error.required = Nodwch rôl
+deregisterContactRole.error.length = Mae’n rhaid i’r rôl fod yn {0} o gymeriadau neu lai
+
+deregisterContactEmail.title = Beth yw cyfeiriad e-bost {0}?
+deregisterContactEmail.heading = Beth yw cyfeiriad e-bost {0}?
+deregisterContactEmail.legend = Dyma gyfeiriad e-bost y cyswllt a enwyd gennych.
+deregisterContactEmail.error.required = Nodwch gyfeiriad e-bost
+deregisterContactEmail.error.length = Mae’n rhaid i’r cyfeiriad e-bost fod yn {0} o gymeriadau neu lai
+deregisterContactEmail.error.invalid = Nodwch gyfeiriad e-bost yn y fformat cywir, megis enw@enghraifft.com
+deregisterContactEmail.use = Byddwn ond yn defnyddio’r cyfeiriad e-bost hwn i gysylltu â’ch cyswllt ynghylch yr Ardoll Troseddau Economaidd.
+
+deregisterContactNumber.title = Beth yw rhif ffôn {0}?
+deregisterContactNumber.heading = Beth yw rhif ffôn {0}?
+deregisterContactNumber.label = Rhif ffôn
+deregisterContactNumber.legend = Dyma’r rhif ffôn ar gyfer y cyswllt a enwyd gennych.
+deregisterContactNumber.hint = Ar gyfer rhifau rhyngwladol, cofiwch nodi cod y wlad
+deregisterContactNumber.error.required = Nodwch rif ffôn
+deregisterContactNumber.error.length = Mae’n rhaid i’r rhif ffôn gynnwys {0} o gymeriadau neu lai
+deregisterContactNumber.error.invalid = Nodwch rif ffôn, megis 01632 960 001, 07700 900 982 neu +44 808 157 0192
+deregisterContactNumber.use = Byddwn ond yn defnyddio’r rhif ffôn hwn i gysylltu â’ch cyswllt ynghylch yr Ardoll Troseddau Economaidd.
+
+deregisterCya.title = Gwirio’ch atebion
+deregisterCya.h1 = Gwirio’ch atebion
+deregisterCya.t1.h2 = Manylion y sefydliad
+deregisterCya.t1.l1 = Cyfeirnod ECL
+deregisterCya.t1.l2 = Enw’r cwmni
+deregisterCya.t2.h2 = Gwybodaeth ychwanegol
+deregisterCya.t2.l1 = Y rheswm dros ddatgofrestru
+deregisterCya.t2.l2 = Y dyddiad pan nad oeddech yn agored i ECL mwyach
+deregisterCya.t3.h2 = Manylion cyswllt
+deregisterCya.t3.l1 = Enw cyswllt
+deregisterCya.t3.l2 = Rôl
+deregisterCya.t3.l3 = Cyfeiriad e-bost
+deregisterCya.t3.l4 = Rhif ffôn
+deregisterCya.h2 = Anfonwch eich cais i ddadgofrestru nawr
+deregisterCya.p1 = Drwy gyflwyno’r cais hwn i ddatgofrestru, rydych yn cadarnhau, hyd eithaf eich gwybodaeth, bod y manylion a roddir gennych yn gywir.
