@@ -15,11 +15,12 @@
  *@
 
 @import java.time.LocalDate
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
+@import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates._
 
 @this(
-        layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
+        layout: Layout,
         formHelper: FormWithCSRF,
         errorSummary: GovukErrorSummary,
         dateInput: GovukDateInput,
@@ -39,7 +40,7 @@
 
     <div class="govuk-hint">@messages("deregisterDate.hint")</div>
 
-    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterDateController.onSubmit(mode)) {
+    @formHelper(action = DeregisterDateController.onSubmit(mode)) {
         @dateInput(DateInput(
             fieldset = Some(Fieldset(legend = None))).withFormField(form("value"))
         )

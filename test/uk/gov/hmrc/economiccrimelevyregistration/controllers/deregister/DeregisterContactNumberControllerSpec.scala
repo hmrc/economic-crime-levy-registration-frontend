@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.DeregisterCont
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.TelephoneNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.{arbDeregistration, arbMode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Mode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterContactNumberView
 
@@ -52,14 +52,20 @@ class DeregisterContactNumberControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view" in forAll { (deregistration: Deregistration, mode: Mode) =>
-      new TestContext(deregistration.internalId) {
+    "return OK and the correct view" in forAll { (deregistration: Deregistration, name: String, mode: Mode) =>
+      val updatedDeregistration: Deregistration =
+        deregistration.copy(contactDetails = deregistration.contactDetails.copy(name = Some(name)))
+      new TestContext(updatedDeregistration.internalId) {
         when(mockDeregistrationService.getOrCreate(anyString())(any()))
-          .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
+          .thenReturn(
+            EitherT.fromEither[Future](
+              Right(updatedDeregistration)
+            )
+          )
 
         val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
-        val form = deregistration.contactDetails.telephoneNumber match {
+        val form = updatedDeregistration.contactDetails.telephoneNumber match {
           case Some(number) => formProvider().fill(number)
           case None         => formProvider()
         }
@@ -68,7 +74,7 @@ class DeregisterContactNumberControllerSpec extends SpecBase {
 
         contentAsString(result) shouldBe view(
           form,
-          deregistration.contactDetails.name.getOrElse(""),
+          name,
           mode,
           deregistration.registrationType
         )(fakeRequest, messages).toString

@@ -21,46 +21,39 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 
-class SecondContactEmailPageNavigatorSpec extends SpecBase {
+class SecondContactRolePageDeregisterNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new SecondContactEmailPageNavigator()
+  val pageNavigator = new SecondContactRolePageNavigator()
 
   "nextPage" should {
-    "return a Call to the second contact telephone number page in NormalMode" in forAll {
-      (registration: Registration, email: String) =>
+    "return a Call to the second contact email page in NormalMode" in forAll {
+      (registration: Registration, role: String) =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
             registration.contacts.copy(secondContactDetails =
-              registration.contacts.secondContactDetails.copy(emailAddress = Some(email))
+              registration.contacts.secondContactDetails.copy(role = Some(role))
             )
           )
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
-          contacts.routes.SecondContactNumberController.onPageLoad(NormalMode)
+          contacts.routes.SecondContactEmailController.onPageLoad(NormalMode)
     }
 
-    "return a Call to the second contact telephone number page in CheckMode when a second contact telephone number does not already exist" in forAll {
-      (registration: Registration, email: String) =>
+    "return a Call to the second contact email page in CheckMode when a second contact email is not already present" in forAll {
+      (registration: Registration, role: String) =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
-            registration.contacts.copy(secondContactDetails =
-              registration.contacts.secondContactDetails.copy(emailAddress = Some(email), telephoneNumber = None)
-            )
+            registration.contacts.copy(secondContactDetails = validContactDetails.copy(emailAddress = None))
           )
 
         pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
-          contacts.routes.SecondContactNumberController.onPageLoad(CheckMode)
+          contacts.routes.SecondContactEmailController.onPageLoad(CheckMode)
     }
 
-    "return a Call to the check your answers page in CheckMode when a second contact telephone number already exists" in forAll {
-      (registration: Registration, email: String, telephoneNumber: String) =>
+    "return a Call to the check your answers page in CheckMode when second contact details are already present" in forAll {
+      (registration: Registration, role: String, emailAddress: String) =>
         val updatedRegistration: Registration =
-          registration.copy(contacts =
-            registration.contacts.copy(secondContactDetails =
-              registration.contacts.secondContactDetails
-                .copy(emailAddress = Some(email), telephoneNumber = Some(telephoneNumber))
-            )
-          )
+          registration.copy(contacts = registration.contacts.copy(secondContactDetails = validContactDetails))
 
         pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           routes.CheckYourAnswersController.onPageLoad()

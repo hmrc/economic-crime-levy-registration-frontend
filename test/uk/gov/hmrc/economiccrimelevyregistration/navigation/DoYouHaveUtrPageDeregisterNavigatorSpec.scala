@@ -22,18 +22,34 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class CompanyRegistrationNumberPageNavigatorSpec extends SpecBase {
+class DoYouHaveUtrPageDeregisterNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new CompanyRegistrationNumberPageNavigator()
+  val pageNavigator = new DoYouHaveUtrPageNavigator()
 
   "nextPage" should {
-    "return a call to the business sector page in normal mode" in forAll {
-      (registration: Registration, charityRegistrationNumber: String, companyRegistrationNumber: String, mode: Mode) =>
+    "(Normal Mode) return a call to the utr page when answer is yes" in forAll { (registration: Registration) =>
+      val otherEntityJourneyData = OtherEntityJourneyData
+        .empty()
+        .copy(
+          isCtUtrPresent = Some(true)
+        )
+
+      val updatedRegistration: Registration =
+        registration.copy(
+          entityType = Some(Charity),
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
+
+      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        routes.UtrController.onPageLoad(NormalMode)
+    }
+
+    "(Normal Mode) return a call to the company registration number page when answer is no" in forAll {
+      (registration: Registration) =>
         val otherEntityJourneyData = OtherEntityJourneyData
           .empty()
           .copy(
-            charityRegistrationNumber = Some(charityRegistrationNumber),
-            companyRegistrationNumber = Some(companyRegistrationNumber)
+            isCtUtrPresent = Some(false)
           )
 
         val updatedRegistration: Registration =
@@ -43,16 +59,19 @@ class CompanyRegistrationNumberPageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
-          routes.BusinessSectorController.onPageLoad(NormalMode)
+          routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
     }
 
-    "return a call to the check your answers page in check mode" in forAll {
-      (registration: Registration, charityRegistrationNumber: String, companyRegistrationNumber: String, mode: Mode) =>
+    "(Check Mode) return a call to the check your answers page" in forAll {
+      (registration: Registration, isUtrPresent: Boolean, utr: String) =>
         val otherEntityJourneyData = OtherEntityJourneyData
           .empty()
           .copy(
-            charityRegistrationNumber = Some(charityRegistrationNumber),
-            companyRegistrationNumber = Some(companyRegistrationNumber)
+            isCtUtrPresent = Some(isUtrPresent),
+            ctUtr = isUtrPresent match {
+              case true  => Some(utr)
+              case false => None
+            }
           )
 
         val updatedRegistration: Registration =

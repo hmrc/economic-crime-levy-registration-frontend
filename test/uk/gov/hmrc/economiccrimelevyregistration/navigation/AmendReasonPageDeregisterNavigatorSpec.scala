@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, 
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 
-class AmendReasonPageNavigatorSpec extends SpecBase {
+class AmendReasonPageDeregisterNavigatorSpec extends SpecBase {
 
   val pageNavigator = new AmendReasonPageNavigator()
 

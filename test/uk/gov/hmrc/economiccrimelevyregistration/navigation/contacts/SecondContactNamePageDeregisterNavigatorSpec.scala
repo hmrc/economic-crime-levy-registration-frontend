@@ -21,7 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 
-class SecondContactNamePageNavigatorSpec extends SpecBase {
+class SecondContactNamePageDeregisterNavigatorSpec extends SpecBase {
 
   val pageNavigator = new SecondContactNamePageNavigator()
 

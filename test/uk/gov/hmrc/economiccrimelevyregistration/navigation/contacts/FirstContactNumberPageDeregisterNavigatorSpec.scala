@@ -21,30 +21,30 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 
-class FirstContactEmailPageNavigatorSpec extends SpecBase {
+class FirstContactNumberPageDeregisterNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new FirstContactEmailPageNavigator()
+  val pageNavigator = new FirstContactNumberPageNavigator()
 
   "nextPage" should {
-    "return a Call to the first contact telephone number page in NormalMode" in forAll {
-      (registration: Registration, email: String) =>
+    "return a Call to the add another contact page in NormalMode" in forAll {
+      (registration: Registration, number: String) =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
             registration.contacts.copy(firstContactDetails =
-              registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
+              registration.contacts.firstContactDetails.copy(telephoneNumber = Some(number))
             )
           )
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
-          contacts.routes.FirstContactNumberController.onPageLoad(NormalMode)
+          contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)
     }
 
     "return a Call to the check your answers page in CheckMode" in forAll {
-      (registration: Registration, email: String) =>
+      (registration: Registration, number: String) =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
             registration.contacts.copy(firstContactDetails =
-              registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
+              registration.contacts.firstContactDetails.copy(telephoneNumber = Some(number))
             )
           )
 

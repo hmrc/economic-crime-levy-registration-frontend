@@ -53,8 +53,8 @@ class DeregisterCheckYourAnswersController @Inject() (
     with SummaryListFluency {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
-    val eclReference = request.eclRegistrationReference.getOrElse("")
     (for {
+      eclReference <- valueOrError(request.eclRegistrationReference)
       subscription <- eclRegistrationService.getSubscription(eclReference).asResponseError
       _            <- deregistrationService
                         .upsert(request.deregistration.copy(eclReference = request.eclRegistrationReference))

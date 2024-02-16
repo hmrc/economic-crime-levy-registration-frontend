@@ -17,14 +17,13 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
-import play.api.Logger
 import play.api.http.HeaderNames.CACHE_CONTROL
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.Results.{InternalServerError, Redirect}
 import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.twirl.api.Html
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, ErrorCode, ResponseError}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{ErrorCode, ResponseError}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 
@@ -36,10 +35,11 @@ trait BaseController extends I18nSupport {
     EitherT {
       Future.successful(value.map(Right(_)).getOrElse(Left(ResponseError.internalServiceError(message))))
     }
+
   private def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
     request: Request[_],
     errorTemplate: ErrorTemplate
-  ): Html                                                                  =
+  ): Html =
     errorTemplate(pageTitle, heading, message)
 
   private def internalServerErrorTemplate(implicit request: Request[_], errorTemplate: ErrorTemplate): Html =

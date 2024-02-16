@@ -15,9 +15,11 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
+@import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates._
 
 @this(
-        layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
+        layout: Layout,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukInput: GovukInput,
@@ -40,7 +42,7 @@
 
     <p class="govuk-body">@messages("deregisterContactEmail.use", name)</p>
 
-    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactEmailController.onSubmit(mode)) {
+    @formHelper(action = DeregisterContactEmailController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),

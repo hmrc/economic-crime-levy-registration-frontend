@@ -22,7 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.UtrType.{CtUtr, SaUtr}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class UtrTypeNavigatorSpec extends SpecBase {
+class UtrTypeDeregisterNavigatorSpec extends SpecBase {
 
   val pageNavigator = new UtrTypePageNavigator()
 

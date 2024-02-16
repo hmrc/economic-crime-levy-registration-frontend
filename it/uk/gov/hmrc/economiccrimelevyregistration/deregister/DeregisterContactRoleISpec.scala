@@ -24,12 +24,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleM
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 
 class DeregisterContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactRoleController.onPageLoad(NormalMode).url}"  should {
+  s"GET ${DeregisterContactRoleController.onPageLoad(NormalMode).url}"  should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(
-      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactRoleController
+      DeregisterContactRoleController
         .onPageLoad(NormalMode)
     )
 
@@ -50,9 +51,9 @@ class DeregisterContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactRoleController.onPageLoad(NormalMode).url}" should {
+  s"POST ${DeregisterContactRoleController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(
-      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactRoleController
+      DeregisterContactRoleController
         .onSubmit(NormalMode)
     )
 
@@ -67,7 +68,7 @@ class DeregisterContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactRoleController
+          DeregisterContactRoleController
             .onSubmit(NormalMode)
         )
           .withFormUrlEncodedBody(("value", role))
@@ -76,7 +77,7 @@ class DeregisterContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(
-        uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactEmailController
+        DeregisterContactEmailController
           .onPageLoad(NormalMode)
           .url
       )

@@ -19,21 +19,25 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 
-class SaUtrPageNavigatorSpec extends SpecBase {
+class RelevantApLengthPageDeregisterNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new SaUtrPageNavigator()
+  val pageNavigator = new RelevantApLengthPageNavigator
 
   "nextPage" should {
-    "return a call to the business sector page in Normal mode" in forAll { (registration: Registration) =>
-      pageNavigator.nextPage(NormalMode, registration) shouldBe
-        routes.BusinessSectorController.onPageLoad(NormalMode)
+    "return a Call to the UK revenue page in NormalMode" in forAll { (registration: Registration, length: Int) =>
+      val updatedRegistration = registration.copy(relevantApLength = Some(length))
+
+      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        routes.UkRevenueController.onPageLoad(NormalMode)
     }
 
-    "return a call to the check your answers page in Check mode" in forAll { (registration: Registration) =>
-      pageNavigator.nextPage(CheckMode, registration) shouldBe
-        routes.CheckYourAnswersController.onPageLoad()
+    "return a Call to the UK revenue page in CheckMode" in forAll { (registration: Registration, length: Int) =>
+      val updatedRegistration = registration.copy(relevantApLength = Some(length))
+
+      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        routes.UkRevenueController.onPageLoad(CheckMode)
     }
   }
 

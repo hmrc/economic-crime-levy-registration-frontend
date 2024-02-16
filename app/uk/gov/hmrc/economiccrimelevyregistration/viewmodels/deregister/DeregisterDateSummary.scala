@@ -18,8 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.deregister
 
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
-import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.DeregisterReason
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
@@ -40,7 +40,7 @@ object DeregisterDateSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterDateController
+            DeregisterDateController
               .onPageLoad(CheckMode)
               .url
           )

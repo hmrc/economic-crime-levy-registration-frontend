@@ -29,7 +29,7 @@ object CompanyNameSummary {
       SummaryListRowViewModel(
         key = Key("deregisterCya.t1.l2"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),
-        actions = Seq()
+        actions = Seq.empty
       )
     }
 }

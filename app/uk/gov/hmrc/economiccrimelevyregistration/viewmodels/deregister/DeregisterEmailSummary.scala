@@ -23,6 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 
 object DeregisterEmailSummary {
 
@@ -36,7 +37,7 @@ object DeregisterEmailSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactEmailController
+            DeregisterContactEmailController
               .onPageLoad(CheckMode)
               .url
           )

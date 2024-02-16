@@ -21,7 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.{RegistrationWithUnincorporatedAssociation, ValidTrustRegistration}
 
-class CtUtrPageNavigatorSpec extends SpecBase {
+class CtUtrPageDeregisterNavigatorSpec extends SpecBase {
 
   val pageNavigator = new CtUtrPageNavigator()
 

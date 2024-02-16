@@ -83,10 +83,12 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
   "onSubmit" should {
     "go to the deregistration requested page" in forAll { deregistration: Deregistration =>
       new TestContext(deregistration.internalId, "") {
+
         val result: Future[Result] =
           controller.onSubmit()(fakeRequest)
 
-        status(result)           shouldBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
+
         redirectLocation(result) shouldBe Some(routes.DeregistrationRequestedController.onPageLoad().url)
       }
     }

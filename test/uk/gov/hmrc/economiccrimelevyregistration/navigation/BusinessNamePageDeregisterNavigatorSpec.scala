@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class BusinessNamePageNavigatorSpec extends SpecBase {
+class BusinessNamePageDeregisterNavigatorSpec extends SpecBase {
 
   val pageNavigator = new BusinessNamePageNavigator()
 

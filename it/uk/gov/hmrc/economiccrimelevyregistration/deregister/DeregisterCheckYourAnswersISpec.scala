@@ -20,17 +20,17 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, GetSubscriptionResponse}
+import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.{DeregisterCheckYourAnswersController, DeregistrationRequestedController}
 
 class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController.onPageLoad().url}"  should {
+  s"GET ${DeregisterCheckYourAnswersController.onPageLoad().url}"  should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(
-      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController
+      DeregisterCheckYourAnswersController
         .onPageLoad()
     )
 
@@ -45,7 +45,7 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
 
       val result = callRoute(
         FakeRequest(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController
+          DeregisterCheckYourAnswersController
             .onPageLoad()
         )
       )
@@ -55,21 +55,22 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
     }
   }
 
-  s"POST ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController.onPageLoad().url}" should {
+  s"POST ${DeregisterCheckYourAnswersController.onPageLoad().url}" should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(
-      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController
+      DeregisterCheckYourAnswersController
         .onSubmit()
     )
 
-    "delete the deregistration then redirect the the deregistration requested page" in {
+    "delete the deregistration then redirect the account dashboard" in {
       stubAuthorisedWithEclEnrolment()
+
       val deregistration = random[Deregistration].copy(internalId = testInternalId)
       val role           = stringsWithMaxLength(RoleMaxLength).sample.get
       stubGetDeregistration(deregistration)
 
       val result = callRoute(
         FakeRequest(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController
+          DeregisterCheckYourAnswersController
             .onSubmit()
         )
           .withFormUrlEncodedBody(("value", role))
@@ -77,7 +78,11 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.DeregistrationRequestedController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(
+        DeregistrationRequestedController
+          .onPageLoad()
+          .url
+      )
     }
   }
 

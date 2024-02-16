@@ -20,16 +20,16 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.{DeregisterReason, Deregistration}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 
 class DeregisterReasonISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterReasonController.onPageLoad(NormalMode).url}"  should {
+  s"GET ${DeregisterReasonController.onPageLoad(NormalMode).url}"  should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(
-      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterReasonController
+      DeregisterReasonController
         .onPageLoad(NormalMode)
     )
 
@@ -39,7 +39,7 @@ class DeregisterReasonISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterReasonController
+          DeregisterReasonController
             .onPageLoad(NormalMode)
         )
       )
@@ -49,9 +49,9 @@ class DeregisterReasonISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterReasonController.onPageLoad(NormalMode).url}" should {
+  s"POST ${DeregisterReasonController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(
-      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterReasonController
+      DeregisterReasonController
         .onSubmit(NormalMode)
     )
 
@@ -64,7 +64,7 @@ class DeregisterReasonISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterReasonController
+          DeregisterReasonController
             .onSubmit(NormalMode)
         )
           .withFormUrlEncodedBody(("value", reason.toString))
@@ -73,7 +73,7 @@ class DeregisterReasonISpec extends ISpecBase with AuthorisedBehaviour {
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(
-        uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterDateController
+        DeregisterDateController
           .onPageLoad(NormalMode)
           .url
       )

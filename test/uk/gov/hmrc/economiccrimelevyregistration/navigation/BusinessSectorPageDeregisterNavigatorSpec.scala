@@ -14,39 +14,29 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
+package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, CheckMode, NormalMode, Registration}
 
-class FirstContactNumberPageNavigatorSpec extends SpecBase {
+class BusinessSectorPageDeregisterNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new FirstContactNumberPageNavigator()
+  val pageNavigator = new BusinessSectorPageNavigator()
 
   "nextPage" should {
-    "return a Call to the add another contact page in NormalMode" in forAll {
-      (registration: Registration, number: String) =>
-        val updatedRegistration: Registration =
-          registration.copy(contacts =
-            registration.contacts.copy(firstContactDetails =
-              registration.contacts.firstContactDetails.copy(telephoneNumber = Some(number))
-            )
-          )
+    "return a Call to the contact name page in NormalMode" in forAll {
+      (registration: Registration, businessSector: BusinessSector) =>
+        val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
 
         pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
-          contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)
+          contacts.routes.FirstContactNameController.onPageLoad(NormalMode)
     }
 
     "return a Call to the check your answers page in CheckMode" in forAll {
-      (registration: Registration, number: String) =>
-        val updatedRegistration: Registration =
-          registration.copy(contacts =
-            registration.contacts.copy(firstContactDetails =
-              registration.contacts.firstContactDetails.copy(telephoneNumber = Some(number))
-            )
-          )
+      (registration: Registration, businessSector: BusinessSector) =>
+        val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
 
         pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
