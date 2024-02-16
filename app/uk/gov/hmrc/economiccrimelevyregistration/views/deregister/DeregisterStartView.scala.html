@@ -16,9 +16,11 @@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 @import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+@import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates._
 
 @this(
-        layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
+        layout: Layout,
         summaryList: GovukSummaryList,
         button: GovukButton,
         appConfig: AppConfig
@@ -77,7 +79,7 @@
 
     @button(
         ButtonViewModel(messages("site.start"))
-                .asLink(uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterReasonController.onPageLoad(NormalMode).url)
+                .asLink(DeregisterReasonController.onPageLoad(NormalMode).url)
                 .asStartButton()
                 .withAttribute("id" -> "start")
                 .withCssClass("govuk-!-margin-top-2 govuk-!-margin-bottom-8")

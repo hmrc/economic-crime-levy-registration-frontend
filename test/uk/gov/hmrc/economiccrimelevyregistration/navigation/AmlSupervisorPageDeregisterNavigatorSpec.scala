@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Finan
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class AmlSupervisorPageNavigatorSpec extends SpecBase {
+class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
 
   val pageNavigator = new AmlSupervisorPageNavigator()
 

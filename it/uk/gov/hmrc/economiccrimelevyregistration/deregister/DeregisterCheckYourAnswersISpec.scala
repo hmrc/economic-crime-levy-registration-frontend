@@ -24,12 +24,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleM
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, GetSubscriptionResponse}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 
 class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController.onPageLoad().url}"  should {
+  s"GET ${DeregisterCheckYourAnswersController.onPageLoad().url}"  should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(
-      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController
+      DeregisterCheckYourAnswersController
         .onPageLoad()
     )
 
@@ -44,7 +45,7 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
 
       val result = callRoute(
         FakeRequest(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController
+          DeregisterCheckYourAnswersController
             .onPageLoad()
         )
       )
@@ -54,9 +55,9 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
     }
   }
 
-  s"POST ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController.onPageLoad().url}" should {
+  s"POST ${DeregisterCheckYourAnswersController.onPageLoad().url}" should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(
-      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController
+      DeregisterCheckYourAnswersController
         .onSubmit()
     )
 
@@ -69,7 +70,7 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
 
       val result = callRoute(
         FakeRequest(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController
+          DeregisterCheckYourAnswersController
             .onSubmit()
         )
           .withFormUrlEncodedBody(("value", role))

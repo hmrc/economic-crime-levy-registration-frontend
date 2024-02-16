@@ -23,12 +23,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 
 class DeregisterStartISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterStartController.onPageLoad().url}" should {
+  s"GET ${DeregisterStartController.onPageLoad().url}" should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(
-      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterStartController.onPageLoad()
+      DeregisterStartController.onPageLoad()
     )
 
     "respond with 200 status and the start HTML view" in {
@@ -37,7 +38,7 @@ class DeregisterStartISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterStartController.onPageLoad()
+          DeregisterStartController.onPageLoad()
         )
       )
 

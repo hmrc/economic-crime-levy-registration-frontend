@@ -15,9 +15,11 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
+@import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates._
 
 @this(
-        layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
+        layout: Layout,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukInput: GovukInput,
@@ -40,7 +42,7 @@
     <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("deregisterContactRole.heading", name))</h1>
     <p class="govuk-body">@messages("deregisterContactRole.legend")</p>
 
-    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactRoleController.onSubmit(mode)) {
+    @formHelper(action = DeregisterContactRoleController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),

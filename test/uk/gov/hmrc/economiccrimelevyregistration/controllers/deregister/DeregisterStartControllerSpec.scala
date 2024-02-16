@@ -22,7 +22,7 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.arbGetSubscriptionResponse
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Dereg
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.DeRegistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
@@ -61,7 +61,7 @@ class DeregisterStartControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             eclReference,
             subscription.legalEntityDetails.organisationName,
-            Dereg
+            DeRegistration
           )(fakeRequest, messages).toString
         }
     }
@@ -81,7 +81,7 @@ class DeregisterStartControllerSpec extends SpecBase {
           contentAsString(result) should not be view(
             eclReference,
             subscription.legalEntityDetails.organisationName,
-            Dereg
+            DeRegistration
           )(fakeRequest, messages).toString
         }
     }

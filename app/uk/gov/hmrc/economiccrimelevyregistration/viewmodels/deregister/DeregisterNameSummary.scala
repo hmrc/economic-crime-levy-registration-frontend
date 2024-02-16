@@ -18,14 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.deregister
 
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
-import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
-
-import java.time.LocalDate
 
 object DeregisterNameSummary {
 
@@ -39,7 +37,7 @@ object DeregisterNameSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactNameController
+            DeregisterContactNameController
               .onPageLoad(CheckMode)
               .url
           )

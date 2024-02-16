@@ -22,7 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.PartnershipNamePageNavigator
 
-class PartnershipNamePageNavigatorSpec extends SpecBase {
+class PartnershipNamePageDeregisterNavigatorSpec extends SpecBase {
 
   val pageNavigator = new PartnershipNamePageNavigator()
 

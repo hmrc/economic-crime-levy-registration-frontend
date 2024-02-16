@@ -21,7 +21,7 @@ import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode}
 
-trait Navigator {
+trait DeregisterNavigator {
   def toNextPage(mode: Mode, nextPage: Call) =
     Redirect(mode match {
       case NormalMode => nextPage

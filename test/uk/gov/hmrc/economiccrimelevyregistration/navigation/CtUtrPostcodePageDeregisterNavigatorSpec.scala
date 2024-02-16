@@ -22,7 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
 import uk.gov.hmrc.http.HttpVerbs.GET
 
-class CtUtrPostcodePageNavigatorSpec extends SpecBase {
+class CtUtrPostcodePageDeregisterNavigatorSpec extends SpecBase {
 
   val pageNavigator = new CtUtrPostcodePageNavigator()
 

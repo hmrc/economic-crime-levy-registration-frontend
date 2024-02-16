@@ -17,9 +17,11 @@
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 @import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.DeregisterReason
+@import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates._
 
 @this(
-        layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
+        layout: Layout,
         formHelper: FormWithCSRF,
         errorSummary: GovukErrorSummary,
         radios: GovukRadios,
@@ -30,7 +32,7 @@
 @(form: Form[DeregisterReason], mode: Mode, registrationType: RegistrationType)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleWithForm(form, messages("deregisterReason.title")), registrationTypeForTopBanner = Some(registrationType)) {
-    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterReasonController.onSubmit(mode)) {
+    @formHelper(action = DeregisterReasonController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
         }

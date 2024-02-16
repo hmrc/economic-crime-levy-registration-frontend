@@ -20,7 +20,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, AuthorisedActionWithoutEnrolmentCheck}
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Dereg
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.DeRegistration
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterStartView
@@ -42,12 +42,12 @@ class DeregisterStartController @Inject() (
     with ErrorHandler {
 
   def onPageLoad(): Action[AnyContent] = authorise.async { implicit request =>
-    val eclReference = request.eclRegistrationReference.getOrElse("")
     (for {
+      eclReference <- getValue(request.eclRegistrationReference).asResponseError
       subscription <- eclRegistrationService.getSubscription(eclReference).asResponseError
-    } yield subscription).fold(
+    } yield (eclReference, subscription)).fold(
       err => routeError(err),
-      subscription => Ok(view(eclReference, subscription.legalEntityDetails.organisationName, Dereg))
+      data => Ok(view(data._1, data._2.legalEntityDetails.organisationName, DeRegistration))
     )
   }
 }

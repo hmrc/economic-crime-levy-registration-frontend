@@ -23,14 +23,15 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 
 import java.time.LocalDate
 
 class DeregisterDateISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterDateController.onPageLoad(NormalMode).url}"  should {
+  s"GET ${DeregisterDateController.onPageLoad(NormalMode).url}"  should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(
-      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterDateController
+      DeregisterDateController
         .onPageLoad(NormalMode)
     )
 
@@ -40,7 +41,7 @@ class DeregisterDateISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterDateController
+          DeregisterDateController
             .onPageLoad(NormalMode)
         )
       )
@@ -50,9 +51,9 @@ class DeregisterDateISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterDateController.onPageLoad(NormalMode).url}" should {
+  s"POST ${DeregisterDateController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(
-      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterDateController
+      DeregisterDateController
         .onSubmit(NormalMode)
     )
 
@@ -65,7 +66,7 @@ class DeregisterDateISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterDateController
+          DeregisterDateController
             .onSubmit(NormalMode)
         )
           .withFormUrlEncodedBody(
@@ -78,7 +79,7 @@ class DeregisterDateISpec extends ISpecBase with AuthorisedBehaviour {
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(
-        uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterContactNameController
+        DeregisterContactNameController
           .onPageLoad(NormalMode)
           .url
       )

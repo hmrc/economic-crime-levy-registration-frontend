@@ -30,7 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.EntityTypeSelectedEvent
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.DeregisterReason
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.deregister.Navigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.deregister.DeregisterNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterReasonView
@@ -54,7 +54,7 @@ class DeregisterReasonController @Inject() (
     with I18nSupport
     with BaseController
     with ErrorHandler
-    with Navigator {
+    with DeregisterNavigator {
 
   val form: Form[DeregisterReason] = formProvider()
 

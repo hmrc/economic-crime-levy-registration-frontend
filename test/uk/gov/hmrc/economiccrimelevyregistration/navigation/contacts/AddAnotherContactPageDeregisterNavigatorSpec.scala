@@ -22,7 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, NormalMode, Registration}
 
-class AddAnotherContactPageNavigatorSpec extends SpecBase {
+class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
 
   val pageNavigator = new AddAnotherContactPageNavigator
 

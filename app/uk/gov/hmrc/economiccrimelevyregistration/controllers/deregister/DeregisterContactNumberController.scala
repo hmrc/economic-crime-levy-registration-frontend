@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, Er
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.DeregisterContactNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.deregister.Navigator
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.deregister.DeregisterNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterContactNumberView
@@ -47,18 +47,24 @@ class DeregisterContactNumberController @Inject() (
     with I18nSupport
     with BaseController
     with ErrorHandler
-    with Navigator {
+    with DeregisterNavigator {
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getDeregistrationData) { implicit request =>
-    Ok(
-      view(
-        form.prepare(request.deregistration.contactDetails.telephoneNumber),
-        request.deregistration.contactDetails.name.getOrElse(""),
-        mode,
-        request.deregistration.registrationType
-      )
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
+    (for {
+      name <- getValue(request.deregistration.contactDetails.name).asResponseError
+    } yield name).fold(
+      err => routeError(err),
+      name =>
+        Ok(
+          view(
+            form.prepare(request.deregistration.contactDetails.telephoneNumber),
+            name,
+            mode,
+            request.deregistration.registrationType
+          )
+        )
     )
   }
 
@@ -67,15 +73,19 @@ class DeregisterContactNumberController @Inject() (
       .bindFromRequest()
       .fold(
         formWithErrors =>
-          Future.successful(
-            BadRequest(
-              view(
-                formWithErrors,
-                request.deregistration.contactDetails.name.getOrElse(""),
-                mode,
-                request.deregistration.registrationType
+          (for {
+            name <- getValue(request.deregistration.contactDetails.name).asResponseError
+          } yield name).fold(
+            err => routeError(err),
+            name =>
+              BadRequest(
+                view(
+                  formWithErrors,
+                  name,
+                  mode,
+                  request.deregistration.registrationType
+                )
               )
-            )
           ),
         number => {
 

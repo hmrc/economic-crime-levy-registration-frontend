@@ -15,10 +15,11 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
-@import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+@import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates._
 
 @this(
-        layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
+        layout: Layout,
         formHelper: FormWithCSRF,
         govukSummaryList: GovukSummaryList,
         govukButton: GovukButton
@@ -30,7 +31,7 @@
     registrationTypeForTopBanner = Some(registrationType)
 ) {
 
-    @formHelper(action = uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterCheckYourAnswersController.onSubmit()) {
+    @formHelper(action = DeregisterCheckYourAnswersController.onSubmit()) {
         <h1 class="govuk-heading-l">@messages("deregisterCya.h1")</h1>
 
         <h2 class="govuk-heading-m">@messages("deregisterCya.t1.h2")</h2>

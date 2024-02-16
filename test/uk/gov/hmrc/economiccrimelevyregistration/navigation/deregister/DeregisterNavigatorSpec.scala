@@ -26,8 +26,8 @@ import uk.gov.hmrc.http.HttpVerbs.GET
 
 import scala.concurrent.Future
 
-class NavigatorSpec extends SpecBase {
-  class TestNavigator extends Navigator
+class DeregisterNavigatorSpec extends SpecBase {
+  class TestNavigator extends DeregisterNavigator
 
   val navigator = new TestNavigator
 

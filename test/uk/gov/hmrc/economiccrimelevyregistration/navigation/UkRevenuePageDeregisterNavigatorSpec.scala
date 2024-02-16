@@ -21,7 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class UkRevenuePageNavigatorSpec extends SpecBase {
+class UkRevenuePageDeregisterNavigatorSpec extends SpecBase {
 
   val pageNavigator = new UkRevenuePageNavigator()
 
