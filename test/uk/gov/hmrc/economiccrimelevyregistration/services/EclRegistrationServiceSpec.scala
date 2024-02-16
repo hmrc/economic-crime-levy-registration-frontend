@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
-import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
@@ -27,7 +26,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration}
 import uk.gov.hmrc.http.UpstreamErrorResponse
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import scala.concurrent.Future
 

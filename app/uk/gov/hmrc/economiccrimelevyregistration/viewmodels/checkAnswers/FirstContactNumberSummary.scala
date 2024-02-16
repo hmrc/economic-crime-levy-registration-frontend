@@ -27,10 +27,13 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 
 object FirstContactNumberSummary {
 
-  def row(telephoneNumber: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+  def row(telephoneNumber: Option[String], secondContact: Boolean = false)(implicit
+    messages: Messages
+  ): Option[SummaryListRow] =
     telephoneNumber.map { answer =>
+      val contact = if (secondContact) "firstContactNumber" else "contactNumber"
       SummaryListRowViewModel(
-        key = Key("checkYourAnswers.firstContactNumber.label"),
+        key = Key(s"checkYourAnswers.$contact.label"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),
         actions = Seq(
           ActionItemViewModel("site.change", contacts.routes.FirstContactNumberController.onPageLoad(CheckMode).url)
@@ -40,5 +43,4 @@ object FirstContactNumberSummary {
         )
       )
     }
-
 }

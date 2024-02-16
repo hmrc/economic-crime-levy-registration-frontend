@@ -267,10 +267,13 @@ class CheckYourAnswersController @Inject() (
     checkYourAnswersViewModel: CheckYourAnswersViewModel,
     amendRegistrationPdfViewModel: AmendRegistrationPdfViewModel
   )(implicit request: RegistrationDataRequest[_]): String = {
-    val date         = LocalDate.now
-    val organisation = checkYourAnswersViewModel.organisationDetails(LiabilityYearSummary.row())
-    val contact      = checkYourAnswersViewModel.contactDetails()
-    val otherEntity  = checkYourAnswersViewModel.otherEntityDetails()
+    val date                          = LocalDate.now
+    val organisation                  = checkYourAnswersViewModel.organisationDetails(LiabilityYearSummary.row())
+    val firstContact                  = checkYourAnswersViewModel.firstContactDetails()
+    val secondContact                 = checkYourAnswersViewModel.secondContactDetails()
+    val addressDetails                = checkYourAnswersViewModel.addressDetails()
+    val otherEntity                   = checkYourAnswersViewModel.otherEntityDetails()
+    val secondContactPresent: Boolean = request.registration.contacts.secondContact.contains(true)
 
     checkYourAnswersViewModel.registrationType match {
       case Some(Amendment) =>
@@ -285,10 +288,11 @@ class CheckYourAnswersController @Inject() (
           otherRegistrationPdfView(
             ViewUtils.formatLocalDate(date),
             organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
-            contact.copy(rows = contact.rows.map(_.copy(actions = None))),
-            otherEntity.copy(
-              rows = otherEntity.rows.map(_.copy(actions = None))
-            )
+            firstContact.copy(rows = firstContact.rows.map(_.copy(actions = None))),
+            secondContact.copy(rows = secondContact.rows.map(_.copy(actions = None))),
+            otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None))),
+            addressDetails.copy(rows = addressDetails.rows.map(_.copy(actions = None))),
+            secondContactPresent
           ).toString()
         )
     }
