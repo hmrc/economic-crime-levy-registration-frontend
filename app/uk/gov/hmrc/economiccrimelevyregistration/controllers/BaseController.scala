@@ -17,7 +17,6 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
-import play.api.Logger
 import play.api.http.HeaderNames.CACHE_CONTROL
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.Results.{InternalServerError, Redirect}
@@ -31,6 +30,14 @@ import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import scala.concurrent.{ExecutionContext, Future}
 
 trait BaseController extends I18nSupport {
+
+  def getValue[T](option: Option[T]): EitherT[Future, DataRetrievalError, T] =
+    EitherT {
+      option match {
+        case Some(value) => Future.successful(Right(value))
+        case None        => Future.successful(Left(DataRetrievalError.InternalUnexpectedError("Missing value", None)))
+      }
+    }
 
   private def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
     request: Request[_],

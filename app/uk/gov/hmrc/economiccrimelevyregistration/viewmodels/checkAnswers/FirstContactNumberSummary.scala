@@ -27,7 +27,9 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListR
 
 object FirstContactNumberSummary {
 
-  def row(telephoneNumber: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+  def row(telephoneNumber: Option[String])(implicit
+    messages: Messages
+  ): Option[SummaryListRow] =
     telephoneNumber.map { answer =>
       SummaryListRowViewModel(
         key = Key("checkYourAnswers.firstContactNumber.label"),
@@ -40,5 +42,4 @@ object FirstContactNumberSummary {
         )
       )
     }
-
 }

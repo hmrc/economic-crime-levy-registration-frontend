@@ -26,11 +26,11 @@ import javax.inject.Inject
 class DoYouHaveCrnPageNavigator @Inject() extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.otherEntityJourneyData.isUkCrnPresent match {
-      case Some(true)                                                                 => routes.NonUkCrnController.onPageLoad(NormalMode)
+      case Some(true)                                              => routes.NonUkCrnController.onPageLoad(NormalMode)
       case Some(false) if registration.isUnincorporatedAssociation =>
         routes.DoYouHaveUtrController.onPageLoad(NormalMode)
-      case Some(false)                                                                => routes.UtrTypeController.onPageLoad(NormalMode)
-      case None                                                                       => routes.NotableErrorController.answersAreInvalid()
+      case Some(false)                                             => routes.UtrTypeController.onPageLoad(NormalMode)
+      case None                                                    => routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call =
