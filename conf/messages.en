@@ -626,3 +626,87 @@ cancelRegistrationAmendment.title = Are you sure you want to cancel your request
 cancelRegistrationAmendment.heading = Are you sure you want to cancel your request to amend your registration?
 cancelRegistrationAmendment.body = Your answers will be deleted.
 cancelRegistrationAmendment.error.required = Select yes if you want to cancel your request to amend your registration
+
+deregister.banner.title = Deregister from the Economic Crime Levy
+
+deregister.start.title = Request to deregister from HMRC for the Economic Crime Levy
+deregister.start.heading = Request to deregister from HMRC for the Economic Crime Levy
+deregister.start.h2 = Organisation details
+deregister.start.eclReference = ECL reference number
+deregister.start.companyName = Company name
+deregister.start.p1 = Use this service to request to deregister your Economic Crime Levy (ECL) account.
+deregister.start.p2 = You can deregister if your organisation:
+deregister.start.b1 = has stopped AML regulated activities
+deregister.start.b2 = has started being regulated by the FCA or the GC
+deregister.start.b3 = no longer meets the revenue threshold for ECL
+deregister.start.p3 = To make any changes to your registration, you do not need to deregister. You can {0}.
+deregister.start.p3.link = <a href="{0}" class="govuk-link">request to amend your registration</a>
+deregister.start.p4 = For more information, read the {0}.
+deregister.start.p4.link = <a href="{0}" class="govuk-link">guidance page</a>
+deregister.start.beforeYouStart = Before you start
+deregister.start.provide = You will need to tell us:
+deregister.start.provide.b1 = the reason why you are deregistering from ECL
+deregister.start.provide.b2 = the date you were no longer liable for ECL
+deregister.start.provide.b3 = the details of someone in your organisation who can act as a point of contact for any activities related to the ECL
+
+deregisterReason.title = Select the reason for deregistering
+deregisterReason.NoAmlActivity = The organisation has stopped anti-money laundering (AML) regulated activities.
+deregisterReason.RegulatedByFcaOrGa = The organisation is now regulated by the Financial Conduct Authority (FCA) or the Gambling Commission (GC).
+deregisterReason.NoLongerMeetsThreshold = The organisation no longer meets the revenue threshold for ECL.
+deregisterReason.error.required = Select the reason for deregistering
+
+deregisterDate.title = Enter the date you were no longer liable
+deregisterDate.heading = Enter the date you were no longer liable
+deregisterDate.p1 = This is the date you stopped AML regulated activities, started being regulated by the FCA or the GC or the date you no longer met the threshold for ECL.
+deregisterDate.hint = For example, 27 3 2024.
+deregisterDate.error.required = Enter the date you were no longer liable for ECL
+deregisterDate.error.past = The date must be after 1 April 2022
+deregisterDate.error.future = The date must be in the past
+
+deregisterContactName.title = Provide a contact name
+deregisterContactName.heading = Provide a contact name
+deregisterContactName.legend.p1 = Provide the name of a person in your organisation who can act as a point of contact. They do not have to be part of your tax or accounting departments.
+deregisterContactName.hint = For example, ''John Jones'' or ''Laura Smith''.
+deregisterContactName.error.required = Enter a full name
+deregisterContactName.error.length = Full name must be {0} characters or less
+
+deregisterContactRole.title = What is {0}''s role?
+deregisterContactRole.heading = What is {0}''s role?
+deregisterContactRole.legend = Tell us about their role in your organisation.
+deregisterContactRole.hint = For example, ''Compliance officer''.
+deregisterContactRole.error.required = Enter a role
+deregisterContactRole.error.length = Role must be {0} characters or less
+
+deregisterContactEmail.title = What is {0}''s email address?
+deregisterContactEmail.heading = What is {0}''s email address?
+deregisterContactEmail.legend = This is the email address of your named contact.
+deregisterContactEmail.error.required = Enter an email address
+deregisterContactEmail.error.length = Email address must be {0} characters or less
+deregisterContactEmail.error.invalid = Enter an email address in the correct format, like name@example.com
+deregisterContactEmail.use = We will only use this email address to contact them about the Economic Crime Levy.
+
+deregisterContactNumber.title = What is {0}''s telephone number?
+deregisterContactNumber.heading = What is {0}''s telephone number?
+deregisterContactNumber.label = Telephone number
+deregisterContactNumber.legend = This is the telephone number of your named contact.
+deregisterContactNumber.hint = For international numbers include the country code.
+deregisterContactNumber.error.required = Enter a telephone number
+deregisterContactNumber.error.length = Telephone number must be {0} characters or less
+deregisterContactNumber.error.invalid = Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
+deregisterContactNumber.use = We will only use this telephone number to contact them about the Economic Crime Levy.
+
+deregisterCya.title = Check your answers
+deregisterCya.h1 = Check your answers
+deregisterCya.t1.h2 = Organisation details
+deregisterCya.t1.l1 = ECL reference number
+deregisterCya.t1.l2 = Company name
+deregisterCya.t2.h2 = Additional information
+deregisterCya.t2.l1 = Reason for deregistering
+deregisterCya.t2.l2 = Date you were no longer liable
+deregisterCya.t3.h2 = Contact details
+deregisterCya.t3.l1 = Contact name
+deregisterCya.t3.l2 = Role
+deregisterCya.t3.l3 = Email address
+deregisterCya.t3.l4 = Telephone number
+deregisterCya.h2 = Now send your deregistration request
+deregisterCya.p1 = By submitting this request to deregister, you are confirming that, to the best of your knowledge, the details you are providing are correct.
