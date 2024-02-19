@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,15 @@
  */
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
-
 import play.api.mvc.Call
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration}
 
-class RelevantAp12MonthsPageNavigator extends PageNavigator {
+class LiabilityDatePageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
-    navigate(eclRegistrationModel.registration, NormalMode)
+    routes.EntityTypeController.onPageLoad(NormalMode)
 
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
-    navigate(eclRegistrationModel.registration, CheckMode)
-
-  private def navigate(registration: Registration, mode: Mode): Call =
-    registration.relevantAp12Months match {
-      case Some(true)  => routes.UkRevenueController.onPageLoad(mode)
-      case Some(false) => routes.RelevantApLengthController.onPageLoad(mode)
-      case _           => routes.NotableErrorController.answersAreInvalid()
-    }
-
+    routes.CheckYourAnswersController.onPageLoad()
 }

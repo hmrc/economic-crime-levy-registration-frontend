@@ -18,18 +18,20 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, EclRegistrationModel, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
 class SecondContactRolePageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.contacts.secondContactDetails.role match {
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
+    eclRegistrationModel.registration.contacts.secondContactDetails.role match {
       case Some(_) => contacts.routes.SecondContactEmailController.onPageLoad(NormalMode)
       case _       => routes.NotableErrorController.answersAreInvalid()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call = {
+    val registration = eclRegistrationModel.registration
+
     registration.contacts.secondContactDetails.role match {
       case Some(_) =>
         registration.contacts.secondContactDetails match {
@@ -38,5 +40,5 @@ class SecondContactRolePageNavigator extends PageNavigator {
         }
       case _       => routes.NotableErrorController.answersAreInvalid()
     }
-
+  }
 }

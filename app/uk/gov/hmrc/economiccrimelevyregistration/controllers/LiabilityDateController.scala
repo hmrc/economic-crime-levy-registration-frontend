@@ -17,27 +17,55 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
-import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.NonUkCrnFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.NonUkCrnPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, NonUkCrnView}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityDateFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityDatePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityDateView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class LiabilityDateController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationService: EclRegistrationService,
-//  formProvider: ???,
-//  pageNavigator: ???,
-  view: NonUkCrnView
+  registrationAdditionalInfoService: RegistrationAdditionalInfoService,
+  formProvider: LiabilityDateFormProvider,
+  pageNavigator: LiabilityDatePageNavigator,
+  view: LiabilityDateView
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler
-    with BaseController {}
+    with BaseController {
+  val form                                       = formProvider()
+  def onPageLoad(mode: Mode): Action[AnyContent] = authorise { implicit request =>
+    Ok(view(form))
+  }
+
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (authorise andThen getRegistrationData).async { implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+          liabilityDate => {
+            val registration   = request.registration
+            val additionalInfo = request.additionalInfo.get.copy(liabilityStartDate = Some(liabilityDate))
+
+            (for {
+              upsertedAdditionalInfo <- registrationAdditionalInfoService.upsert(additionalInfo).asResponseError
+            } yield registration)
+              .convertToResult(
+                mode = mode,
+                pageNavigator = pageNavigator,
+                additionalInfo = Some(additionalInfo)
+              )
+          }
+        )
+    }
+}

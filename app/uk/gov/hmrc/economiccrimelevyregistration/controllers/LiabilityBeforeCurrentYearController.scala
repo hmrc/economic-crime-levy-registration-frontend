@@ -77,6 +77,8 @@ class LiabilityBeforeCurrentYearController @Inject() (
             val info = RegistrationAdditionalInfo(
               registration.internalId,
               liabilityYear,
+              None,
+              None,
               request.eclRegistrationReference
             )
 
@@ -124,7 +126,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
       case (false, Some(false)) =>
         sendNotLiableAuditEvent(registration)
         routes.NotLiableController.youDoNotNeedToRegister()
-      case (_, Some(_))         => routes.EntityTypeController.onPageLoad(mode)
+      case (_, Some(_))         => routes.LiabilityDateController.onPageLoad(mode)
       case (false, None)        =>
         sendNotLiableAuditEvent(registration)
         routes.NotLiableController.youDoNotNeedToRegister()

@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegisterForCurrentYearView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -36,7 +37,7 @@ class RegisterForCurrentYearController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   formProvider: RegisterForCurrentYearFormProvider,
-  eclRegistrationService: EclRegistrationService,
+  registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   pageNavigator: RegisterForCurrentYearPageNavigator
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
@@ -44,7 +45,7 @@ class RegisterForCurrentYearController @Inject() (
     with BaseController
     with ErrorHandler {
 
-  val form                                       = formProvider()
+  val form: Form[Boolean]                        = formProvider()
   def onPageLoad(mode: Mode): Action[AnyContent] = authorise { implicit request =>
     Ok(view(form, mode, s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
   }
@@ -57,13 +58,12 @@ class RegisterForCurrentYearController @Inject() (
           Future.successful(
             BadRequest(view(formWithErrors, mode, s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
           ),
-        answer => {
-          val updatedRegistration = request.registration.copy(registeringForCurrentYear = Some(answer))
-
+        answer =>
           (for {
-            _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield updatedRegistration).convertToResult(mode, pageNavigator)
-        }
+            additionalInfo       <- registrationAdditionalInfoService.get(request.internalId).asResponseError
+            updatedAdditionalInfo = additionalInfo.get.copy(registeringForCurrentYear = Some(answer))
+            _                    <- registrationAdditionalInfoService.upsert(updatedAdditionalInfo).asResponseError
+          } yield request.registration).convertToResult(mode, pageNavigator)
       )
   }
 }

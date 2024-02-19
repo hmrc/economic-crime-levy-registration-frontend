@@ -17,29 +17,37 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode}
 
 class RegisterForCurrentYearPageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.registeringForCurrentYear match {
-      case Some(value) =>
-        if (value) {
-          routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
-        } else {
-          routes.EntityTypeController.onPageLoad(NormalMode)
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
+    eclRegistrationModel.registrationAdditionalInfo match {
+      case Some(additionalInfo) =>
+        additionalInfo.registeringForCurrentYear match {
+          case Some(value) =>
+            if (value) {
+              routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
+            } else {
+              routes.LiabilityDateController.onPageLoad(NormalMode)
+            }
+          case None        => routes.NotableErrorController.answersAreInvalid()
         }
-      case None        => routes.NotableErrorController.answersAreInvalid()
+      case None                 => routes.NotableErrorController.answersAreInvalid()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    registration.registeringForCurrentYear match {
-      case Some(value) =>
-        if (value) {
-          routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
-        } else {
-          routes.CheckYourAnswersController.onPageLoad()
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
+    eclRegistrationModel.registrationAdditionalInfo match {
+      case Some(additionalInfo) =>
+        additionalInfo.registeringForCurrentYear match {
+          case Some(value) =>
+            if (value) {
+              routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
+            } else {
+              routes.CheckYourAnswersController.onPageLoad()
+            }
+          case None        => routes.NotableErrorController.answersAreInvalid()
         }
-      case None        => routes.NotableErrorController.answersAreInvalid()
+      case None                 => routes.NotableErrorController.answersAreInvalid()
     }
 }

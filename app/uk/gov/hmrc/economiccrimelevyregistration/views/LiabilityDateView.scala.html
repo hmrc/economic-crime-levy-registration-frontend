@@ -34,7 +34,7 @@
 
     <h1 class="govuk-heading-l">@messages("liability.date.h1")</h1>
 
-    @formHelper(action = RegisterForCurrentYearController.onSubmit(NormalMode)) {
+    @formHelper(action = LiabilityDateController.onSubmit(NormalMode)) {
         @dateInput(DateInput(
             hint = Some(Hint(content = messages("liability.date.hint"))),
             fieldset = Some(Fieldset(legend = None))).withFormField(form("value")),

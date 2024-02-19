@@ -22,7 +22,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmendReasonFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmendReasonPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendReasonView, ErrorTemplate}
@@ -72,7 +72,7 @@ class AmendReasonController @Inject() (
             .asResponseError
             .fold(
               err => routeError(err),
-              _ => Redirect(pageNavigator.nextPage(mode, updatedRegistration))
+              _ => Redirect(pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)))
             )
         }
       )

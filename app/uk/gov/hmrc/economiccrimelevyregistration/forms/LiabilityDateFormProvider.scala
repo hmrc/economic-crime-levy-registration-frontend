@@ -18,17 +18,19 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{maximumDate, minimumDate}
 
-class RegisterForCurrentYearFormProvider extends Mappings {
+import java.time.LocalDate
 
-  def apply(): Form[Boolean] = Form(
-    (
-      "value",
-      boolean(
-        "register.currentYear.error",
-        messageArgs = Seq(s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}")
+class LiabilityDateFormProvider extends Mappings {
+
+  def apply(): Form[LocalDate] =
+    Form(
+      "value" -> localDate(
+        invalidKey = "invalidKey",
+        requiredKey = "liability.date.error.required",
+        minDateConstraint = Some(minDate(minimumDate, "liability.date.error.early.date")),
+        maxDateConstraint = Some(maxDate(maximumDate, "liability.date.error.future.date"))
       )
     )
-  )
 }

@@ -21,15 +21,15 @@ import scala.annotation.tailrec
 
 object EclTaxYear {
 
-  private def startYear       = LocalDate.now().getYear
-  private val MonthDue        = 9
-  private val DayDue          = 30
-  private val EclFyEndMonth   = 3
-  private val EclFyStartMonth = 4
-  private val EclFyEndDay     = 31
-  private val EclFyStartDay   = 1
-
-  def dueDate: LocalDate =
+  private def startYear     = LocalDate.now().getYear
+  private val MonthDue      = 9
+  private val DayDue        = 30
+  private val EclFyEndMonth = 3
+  val EclFyStartMonth       = 4
+  private val EclFyEndDay   = 31
+  val EclFyStartDay         = 1
+  val initialYear           = 2022
+  def dueDate: LocalDate    =
     LocalDate.of(calculateYearDue(), MonthDue, DayDue)
 
   def yearDue: String              = calculateYearDue().toString

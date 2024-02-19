@@ -634,3 +634,7 @@ register.currentYear.error = Select yes if you are registering for {0}
 liability.date.title = Enter the date you became liable for ECL
 liability.date.h1 = Enter the date you became liable for ECL
 liability.date.hint = This is the date you started AML regulated activities, started being regulated by HMRC or the date you met the revenue threshold for ECL. This date must be after the start of ECL on 1 April 2022.
+
+liability.date.error.future.date = The date must be in the past
+liability.date.error.early.date = The date must be after 1 April 2022
+liability.date.error.required = Enter the date you became liable for ECL

@@ -18,13 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode}
 
 import javax.inject.Inject
 
 class AmlRegulatedActivityPageNavigator @Inject() () extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = {
+    val registration = eclRegistrationModel.registration
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  =>
         routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get)
@@ -33,11 +34,12 @@ class AmlRegulatedActivityPageNavigator @Inject() () extends PageNavigator {
       case _           =>
         routes.NotableErrorController.answersAreInvalid()
     }
+  }
 
   override protected def navigateInCheckMode(
-    registration: Registration
+    eclRegistrationModel: EclRegistrationModel
   ): Call =
-    registration.carriedOutAmlRegulatedActivityInCurrentFy match {
+    eclRegistrationModel.registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(_) =>
         routes.CheckYourAnswersController.onPageLoad()
       case _       =>
