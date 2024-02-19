@@ -37,17 +37,6 @@
 
     <h1 class="govuk-heading-l">@messages("liabilityBeforeCurrentYear.h1")</h1>
 
-    <p class="govuk-body">@messages("liabilityBeforeCurrentYear.p1")</p>
-
-    <ul class="govuk-list govuk-list--bullet">
-        <li>@messages("liabilityBeforeCurrentYear.list.b1")</li>
-        <li>@messages("liabilityBeforeCurrentYear.list.b2")</li>
-    </ul>
-
-    <p class="govuk-body">@messages("liabilityBeforeCurrentYear.p2")</p>
-
-    <p class="govuk-body">@Html(messages("liabilityBeforeCurrentYear.p3"))</p>
-
     @formHelper(action = LiabilityBeforeCurrentYearController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))

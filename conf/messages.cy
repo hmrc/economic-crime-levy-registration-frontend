@@ -596,14 +596,8 @@ amendmentRequested.h2 = Yr hyn sy’n digwydd nesaf
 amendRegistration.pdfHtml.title = Cais i ddiwygio cofrestriad yr Ardoll Troseddau Economaidd
 amendRegistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad {0}
 
-liabilityBeforeCurrentYear.title =A oeddech yn agored i dalu’r Ardoll Troseddau Economaidd (ECL) o 1 Ebrill 2022 i 31 Mawrth 2023?
-liabilityBeforeCurrentYear.h1 = A oeddech yn agored i dalu’r Ardoll Troseddau Economaidd (ECL) o 1 Ebrill 2022 i 31 Mawrth 2023?
-liabilityBeforeCurrentYear.p1 = Roeddech yn agored i dalu’r ECL os oedd y canlynol yn berthnasol:
-liabilityBeforeCurrentYear.list.b1 = gwnaeth eich refeniw yn y DU gyrraedd y trothwy, neu
-liabilityBeforeCurrentYear.list.b2 = gwnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
-liabilityBeforeCurrentYear.p2 = Mae’r flwyddyn ariannol yn rhedeg o 1 Ebrill i 31 Mawrth y flwyddyn ganlynol.
-liabilityBeforeCurrentYear.p3 = Mae rhagor o wybodaeth ar gael yn yr arweiniad ar yr Ardoll Troseddau Economaidd, gan gynnwys <a class="govuk-link" href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy"> pwy sydd angen talu’r ardoll</a>.
-liabilityBeforeCurrentYear.required = Dewiswch ‘Iawn’ os oeddech yn agored i dalu’r Ardoll Troseddau Economaidd
+liabilityBeforeCurrentYear.title =A ydych yn agored i’r ardoll ar gyfer unrhyw flynyddoedd blaenorol?
+liabilityBeforeCurrentYear.h1 = A ydych yn agored i’r ardoll ar gyfer unrhyw flynyddoedd blaenorol?
 
 otherEntityType.crn.question.title = Oes gennych chi rif cofrestru cwmni'r DU?
 otherEntityType.crn.question.label = Oes gennych chi rif cofrestru cwmni'r DU?
@@ -629,10 +623,12 @@ cancelRegistrationAmendment.body = Bydd eich atebion yn cael eu dileu.
 cancelRegistrationAmendment.error.required = Dewiswch 'Iawn' os ydych yn dymuno canslo eich cais i newid eich cofrestriad
 register.currentYear.h1 = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0}?
 register.currentYear.title = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0}?
+register.currentYear.label = Cofrestru ar gyfer y flwyddyn ariannol gyfredol
 
 liability.date.title = Nodwch y dyddiad pan ddaethoch yn agored i’r Ardoll Troseddau Economaidd (ECL)
 liability.date.h1 = Nodwch y dyddiad pan ddaethoch yn agored i’r Ardoll Troseddau Economaidd (ECL)
 liability.date.hint = Dyma’r dyddiad y gwnaethoch ddechrau gweithgareddau a reoleiddir gan reoliadau AML, dechrau cael eich rheoleiddio gan CThEF neu’r dyddiad y gwnaethoch gyrraedd y trothwy refeniw ar gyfer ECL. Mae’n rhaid i’r dyddiad hwn fod ar ôl dyddiad dechrau’r ECL ar 1 Ebrill 2022.
+liability.date.label = Dyddiad cychwyn atebolrwydd
 
 liability.date.error.future.date = Mae’n rhaid i’r dyddiad fod yn y gorffennol
 liability.date.error.early.date = Mae’n rhaid i’r dyddiad fod ar ôl 1 Ebrill 2022

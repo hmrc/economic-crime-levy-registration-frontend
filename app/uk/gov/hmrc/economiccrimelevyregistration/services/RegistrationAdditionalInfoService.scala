@@ -40,7 +40,7 @@ class RegistrationAdditionalInfoService @Inject() (
       case Some(additionalInfo) =>
         EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo](Future.successful(Right(additionalInfo)))
       case None                 =>
-        val newAdditionalInfo = RegistrationAdditionalInfo(internalId, None, None, None, eclReference)
+        val newAdditionalInfo = RegistrationAdditionalInfo(internalId, None, None, None, None, eclReference)
         upsert(newAdditionalInfo).map(_ => newAdditionalInfo)
     }
 

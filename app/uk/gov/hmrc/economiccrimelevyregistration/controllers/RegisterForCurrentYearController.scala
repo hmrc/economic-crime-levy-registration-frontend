@@ -21,9 +21,10 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegisterForCurrentYearView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -38,6 +39,7 @@ class RegisterForCurrentYearController @Inject() (
   getRegistrationData: DataRetrievalAction,
   formProvider: RegisterForCurrentYearFormProvider,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
+  registrationService: EclRegistrationService,
   pageNavigator: RegisterForCurrentYearPageNavigator
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
@@ -63,7 +65,9 @@ class RegisterForCurrentYearController @Inject() (
             additionalInfo       <- registrationAdditionalInfoService.get(request.internalId).asResponseError
             updatedAdditionalInfo = additionalInfo.get.copy(registeringForCurrentYear = Some(answer))
             _                    <- registrationAdditionalInfoService.upsert(updatedAdditionalInfo).asResponseError
-          } yield EclRegistrationModel(request.registration, Some(updatedAdditionalInfo)))
+            updatedRegistration   = request.registration.copy(registrationType = Some(Initial))
+            _                    <- registrationService.upsertRegistration(updatedRegistration).asResponseError
+          } yield EclRegistrationModel(updatedRegistration, Some(updatedAdditionalInfo)))
             .convertToResult(mode = mode, pageNavigator = pageNavigator)
       )
   }

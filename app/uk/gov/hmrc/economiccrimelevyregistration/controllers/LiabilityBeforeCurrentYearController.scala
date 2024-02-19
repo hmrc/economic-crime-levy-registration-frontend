@@ -78,7 +78,8 @@ class LiabilityBeforeCurrentYearController @Inject() (
               registration.internalId,
               liabilityYear,
               None,
-              None,
+              request.additionalInfo.flatMap(info => info.registeringForCurrentYear),
+              Some(liableBeforeCurrentYear),
               request.eclRegistrationReference
             )
 
@@ -126,13 +127,12 @@ class LiabilityBeforeCurrentYearController @Inject() (
       case (false, Some(false)) =>
         sendNotLiableAuditEvent(registration)
         routes.NotLiableController.youDoNotNeedToRegister()
-      case (_, Some(_))         => routes.LiabilityDateController.onPageLoad(mode)
+      case (false, Some(true))  => routes.EntityTypeController.onPageLoad(mode)
       case (false, None)        =>
         sendNotLiableAuditEvent(registration)
         routes.NotLiableController.youDoNotNeedToRegister()
-      case (true, None)         =>
-        routes.AmlSupervisorController
-          .onPageLoad(mode, registration.registrationType.get)
+      case (true, _)            =>
+        routes.LiabilityDateController.onPageLoad(mode)
     }
 
   private def sendNotLiableAuditEvent(registration: Registration)(implicit hc: HeaderCarrier) =

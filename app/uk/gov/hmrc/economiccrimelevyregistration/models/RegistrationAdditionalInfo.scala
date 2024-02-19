@@ -25,6 +25,7 @@ case class RegistrationAdditionalInfo(
   liabilityYear: Option[LiabilityYear],
   liabilityStartDate: Option[LocalDate],
   registeringForCurrentYear: Option[Boolean],
+  liableForPreviousYears: Option[Boolean],
   eclReference: Option[String]
 )
 
