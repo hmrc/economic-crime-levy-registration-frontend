@@ -29,7 +29,7 @@ case class CheckYourAnswersViewModel(
   eclReference: Option[String]
 ) extends TrackRegistrationChanges {
 
-  val checkForSecondContact: Boolean = registration.contacts.secondContact.contains(true)
+  val hasSecondContact: Boolean = registration.contacts.secondContact.contains(true)
 
   def addressDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
@@ -45,24 +45,48 @@ case class CheckYourAnswersViewModel(
   def firstContactDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = (
-        addIfNot(hasSecondContactDetailsPresentChanged, SecondContactSummary.row(registration.contacts.secondContact))
+        Seq(SecondContactSummary.row(registration.contacts.secondContact))
           ++ addIfNot(
             hasFirstContactNameChanged,
-            FirstContactNameSummary.row(registration.contacts.firstContactDetails.name, checkForSecondContact)
+            FirstContactNameSummary.row(registration.contacts.firstContactDetails.name)
           )
           ++ addIfNot(
             hasFirstContactRoleChanged,
-            FirstContactRoleSummary.row(registration.contacts.firstContactDetails.role, checkForSecondContact)
+            FirstContactRoleSummary.row(registration.contacts.firstContactDetails.role)
           )
           ++ addIfNot(
             hasFirstContactEmailChanged,
-            FirstContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress, checkForSecondContact)
+            FirstContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress)
           )
           ++ addIfNot(
             hasFirstContactPhoneChanged,
             FirstContactNumberSummary.row(
-              registration.contacts.firstContactDetails.telephoneNumber,
-              checkForSecondContact
+              registration.contacts.firstContactDetails.telephoneNumber
+            )
+          )
+      ).flatten
+    ).withCssClass("govuk-!-margin-bottom-9")
+
+  def contactDetails()(implicit messages: Messages): SummaryList =
+    SummaryListViewModel(
+      rows = (
+        Seq(SecondContactSummary.row(registration.contacts.secondContact))
+          ++ addIfNot(
+            hasFirstContactNameChanged,
+            ContactNameSummary.row(registration.contacts.firstContactDetails.name)
+          )
+          ++ addIfNot(
+            hasFirstContactRoleChanged,
+            ContactRoleSummary.row(registration.contacts.firstContactDetails.role)
+          )
+          ++ addIfNot(
+            hasFirstContactEmailChanged,
+            ContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress)
+          )
+          ++ addIfNot(
+            hasFirstContactPhoneChanged,
+            ContactNumberSummary.row(
+              registration.contacts.firstContactDetails.telephoneNumber
             )
           )
       ).flatten
@@ -175,17 +199,17 @@ case class CheckYourAnswersViewModel(
           AmlSupervisorSummary.row(registration.amlSupervisor, registrationType)
         ) ++ addIf(
           hasFirstContactNameChanged,
-          FirstContactNameSummary.row(registration.contacts.firstContactDetails.name, checkForSecondContact)
+          FirstContactNameSummary.row(registration.contacts.firstContactDetails.name)
         ) ++ addIf(
           hasFirstContactRoleChanged,
-          FirstContactRoleSummary.row(registration.contacts.firstContactDetails.role, checkForSecondContact)
+          FirstContactRoleSummary.row(registration.contacts.firstContactDetails.role)
         ) ++ addIf(
           hasFirstContactEmailChanged,
-          FirstContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress, checkForSecondContact)
+          FirstContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress)
         ) ++ addIf(
           hasFirstContactPhoneChanged,
           FirstContactNumberSummary
-            .row(registration.contacts.firstContactDetails.telephoneNumber, checkForSecondContact)
+            .row(registration.contacts.firstContactDetails.telephoneNumber)
         ) ++ addIf(
           hasSecondContactDetailsPresentChanged,
           SecondContactSummary.row(registration.contacts.secondContact)
