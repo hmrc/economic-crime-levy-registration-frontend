@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.deregister
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.DeregisterReason
 
 class DeregisterReasonFormProvider extends Mappings {

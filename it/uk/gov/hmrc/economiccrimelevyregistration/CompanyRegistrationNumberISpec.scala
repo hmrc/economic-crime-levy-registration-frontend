@@ -19,8 +19,16 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
     "respond with 200 status and the company registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val companyNumber: String = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
+
+      val otherEntityJourneyData: OtherEntityJourneyData = OtherEntityJourneyData
+        .empty()
+        .copy(companyRegistrationNumber = Some(companyNumber))
+
+      val registration: Registration = random[Registration]
+        .copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+
+      val additionalInfo: RegistrationAdditionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistration(registration)
       stubGetRegistrationAdditionalInfo(additionalInfo)

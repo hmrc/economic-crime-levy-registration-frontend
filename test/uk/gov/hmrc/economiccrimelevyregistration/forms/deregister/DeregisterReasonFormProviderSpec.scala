@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.deregister
 
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.OptionFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.DeregisterReason
 
 class DeregisterReasonFormProviderSpec extends OptionFieldBehaviours {
