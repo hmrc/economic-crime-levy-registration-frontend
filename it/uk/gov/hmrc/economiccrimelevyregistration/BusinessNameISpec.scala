@@ -17,7 +17,12 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the business name HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
+      val otherEntityJourneyData: OtherEntityJourneyData = OtherEntityJourneyData
+        .empty()
+        .copy(businessName = Some(alphaNumericString))
+
       val registration   = random[Registration]
+        .copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -45,23 +50,29 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
     "save the business name then redirect to the charity registration number page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration: Registration = random[Registration]
+      val businessName: String = alphaNumericString
 
+      val otherEntityJourneyData: OtherEntityJourneyData = OtherEntityJourneyData
+        .empty()
+        .copy(
+          businessName = Some(businessName),
+          charityRegistrationNumber = Some(alphaNumericString),
+          isUkCrnPresent = Some(true),
+          ctUtr = Some(alphaNumericString)
+        )
+
+      val registration   = random[Registration]
+        .copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
-      val otherEntityJourneyData = registration.otherEntityJourneyData.copy(businessName = Some("Test"))
-      val updatedRegistration    = registration.copy(
-        optOtherEntityJourneyData = Some(otherEntityJourneyData)
-      )
-
-      stubUpsertRegistration(updatedRegistration)
+      stubUpsertRegistration(registration)
 
       val result = callRoute(
         FakeRequest(routes.BusinessNameController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", "Test"))
+          .withFormUrlEncodedBody(("value", businessName))
       )
 
       status(result) shouldBe SEE_OTHER
