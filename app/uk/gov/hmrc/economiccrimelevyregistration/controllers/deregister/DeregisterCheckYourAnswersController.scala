@@ -54,7 +54,7 @@ class DeregisterCheckYourAnswersController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
     (for {
-      eclReference <- valueOrError(request.eclRegistrationReference)
+      eclReference <- valueOrError(request.eclRegistrationReference, "ECL reference")
       subscription <- eclRegistrationService.getSubscription(eclReference).asResponseError
       _            <- deregistrationService
                         .upsert(request.deregistration.copy(eclReference = request.eclRegistrationReference))

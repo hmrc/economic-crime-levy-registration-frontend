@@ -47,10 +47,10 @@ class DeregistrationRequestedController @Inject() (
   def onPageLoad: Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
     (for {
       _                    <- deregistrationService.delete(request.internalId).asResponseError
-      eclReference         <- valueOrError(request.eclRegistrationReference)
+      eclReference         <- valueOrError(request.eclRegistrationReference, "ECL reference")
       subscriptionResponse <- registrationService.getSubscription(eclReference).asResponseError
       address               = subscriptionResponse.correspondenceAddressDetails
-      email                <- valueOrError(request.deregistration.contactDetails.emailAddress)
+      email                <- valueOrError(request.deregistration.contactDetails.emailAddress, "contact email address")
     } yield (eclReference, email, address)).fold(
       error => routeError(error),
       tuple => {

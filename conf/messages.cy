@@ -711,3 +711,14 @@ deregisterCya.t3.l3 = Cyfeiriad e-bost
 deregisterCya.t3.l4 = Rhif ffôn
 deregisterCya.h2 = Anfonwch eich cais i ddadgofrestru nawr
 deregisterCya.p1 = Drwy gyflwyno’r cais hwn i ddatgofrestru, rydych yn cadarnhau, hyd eithaf eich gwybodaeth, bod y manylion a roddir gennych yn gywir.
+
+deregistrationRequested.title = Cais wedi’i wneud i ddatgofrestru rhag yr Ardoll Troseddau Economaidd - Datgofrestru rhag ECL - GOV.UK
+deregistrationRequested.panel.p1 = Cais wedi’i wneud i ddatgofrestru
+deregistrationRequested.panel.p2 = Cyfeirnod ECL: {0}
+deregistrationRequested.body.p1 = Rydych wedi gwneud cais i ddatgofrestru rhag CThEF ar gyfer yr Ardoll Troseddau Economaidd ar {0}.
+deregistrationRequested.body.p2 = Rydym wedi anfon e-bost cadarnhau i {0}. Cadwch hwn ar gyfer eich cofnodion.
+deregistrationRequested.h2 = Yr hyn sy’n digwydd nesaf
+deregistrationRequested.body.p3 = Byddwn yn adolygu’ch atebion. Os oes angen rhagor o wybodaeth arnom, mae’n bosibl y byddwn yn cysylltu â chi drwy ddefnyddio’r manylion a roddwyd gennych. Bydd y broses hon yn cymryd hyd at 15 diwrnod gwaith.
+deregistrationRequested.body.p4 = Byddwn yn anfon llythyr atoch ar ôl i ni orffen y broses o’ch datgofrestru.
+deregistrationRequested.body.p5 = Byddwn yn anfon llythyr at:
+deregistrationRequested.body.p6 = Gallwch fewngofnodi i’ch cyfrif ECL o hyd i weld y datganiadau a gyflwynwyd gennych a’ch hanes talu.
