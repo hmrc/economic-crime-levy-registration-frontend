@@ -597,6 +597,7 @@ amendRegistration.pdfHtml.submissionDate = Submission date: {0}
 
 liabilityBeforeCurrentYear.title = Are you liable for any previous years?
 liabilityBeforeCurrentYear.h1 = Are you liable for any previous years?
+liabilityBeforeCurrentYear.label = Liable for any previous years
 
 otherEntityType.crn.question.title = Do you have a UK company registration number?
 otherEntityType.crn.question.label = Do you have a UK company registration number?

@@ -598,6 +598,7 @@ amendRegistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad {0}
 
 liabilityBeforeCurrentYear.title =A ydych yn agored i’r ardoll ar gyfer unrhyw flynyddoedd blaenorol?
 liabilityBeforeCurrentYear.h1 = A ydych yn agored i’r ardoll ar gyfer unrhyw flynyddoedd blaenorol?
+liabilityBeforeCurrentYear.label = Yn atebol am unrhyw flynyddoedd blaenorol
 
 otherEntityType.crn.question.title = Oes gennych chi rif cofrestru cwmni'r DU?
 otherEntityType.crn.question.label = Oes gennych chi rif cofrestru cwmni'r DU?

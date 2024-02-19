@@ -128,6 +128,12 @@ case class CheckYourAnswersViewModel(
           )
           ++ addIf(
             isInitialRegistration,
+            LiabilityBeforeCurrentYearSummary.row(
+              additionalInfo.flatMap(additionalInfo => additionalInfo.liableForPreviousYears)
+            )
+          )
+          ++ addIf(
+            isInitialRegistration,
             LiabilityDateSummary.row(additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate))
           )
           ++ addIf(

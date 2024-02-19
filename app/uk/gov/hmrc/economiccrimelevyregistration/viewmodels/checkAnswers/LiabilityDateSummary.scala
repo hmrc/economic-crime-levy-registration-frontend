@@ -38,7 +38,7 @@ object LiabilityDateSummary {
         key = Key("liability.date.label"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(s"${ViewUtils.formatLocalDate(answer)}"))),
         actions = Seq(
-          ActionItemViewModel("site.change", contacts.routes.FirstContactNumberController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.LiabilityDateController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(
               messages("liability.date.label")
             )
