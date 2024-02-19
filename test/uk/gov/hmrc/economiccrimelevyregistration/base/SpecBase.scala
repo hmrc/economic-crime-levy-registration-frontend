@@ -81,8 +81,8 @@ trait SpecBase
   val actorSystem: ActorSystem                         = ActorSystem("actor")
   val eclReference: String                             = "ECLRefNumber12345"
 
-  def fakeAuthorisedActionWithEnrolmentCheck(internalId: String)                                                     =
-    new FakeAuthorisedActionWithEnrolmentCheck(internalId, bodyParsers)
+  def fakeAuthorisedActionWithEnrolmentCheck(internalId: String, eclRegistrationReference: Option[String] = None)    =
+    new FakeAuthorisedActionWithEnrolmentCheck(internalId, bodyParsers, eclRegistrationReference)
   def fakeAuthorisedActionWithoutEnrolmentCheck(internalId: String, eclRegistrationReference: Option[String] = None) =
     new FakeAuthorisedActionWithoutEnrolmentCheck(eclRegistrationReference, internalId, bodyParsers)
   def fakeAuthorisedActionAgentsAllowed                                                                              =

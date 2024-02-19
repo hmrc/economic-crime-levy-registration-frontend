@@ -31,6 +31,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait BaseController extends I18nSupport {
 
+  def getValue[T](option: Option[T]): EitherT[Future, DataRetrievalError, T] =
+    EitherT {
+      option match {
+        case Some(value) => Future.successful(Right(value))
+        case None        => Future.successful(Left(DataRetrievalError.InternalUnexpectedError("Missing value", None)))
+      }
+    }
+
   private def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
     request: Request[_],
     errorTemplate: ErrorTemplate
