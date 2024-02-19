@@ -22,7 +22,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UkRevenueFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclCalculatorService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, UkRevenueView}
@@ -72,7 +72,7 @@ class UkRevenueController @Inject() (
                                          revenueWithThreshold
                                        )
                                        .asResponseError
-          } yield revenueWithThreshold).convertToResult(mode, pageNavigator)
+          } yield EclRegistrationModel(revenueWithThreshold)).convertToResult(mode, pageNavigator)
         }
       )
   }

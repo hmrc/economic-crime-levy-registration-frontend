@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNameFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNamePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
@@ -80,7 +80,7 @@ class SecondContactNameController @Inject() (
             _ <- eclRegistrationService
                    .upsertRegistration(updatedRegistration)
                    .asResponseError
-          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+          } yield EclRegistrationModel(updatedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

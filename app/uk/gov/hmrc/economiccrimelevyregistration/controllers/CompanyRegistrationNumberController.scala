@@ -68,7 +68,7 @@ class CompanyRegistrationNumberController @Inject() (
 
             (for {
               _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            } yield updatedRegistration).convertToResult(mode, pageNavigator)
+            } yield EclRegistrationModel(updatedRegistration)).convertToResult(mode, pageNavigator)
           }
         )
     }

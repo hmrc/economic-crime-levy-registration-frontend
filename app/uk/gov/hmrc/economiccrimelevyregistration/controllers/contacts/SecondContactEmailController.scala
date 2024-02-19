@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactEmailFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode, SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EclRegistrationModel, Mode, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactEmailPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
@@ -106,7 +106,7 @@ class SecondContactEmailController @Inject() (
           (for {
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
             _  = sessionService.upsert(sessionData)
-          } yield updatedRegistration)
+          } yield EclRegistrationModel(updatedRegistration))
             .convertToResult(mode, pageNavigator)
             .map(
               _.withSession(

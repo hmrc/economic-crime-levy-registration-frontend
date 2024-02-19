@@ -23,7 +23,7 @@ import play.api.mvc.Results.{InternalServerError, Redirect}
 import play.api.mvc._
 import play.twirl.api.Html
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{ErrorCode, ResponseError}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 
@@ -61,13 +61,12 @@ trait BaseController extends I18nSupport {
       case errorCode                                            => Results.Status(errorCode.statusCode)(fallbackClientErrorTemplate(request, errorTemplate))
     }
 
-  implicit class ResponseHandler(data: EitherT[Future, ResponseError, Registration]) {
+  implicit class ResponseHandler(data: EitherT[Future, ResponseError, EclRegistrationModel]) {
 
     def convertToResult(
       mode: Mode,
       pageNavigator: PageNavigator,
-      session: Map[String, String] = Map(),
-      additionalInfo: Option[RegistrationAdditionalInfo] = None
+      session: Map[String, String] = Map()
     )(implicit
       ec: ExecutionContext,
       rh: RequestHeader,
@@ -77,7 +76,7 @@ trait BaseController extends I18nSupport {
       data.fold(
         error => routeError(error),
         data =>
-          Redirect(pageNavigator.nextPage(mode, EclRegistrationModel(data, additionalInfo)))
+          Redirect(pageNavigator.nextPage(mode, data))
             .withSession(rh.session ++ session)
       )
   }

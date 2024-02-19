@@ -21,7 +21,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
@@ -63,7 +63,8 @@ class RegisterForCurrentYearController @Inject() (
             additionalInfo       <- registrationAdditionalInfoService.get(request.internalId).asResponseError
             updatedAdditionalInfo = additionalInfo.get.copy(registeringForCurrentYear = Some(answer))
             _                    <- registrationAdditionalInfoService.upsert(updatedAdditionalInfo).asResponseError
-          } yield request.registration).convertToResult(mode, pageNavigator)
+          } yield EclRegistrationModel(request.registration, Some(updatedAdditionalInfo)))
+            .convertToResult(mode = mode, pageNavigator = pageNavigator)
       )
   }
 }
