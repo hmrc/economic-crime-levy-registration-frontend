@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class NonUkCrnPageNavigatorSpec extends SpecBase {
@@ -27,8 +28,14 @@ class NonUkCrnPageNavigatorSpec extends SpecBase {
 
   "nextPage" should {
     "return a call to the UTR type page in Normal mode" in forAll { (registration: Registration) =>
-      pageNavigator.nextPage(NormalMode, registration) shouldBe
+      val nextPage = if (registration.entityType.contains(UnincorporatedAssociation)) {
+        routes.DoYouHaveUtrController.onPageLoad(NormalMode)
+      } else {
         routes.UtrTypeController.onPageLoad(NormalMode)
+      }
+
+      pageNavigator.nextPage(NormalMode, registration) shouldBe
+        nextPage
     }
 
     "return a call to the check your answers page in Check mode" in forAll {

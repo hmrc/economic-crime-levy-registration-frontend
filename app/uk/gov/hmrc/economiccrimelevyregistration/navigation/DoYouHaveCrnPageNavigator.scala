@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
 
 import javax.inject.Inject
@@ -25,9 +26,11 @@ import javax.inject.Inject
 class DoYouHaveCrnPageNavigator @Inject() extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
     registration.otherEntityJourneyData.isUkCrnPresent match {
-      case Some(true)  => routes.NonUkCrnController.onPageLoad(NormalMode)
-      case Some(false) => routes.UtrTypeController.onPageLoad(NormalMode)
-      case None        => routes.NotableErrorController.answersAreInvalid()
+      case Some(true)                                                                 => routes.NonUkCrnController.onPageLoad(NormalMode)
+      case Some(false) if registration.isUnincorporatedAssociation =>
+        routes.DoYouHaveUtrController.onPageLoad(NormalMode)
+      case Some(false)                                                                => routes.UtrTypeController.onPageLoad(NormalMode)
+      case None                                                                       => routes.NotableErrorController.answersAreInvalid()
     }
 
   override protected def navigateInCheckMode(registration: Registration): Call =
