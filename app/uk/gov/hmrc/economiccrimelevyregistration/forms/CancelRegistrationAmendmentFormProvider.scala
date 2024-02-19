@@ -17,7 +17,6 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
-import play.api.data.Forms.boolean
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
 class CancelRegistrationAmendmentFormProvider extends Mappings {

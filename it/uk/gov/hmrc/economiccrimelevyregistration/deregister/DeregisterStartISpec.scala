@@ -20,10 +20,9 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, NormalMode}
-import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
 
 class DeregisterStartISpec extends ISpecBase with AuthorisedBehaviour {
 

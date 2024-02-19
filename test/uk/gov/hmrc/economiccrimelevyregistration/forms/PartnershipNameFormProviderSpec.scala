@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CompanyRegistrationNumberMaxLength, OrganisationNameMaxLength}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
 
 class PartnershipNameFormProviderSpec extends StringFieldBehaviours {
 

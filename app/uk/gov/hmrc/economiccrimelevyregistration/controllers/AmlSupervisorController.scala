@@ -17,7 +17,6 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
-import cats.instances.unit
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -38,7 +37,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.postfixOps
 
 @Singleton
 class AmlSupervisorController @Inject() (

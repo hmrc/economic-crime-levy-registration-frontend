@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, SessionError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 
