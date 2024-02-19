@@ -25,17 +25,19 @@ import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 
-object FirstContactNameSummary {
+object ContactEmailSummary {
 
-  def row(name: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
-    name.map { answer =>
+  def row(
+    emailAddress: Option[String]
+  )(implicit messages: Messages): Option[SummaryListRow] =
+    emailAddress.map { answer =>
       SummaryListRowViewModel(
-        key = Key(s"checkYourAnswers.firstContactName.label"),
+        key = Key("checkYourAnswers.contactEmail.label"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),
         actions = Seq(
-          ActionItemViewModel("site.change", contacts.routes.FirstContactNameController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", contacts.routes.FirstContactEmailController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(
-              messages("checkYourAnswers.firstContactName.label")
+              messages("checkYourAnswers.contactEmail.label")
             )
         )
       )

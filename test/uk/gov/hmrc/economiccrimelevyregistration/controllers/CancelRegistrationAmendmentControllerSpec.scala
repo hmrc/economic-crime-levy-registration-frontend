@@ -76,7 +76,7 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
         new TestContext(registration) {
 
           when(mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(registration.internalId))(any()))
-            .thenReturn(Future.successful())
+            .thenReturn(Future.successful(()))
 
           val result: Future[Result] =
             controller.onSubmit()(

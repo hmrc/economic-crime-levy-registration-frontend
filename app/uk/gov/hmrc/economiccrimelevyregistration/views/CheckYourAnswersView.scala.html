@@ -55,9 +55,22 @@
             @govukSummaryList(viewModel.organisationDetails())
         }
 
-        <h2 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h2>
+        @if(viewModel.hasSecondContact) {
+            <h2 class="govuk-heading-m">@messages("checkYourAnswers.firstContact")</h2>
+            @govukSummaryList(viewModel.firstContactDetails())
 
-        @govukSummaryList(viewModel.contactDetails())
+            <h2 class="govuk-heading-m">@messages("checkYourAnswers.secondContact")</h2>
+            @govukSummaryList(viewModel.secondContactDetails())
+
+            } else {
+            <h2 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h2>
+            @govukSummaryList(viewModel.contactDetails())
+        }
+
+
+        <h2 class="govuk-heading-m">@messages("checkYourAnswers.addressDetails")</h2>
+        @govukSummaryList(viewModel.addressDetails())
+
 
         @if(viewModel.otherEntityDetails().rows.nonEmpty) {
 
