@@ -6,7 +6,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 
 import scala.concurrent.Future

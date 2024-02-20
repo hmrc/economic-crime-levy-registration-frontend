@@ -26,8 +26,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.DeregisterContactEmailFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-import uk.gov.hmrc.economiccrimelevyregistration.navigation.deregister.Navigator
-
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.deregister.DeregisterNavigator
 
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
