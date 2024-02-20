@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContac
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.AddAnotherContactView
@@ -45,9 +45,9 @@ class AddAnotherContactControllerSpec extends SpecBase {
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: AddAnotherContactPageNavigator = new AddAnotherContactPageNavigator {
-    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
 
-    override protected def navigateInCheckMode(navigationData: Registration): Call = onwardRoute
+    override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
   }
 
   val dataCleanup: AddAnotherContactDataCleanup = new AddAnotherContactDataCleanup {
@@ -108,8 +108,8 @@ class AddAnotherContactControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, secondContact: Boolean) =>
         new TestContext(registration) {
-          val contacts            = registration.contacts.copy(secondContact = Some(secondContact))
-          val updatedRegistration = dataCleanup.cleanup(registration).copy(contacts = contacts)
+          val contacts: Contacts                = registration.contacts.copy(secondContact = Some(secondContact))
+          val updatedRegistration: Registration = dataCleanup.cleanup(registration).copy(contacts = contacts)
 
           when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))

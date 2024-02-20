@@ -46,11 +46,11 @@ class NonUkCrnControllerSpec extends SpecBase {
   val pageNavigator: NonUkCrnPageNavigator = new NonUkCrnPageNavigator(
   ) {
     override protected def navigateInNormalMode(
-      navigationData: Registration
+      eclRegistrationModel: EclRegistrationModel
     ): Call = onwardRoute
 
     override protected def navigateInCheckMode(
-      navigationData: Registration
+      eclRegistrationModel: EclRegistrationModel
     ): Call = onwardRoute
   }
 

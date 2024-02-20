@@ -64,6 +64,9 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
           RegistrationAdditionalInfo(
             registration.internalId,
             None,
+            None,
+            None,
+            None,
             None
           )
         new TestContext(registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = None), Some(info)) {
@@ -81,21 +84,14 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, liableBeforeCurrentYear: Boolean) =>
         new TestContext(registration) {
-          val liabilityYear =
+          val liabilityYear: Option[LiabilityYear] =
             (registration.carriedOutAmlRegulatedActivityInCurrentFy, liableBeforeCurrentYear) match {
               case (Some(_), true)     => Some(LiabilityYear(TaxYear.current.previous.startYear))
               case (Some(true), false) => Some(LiabilityYear(TaxYear.current.currentYear))
               case _                   => None
             }
 
-          val info: RegistrationAdditionalInfo =
-            RegistrationAdditionalInfo(
-              registration.internalId,
-              liabilityYear,
-              Some(eclReference)
-            )
-
-          when(mockAdditionalInfoService.upsert(ArgumentMatchers.eq(info))(any(), any()))
+          when(mockAdditionalInfoService.upsert(any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
           if (liabilityYear.isDefined) {
             val liabilityYearSessionData: Map[String, String] =

@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 
 class RelevantApLengthPageDeregisterNavigatorSpec extends SpecBase {
 
@@ -29,14 +29,14 @@ class RelevantApLengthPageDeregisterNavigatorSpec extends SpecBase {
     "return a Call to the UK revenue page in NormalMode" in forAll { (registration: Registration, length: Int) =>
       val updatedRegistration = registration.copy(relevantApLength = Some(length))
 
-      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
         routes.UkRevenueController.onPageLoad(NormalMode)
     }
 
     "return a Call to the UK revenue page in CheckMode" in forAll { (registration: Registration, length: Int) =>
       val updatedRegistration = registration.copy(relevantApLength = Some(length))
 
-      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
         routes.UkRevenueController.onPageLoad(CheckMode)
     }
   }

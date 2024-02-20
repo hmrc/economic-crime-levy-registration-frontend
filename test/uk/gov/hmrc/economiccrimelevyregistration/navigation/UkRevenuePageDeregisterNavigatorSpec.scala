@@ -31,7 +31,7 @@ class UkRevenuePageDeregisterNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(true))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode)
     }
 
@@ -40,7 +40,7 @@ class UkRevenuePageDeregisterNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = Some(true))
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
 
@@ -51,7 +51,7 @@ class UkRevenuePageDeregisterNavigatorSpec extends SpecBase {
 
         pageNavigator.nextPage(
           mode,
-          updatedRegistration
+          EclRegistrationModel(updatedRegistration)
         ) shouldBe routes.LiabilityBeforeCurrentYearController
           .onPageLoad(mode)
     }

@@ -30,8 +30,11 @@ class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
     navigateInEitherMode(eclRegistrationModel.registration, CheckMode)
 
   private def navigateInEitherMode(registration: Registration, mode: Mode): Call =
-    if (registration.isUnincorporatedAssociation) routeUnincorporatedAssociation(registration, mode)
-    else routeOtherEntityTypes(registration, mode)
+    if (registration.isUnincorporatedAssociation) {
+      routeUnincorporatedAssociation(registration, mode)
+    } else {
+      routeOtherEntityTypes(registration, mode)
+    }
 
   private def routeUnincorporatedAssociation(registration: Registration, mode: Mode) =
     if (registration.otherEntityJourneyData.isCtUtrPresent.contains(true)) {

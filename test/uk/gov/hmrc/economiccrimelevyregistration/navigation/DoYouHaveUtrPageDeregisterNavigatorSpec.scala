@@ -45,7 +45,7 @@ class DoYouHaveUtrPageDeregisterNavigatorSpec extends SpecBase {
         routes.UtrController.onPageLoad(NormalMode)
       }
 
-      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
         nextPage
     }
 
@@ -68,7 +68,7 @@ class DoYouHaveUtrPageDeregisterNavigatorSpec extends SpecBase {
           routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
         }
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           nextPage
     }
 
@@ -78,9 +78,10 @@ class DoYouHaveUtrPageDeregisterNavigatorSpec extends SpecBase {
           .empty()
           .copy(
             isCtUtrPresent = Some(isUtrPresent),
-            ctUtr = isUtrPresent match {
-              case true  => Some(utr)
-              case false => None
+            ctUtr = if (isUtrPresent) {
+              Some(utr)
+            } else {
+              None
             }
           )
 
@@ -90,7 +91,7 @@ class DoYouHaveUtrPageDeregisterNavigatorSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }

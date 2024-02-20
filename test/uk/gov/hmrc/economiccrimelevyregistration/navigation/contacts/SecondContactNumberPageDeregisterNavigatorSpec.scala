@@ -20,7 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWi
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 
 class SecondContactNumberPageDeregisterNavigatorSpec extends SpecBase {
 
@@ -44,7 +44,7 @@ class SecondContactNumberPageDeregisterNavigatorSpec extends SpecBase {
             soleTraderEntityJourneyData = None
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.ConfirmContactAddressController.onPageLoad(NormalMode)
     }
 
@@ -63,19 +63,18 @@ class SecondContactNumberPageDeregisterNavigatorSpec extends SpecBase {
             soleTraderEntityJourneyData = None
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.IsUkAddressController.onPageLoad(NormalMode)
     }
 
-    "return a Call to the check your answers page in CheckMode" in forAll {
-      (registration: Registration, telephoneNumber: String) =>
-        val updatedRegistration: Registration =
-          registration.copy(
-            contacts = registration.contacts.copy(secondContactDetails = validContactDetails)
-          )
+    "return a Call to the check your answers page in CheckMode" in forAll { registration: Registration =>
+      val updatedRegistration: Registration =
+        registration.copy(
+          contacts = registration.contacts.copy(secondContactDetails = validContactDetails)
+        )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+      pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+        routes.CheckYourAnswersController.onPageLoad()
     }
   }
 

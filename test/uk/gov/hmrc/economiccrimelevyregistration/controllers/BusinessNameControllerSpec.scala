@@ -46,9 +46,9 @@ class BusinessNameControllerSpec extends SpecBase {
   override val appConfig: AppConfig                      = mock[AppConfig]
   val pageNavigator: BusinessNamePageNavigator           = new BusinessNamePageNavigator(
   ) {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
 
-    override protected def navigateInCheckMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
   }
 
   class TestContext(registrationData: Registration) {

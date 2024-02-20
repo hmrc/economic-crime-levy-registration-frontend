@@ -26,6 +26,9 @@ class UtrISpec extends ISpecBase with AuthorisedBehaviour {
         RegistrationAdditionalInfo.apply(
           registration.internalId,
           None,
+          None,
+          None,
+          None,
           None
         )
       )

@@ -20,7 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 
 class AmlRegulatedActivityPageDeregisterNavigatorSpec extends SpecBase {
 
@@ -32,7 +32,7 @@ class AmlRegulatedActivityPageDeregisterNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true), registrationType = Some(Amendment))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.AmlSupervisorController.onPageLoad(NormalMode, Amendment)
     }
 
@@ -41,8 +41,8 @@ class AmlRegulatedActivityPageDeregisterNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true), registrationType = Some(Initial))
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.AmlSupervisorController.onPageLoad(NormalMode, Initial)
     }
 
     "return a Call to the liable in previous year page from the AML regulated activity page in either mode when the 'No' option is selected" in forAll {
@@ -50,7 +50,7 @@ class AmlRegulatedActivityPageDeregisterNavigatorSpec extends SpecBase {
         val updatedRegistration =
           registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false), registrationType = Some(Initial))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode)
     }
   }

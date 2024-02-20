@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.PartnershipNameFormProvid
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.PartnershipNamePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.PartnershipNameView
@@ -43,7 +43,7 @@ class PartnershipNameControllerSpec extends SpecBase {
   val form: Form[String]                        = formProvider()
 
   val pageNavigator: PartnershipNamePageNavigator = new PartnershipNamePageNavigator() {
-    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
