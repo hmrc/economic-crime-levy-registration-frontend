@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors
 
 import akka.actor.ActorSystem
 import com.typesafe.config.Config
-import play.api.http.HeaderNames
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig

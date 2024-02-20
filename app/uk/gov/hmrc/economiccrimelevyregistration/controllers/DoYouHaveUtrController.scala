@@ -20,6 +20,7 @@ import com.google.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.DoYouHaveUtrDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
@@ -63,19 +64,14 @@ class DoYouHaveUtrController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           hasUtr => {
-            val otherEntityJourneyData =
-              request.registration.otherEntityJourneyData.copy(
-                isCtUtrPresent = Some(hasUtr),
-                ctUtr = hasUtr match {
-                  case false => None
-                  case true  => request.registration.otherEntityJourneyData.ctUtr
-                }
-              )
-            val updatedRegistration    =
-              request.registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+            val updatedRegistration = request.registration.copy(optOtherEntityJourneyData =
+              Some(request.registration.otherEntityJourneyData.copy(isCtUtrPresent = Some(hasUtr)))
+            )
+
+            val cleanRegistration = DoYouHaveUtrDataCleanup.cleanup(updatedRegistration)
 
             (for {
-              _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
+              _ <- eclRegistrationService.upsertRegistration(cleanRegistration).asResponseError
             } yield updatedRegistration).convertToResult(mode, pageNavigator)
           }
         )

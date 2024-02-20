@@ -30,7 +30,7 @@ object FirstContactNameSummary {
   def row(name: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
     name.map { answer =>
       SummaryListRowViewModel(
-        key = Key("checkYourAnswers.firstContactName.label"),
+        key = Key(s"checkYourAnswers.firstContactName.label"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),
         actions = Seq(
           ActionItemViewModel("site.change", contacts.routes.FirstContactNameController.onPageLoad(CheckMode).url)
@@ -40,5 +40,4 @@ object FirstContactNameSummary {
         )
       )
     }
-
 }

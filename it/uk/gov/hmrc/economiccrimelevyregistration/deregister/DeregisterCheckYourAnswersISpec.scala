@@ -20,11 +20,11 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.{DeregisterCheckYourAnswersController, DeregistrationRequestedController}
+import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 
 class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 

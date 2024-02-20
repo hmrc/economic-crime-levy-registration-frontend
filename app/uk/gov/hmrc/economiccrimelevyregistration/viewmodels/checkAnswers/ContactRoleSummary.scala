@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,30 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.deregister
+package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
+import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
-import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 
-object EclReferenceSummary {
-  def row(eclReference: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
-    eclReference.map { answer =>
+object ContactRoleSummary {
+
+  def row(role: Option[String])(implicit messages: Messages): Option[SummaryListRow] =
+    role.map { answer =>
       SummaryListRowViewModel(
-        key = Key("deregisterCya.t1.l1"),
+        key = Key("checkYourAnswers.contactRole.label"),
         value = ValueViewModel(HtmlContent(HtmlFormat.escape(answer))),
-        actions = Seq.empty
+        actions = Seq(
+          ActionItemViewModel("site.change", contacts.routes.FirstContactRoleController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(
+              messages("checkYourAnswers.contactRole.label")
+            )
+        )
       )
     }
 }

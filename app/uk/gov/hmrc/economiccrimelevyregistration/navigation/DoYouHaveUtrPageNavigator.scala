@@ -18,38 +18,64 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
 
 import javax.inject.Inject
 
 class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
   override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.otherEntityJourneyData.isCtUtrPresent match {
-      case Some(isCtUtrPresent) =>
-        navigateInEitherMode(isCtUtrPresent, registration.otherEntityJourneyData.ctUtr, NormalMode)
-      case None                 => routes.NotableErrorController.answersAreInvalid()
-    }
+    navigateInEitherMode(registration, NormalMode)
 
   override protected def navigateInCheckMode(registration: Registration): Call =
-    registration.otherEntityJourneyData.isCtUtrPresent match {
-      case Some(isCtUtrPresent) =>
-        navigateInEitherMode(isCtUtrPresent, registration.otherEntityJourneyData.ctUtr, CheckMode)
-      case None                 => routes.NotableErrorController.answersAreInvalid()
-    }
+    navigateInEitherMode(registration, CheckMode)
 
-  private def navigateInEitherMode(isCtUtrPresent: Boolean, utr: Option[String], mode: Mode): Call =
-    if (isCtUtrPresent) {
+  private def navigateInEitherMode(registration: Registration, mode: Mode): Call =
+    if (registration.isUnincorporatedAssociation) routeUnincorporatedAssociation(registration, mode)
+    else routeOtherEntityTypes(registration, mode)
+
+  def routeUnincorporatedAssociation(registration: Registration, mode: Mode) =
+    if (registration.otherEntityJourneyData.isCtUtrPresent.contains(true)) {
       mode match {
         case CheckMode  =>
+          val utr = registration.otherEntityJourneyData.ctUtr
           utr match {
-            case Some(_) => routes.CheckYourAnswersController.onPageLoad()
-            case None    => routes.UtrController.onPageLoad(mode)
+            case Some(_) =>
+              routes.UtrTypeController.onPageLoad(mode)
+            case None    =>
+              routes.UtrTypeController.onPageLoad(mode)
           }
-        case NormalMode => routes.UtrController.onPageLoad(mode)
+        case NormalMode =>
+          routes.UtrTypeController.onPageLoad(mode)
       }
     } else {
       mode match {
-        case NormalMode => routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
+        case NormalMode =>
+          routes.BusinessSectorController.onPageLoad(mode)
+        case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
+      }
+    }
+
+  def routeOtherEntityTypes(registration: Registration, mode: Mode) =
+    if (registration.otherEntityJourneyData.isCtUtrPresent.contains(true)) {
+      mode match {
+        case CheckMode  =>
+          val utr = registration.otherEntityJourneyData.ctUtr
+          utr match {
+            case Some(_) =>
+              routes.CheckYourAnswersController.onPageLoad()
+            case None    =>
+              routes.UtrController.onPageLoad(mode)
+
+          }
+        case NormalMode =>
+          routes.UtrController.onPageLoad(mode)
+
+      }
+    } else {
+      mode match {
+        case NormalMode =>
+          routes.CompanyRegistrationNumberController.onPageLoad(mode)
         case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
       }
     }

@@ -18,21 +18,30 @@
 
 @this(pdfLayout: PdfLayout, govukSummaryList: GovukSummaryList)
 
-@(date: String, organisationDetails: SummaryList, contactDetails: SummaryList, otherEntityDetails: SummaryList)(implicit request: Request[_], messages: Messages)
+@(date: String, organisationDetails: SummaryList, contactDetails: SummaryList, firstContactDetails: SummaryList, secondContactDetails: SummaryList, otherEntityDetails: SummaryList, addressDetails: SummaryList, hasSecondContact: Boolean)(implicit request: Request[_], messages: Messages)
 
 @pdfLayout(messages("otherRegistration.pdfHtml.title")) {
 
     <p class="govuk-body" align="right">@messages("otherRegistration.pdfHtml.submissionDate", date)</p>
 
-    <h2>@messages("checkYourAnswers.organisationDetails")</h2>
+    <h2 class="govuk-heading-m">@messages("checkYourAnswers.organisationDetails")</h2>
 
     @govukSummaryList(organisationDetails)
 
-    <h2>@messages("checkYourAnswers.contactDetails")</h2>
+    @if(hasSecondContact) {
+        <h2 class="govuk-heading-m">@messages("checkYourAnswers.firstContact")</h2>
+        @govukSummaryList(firstContactDetails)
 
-    @govukSummaryList(contactDetails)
+        <h2 class="govuk-heading-m">@messages("checkYourAnswers.secondContact")</h2>
+        @govukSummaryList(secondContactDetails)
+    } else {
+        <h2 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h2>
+        @govukSummaryList(contactDetails)
+    }
+
+    <h2 class="govuk-heading-m">@messages("checkYourAnswers.addressDetails")</h2>
+    @govukSummaryList(addressDetails)
 
     <h2>@messages("checkYourAnswers.otherEntityDetails")</h2>
-
     @govukSummaryList(otherEntityDetails)
 }
