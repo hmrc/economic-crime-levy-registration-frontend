@@ -48,8 +48,8 @@ class LiabilityDateController @Inject() (
   val form: Form[LocalDate]                      = formProvider()
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     request.additionalInfo match {
-      case Some(value) => Ok(view(form.prepare(value.liabilityStartDate)))
-      case None        => Ok(view(form))
+      case Some(value) => Ok(view(mode, form.prepare(value.liabilityStartDate)))
+      case None        => Ok(view(mode, form))
     }
 
   }
@@ -59,7 +59,7 @@ class LiabilityDateController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+          formWithErrors => Future.successful(BadRequest(view(mode, formWithErrors))),
           liabilityDate => {
             val registration   = request.registration
             val additionalInfo = request.additionalInfo.get.copy(liabilityStartDate = Some(liabilityDate))

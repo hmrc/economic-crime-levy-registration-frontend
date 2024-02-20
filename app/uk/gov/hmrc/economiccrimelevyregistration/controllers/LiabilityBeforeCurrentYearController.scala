@@ -77,7 +77,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
             val info = RegistrationAdditionalInfo(
               registration.internalId,
               liabilityYear,
-              None,
+              request.additionalInfo.flatMap(info => info.liabilityStartDate),
               request.additionalInfo.flatMap(info => info.registeringForCurrentYear),
               Some(liableBeforeCurrentYear),
               request.eclRegistrationReference
@@ -123,16 +123,17 @@ class LiabilityBeforeCurrentYearController @Inject() (
   private def navigateInNormalMode(liableBeforeCurrentYear: Boolean, registration: Registration, mode: Mode)(implicit
     hc: HeaderCarrier
   ): Call =
-    (liableBeforeCurrentYear, registration.revenueMeetsThreshold) match {
-      case (false, Some(false)) =>
+    (liableBeforeCurrentYear, registration.revenueMeetsThreshold, registration.businessSector) match {
+      case (false, Some(false), None) =>
         sendNotLiableAuditEvent(registration)
         routes.NotLiableController.youDoNotNeedToRegister()
-      case (false, Some(true))  => routes.EntityTypeController.onPageLoad(mode)
-      case (false, None)        =>
+      case (false, Some(true), None)  => routes.EntityTypeController.onPageLoad(mode)
+      case (false, None, None)        =>
         sendNotLiableAuditEvent(registration)
         routes.NotLiableController.youDoNotNeedToRegister()
-      case (true, _)            =>
+      case (true, _, None)            =>
         routes.LiabilityDateController.onPageLoad(mode)
+      case (_, _, Some(_))            => routes.CheckYourAnswersController.onPageLoad()
     }
 
   private def sendNotLiableAuditEvent(registration: Registration)(implicit hc: HeaderCarrier) =

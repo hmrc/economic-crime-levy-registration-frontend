@@ -19,10 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.{LiabilityDateAdditionalInfoCleanup, LiabilityDateRegistrationCleanup}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
@@ -40,7 +42,9 @@ class RegisterForCurrentYearController @Inject() (
   formProvider: RegisterForCurrentYearFormProvider,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   registrationService: EclRegistrationService,
-  pageNavigator: RegisterForCurrentYearPageNavigator
+  pageNavigator: RegisterForCurrentYearPageNavigator,
+  registrationDataCleanup: LiabilityDateRegistrationCleanup,
+  additionalInfoDataCleanup: LiabilityDateAdditionalInfoCleanup
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
@@ -48,8 +52,19 @@ class RegisterForCurrentYearController @Inject() (
     with ErrorHandler {
 
   val form: Form[Boolean]                        = formProvider()
-  def onPageLoad(mode: Mode): Action[AnyContent] = authorise { implicit request =>
-    Ok(view(form, mode, s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+    request.additionalInfo match {
+      case Some(value) =>
+        Ok(
+          view(
+            form.prepare(value.registeringForCurrentYear),
+            mode,
+            s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"
+          )
+        )
+      case None        => Ok(view(form, mode, s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
+
+    }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
@@ -62,13 +77,32 @@ class RegisterForCurrentYearController @Inject() (
           ),
         answer =>
           (for {
-            additionalInfo       <- registrationAdditionalInfoService.get(request.internalId).asResponseError
-            updatedAdditionalInfo = additionalInfo.get.copy(registeringForCurrentYear = Some(answer))
-            _                    <- registrationAdditionalInfoService.upsert(updatedAdditionalInfo).asResponseError
-            updatedRegistration   = request.registration.copy(registrationType = Some(Initial))
-            _                    <- registrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield EclRegistrationModel(updatedRegistration, Some(updatedAdditionalInfo)))
+            additionalInfo         <- registrationAdditionalInfoService.get(request.internalId).asResponseError
+            updatedAdditionalInfo   = additionalInfo.get.copy(registeringForCurrentYear = Some(answer))
+            cleanedUpAdditionalInfo = additionalInfoCleanup(updatedAdditionalInfo)
+            _                      <- registrationAdditionalInfoService.upsert(cleanedUpAdditionalInfo).asResponseError
+            updatedRegistration     = request.registration.copy(registrationType = Some(Initial))
+            cleanedUpRegistration   = registrationCleanup(updatedRegistration, cleanedUpAdditionalInfo)
+            _                      <- registrationService.upsertRegistration(cleanedUpRegistration).asResponseError
+          } yield EclRegistrationModel(cleanedUpRegistration, Some(cleanedUpAdditionalInfo)))
             .convertToResult(mode = mode, pageNavigator = pageNavigator)
       )
   }
+
+  private def registrationCleanup(
+    registration: Registration,
+    additionalInfo: RegistrationAdditionalInfo
+  ): Registration =
+    if (additionalInfo.registeringForCurrentYear.contains(false)) {
+      registrationDataCleanup.cleanup(registration)
+    } else {
+      registration
+    }
+
+  private def additionalInfoCleanup(additionalInfo: RegistrationAdditionalInfo): RegistrationAdditionalInfo =
+    if (additionalInfo.registeringForCurrentYear.contains(false)) {
+      additionalInfoDataCleanup.cleanup(additionalInfo)
+    } else {
+      additionalInfo
+    }
 }

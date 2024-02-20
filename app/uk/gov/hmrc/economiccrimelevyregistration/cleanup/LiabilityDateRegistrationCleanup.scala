@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,17 @@
  */
 
 package uk.gov.hmrc.economiccrimelevyregistration.cleanup
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Registration}
+class LiabilityDateRegistrationCleanup extends DataCleanup[Registration] {
 
-import javax.inject.Inject
-
-class AddAnotherContactDataCleanup @Inject() () extends DataCleanup[Registration] {
-  def cleanup(registration: Registration): Registration =
-    registration.contacts.secondContact match {
-      case Some(true)  => registration
-      case Some(false) =>
-        registration.copy(contacts =
-          registration.contacts
-            .copy(secondContactDetails = ContactDetails.empty)
-        )
-      case _           => registration
-    }
-
+  override def cleanup(registration: Registration): Registration =
+    registration.copy(
+      carriedOutAmlRegulatedActivityInCurrentFy = None,
+      amlSupervisor = None,
+      relevantAp12Months = None,
+      relevantApLength = None,
+      relevantApRevenue = None,
+      revenueMeetsThreshold = None
+    )
 }

@@ -20,7 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 import javax.inject.Inject
 
-class ConfirmContactAddressDataCleanup @Inject() () extends DataCleanup {
+class ConfirmContactAddressDataCleanup @Inject() () extends DataCleanup[Registration] {
   def cleanup(registration: Registration): Registration =
     registration.useRegisteredOfficeAddressAsContactAddress match {
       case Some(false) => registration.copy(contactAddress = None)
