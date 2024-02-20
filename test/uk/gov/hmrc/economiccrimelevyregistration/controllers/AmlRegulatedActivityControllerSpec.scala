@@ -108,7 +108,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
               .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
             when(mockSessionService.upsert(any())(any()))
-              .thenReturn(EitherT.fromEither[Future](Right()))
+              .thenReturn(EitherT.fromEither[Future](Right(())))
 
             val result: Future[Result] =
               controller.onSubmit(NormalMode)(

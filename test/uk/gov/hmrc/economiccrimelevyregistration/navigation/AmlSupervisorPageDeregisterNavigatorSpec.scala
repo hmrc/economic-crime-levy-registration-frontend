@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.scalacheck.Gen
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes

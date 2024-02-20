@@ -150,7 +150,7 @@ class FirstContactEmailControllerSpec extends SpecBase {
             )
           )(any())
         )
-          .thenReturn(EitherT.fromEither[Future](Right()))
+          .thenReturn(EitherT.fromEither[Future](Right(())))
 
         when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))

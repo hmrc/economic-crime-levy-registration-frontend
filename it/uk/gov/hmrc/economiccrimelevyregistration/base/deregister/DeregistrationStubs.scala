@@ -6,7 +6,6 @@ import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockStubs
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationAdditionalInfo
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 
 trait DeregistrationStubs { self: WireMockStubs =>

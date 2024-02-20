@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
-import uk.gov.hmrc.economiccrimelevyregistration.models.{RegistrationAdditionalInfo, SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionData, SessionKeys}
 
 class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 

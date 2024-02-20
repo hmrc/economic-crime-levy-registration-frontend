@@ -23,12 +23,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedA
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.{DeregisterDateFormProvider, DeregisterReasonFormProvider}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.DeregisterDateFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.deregister.DeregisterNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.{DeregisterDateView, DeregisterReasonView}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterDateView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import java.time.LocalDate

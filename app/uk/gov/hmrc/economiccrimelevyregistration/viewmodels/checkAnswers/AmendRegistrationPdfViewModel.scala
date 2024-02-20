@@ -29,30 +29,80 @@ case class AmendRegistrationPdfViewModel(
   eclReference: Option[String]
 ) extends TrackRegistrationChanges {
 
+  val hasSecondContact: Boolean = registration.contacts.secondContact.contains(true)
+
+  def addressDetails()(implicit messages: Messages): SummaryList =
+    SummaryListViewModel(
+      rows = addIfNot(
+        hasAddressChanged,
+        ContactAddressSummary.row(
+          registration.useRegisteredOfficeAddressAsContactAddress,
+          registration.contactAddress
+        )
+      ).flatten
+    ).withCssClass("govuk-!-margin-bottom-9")
+
+  def firstContactDetails()(implicit messages: Messages): SummaryList =
+    SummaryListViewModel(
+      rows = (
+        Seq(formatRow(SecondContactSummary.row(registration.contacts.secondContact)))
+          ++ addIfNot(
+            hasFirstContactNameChanged,
+            formatRow(FirstContactNameSummary.row(registration.contacts.firstContactDetails.name))
+          )
+          ++ addIfNot(
+            hasFirstContactRoleChanged,
+            formatRow(FirstContactRoleSummary.row(registration.contacts.firstContactDetails.role))
+          )
+          ++ addIfNot(
+            hasFirstContactEmailChanged,
+            formatRow(FirstContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress))
+          )
+          ++ addIfNot(
+            hasFirstContactPhoneChanged,
+            formatRow(
+              FirstContactNumberSummary.row(
+                registration.contacts.firstContactDetails.telephoneNumber
+              )
+            )
+          )
+      ).flatten
+    ).withCssClass("govuk-!-margin-bottom-9")
+
   def contactDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = (
-        addIfNot(
-          hasFirstContactNameChanged,
-          formatRow(FirstContactNameSummary.row(registration.contacts.firstContactDetails.name))
-        ) ++ addIfNot(
-          hasFirstContactRoleChanged,
-          formatRow(FirstContactRoleSummary.row(registration.contacts.firstContactDetails.role))
-        ) ++ addIfNot(
-          hasFirstContactEmailChanged,
-          formatRow(FirstContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress))
-        )
+        Seq(formatRow(SecondContactSummary.row(registration.contacts.secondContact)))
+          ++ addIfNot(
+            hasFirstContactNameChanged,
+            formatRow(ContactNameSummary.row(registration.contacts.firstContactDetails.name))
+          )
+          ++ addIfNot(
+            hasFirstContactRoleChanged,
+            formatRow(ContactRoleSummary.row(registration.contacts.firstContactDetails.role))
+          )
+          ++ addIfNot(
+            hasFirstContactEmailChanged,
+            formatRow(ContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress))
+          )
           ++ addIfNot(
             hasFirstContactPhoneChanged,
-            formatRow(FirstContactNumberSummary.row(registration.contacts.firstContactDetails.telephoneNumber))
-          ) ++ addIfNot(
-            hasSecondContactDetailsPresentChanged,
-            formatRow(SecondContactSummary.row(registration.contacts.secondContact))
+            formatRow(
+              ContactNumberSummary.row(
+                registration.contacts.firstContactDetails.telephoneNumber
+              )
+            )
           )
-          ++ addIfNot(
-            hasSecondContactNameChanged,
-            formatRow(SecondContactNameSummary.row(registration.contacts.secondContactDetails.name))
-          )
+      ).flatten
+    ).withCssClass("govuk-!-margin-bottom-9")
+
+  def secondContactDetails()(implicit messages: Messages): SummaryList =
+    SummaryListViewModel(
+      rows = (
+        addIfNot(
+          hasSecondContactNameChanged,
+          formatRow(SecondContactNameSummary.row(registration.contacts.secondContactDetails.name))
+        )
           ++ addIfNot(
             hasSecondContactRoleChanged,
             formatRow(SecondContactRoleSummary.row(registration.contacts.secondContactDetails.role))
@@ -64,15 +114,6 @@ case class AmendRegistrationPdfViewModel(
           ++ addIfNot(
             hasSecondContactPhoneChanged,
             formatRow(SecondContactNumberSummary.row(registration.contacts.secondContactDetails.telephoneNumber))
-          )
-          ++ addIfNot(
-            hasAddressChanged,
-            formatRow(
-              ContactAddressSummary.row(
-                registration.useRegisteredOfficeAddressAsContactAddress,
-                registration.contactAddress
-              )
-            )
           )
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
@@ -129,8 +170,16 @@ case class AmendRegistrationPdfViewModel(
       rows = (
         addIf(
           isInitialRegistration,
-          formatRow(EntityTypeSummary.row(registration.entityType))
+          formatRow(AmlRegulatedActivitySummary.row(registration.carriedOutAmlRegulatedActivityInCurrentFy))
         )
+          ++ addIfNot(
+            hasAmlSupervisorChanged,
+            formatRow(AmlSupervisorSummary.row(registration.amlSupervisor, registrationType))
+          )
+          ++ addIf(isInitialRegistration, formatRow(RelevantAp12MonthsSummary.row(registration.relevantAp12Months)))
+          ++ addIf(isInitialRegistration, formatRow(RelevantApLengthSummary.row(registration.relevantApLength)))
+          ++ addIf(isInitialRegistration, formatRow(UkRevenueSummary.row(registration.relevantApRevenue)))
+          ++ addIf(isInitialRegistration, formatRow(EntityTypeSummary.row(registration.entityType)))
           ++ addIf(
             isInitialRegistration,
             formatRow(EntityNameSummary.row(registration.entityName, registration.entityType))
@@ -140,18 +189,7 @@ case class AmendRegistrationPdfViewModel(
           ++ addIf(isInitialRegistration, formatRow(SaUtrSummary.row(registration.saUtr)))
           ++ addIf(isInitialRegistration, formatRow(NinoSummary.row(registration.nino)))
           ++ addIf(isInitialRegistration, formatRow(DateOfBirthSummary.row(registration.dateOfBirth)))
-          ++ addIf(
-            isInitialRegistration,
-            formatRow(AmlRegulatedActivitySummary.row(registration.carriedOutAmlRegulatedActivityInCurrentFy))
-          )
           ++ addIf(isInitialRegistration, formatRow(liabilityRow))
-          ++ addIf(isInitialRegistration, formatRow(RelevantAp12MonthsSummary.row(registration.relevantAp12Months)))
-          ++ addIf(isInitialRegistration, formatRow(RelevantApLengthSummary.row(registration.relevantApLength)))
-          ++ addIf(isInitialRegistration, formatRow(UkRevenueSummary.row(registration.relevantApRevenue)))
-          ++ addIfNot(
-            hasAmlSupervisorChanged,
-            formatRow(AmlSupervisorSummary.row(registration.amlSupervisor, registrationType))
-          )
           ++ addIfNot(hasBusinessSectorChanged, formatRow(BusinessSectorSummary.row(registration.businessSector)))
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
@@ -187,19 +225,31 @@ case class AmendRegistrationPdfViewModel(
           )
           ++ addIf(
             hasFirstContactNameChanged,
-            formatRow(FirstContactNameSummary.row(registration.contacts.firstContactDetails.name))
+            formatRow(
+              FirstContactNameSummary.row(registration.contacts.firstContactDetails.name)
+            )
           )
           ++ addIf(
             hasFirstContactRoleChanged,
-            formatRow(FirstContactRoleSummary.row(registration.contacts.firstContactDetails.role))
+            formatRow(
+              FirstContactRoleSummary.row(registration.contacts.firstContactDetails.role)
+            )
           )
           ++ addIf(
             hasFirstContactEmailChanged,
-            formatRow(FirstContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress))
+            formatRow(
+              FirstContactEmailSummary.row(
+                registration.contacts.firstContactDetails.emailAddress
+              )
+            )
           )
           ++ addIf(
             hasFirstContactPhoneChanged,
-            formatRow(FirstContactNumberSummary.row(registration.contacts.firstContactDetails.telephoneNumber))
+            formatRow(
+              FirstContactNumberSummary.row(
+                registration.contacts.firstContactDetails.telephoneNumber
+              )
+            )
           )
           ++ addIf(
             hasSecondContactDetailsPresentChanged,
