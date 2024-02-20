@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleM
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.{DeregisterContactEmailController, DeregisterContactRoleController}
 
 class DeregisterContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
 

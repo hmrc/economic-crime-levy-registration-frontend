@@ -173,7 +173,6 @@ POST        /change-answer/what-is-your-postcode                                
 
 GET         /registration-received                                              uk.gov.hmrc.economiccrimelevyregistration.controllers.RegistrationReceivedController.onPageLoad()
 
-
 GET         /what-is-your-non-uk-crn                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.NonUkCrnController.onPageLoad(mode: Mode = NormalMode)
 POST        /what-is-your-non-uk-crn                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.NonUkCrnController.onSubmit(mode: Mode = NormalMode)
 GET         /change-answer/what-is-your-non-uk-crn                              uk.gov.hmrc.economiccrimelevyregistration.controllers.NonUkCrnController.onPageLoad(mode: Mode = CheckMode)
@@ -254,3 +253,5 @@ POST        /change-answer/deregister-contact-telephone                         
 
 GET         /deregister-check-your-answers                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterCheckYourAnswersController.onPageLoad()
 POST        /deregister-check-your-answers                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterCheckYourAnswersController.onSubmit()
+
+GET         /deregister-deregistration-requested                                uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregistrationRequestedController.onPageLoad()

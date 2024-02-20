@@ -24,6 +24,7 @@ import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.DoYouHaveUtrDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
@@ -101,20 +102,13 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, hasUtr: Boolean) =>
         new TestContext(registration) {
-          val otherEntityJourneyData            =
-            registration.otherEntityJourneyData.copy(
-              isCtUtrPresent = Some(hasUtr),
-              ctUtr = hasUtr match {
-                case false => None
-                case true  => registration.otherEntityJourneyData.ctUtr
-              }
-            )
-          val updatedRegistration: Registration =
-            registration.copy(
-              optOtherEntityJourneyData = Some(otherEntityJourneyData)
-            )
+          val updatedRegistration = registration.copy(optOtherEntityJourneyData =
+            Some(registration.otherEntityJourneyData.copy(isCtUtrPresent = Some(hasUtr)))
+          )
 
-          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          val cleanRegistration = DoYouHaveUtrDataCleanup.cleanup(updatedRegistration)
+
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(cleanRegistration))(any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] =

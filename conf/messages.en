@@ -717,3 +717,16 @@ deregisterCya.t3.l3 = Email address
 deregisterCya.t3.l4 = Telephone number
 deregisterCya.h2 = Now send your deregistration request
 deregisterCya.p1 = By submitting this request to deregister, you are confirming that, to the best of your knowledge, the details you are providing are correct.
+
+deregistrationRequested.title = Economic Crime Levy deregistration requested - Deregister from ECL - GOV.UK
+deregistrationRequested.panel.p1 = Deregistration requested
+deregistrationRequested.panel.p2 = ECL reference number: {0}
+deregistrationRequested.body.p1 = You have requested to deregister from HMRC for the Economic Crime Levy on {0}.
+deregistrationRequested.body.p2 = We have sent a confirmation email to {0}. Please save this for your records.
+deregistrationRequested.h2 = What happens next
+deregistrationRequested.body.p3 = We will review your answers. We may contact you using the details you provided if we need any more information. This process will take up to 15 working days.
+deregistrationRequested.body.p4 = We will send you a letter once we have completed your deregistration.
+deregistrationRequested.body.p5 = We will send the letter to:
+deregistrationRequested.body.p6 = You can still log in to your ECL account to view your submitted returns and payment history.
+
+
