@@ -1,6 +1,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -49,7 +50,6 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
 
     "save the business name then redirect to the charity registration number page" in {
       stubAuthorisedWithNoGroupEnrolment()
-
       val businessName: String = alphaNumericString
 
       val otherEntityJourneyData: OtherEntityJourneyData = OtherEntityJourneyData
@@ -61,8 +61,9 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
           ctUtr = Some(alphaNumericString)
         )
 
-      val registration   = random[Registration]
+      val registration = random[Registration]
         .copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)

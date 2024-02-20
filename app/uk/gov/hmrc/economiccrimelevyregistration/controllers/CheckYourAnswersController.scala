@@ -67,7 +67,8 @@ class CheckYourAnswersController @Inject() (
         .foldF(
           error => Future.successful(routeError(error)),
           {
-            case Some(_) =>
+            case Some(e) =>
+              println("ERORROR: " + e.message)
               Future.successful(Redirect(routes.NotableErrorController.answersAreInvalid()))
             case None    =>
               if (appConfig.getSubscriptionEnabled && request.registration.registrationType.contains(Amendment)) {
