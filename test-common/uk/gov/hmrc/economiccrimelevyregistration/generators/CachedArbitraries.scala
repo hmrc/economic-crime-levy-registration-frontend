@@ -23,6 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.NotLiableReason.RevenueDoesNotMeetThreshold
+import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.{DeregisterReason, Deregistration}
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResponse
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailParameters
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationError
@@ -61,4 +62,7 @@ object CachedArbitraries extends EclTestData {
   implicit lazy val arbGetSubscriptionResponse: Arbitrary[GetSubscriptionResponse]                      = mkArb
   implicit lazy val arbGetAdditionalDetails: Arbitrary[GetAdditionalDetails]                            = mkArb
   implicit lazy val arbEclAddress: Arbitrary[EclAddress]                                                = mkArb
+  implicit lazy val arbDeregisterReason: Arbitrary[DeregisterReason]                                    = mkArb
+  implicit lazy val arbDeregistration: Arbitrary[Deregistration]                                        = mkArb
+  implicit lazy val arbGetCorrespondenceAddressDetails: Arbitrary[GetCorrespondenceAddressDetails]      = mkArb
 }

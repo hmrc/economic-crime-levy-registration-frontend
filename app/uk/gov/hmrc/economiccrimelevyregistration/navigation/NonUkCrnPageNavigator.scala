@@ -18,21 +18,28 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration}
 
 class NonUkCrnPageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
-    navigateInMode(NormalMode)
+    navigateInMode(eclRegistrationModel.registration, NormalMode)
 
-  private def navigateInMode(mode: Mode) =
-    routes.UtrTypeController.onPageLoad(mode)
+  private def navigateInMode(registration: Registration, mode: Mode) =
+    if (registration.entityType.contains(UnincorporatedAssociation)) {
+      routes.DoYouHaveUtrController.onPageLoad(mode)
+    } else {
+      routes.UtrTypeController.onPageLoad(mode)
+    }
 
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call = {
     val registration = eclRegistrationModel.registration
-
-    if (registration.otherEntityJourneyData.utrType.isEmpty) {
-      navigateInMode(CheckMode)
+    if (
+      (registration.isUnincorporatedAssociation && registration.otherEntityJourneyData.isCtUtrPresent.isEmpty)
+      || (!registration.isUnincorporatedAssociation && registration.otherEntityJourneyData.utrType.isEmpty)
+    ) {
+      navigateInMode(registration, CheckMode)
     } else {
       routes.CheckYourAnswersController.onPageLoad()
     }

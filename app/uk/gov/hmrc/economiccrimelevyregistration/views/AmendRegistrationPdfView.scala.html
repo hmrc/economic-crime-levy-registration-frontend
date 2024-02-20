@@ -32,16 +32,26 @@
 
 
     <h2>@messages("checkYourAnswers.eclDetails")</h2>
-
     @govukSummaryList(viewModel.eclDetails())
 
     <h2>@messages("checkYourAnswers.organisationDetails")</h2>
-
     @govukSummaryList(viewModel.organisationDetails())
 
-    <h2>@messages("checkYourAnswers.contactDetails")</h2>
 
-    @govukSummaryList(viewModel.contactDetails())
+    @if(viewModel.hasSecondContact) {
+        <h2 class="govuk-heading-m">@messages("checkYourAnswers.firstContact")</h2>
+        @govukSummaryList(viewModel.firstContactDetails())
+
+        <h2 class="govuk-heading-m">@messages("checkYourAnswers.secondContact")</h2>
+        @govukSummaryList(viewModel.secondContactDetails())
+    } else {
+        <h2 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h2>
+        @govukSummaryList(viewModel.contactDetails())
+    }
+
+
+    <h2 class="govuk-heading-m">@messages("checkYourAnswers.addressDetails")</h2>
+    @govukSummaryList(viewModel.addressDetails())
 
     <h2 class="govuk-heading-m">@messages("checkYourAnswers.amendedAnswers")</h2>
     @govukSummaryList(viewModel.amendedAnswersDetails())

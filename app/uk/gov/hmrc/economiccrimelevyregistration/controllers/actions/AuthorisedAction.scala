@@ -191,7 +191,7 @@ abstract class BaseAuthorisedAction @Inject() (
   )(implicit hc: HeaderCarrier): Future[Result] =
     eclEnrolment match {
       case Some(_) =>
-        if (request.uri.toLowerCase.contains("amend-")) {
+        if (request.uri.toLowerCase.contains("amend-") || request.uri.toLowerCase.contains("deregister-")) {
           block(
             AuthorisedRequest(
               request,

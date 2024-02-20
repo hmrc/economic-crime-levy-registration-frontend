@@ -30,30 +30,76 @@ case class CheckYourAnswersViewModel(
   additionalInfo: Option[RegistrationAdditionalInfo]
 ) extends TrackRegistrationChanges {
 
+  val hasSecondContact: Boolean = registration.contacts.secondContact.contains(true)
+
+  def addressDetails()(implicit messages: Messages): SummaryList =
+    SummaryListViewModel(
+      rows = addIfNot(
+        hasAddressChanged,
+        ContactAddressSummary.row(
+          registration.useRegisteredOfficeAddressAsContactAddress,
+          registration.contactAddress
+        )
+      ).flatten
+    ).withCssClass("govuk-!-margin-bottom-9")
+
+  def firstContactDetails()(implicit messages: Messages): SummaryList =
+    SummaryListViewModel(
+      rows = (
+        Seq(SecondContactSummary.row(registration.contacts.secondContact))
+          ++ addIfNot(
+            hasFirstContactNameChanged,
+            FirstContactNameSummary.row(registration.contacts.firstContactDetails.name)
+          )
+          ++ addIfNot(
+            hasFirstContactRoleChanged,
+            FirstContactRoleSummary.row(registration.contacts.firstContactDetails.role)
+          )
+          ++ addIfNot(
+            hasFirstContactEmailChanged,
+            FirstContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress)
+          )
+          ++ addIfNot(
+            hasFirstContactPhoneChanged,
+            FirstContactNumberSummary.row(
+              registration.contacts.firstContactDetails.telephoneNumber
+            )
+          )
+      ).flatten
+    ).withCssClass("govuk-!-margin-bottom-9")
+
   def contactDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = (
-        addIfNot(
-          hasFirstContactNameChanged,
-          FirstContactNameSummary.row(registration.contacts.firstContactDetails.name)
-        ) ++ addIfNot(
-          hasFirstContactRoleChanged,
-          FirstContactRoleSummary.row(registration.contacts.firstContactDetails.role)
-        ) ++ addIfNot(
-          hasFirstContactEmailChanged,
-          FirstContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress)
-        )
+        Seq(SecondContactSummary.row(registration.contacts.secondContact))
+          ++ addIfNot(
+            hasFirstContactNameChanged,
+            ContactNameSummary.row(registration.contacts.firstContactDetails.name)
+          )
+          ++ addIfNot(
+            hasFirstContactRoleChanged,
+            ContactRoleSummary.row(registration.contacts.firstContactDetails.role)
+          )
+          ++ addIfNot(
+            hasFirstContactEmailChanged,
+            ContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress)
+          )
           ++ addIfNot(
             hasFirstContactPhoneChanged,
-            FirstContactNumberSummary.row(registration.contacts.firstContactDetails.telephoneNumber)
-          ) ++ addIfNot(
-            hasSecondContactDetailsPresentChanged,
-            SecondContactSummary.row(registration.contacts.secondContact)
+            ContactNumberSummary.row(
+              registration.contacts.firstContactDetails.telephoneNumber
+            )
           )
-          ++ addIfNot(
-            hasSecondContactNameChanged,
-            SecondContactNameSummary.row(registration.contacts.secondContactDetails.name)
-          )
+      ).flatten
+    ).withCssClass("govuk-!-margin-bottom-9")
+
+  def secondContactDetails()(implicit messages: Messages): SummaryList =
+    SummaryListViewModel(
+      rows = (
+        addIfNot(
+          hasSecondContactNameChanged,
+          SecondContactNameSummary.row(registration.contacts.secondContactDetails.name)
+        )
           ++ addIfNot(
             hasSecondContactRoleChanged,
             SecondContactRoleSummary.row(registration.contacts.secondContactDetails.role)
@@ -65,13 +111,6 @@ case class CheckYourAnswersViewModel(
           ++ addIfNot(
             hasSecondContactPhoneChanged,
             SecondContactNumberSummary.row(registration.contacts.secondContactDetails.telephoneNumber)
-          )
-          ++ addIfNot(
-            hasAddressChanged,
-            ContactAddressSummary.row(
-              registration.useRegisteredOfficeAddressAsContactAddress,
-              registration.contactAddress
-            )
           )
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
@@ -87,7 +126,10 @@ case class CheckYourAnswersViewModel(
             isInitialRegistration,
             CharityRegistrationNumberSummary.row(registration.otherEntityJourneyData.charityRegistrationNumber)
           )
-          ++ addIf(isInitialRegistration, DoYouHaveCrnSummary.row(registration.otherEntityJourneyData.isUkCrnPresent))
+          ++ addIf(
+            isInitialRegistration,
+            DoYouHaveCrnSummary.row(registration.otherEntityJourneyData.isUkCrnPresent)
+          )
           ++ addIf(
             isInitialRegistration,
             CompanyRegistrationNumberSummary.row(
@@ -114,7 +156,16 @@ case class CheckYourAnswersViewModel(
   ): SummaryList =
     SummaryListViewModel(
       rows = (
-        addIf(isInitialRegistration, EntityTypeSummary.row(registration.entityType))
+        addIf(
+          isInitialRegistration,
+          AmlRegulatedActivitySummary.row(registration.carriedOutAmlRegulatedActivityInCurrentFy)
+        )
+          ++ addIfNot(hasAmlSupervisorChanged, AmlSupervisorSummary.row(registration.amlSupervisor, registrationType))
+          ++ addIf(isInitialRegistration, RelevantAp12MonthsSummary.row(registration.relevantAp12Months))
+          ++ addIf(isInitialRegistration, RelevantApLengthSummary.row(registration.relevantApLength))
+          ++ addIf(isInitialRegistration, UkRevenueSummary.row(registration.relevantApRevenue))
+          ++ addIf(isInitialRegistration, EntityTypeSummary.row(registration.entityType))
+          ++ addIf(isInitialRegistration, EntityNameSummary.row(registration.entityName, registration.entityType))
           ++ addIf(isInitialRegistration, CompanyNumberSummary.row(registration.companyNumber))
           ++ addIf(isInitialRegistration, CtUtrSummary.row(registration.ctUtr))
           ++ addIf(isInitialRegistration, SaUtrSummary.row(registration.saUtr))
@@ -140,10 +191,6 @@ case class CheckYourAnswersViewModel(
             isInitialRegistration,
             AmlRegulatedActivitySummary.row(registration.carriedOutAmlRegulatedActivityInCurrentFy)
           )
-          ++ addIf(isInitialRegistration, RelevantAp12MonthsSummary.row(registration.relevantAp12Months))
-          ++ addIf(isInitialRegistration, RelevantApLengthSummary.row(registration.relevantApLength))
-          ++ addIf(isInitialRegistration, UkRevenueSummary.row(registration.relevantApRevenue))
-          ++ addIfNot(hasAmlSupervisorChanged, AmlSupervisorSummary.row(registration.amlSupervisor, registrationType))
           ++ addIfNot(hasBusinessSectorChanged, BusinessSectorSummary.row(registration.businessSector))
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
@@ -162,50 +209,43 @@ case class CheckYourAnswersViewModel(
 
   def amendedAnswersDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
-      rows = (
-        addIf(hasBusinessSectorChanged, BusinessSectorSummary.row(registration.businessSector))
-          ++ addIf(
-            hasAddressChanged,
-            ContactAddressSummary.row(
-              registration.useRegisteredOfficeAddressAsContactAddress,
-              registration.contactAddress
-            )
-          )
-          ++ addIf(hasAmlSupervisorChanged, AmlSupervisorSummary.row(registration.amlSupervisor, registrationType))
-          ++ addIf(
-            hasFirstContactNameChanged,
-            FirstContactNameSummary.row(registration.contacts.firstContactDetails.name)
-          )
-          ++ addIf(
-            hasFirstContactRoleChanged,
-            FirstContactRoleSummary.row(registration.contacts.firstContactDetails.role)
-          )
-          ++ addIf(
-            hasFirstContactEmailChanged,
-            FirstContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress)
-          )
-          ++ addIf(
-            hasFirstContactPhoneChanged,
-            FirstContactNumberSummary.row(registration.contacts.firstContactDetails.telephoneNumber)
-          )
-          ++ addIf(hasSecondContactDetailsPresentChanged, SecondContactSummary.row(registration.contacts.secondContact))
-          ++ addIf(
-            hasSecondContactNameChanged,
-            SecondContactNameSummary.row(registration.contacts.secondContactDetails.name)
-          )
-          ++ addIf(
-            hasSecondContactRoleChanged,
-            SecondContactRoleSummary.row(registration.contacts.secondContactDetails.role)
-          )
-          ++ addIf(
-            hasSecondContactPhoneChanged,
-            SecondContactNumberSummary.row(registration.contacts.secondContactDetails.telephoneNumber)
-          )
-          ++ addIf(
-            hasSecondContactEmailChanged,
-            SecondContactEmailSummary.row(registration.contacts.secondContactDetails.emailAddress)
-          )
-      ).flatten
+      rows = (addIf(hasBusinessSectorChanged, BusinessSectorSummary.row(registration.businessSector))
+        ++ addIf(
+          hasAddressChanged,
+          ContactAddressSummary
+            .row(registration.useRegisteredOfficeAddressAsContactAddress, registration.contactAddress)
+        ) ++ addIf(
+          hasAmlSupervisorChanged,
+          AmlSupervisorSummary.row(registration.amlSupervisor, registrationType)
+        ) ++ addIf(
+          hasFirstContactNameChanged,
+          FirstContactNameSummary.row(registration.contacts.firstContactDetails.name)
+        ) ++ addIf(
+          hasFirstContactRoleChanged,
+          FirstContactRoleSummary.row(registration.contacts.firstContactDetails.role)
+        ) ++ addIf(
+          hasFirstContactEmailChanged,
+          FirstContactEmailSummary.row(registration.contacts.firstContactDetails.emailAddress)
+        ) ++ addIf(
+          hasFirstContactPhoneChanged,
+          FirstContactNumberSummary
+            .row(registration.contacts.firstContactDetails.telephoneNumber)
+        ) ++ addIf(
+          hasSecondContactDetailsPresentChanged,
+          SecondContactSummary.row(registration.contacts.secondContact)
+        ) ++ addIf(
+          hasSecondContactNameChanged,
+          SecondContactNameSummary.row(registration.contacts.secondContactDetails.name)
+        ) ++ addIf(
+          hasSecondContactRoleChanged,
+          SecondContactRoleSummary.row(registration.contacts.secondContactDetails.role)
+        ) ++ addIf(
+          hasSecondContactPhoneChanged,
+          SecondContactNumberSummary.row(registration.contacts.secondContactDetails.telephoneNumber)
+        ) ++ addIf(
+          hasSecondContactEmailChanged,
+          SecondContactEmailSummary.row(registration.contacts.secondContactDetails.emailAddress)
+        )).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 
   private def addIf[T](condition: Boolean, value: T): Seq[T]    = if (condition) Seq(value) else Seq.empty

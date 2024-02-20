@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityAddress, IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 
 import java.time.LocalDate
@@ -44,6 +45,8 @@ final case class Registration(
   registrationType: Option[RegistrationType],
   amendReason: Option[String]
 ) {
+
+  val isUnincorporatedAssociation = entityType.contains(UnincorporatedAssociation)
 
   val grsAddressToEclAddress: Option[EclAddress] = {
     val incorporatedEntityAddress: Option[IncorporatedEntityAddress] =
