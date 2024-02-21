@@ -136,15 +136,7 @@ case class CheckYourAnswersViewModel(
           )
           ++ addIf(
             isInitialOrAmendRegistration,
-            LiabilityDateSummary.row(
-              additionalInfo
-                .map(additionalInfo => additionalInfo.liabilityStartDate)
-                .getOrElse(
-                  getSubscriptionResponse.map(response =>
-                    LocalDate.parse(response.additionalDetails.liabilityStartDate)
-                  )
-                )
-            )
+            liabilityStartDateRow
           )
           ++ addIf(
             isInitialRegistration,
@@ -157,6 +149,19 @@ case class CheckYourAnswersViewModel(
           ++ addIfNot(hasBusinessSectorChanged, BusinessSectorSummary.row(registration.businessSector))
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
+
+  private def liabilityStartDateRow(implicit messages: Messages) = {
+    val additionalInfoLiabilityDate = additionalInfo.flatMap(_.liabilityStartDate)
+    if (additionalInfoLiabilityDate.isEmpty) {
+      println("is empty" + getSubscriptionResponse.map(_.additionalDetails.liabilityStartDate))
+      LiabilityDateSummary.row(
+        getSubscriptionResponse.map(response => LocalDate.parse(response.additionalDetails.liabilityStartDate))
+      )
+    } else {
+      println("is defined" + additionalInfoLiabilityDate.get)
+      LiabilityDateSummary.row(additionalInfoLiabilityDate)
+    }
+  }
 
   def eclDetails(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
