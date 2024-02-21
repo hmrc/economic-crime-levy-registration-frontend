@@ -23,6 +23,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
+import java.time.LocalDate
+
 case class CheckYourAnswersViewModel(
   registration: Registration,
   getSubscriptionResponse: Option[GetSubscriptionResponse],
@@ -133,8 +135,16 @@ case class CheckYourAnswersViewModel(
             )
           )
           ++ addIf(
-            isInitialRegistration,
-            LiabilityDateSummary.row(additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate))
+            isInitialOrAmendRegistration,
+            LiabilityDateSummary.row(
+              additionalInfo
+                .map(additionalInfo => additionalInfo.liabilityStartDate)
+                .getOrElse(
+                  getSubscriptionResponse.map(response =>
+                    LocalDate.parse(response.additionalDetails.liabilityStartDate)
+                  )
+                )
+            )
           )
           ++ addIf(
             isInitialRegistration,

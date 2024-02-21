@@ -25,8 +25,10 @@ trait TrackRegistrationChanges {
 
   val getSubscriptionResponse: Option[GetSubscriptionResponse]
 
-  val isAmendRegistration: Boolean   = registration.registrationType.contains(Amendment)
-  val isInitialRegistration: Boolean = registration.registrationType.contains(Initial)
+  val isAmendRegistration: Boolean          = registration.registrationType.contains(Amendment)
+  val isInitialRegistration: Boolean        = registration.registrationType.contains(Initial)
+  val isInitialOrAmendRegistration: Boolean =
+    registration.registrationType.exists(regType => regType == Initial || regType == Amendment)
 
   def getFullName(firstName: String, lastName: String): String = s"$firstName $lastName"
 

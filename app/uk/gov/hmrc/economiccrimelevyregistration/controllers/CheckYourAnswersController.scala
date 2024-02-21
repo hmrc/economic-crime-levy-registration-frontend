@@ -198,18 +198,15 @@ class CheckYourAnswersController @Inject() (
       )
     )
 
-  private def fetchSubscription(implicit request: RegistrationDataRequest[_]) = {
-    val getSubscriptionResponse =
-      (if (appConfig.getSubscriptionEnabled && request.registration.registrationType.contains(Amendment)) {
-         Some(
-           registrationService
-             .getSubscription(request.eclRegistrationReference.get)
-         )
-       } else {
-         None
-       }).traverse(identity)
-    getSubscriptionResponse
-  }
+  private def fetchSubscription(implicit request: RegistrationDataRequest[_]) =
+    (if (appConfig.getSubscriptionEnabled && request.registration.registrationType.contains(Amendment)) {
+       Some(
+         registrationService
+           .getSubscription(request.eclRegistrationReference.get)
+       )
+     } else {
+       None
+     }).traverse(identity)
 
   private def getNextPage(registration: Registration) =
     (registration.entityType, registration.registrationType) match {
