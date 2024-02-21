@@ -38,7 +38,8 @@
 ) {
 
     @govukPanel(Panel(
-        title = HtmlContent(messages(Seq("deregistrationRequested.panel.p1", "deregistrationRequested.panel.p2"), eclReference))
+        title = Text(messages("deregistrationRequested.panel.p1")),
+        content = Text(messages("deregistrationRequested.panel.p2", eclReference))
     ))
 
     <p class="govuk-body">@messages("deregistrationRequested.body.p1",
