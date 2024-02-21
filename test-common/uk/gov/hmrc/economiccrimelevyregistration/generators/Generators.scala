@@ -141,8 +141,8 @@ trait Generators {
     for {
       firstPart  <- alphaNumStringsWithMaxLength(emailPartsLength)
       secondPart <- alphaNumStringsWithMaxLength(emailPartsLength)
-      thirdPart  <- alphaNumStringsWithMaxLength(emailPartsLength)
-    } yield (s"$firstPart@$secondPart.$thirdPart")
+      thirdPart  <- alphaNumStringsWithMaxLength(3)
+    } yield (s"$firstPart@$secondPart.$thirdPart".toLowerCase)
   }
 
   def stringsLongerThan(minLength: Int): Gen[String] = for {
