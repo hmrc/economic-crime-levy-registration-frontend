@@ -55,7 +55,7 @@
             @govukSummaryList(viewModel.organisationDetails())
         }
 
-        @if(viewModel.hasSecondContact) {
+        @if(viewModel.hasSecondContact && !viewModel.hasSecondContactDetailsPresentChanged) {
             <h2 class="govuk-heading-m">@messages("checkYourAnswers.firstContact")</h2>
             @govukSummaryList(viewModel.firstContactDetails())
 
