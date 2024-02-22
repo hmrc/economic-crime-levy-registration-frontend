@@ -37,8 +37,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class SecondContactNameController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  storeUrl: StoreUrlAction,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: SecondContactNameFormProvider,
   pageNavigator: SecondContactNamePageNavigator,

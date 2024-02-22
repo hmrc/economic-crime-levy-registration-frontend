@@ -55,6 +55,7 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       formProvider,
       mockEclRegistrationService,
       pageNavigator,
@@ -99,14 +100,18 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "save the selected answer then redirect to the next page" in forAll {
-      (registration: Registration, hasUtr: Boolean) =>
-        new TestContext(registration) {
+      (registration: Registration, hasUtr: Boolean, utr: String) =>
+        new TestContext(
+          registration.copy(optOtherEntityJourneyData =
+            Some(registration.otherEntityJourneyData.copy(ctUtr = Some(utr)))
+          )
+        ) {
           val otherEntityJourneyData            =
             registration.otherEntityJourneyData.copy(
               isCtUtrPresent = Some(hasUtr),
               ctUtr = hasUtr match {
                 case false => None
-                case true  => registration.otherEntityJourneyData.ctUtr
+                case true  => Some(utr)
               }
             )
           val updatedRegistration: Registration =

@@ -36,8 +36,8 @@ class NonUkCrnController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationService: EclRegistrationService,
   storeUrl: StoreUrlAction,
+  eclRegistrationService: EclRegistrationService,
   formProvider: NonUkCrnFormProvider,
   pageNavigator: NonUkCrnPageNavigator,
   view: NonUkCrnView

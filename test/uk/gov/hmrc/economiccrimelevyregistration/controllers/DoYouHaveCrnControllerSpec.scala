@@ -55,6 +55,7 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       formProvider,
       mockEclRegistrationService,
       pageNavigator,

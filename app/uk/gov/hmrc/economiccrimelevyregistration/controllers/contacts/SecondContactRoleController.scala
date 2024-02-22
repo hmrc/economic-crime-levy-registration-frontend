@@ -38,8 +38,8 @@ class SecondContactRoleController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
-  eclRegistrationService: EclRegistrationService,
   storeUrl: StoreUrlAction,
+  eclRegistrationService: EclRegistrationService,
   formProvider: SecondContactRoleFormProvider,
   pageNavigator: SecondContactRolePageNavigator,
   view: SecondContactRoleView
