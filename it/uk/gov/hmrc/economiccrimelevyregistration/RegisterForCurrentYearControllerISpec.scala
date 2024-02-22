@@ -3,22 +3,21 @@ package uk.gov.hmrc.economiccrimelevyregistration
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
-import java.time.LocalDate
+class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBehaviour {
 
-class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
-
-  s"GET ${routes.LiabilityDateController.onPageLoad(NormalMode).url}" should {
+  s"GET ${routes.RegisterForCurrentYearController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(
-      routes.LiabilityDateController.onPageLoad(NormalMode)
+      routes.RegisterForCurrentYearController.onPageLoad(NormalMode)
     )
 
-    "respond with 200 status and the liability date HTML view" in {
+    "respond with 200 status and the register for current year HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
@@ -27,20 +26,20 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
-      val result = callRoute(FakeRequest(routes.LiabilityDateController.onPageLoad(NormalMode)))
+      val result = callRoute(FakeRequest(routes.RegisterForCurrentYearController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
-      html(result) should include("Enter the date you became liable for ECL")
-    }
-    s"POST ${routes.LiabilityDateController.onSubmit(CheckMode).url}" should {
-      behave like authorisedActionWithEnrolmentCheckRoute(
-        routes.LiabilityDateController.onSubmit(CheckMode)
+      html(result) should include(
+        s"Are you registering for the ${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue} financial year?"
       )
-      "save the entered date then redirect to the check your answers page" in {
+    }
+    s"POST ${routes.RegisterForCurrentYearController.onSubmit(CheckMode).url}" should {
+      behave like authorisedActionWithEnrolmentCheckRoute(
+        routes.RegisterForCurrentYearController.onSubmit(CheckMode)
+      )
+      "save the entered option then redirect to the aml regulated activity" in {
         stubAuthorisedWithNoGroupEnrolment()
-
-        val date = LocalDate.now()
 
         val registration = random[Registration].copy(
           registrationType = Some(Initial)
@@ -53,8 +52,8 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
         val info = RegistrationAdditionalInfo(
           testInternalId,
           None,
-          Some(date),
           None,
+          Some(true),
           None,
           None
         )
@@ -63,17 +62,16 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
         stubUpsertRegistration(registration)
 
         val result = callRoute(
-          FakeRequest(routes.LiabilityDateController.onSubmit(CheckMode))
+          FakeRequest(routes.RegisterForCurrentYearController.onSubmit(CheckMode))
             .withFormUrlEncodedBody(
-              ("value.day", date.getDayOfMonth.toString),
-              ("value.month", date.getMonthValue.toString),
-              ("value.year", date.getYear.toString)
+              ("value", "true")
             )
         )
 
         status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+        redirectLocation(result) shouldBe Some(routes.AmlRegulatedActivityController.onPageLoad(NormalMode).url)
+
       }
     }
   }
