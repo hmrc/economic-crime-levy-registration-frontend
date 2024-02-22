@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AddressLookupContinuePageNavigator
@@ -33,6 +33,7 @@ class AddressLookupContinueController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   addressLookupFrontendService: AddressLookupService,
   eclRegistrationService: EclRegistrationService,
   pageNavigator: AddressLookupContinuePageNavigator
@@ -41,14 +42,14 @@ class AddressLookupContinueController @Inject() (
     with BaseController
     with ErrorHandler {
 
-  def continue(mode: Mode, id: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
-    implicit request =>
+  def continue(mode: Mode, id: String): Action[AnyContent] =
+    (authorise andThen getRegistrationData andThen storeUrl).async { implicit request =>
       (for {
         address            <- addressLookupFrontendService.getAddress(id).asResponseError
         updatedRegistration = request.registration.copy(contactAddress = alfAddressToEclAddress(address))
         _                  <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
       } yield updatedRegistration).convertToResult(mode, pageNavigator)
-  }
+    }
 
   private def alfAddressToEclAddress(alfAddressData: AlfAddressData): Option[EclAddress] =
     Some(

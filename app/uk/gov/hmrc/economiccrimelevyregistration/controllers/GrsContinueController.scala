@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -39,6 +39,7 @@ class GrsContinueController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
   soleTraderIdentificationFrontendConnector: SoleTraderIdentificationFrontendConnector,
   partnershipIdentificationFrontendConnector: PartnershipIdentificationFrontendConnector,
@@ -48,8 +49,8 @@ class GrsContinueController @Inject() (
     with BaseController
     with ErrorHandler {
 
-  def continue(mode: Mode, journeyId: String): Action[AnyContent] = (authorise andThen getRegistrationData).async {
-    implicit request =>
+  def continue(mode: Mode, journeyId: String): Action[AnyContent] =
+    (authorise andThen getRegistrationData andThen storeUrl).async { implicit request =>
       request.registration.entityType match {
         case Some(e @ (UkLimitedCompany | UnlimitedCompany | RegisteredSociety)) =>
           for {
@@ -98,7 +99,7 @@ class GrsContinueController @Inject() (
             routeError(ResponseError.internalServiceError("No valid entity type found in registration data"))
           )
       }
-  }
+    }
 
   private def updateRegistrationWithJourneyData(
     incorporatedEntityJourneyData: Option[IncorporatedEntityJourneyData] = None,
