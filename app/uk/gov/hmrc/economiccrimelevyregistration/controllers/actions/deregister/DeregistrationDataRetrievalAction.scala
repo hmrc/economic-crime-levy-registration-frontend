@@ -39,7 +39,6 @@ class DeregistrationDataRetrievalAction @Inject() (
     request: AuthorisedRequest[A]
   ): Future[Either[Result, DeregistrationDataRequest[A]]] = {
     implicit val hcFromRequest: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-
     (for {
       deregistration <- deregistrationService.getOrCreate(request.internalId).asResponseError
     } yield deregistration).foldF(

@@ -20,16 +20,19 @@ import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class DoYouHaveCrnPageDeregisterNavigatorSpec extends SpecBase {
 
   val pageNavigator = new DoYouHaveCrnPageNavigator()
 
-  val nextPage: Map[Boolean, Call] = Map(
-    true  -> routes.NonUkCrnController.onPageLoad(NormalMode),
-    false -> routes.UtrTypeController.onPageLoad(NormalMode)
-  )
+  def nextPage(value: Boolean, registration: Registration): Call = value match {
+    case true                                                                 => routes.NonUkCrnController.onPageLoad(NormalMode)
+    case false if registration.entityType.contains(UnincorporatedAssociation) =>
+      routes.DoYouHaveUtrController.onPageLoad(NormalMode)
+    case false                                                                => routes.UtrTypeController.onPageLoad(NormalMode)
+  }
 
   "nextPage" should {
     "return a Call to the next page in NormalMode" in forAll { (registration: Registration, hasUkCrn: Boolean) =>
@@ -45,7 +48,7 @@ class DoYouHaveCrnPageDeregisterNavigatorSpec extends SpecBase {
         )
 
       pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
-        nextPage(hasUkCrn)
+        nextPage(hasUkCrn, updatedRegistration)
     }
 
     "return a Call to the check your answers page in CheckMode" in forAll {

@@ -25,7 +25,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, Er
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.DeregisterContactEmailFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.deregister.DeregisterNavigator
+
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterContactEmailView
@@ -53,7 +55,7 @@ class DeregisterContactEmailController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
     (for {
-      name <- getValue(request.deregistration.contactDetails.name).asResponseError
+      name <- valueOrError(request.deregistration.contactDetails.name, "contact name")
     } yield name).fold(
       err => routeError(err),
       name =>
@@ -74,7 +76,7 @@ class DeregisterContactEmailController @Inject() (
       .fold(
         formWithErrors =>
           (for {
-            name <- getValue(request.deregistration.contactDetails.name).asResponseError
+            name <- valueOrError(request.deregistration.contactDetails.name, "contact name")
           } yield name).fold(
             err => routeError(err),
             name =>

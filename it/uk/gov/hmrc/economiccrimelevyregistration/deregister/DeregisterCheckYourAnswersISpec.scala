@@ -63,10 +63,10 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
 
     "delete the deregistration then redirect the account dashboard" in {
       stubAuthorisedWithEclEnrolment()
+
       val deregistration = random[Deregistration].copy(internalId = testInternalId)
       val role           = stringsWithMaxLength(RoleMaxLength).sample.get
       stubGetDeregistration(deregistration)
-      stubDeleteDeregistration()
 
       val result = callRoute(
         FakeRequest(
@@ -78,7 +78,11 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(appConfig.yourEclAccountUrl)
+      redirectLocation(result) shouldBe Some(
+        DeregistrationRequestedController
+          .onPageLoad()
+          .url
+      )
     }
   }
 

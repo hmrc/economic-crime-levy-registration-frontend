@@ -53,7 +53,7 @@ class DeregisterContactNumberController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
     (for {
-      name <- getValue(request.deregistration.contactDetails.name).asResponseError
+      name <- valueOrError(request.deregistration.contactDetails.name, "contact name")
     } yield name).fold(
       err => routeError(err),
       name =>
@@ -74,7 +74,7 @@ class DeregisterContactNumberController @Inject() (
       .fold(
         formWithErrors =>
           (for {
-            name <- getValue(request.deregistration.contactDetails.name).asResponseError
+            name <- valueOrError(request.deregistration.contactDetails.name, "contact name")
           } yield name).fold(
             err => routeError(err),
             name =>
