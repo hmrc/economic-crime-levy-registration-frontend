@@ -59,7 +59,7 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
       redirectLocation(result) shouldBe Some(contacts.routes.SecondContactNameController.onPageLoad(NormalMode).url)
     }
 
-    "save the selected answer then redirect to the registered office address page when the No option is selected" in {
+    "save the selected answer then redirect to the registered office address page when the No option is selected and there is no existing second contact" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration                                         = random[Registration]
@@ -78,6 +78,57 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
       )
 
       stubGetRegistration(updatedRegistration)
+      stubUpsertRegistration(updatedRegistration)
+
+      val result = callRoute(
+        FakeRequest(contacts.routes.AddAnotherContactController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", "false"))
+      )
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.ConfirmContactAddressController.onPageLoad(NormalMode).url)
+    }
+
+    "save the selected answer then redirect to the registered office address page when the No option is selected and there is an existing second contact" in {
+      stubAuthorisedWithNoGroupEnrolment()
+      val contactName                                          = random[String]
+      val contactRole                                          = random[String]
+      val contactEmail                                         = random[String]
+      val contactTelephone                                     = random[String]
+      val registration                                         = random[Registration]
+      val incorporatedEntityJourneyDataWithValidCompanyProfile =
+        random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
+
+      val regWithSecondContact = registration
+        .copy(contacts =
+          registration.contacts.copy(
+            secondContact = Some(true),
+            secondContactDetails =
+              ContactDetails(Some(contactName), Some(contactRole), Some(contactEmail), Some(contactTelephone))
+          )
+        )
+        .copy(
+          incorporatedEntityJourneyData =
+            Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
+          partnershipEntityJourneyData = None,
+          soleTraderEntityJourneyData = None
+        )
+
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
+
+      val updatedRegistration = regWithSecondContact.copy(
+        contacts =
+          regWithSecondContact.contacts.copy(secondContact = Some(false), secondContactDetails = ContactDetails.empty),
+        incorporatedEntityJourneyData =
+          Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
+        partnershipEntityJourneyData = None,
+        soleTraderEntityJourneyData = None
+      )
+
+      stubGetRegistration(regWithSecondContact)
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
