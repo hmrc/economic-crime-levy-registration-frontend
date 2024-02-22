@@ -36,7 +36,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterForCurrentYearController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  view: RegisterForCurrentYearView,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   formProvider: RegisterForCurrentYearFormProvider,
@@ -44,7 +43,8 @@ class RegisterForCurrentYearController @Inject() (
   registrationService: EclRegistrationService,
   pageNavigator: RegisterForCurrentYearPageNavigator,
   registrationDataCleanup: LiabilityDateRegistrationCleanup,
-  additionalInfoDataCleanup: LiabilityDateAdditionalInfoCleanup
+  additionalInfoDataCleanup: LiabilityDateAdditionalInfoCleanup,
+  view: RegisterForCurrentYearView
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
