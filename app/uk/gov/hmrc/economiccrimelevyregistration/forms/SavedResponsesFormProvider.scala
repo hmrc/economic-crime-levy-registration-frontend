@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.models
+package uk.gov.hmrc.economiccrimelevyregistration.forms
 
-object SessionKeys {
+import play.api.data.Form
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 
-  val EclReference: String      = "eclReference"
-  val FirstContactEmailAddress  = "firstContactEmailAddress"
-  val SecondContactEmailAddress = "secondContactEmailAddress"
-  val LiabilityYear             = "liabilityYear"
-  val AmlRegulatedActivity      = "amlRegulatedActivity"
-  val ContactAddress            = "contactAddress"
-  val UrlToReturnTo             = "UrlToReturnTo"
+class SavedResponsesFormProvider extends Mappings {
+  def apply(): Form[Boolean] = Form(
+    ("value", boolean("savedResponses.error.required"))
+  )
 }

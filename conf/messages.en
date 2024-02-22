@@ -717,3 +717,10 @@ deregisterCya.t3.l3 = Email address
 deregisterCya.t3.l4 = Telephone number
 deregisterCya.h2 = Now send your deregistration request
 deregisterCya.p1 = By submitting this request to deregister, you are confirming that, to the best of your knowledge, the details you are providing are correct.
+
+savedResponses.title = Your answers have been saved
+savedResponses.h1 = Your answers have been saved
+savedResponses.h2 = What would you like to do?
+savedResponses.true = Continue with your saved answers
+savedResponses.false = Delete your progress and start again
+savedResponses.error.required = Select the first option if you want to continue with your saved answers

@@ -16,44 +16,62 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
+import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
+import uk.gov.hmrc.economiccrimelevyregistration.forms.SavedResponsesFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, StartView}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, SavedResponsesView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class StartController @Inject() (
+class SavedResponsesController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
+  eclRegistrationService: EclRegistrationService,
   sessionService: SessionService,
-  view: StartView
+  formProvider: SavedResponsesFormProvider,
+  view: SavedResponsesView
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
-    with BaseController
     with ErrorHandler
+    with BaseController
     with I18nSupport {
 
+  val form: Form[Boolean] = formProvider()
+
   def onPageLoad: Action[AnyContent] = authorise { implicit request =>
-    Ok(view())
+    Ok(view(form.prepare(None)))
   }
 
   def onSubmit: Action[AnyContent] = authorise.async { implicit request =>
-    (for {
-      urlToReturnTo <-
-        sessionService.getOptional(request.session, request.internalId, SessionKeys.UrlToReturnTo).asResponseError
-    } yield urlToReturnTo).fold(
-      err => routeError(err),
-      urlToReturnTo =>
-        Redirect(urlToReturnTo match {
-          case Some(_) => routes.SavedResponsesController.onPageLoad
-          case None    => routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
-        })
-    )
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        {
+          case true  =>
+            (for {
+              urlToReturnTo <-
+                sessionService.get(request.session, request.internalId, SessionKeys.UrlToReturnTo).asResponseError
+            } yield urlToReturnTo).fold(
+              err => routeError(err),
+              urlToReturnTo => Redirect(urlToReturnTo)
+            )
+          case false =>
+            (for {
+              _ <- eclRegistrationService.deleteRegistration(request.internalId).asResponseError
+            } yield ()).fold(
+              err => routeError(err),
+              _ => Redirect(routes.AmlRegulatedActivityController.onPageLoad(NormalMode))
+            )
+        }
+      )
   }
 }

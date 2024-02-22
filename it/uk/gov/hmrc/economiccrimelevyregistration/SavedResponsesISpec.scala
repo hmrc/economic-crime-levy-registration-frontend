@@ -21,35 +21,39 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionData, SessionKeys}
 
-class StartISpec extends ISpecBase with AuthorisedBehaviour {
+class SavedResponsesISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.StartController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.StartController.onPageLoad())
+  s"GET ${routes.SavedResponsesController.onPageLoad.url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.SavedResponsesController.onPageLoad)
 
     "respond with 200 status and the start HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val result = callRoute(FakeRequest(routes.StartController.onPageLoad()))
+      val result = callRoute(FakeRequest(routes.SavedResponsesController.onPageLoad))
 
       status(result) shouldBe OK
-      html(result)     should include("Register for the Economic Crime Levy")
+      html(result)     should include("Your answers have been saved")
     }
   }
 
-  s"POST ${routes.StartController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.StartController.onSubmit())
+  s"POST ${routes.SavedResponsesController.onSubmit.url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.SavedResponsesController.onSubmit)
 
     "respond with the next page" in {
       stubAuthorisedWithNoGroupEnrolment()
-      stubGetSession(SessionData(random[String], Map()))
+      val url    = random[String]
+      stubGetSession(SessionData(random[String], Map(SessionKeys.UrlToReturnTo -> url)))
 
-      val result = callRoute(FakeRequest(routes.StartController.onSubmit()))
+      val result = callRoute(
+        FakeRequest(routes.SavedResponsesController.onSubmit)
+          .withFormUrlEncodedBody("value" -> "true")
+      )
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.AmlRegulatedActivityController.onPageLoad(NormalMode).url)
+      redirectLocation(result) shouldBe Some(url)
     }
   }
 }

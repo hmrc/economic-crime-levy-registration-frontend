@@ -718,3 +718,10 @@ deregisterCya.t3.l3 = Cyfeiriad e-bost
 deregisterCya.t3.l4 = Rhif ffôn
 deregisterCya.h2 = Anfonwch eich cais i ddadgofrestru nawr
 deregisterCya.p1 = Drwy gyflwyno’r cais hwn i ddatgofrestru, rydych yn cadarnhau, hyd eithaf eich gwybodaeth, bod y manylion a roddir gennych yn gywir.
+
+savedResponses.title = Mae’ch atebion wedi’u cadw
+savedResponses.h1 = Mae’ch atebion wedi’u cadw
+savedResponses.h2 = eth yr hoffech ei wneud?
+savedResponses.true = Yn eich blaen â’ch atebion sydd wedi’u cadw
+savedResponses.false = Dileu’ch cynnydd hyd yma a dechrau eto
+savedResponses.error.required = Select the first option if you want to continue with your saved answers
