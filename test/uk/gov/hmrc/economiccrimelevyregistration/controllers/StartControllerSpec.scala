@@ -52,7 +52,7 @@ class StartControllerSpec extends SpecBase {
     }
   }
 
-  "onPageLoad" should {
+  "onSubmit" should {
     "redirect to AML Activity page if no return url" in {
       when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
         .thenReturn(EitherT.fromEither[Future](Right(None)))
