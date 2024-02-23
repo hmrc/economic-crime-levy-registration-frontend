@@ -24,6 +24,10 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
+      stubSessionForStoreUrl(
+        registration.internalId,
+        routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode)
+      )
 
       val result = callRoute(FakeRequest(routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode)))
 

@@ -30,6 +30,7 @@ class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(updatedRegistration)
+      stubSessionForStoreUrl(registration.internalId, routes.ConfirmContactAddressController.onPageLoad(NormalMode))
 
       val result = callRoute(FakeRequest(routes.ConfirmContactAddressController.onPageLoad(NormalMode)))
 

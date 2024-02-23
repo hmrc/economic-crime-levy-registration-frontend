@@ -23,6 +23,10 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
       val registration = random[Registration]
 
       stubGetRegistration(registration)
+      stubSessionForStoreUrl(
+        registration.internalId,
+        contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)
+      )
 
       val result = callRoute(FakeRequest(contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)))
 

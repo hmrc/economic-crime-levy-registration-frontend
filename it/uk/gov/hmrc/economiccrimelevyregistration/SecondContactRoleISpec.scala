@@ -31,6 +31,10 @@ class SecondContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
           )
         )
       )
+      stubSessionForStoreUrl(
+        registration.internalId,
+        contacts.routes.SecondContactRoleController.onPageLoad(NormalMode)
+      )
 
       val result = callRoute(FakeRequest(contacts.routes.SecondContactRoleController.onPageLoad(NormalMode)))
 

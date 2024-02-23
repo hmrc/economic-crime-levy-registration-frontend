@@ -4,8 +4,9 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status.OK
 import play.api.libs.json.Json
+import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
-import uk.gov.hmrc.economiccrimelevyregistration.models.SessionData
+import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionData, SessionKeys}
 
 trait SessionDataStubs { self: WireMockStubs =>
 
@@ -28,7 +29,10 @@ trait SessionDataStubs { self: WireMockStubs =>
         .withBody(Json.toJson(sessionData).toString())
     )
 
-  def stubDeleteSession(): StubMapping =
+  def stubSessionForStoreUrl(internalId: String, call: Call) =
+    stubUpsertSession(SessionData(internalId, Map(SessionKeys.UrlToReturnTo -> call.url)))
+
+  def stubDeleteSession(): StubMapping                       =
     stub(
       delete(urlEqualTo(s"/economic-crime-levy-registration/session/$testInternalId")),
       aResponse()

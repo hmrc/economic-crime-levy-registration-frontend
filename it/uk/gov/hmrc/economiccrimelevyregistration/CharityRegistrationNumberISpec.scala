@@ -24,6 +24,7 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
+      stubSessionForStoreUrl(registration.internalId, routes.CharityRegistrationNumberController.onPageLoad(NormalMode))
 
       val result = callRoute(FakeRequest(routes.CharityRegistrationNumberController.onPageLoad(NormalMode)))
 

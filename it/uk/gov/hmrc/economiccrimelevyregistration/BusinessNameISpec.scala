@@ -28,6 +28,7 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
+      stubSessionForStoreUrl(registration.internalId, routes.BusinessNameController.onPageLoad(NormalMode))
 
       val result = callRoute(FakeRequest(routes.BusinessNameController.onPageLoad(NormalMode)))
 
