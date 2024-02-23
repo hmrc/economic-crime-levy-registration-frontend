@@ -105,7 +105,8 @@ class CheckYourAnswersController @Inject() (
             CheckYourAnswersViewModel(
               request.registration,
               Some(getSubscriptionResponse),
-              request.eclRegistrationReference
+              request.eclRegistrationReference,
+              request.additionalInfo
             )
           )
         )
@@ -123,7 +124,8 @@ class CheckYourAnswersController @Inject() (
           CheckYourAnswersViewModel(
             request.registration,
             None,
-            request.eclRegistrationReference
+            request.eclRegistrationReference,
+            request.additionalInfo
           )
         )
       )
@@ -136,7 +138,12 @@ class CheckYourAnswersController @Inject() (
       htmlView                      = createHtmlView(getSubscriptionResponse)
       base64EncodedHtmlView         = base64EncodeHtmlView(htmlView.body)
       checkYourAnswersModel         =
-        CheckYourAnswersViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference)
+        CheckYourAnswersViewModel(
+          registration,
+          getSubscriptionResponse,
+          request.eclRegistrationReference,
+          request.additionalInfo
+        )
       amendRegistrationPdfViewModel =
         AmendRegistrationPdfViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference)
       base64EncodedHtmlViewForPdf   = getBase64EncodedPdf(checkYourAnswersModel, amendRegistrationPdfViewModel)
@@ -186,7 +193,8 @@ class CheckYourAnswersController @Inject() (
       CheckYourAnswersViewModel(
         request.registration,
         getSubscriptionResponse,
-        request.eclRegistrationReference
+        request.eclRegistrationReference,
+        request.additionalInfo
       )
     )
 
@@ -268,7 +276,7 @@ class CheckYourAnswersController @Inject() (
     amendRegistrationPdfViewModel: AmendRegistrationPdfViewModel
   )(implicit request: RegistrationDataRequest[_]): String = {
     val date                      = LocalDate.now
-    val organisation              = checkYourAnswersViewModel.organisationDetails(LiabilityYearSummary.row())
+    val organisation              = checkYourAnswersViewModel.organisationDetails()
     val contactDetails            = checkYourAnswersViewModel.contactDetails()
     val firstContact              = checkYourAnswersViewModel.firstContactDetails()
     val secondContact             = checkYourAnswersViewModel.secondContactDetails()

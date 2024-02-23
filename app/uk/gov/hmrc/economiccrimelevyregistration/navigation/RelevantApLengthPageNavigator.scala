@@ -18,15 +18,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration}
 
 class RelevantApLengthPageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    navigate(registration, NormalMode)
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
+    navigate(eclRegistrationModel.registration, NormalMode)
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    navigate(registration, CheckMode)
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
+    navigate(eclRegistrationModel.registration, CheckMode)
 
   private def navigate(registration: Registration, mode: Mode): Call =
     registration.relevantApLength match {

@@ -52,7 +52,7 @@ class AmendRegistrationStartController @Inject() (
       registration               <- registrationService.getOrCreate(request.internalId).asResponseError
       _                          <-
         registrationService.upsertRegistration(registration.copy(registrationType = Some(Amendment))).asResponseError
-      additionalInfo              = RegistrationAdditionalInfo(request.internalId, None, Some(eclReference))
+      additionalInfo              = RegistrationAdditionalInfo(request.internalId, None, None, None, None, Some(eclReference))
       createOrUpdateRegistration <-
         registrationAdditionalInfoService.upsert(additionalInfo).asResponseError
     } yield createOrUpdateRegistration).foldF(

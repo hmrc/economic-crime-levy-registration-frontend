@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.cleanup.DoYouHaveUtrDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveUtrPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{DoYouHaveUtrView, ErrorTemplate}
@@ -72,7 +72,7 @@ class DoYouHaveUtrController @Inject() (
 
             (for {
               _ <- eclRegistrationService.upsertRegistration(cleanRegistration).asResponseError
-            } yield updatedRegistration).convertToResult(mode, pageNavigator)
+            } yield EclRegistrationModel(cleanRegistration)).convertToResult(mode, pageNavigator)
           }
         )
     }

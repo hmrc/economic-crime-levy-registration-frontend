@@ -45,8 +45,8 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
 
   val mockEclRegistrationService: EclRegistrationService    = mock[EclRegistrationService]
   val pageNavigator: CharityRegistrationNumberPageNavigator = new CharityRegistrationNumberPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
-    override protected def navigateInCheckMode(navigationData: Registration): Call  = onwardRoute
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
+    override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call  = onwardRoute
   }
   override val appConfig: AppConfig                         = mock[AppConfig]
 
@@ -96,10 +96,10 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
       Arbitrary.arbitrary[Mode]
     ) { (registration: Registration, charityNumber: String, mode: Mode) =>
       new TestContext(registration) {
-        val otherEntityJourneyData = registration.otherEntityJourneyData.copy(
+        val otherEntityJourneyData: OtherEntityJourneyData = registration.otherEntityJourneyData.copy(
           charityRegistrationNumber = Some(charityNumber)
         )
-        val updatedRegistration    =
+        val updatedRegistration: Registration              =
           registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
 
         when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))

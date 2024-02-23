@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,29 @@
 package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.CheckMode
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.implicits._
-import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 
-import java.time.LocalDate
+object LiabilityBeforeCurrentYearSummary {
 
-object LiabilityYearSummary {
+  def row(
+    registeringForCurrentYear: Option[Boolean]
+  )(implicit messages: Messages): Option[SummaryListRow] =
+    registeringForCurrentYear.map { answer =>
+      val value = if (answer) "site.yes" else "site.no"
 
-  def row()(implicit messages: Messages, request: RegistrationDataRequest[_]): Option[SummaryListRow] =
-    request.additionalInfo.flatMap(info =>
-      info.liabilityYear.map { year =>
-        val date  = LocalDate.of(year.value, 4, 1)
-        val value = ValueViewModel(HtmlContent(ViewUtils.formatLocalDate(date)))
-
-        SummaryListRowViewModel(
-          key = Key("checkYourAnswers.liabilityDate.label"),
-          value = value
+      SummaryListRowViewModel(
+        key = Key("liabilityBeforeCurrentYear.label"),
+        value = ValueViewModel(value),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.RegisterForCurrentYearController.onPageLoad(CheckMode).url)
+            .withVisuallyHiddenText(
+              messages("liabilityBeforeCurrentYear.label")
+            )
         )
-      }
-    )
-
+      )
+    }
 }

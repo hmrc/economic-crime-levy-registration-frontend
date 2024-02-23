@@ -19,7 +19,9 @@ trait EclRegistrationStubs { self: WireMockStubs =>
         .withStatus(OK)
         .withBody(Json.toJson(registration).toString())
     )
-    stubGetRegistrationAdditionalInfo(new RegistrationAdditionalInfo(registration.internalId, None, None))
+    stubGetRegistrationAdditionalInfo(
+      new RegistrationAdditionalInfo(registration.internalId, None, None, None, None, None)
+    )
   }
 
   def stubGetSubscription(getSubscriptionResponse: GetSubscriptionResponse): StubMapping =

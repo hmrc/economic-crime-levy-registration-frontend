@@ -603,14 +603,11 @@ amendmentRequested.h2 = Yr hyn sy’n digwydd nesaf
 amendRegistration.pdfHtml.title = Cais i ddiwygio cofrestriad yr Ardoll Troseddau Economaidd
 amendRegistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad {0}
 
-liabilityBeforeCurrentYear.title =A oeddech yn agored i dalu’r Ardoll Troseddau Economaidd (ECL) o 1 Ebrill 2022 i 31 Mawrth 2023?
-liabilityBeforeCurrentYear.h1 = A oeddech yn agored i dalu’r Ardoll Troseddau Economaidd (ECL) o 1 Ebrill 2022 i 31 Mawrth 2023?
-liabilityBeforeCurrentYear.p1 = Roeddech yn agored i dalu’r ECL os oedd y canlynol yn berthnasol:
-liabilityBeforeCurrentYear.list.b1 = gwnaeth eich refeniw yn y DU gyrraedd y trothwy, neu
-liabilityBeforeCurrentYear.list.b2 = gwnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
-liabilityBeforeCurrentYear.p2 = Mae’r flwyddyn ariannol yn rhedeg o 1 Ebrill i 31 Mawrth y flwyddyn ganlynol.
-liabilityBeforeCurrentYear.p3 = Mae rhagor o wybodaeth ar gael yn yr arweiniad ar yr Ardoll Troseddau Economaidd, gan gynnwys <a class="govuk-link" href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy"> pwy sydd angen talu’r ardoll</a>.
-liabilityBeforeCurrentYear.required = Dewiswch ‘Iawn’ os oeddech yn agored i dalu’r Ardoll Troseddau Economaidd
+liabilityBeforeCurrentYear.title =A ydych yn atebol i dalu’r ardoll ar gyfer unrhyw flynyddoedd ariannol blaenorol?
+liabilityBeforeCurrentYear.h1 = A ydych yn atebol i dalu’r ardoll ar gyfer unrhyw flynyddoedd ariannol blaenorol?
+liabilityBeforeCurrentYear.label = Yn atebol am unrhyw flynyddoedd blaenorol
+liabilityBeforeCurrentYear.yes = Iawn, nodwch y dyddiad y daethoch yn atebol am ECL
+liabilityBeforeCurrentYear.no = Na, yn atebol am {0}
 
 otherEntityType.crn.question.title = Oes gennych chi rif cofrestru cwmni'r DU?
 otherEntityType.crn.question.label = Oes gennych chi rif cofrestru cwmni'r DU?
@@ -634,6 +631,14 @@ cancelRegistrationAmendment.title = Ydych chi'n siŵr eich bod am ganslo'ch cais
 cancelRegistrationAmendment.heading = Ydych chi'n siŵr eich bod am ganslo'ch cais i newid eich cofrestriad?
 cancelRegistrationAmendment.body = Bydd eich atebion yn cael eu dileu.
 cancelRegistrationAmendment.error.required = Dewiswch 'Iawn' os ydych yn dymuno canslo eich cais i newid eich cofrestriad
+
+register.currentYear.h1 = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0} i {1}?
+register.currentYear.title = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0}?
+register.currentYear.label = Cofrestru ar gyfer y flwyddyn ariannol gyfredol
+register.currentYear.error = Dewiswch ‘Iawn’ os ydych yn cofrestru ar gyfer blwyddyn ariannol {0}
+register.currentYear.yes = Iawn, parhau i gofrestru ar gyfer {0}
+register.currentYear.no = Na, nodwch y dyddiad y daethoch yn atebol am ECL
+
 
 deregister.banner.title = Dadgofrestru o'r Ardoll Troseddau Economaidd
 
@@ -729,3 +734,11 @@ deregistrationRequested.body.p3 = Byddwn yn adolygu’ch atebion. Os oes angen r
 deregistrationRequested.body.p4 = Byddwn yn anfon llythyr atoch ar ôl i ni orffen y broses o’ch datgofrestru.
 deregistrationRequested.body.p5 = Byddwn yn anfon llythyr at:
 deregistrationRequested.body.p6 = Gallwch fewngofnodi i’ch cyfrif ECL o hyd i weld y datganiadau a gyflwynwyd gennych a’ch hanes talu.
+
+liability.date.title = Nodwch y dyddiad pan ddaethoch yn agored i’r Ardoll Troseddau Economaidd (ECL)
+liability.date.h1 = Nodwch y dyddiad pan ddaethoch yn agored i’r Ardoll Troseddau Economaidd (ECL)
+liability.date.hint = Dyma’r dyddiad y gwnaethoch ddechrau gweithgareddau a reoleiddir gan reoliadau AML, dechrau cael eich rheoleiddio gan CThEF neu’r dyddiad y gwnaethoch gyrraedd y trothwy refeniw ar gyfer ECL. Mae’n rhaid i’r dyddiad hwn fod ar ôl dyddiad dechrau’r ECL ar 1 Ebrill 2022.
+liability.date.label = Dyddiad cychwyn atebolrwydd
+liability.date.error.future.date = Mae’n rhaid i’r dyddiad fod yn y gorffennol
+liability.date.error.early.date = Mae’n rhaid i’r dyddiad fod ar ôl 1 Ebrill 2022
+liability.date.error.required = Nodwch y dyddiad pan ddaethoch yn agored i ECL

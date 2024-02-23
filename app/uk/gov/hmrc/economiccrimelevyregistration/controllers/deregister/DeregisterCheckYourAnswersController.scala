@@ -73,7 +73,7 @@ class DeregisterCheckYourAnswersController @Inject() (
     )
   }
 
-  def onSubmit(): Action[AnyContent] = authorise { implicit request =>
+  def onSubmit(): Action[AnyContent] = authorise { _ =>
     Redirect(routes.DeregistrationRequestedController.onPageLoad())
   }
 

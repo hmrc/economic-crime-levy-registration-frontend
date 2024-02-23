@@ -30,7 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.Email
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactEmailPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactEmailView
@@ -44,11 +44,11 @@ class SecondContactEmailControllerSpec extends SpecBase {
   val form: Form[String]                           = formProvider()
 
   val pageNavigator: SecondContactEmailPageNavigator = new SecondContactEmailPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  val mockSessionService                                 = mock[SessionService]
+  val mockSessionService: SessionService                 = mock[SessionService]
 
   class TestContext(registrationData: Registration) {
     val controller = new SecondContactEmailController(
@@ -99,7 +99,7 @@ class SecondContactEmailControllerSpec extends SpecBase {
         new TestContext(
           updatedRegistration
         ) {
-          val result = controller.onPageLoad(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }

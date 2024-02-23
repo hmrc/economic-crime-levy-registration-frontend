@@ -18,21 +18,23 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode}
 
 import javax.inject.Inject
 
 class DoYouHaveCrnPageNavigator @Inject() extends PageNavigator {
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.otherEntityJourneyData.isUkCrnPresent match {
-      case Some(true)                                              => routes.NonUkCrnController.onPageLoad(NormalMode)
-      case Some(false) if registration.isUnincorporatedAssociation =>
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
+    eclRegistrationModel.registration.otherEntityJourneyData.isUkCrnPresent match {
+      case Some(true)                                                                   => routes.NonUkCrnController.onPageLoad(NormalMode)
+      case Some(false) if eclRegistrationModel.registration.isUnincorporatedAssociation =>
         routes.DoYouHaveUtrController.onPageLoad(NormalMode)
-      case Some(false)                                             => routes.UtrTypeController.onPageLoad(NormalMode)
-      case None                                                    => routes.NotableErrorController.answersAreInvalid()
+      case Some(false)                                                                  => routes.UtrTypeController.onPageLoad(NormalMode)
+      case None                                                                         => routes.NotableErrorController.answersAreInvalid()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call = {
+    val registration = eclRegistrationModel.registration
+
     (
       registration.otherEntityJourneyData.isUkCrnPresent,
       registration.otherEntityJourneyData.companyRegistrationNumber
@@ -42,4 +44,5 @@ class DoYouHaveCrnPageNavigator @Inject() extends PageNavigator {
       case (Some(false), _)      => routes.CheckYourAnswersController.onPageLoad()
       case (None, _)             => routes.NotableErrorController.answersAreInvalid()
     }
+  }
 }

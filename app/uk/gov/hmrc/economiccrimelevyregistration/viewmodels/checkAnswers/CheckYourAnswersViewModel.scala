@@ -19,14 +19,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 import play.api.http._
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationType}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationAdditionalInfo, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 case class CheckYourAnswersViewModel(
   registration: Registration,
   getSubscriptionResponse: Option[GetSubscriptionResponse],
-  eclReference: Option[String]
+  eclReference: Option[String],
+  additionalInfo: Option[RegistrationAdditionalInfo]
 ) extends TrackRegistrationChanges {
 
   val hasSecondContact: Boolean = registration.contacts.secondContact.contains(true)
@@ -150,7 +151,7 @@ case class CheckYourAnswersViewModel(
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 
-  def organisationDetails(liabilityRow: Option[SummaryListRow] = None)(implicit
+  def organisationDetails()(implicit
     messages: Messages
   ): SummaryList =
     SummaryListViewModel(
@@ -170,7 +171,26 @@ case class CheckYourAnswersViewModel(
           ++ addIf(isInitialRegistration, SaUtrSummary.row(registration.saUtr))
           ++ addIf(isInitialRegistration, NinoSummary.row(registration.nino))
           ++ addIf(isInitialRegistration, DateOfBirthSummary.row(registration.dateOfBirth))
-          ++ addIf(isInitialRegistration, liabilityRow)
+          ++ addIf(
+            isInitialRegistration,
+            RegisterForCurrentYearSummary.row(
+              additionalInfo.flatMap(additionalInfo => additionalInfo.registeringForCurrentYear)
+            )
+          )
+          ++ addIf(
+            isInitialRegistration,
+            LiabilityBeforeCurrentYearSummary.row(
+              additionalInfo.flatMap(additionalInfo => additionalInfo.liableForPreviousYears)
+            )
+          )
+          ++ addIf(
+            isInitialRegistration,
+            LiabilityDateSummary.row(additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate))
+          )
+          ++ addIf(
+            isInitialRegistration,
+            AmlRegulatedActivitySummary.row(registration.carriedOutAmlRegulatedActivityInCurrentFy)
+          )
           ++ addIfNot(hasBusinessSectorChanged, BusinessSectorSummary.row(registration.businessSector))
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
@@ -232,7 +252,6 @@ case class CheckYourAnswersViewModel(
   private def addIfNot[T](condition: Boolean, value: T): Seq[T] = if (!condition) Seq(value) else Seq.empty
 
   val registrationType: Option[RegistrationType] = registration.registrationType
-
 }
 
 object CheckYourAnswersViewModel {

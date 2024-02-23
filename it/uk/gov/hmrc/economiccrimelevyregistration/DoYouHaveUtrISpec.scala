@@ -41,9 +41,10 @@ class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
 
       val otherEntityJourneyData = registration.otherEntityJourneyData.copy(
         isCtUtrPresent = Some(hasUtr),
-        ctUtr = hasUtr match {
-          case true  => registration.otherEntityJourneyData.ctUtr
-          case false => None
+        ctUtr = if (hasUtr) {
+          registration.otherEntityJourneyData.ctUtr
+        } else {
+          None
         }
       )
       val updatedRegistration    = registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))

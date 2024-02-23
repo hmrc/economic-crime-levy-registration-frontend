@@ -18,12 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, EclRegistrationModel, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
 class AddAnotherContactPageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = {
+    val registration = eclRegistrationModel.registration
+
     registration.contacts.secondContact match {
       case Some(true)  => contacts.routes.SecondContactNameController.onPageLoad(NormalMode)
       case Some(false) =>
@@ -33,8 +35,11 @@ class AddAnotherContactPageNavigator extends PageNavigator {
         }
       case _           => routes.NotableErrorController.answersAreInvalid()
     }
+  }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call = {
+    val registration = eclRegistrationModel.registration
+
     registration.contacts.secondContact match {
       case Some(true)  =>
         registration.contacts.secondContactDetails match {
@@ -44,5 +49,6 @@ class AddAnotherContactPageNavigator extends PageNavigator {
       case Some(false) => routes.CheckYourAnswersController.onPageLoad()
       case _           => routes.NotableErrorController.answersAreInvalid()
     }
+  }
 
 }

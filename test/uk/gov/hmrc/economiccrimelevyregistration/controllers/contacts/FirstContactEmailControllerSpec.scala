@@ -45,7 +45,7 @@ class FirstContactEmailControllerSpec extends SpecBase {
   val mockSessionService: SessionService          = mock[SessionService]
 
   val pageNavigator: FirstContactEmailPageNavigator = new FirstContactEmailPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
@@ -92,7 +92,7 @@ class FirstContactEmailControllerSpec extends SpecBase {
         val updatedRegistration = registration.copy(contacts = Contacts.empty)
 
         new TestContext(updatedRegistration) {
-          val result = controller.onPageLoad(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }

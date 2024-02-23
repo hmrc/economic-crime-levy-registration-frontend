@@ -35,15 +35,14 @@ class NonUkCrnPageDeregisterNavigatorSpec extends SpecBase {
         routes.UtrTypeController.onPageLoad(NormalMode)
       }
 
-      pageNavigator.nextPage(NormalMode, registration) shouldBe
+      pageNavigator.nextPage(NormalMode, EclRegistrationModel(registration)) shouldBe
         nextPage
     }
 
     "return a call to the UtrType page in Check mode when the entity type is not UnincorporatedAssociation and utrType is empty" in forAll(
       Arbitrary.arbitrary[Registration],
-      Arbitrary.arbitrary[UtrType],
       Gen.oneOf(EntityType.values).suchThat(_ != UnincorporatedAssociation)
-    ) { (registration: Registration, utrType: UtrType, entityType: EntityType) =>
+    ) { (registration: Registration, entityType: EntityType) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
@@ -56,7 +55,7 @@ class NonUkCrnPageDeregisterNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
         routes.UtrTypeController.onPageLoad(CheckMode)
     }
 
@@ -74,7 +73,7 @@ class NonUkCrnPageDeregisterNavigatorSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.DoYouHaveUtrController.onPageLoad(CheckMode)
     }
 
@@ -92,7 +91,7 @@ class NonUkCrnPageDeregisterNavigatorSpec extends SpecBase {
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
 
@@ -113,7 +112,7 @@ class NonUkCrnPageDeregisterNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
         routes.CheckYourAnswersController.onPageLoad()
     }
 

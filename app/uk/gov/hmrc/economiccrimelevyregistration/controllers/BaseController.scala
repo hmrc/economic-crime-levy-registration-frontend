@@ -20,10 +20,10 @@ import cats.data.EitherT
 import play.api.http.HeaderNames.CACHE_CONTROL
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.Results.{InternalServerError, Redirect}
-import play.api.mvc.{Request, RequestHeader, Result, Results}
+import play.api.mvc._
 import play.twirl.api.Html
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{ErrorCode, ResponseError}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 
@@ -66,7 +66,7 @@ trait BaseController extends I18nSupport {
       case errorCode                                            => Results.Status(errorCode.statusCode)(fallbackClientErrorTemplate(request, errorTemplate))
     }
 
-  implicit class ResponseHandler(data: EitherT[Future, ResponseError, Registration]) {
+  implicit class ResponseHandler(data: EitherT[Future, ResponseError, EclRegistrationModel]) {
 
     def convertToResult(
       mode: Mode,

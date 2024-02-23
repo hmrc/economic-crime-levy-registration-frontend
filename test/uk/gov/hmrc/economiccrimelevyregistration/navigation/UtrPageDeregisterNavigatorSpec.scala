@@ -44,7 +44,7 @@ class UtrPageDeregisterNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
         routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
     }
 
@@ -61,7 +61,7 @@ class UtrPageDeregisterNavigatorSpec extends SpecBase {
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
         routes.CheckYourAnswersController.onPageLoad()
     }
   }

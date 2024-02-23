@@ -29,7 +29,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
 
       status(result) shouldBe OK
 
-      html(result) should include("Were you liable to pay the ECL from 1 April 2022 to 31 March 2023?")
+      html(result) should include("Are you liable for any previous financial years?")
     }
   }
 
@@ -52,6 +52,9 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
 
       val info = RegistrationAdditionalInfo(
         registration.internalId,
+        None,
+        None,
+        None,
         None,
         None
       )

@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import org.scalacheck.Arbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 
@@ -34,7 +34,10 @@ class AmendReasonPageDeregisterNavigatorSpec extends SpecBase {
     ) { (registration: Registration, reason: String) =>
       val updatedRegistration = registration.copy(amendReason = Some(reason), registrationType = Some(Amendment))
 
-      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.AmlSupervisorController
+      pageNavigator.nextPage(
+        NormalMode,
+        EclRegistrationModel(updatedRegistration)
+      ) shouldBe routes.AmlSupervisorController
         .onPageLoad(NormalMode, Amendment)
     }
     "return a Call to the check your answers page in CheckMode" in forAll(
@@ -43,7 +46,10 @@ class AmendReasonPageDeregisterNavigatorSpec extends SpecBase {
     ) { (registration: Registration, reason: String) =>
       val updatedRegistration: Registration = registration.copy(amendReason = Some(reason))
 
-      pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+      pageNavigator.nextPage(
+        CheckMode,
+        EclRegistrationModel(updatedRegistration)
+      ) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
   }
 }
