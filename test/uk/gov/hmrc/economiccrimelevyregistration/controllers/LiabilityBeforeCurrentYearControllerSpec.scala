@@ -78,8 +78,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
           contentAsString(result) shouldBe view(
             form,
-            NormalMode,
-            s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"
+            NormalMode
           )(fakeRequest, messages).toString
         }
     }
@@ -128,8 +127,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
         contentAsString(result) shouldBe view(
           formWithErrors,
-          NormalMode,
-          s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"
+          NormalMode
         )(fakeRequest, messages).toString
       }
     }

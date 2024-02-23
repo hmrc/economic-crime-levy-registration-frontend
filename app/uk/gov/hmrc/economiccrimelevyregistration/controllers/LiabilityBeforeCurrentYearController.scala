@@ -62,8 +62,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
       Ok(
         view(
           form.prepare(isLiableForPreviousFY(request.additionalInfo)),
-          mode,
-          s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"
+          mode
         )
       )
     }
@@ -76,7 +75,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, mode, s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
+              BadRequest(view(formWithErrors, mode))
             ),
           liableBeforeCurrentYear => {
             val liabilityYear = getFirstLiabilityYear(
