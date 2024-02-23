@@ -46,7 +46,7 @@ case class CheckYourAnswersViewModel(
   def firstContactDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = (
-        Seq(SecondContactSummary.row(registration.contacts.secondContact))
+        addIfNot(hasSecondContactDetailsPresentChanged, SecondContactSummary.row(registration.contacts.secondContact))
           ++ addIfNot(
             hasFirstContactNameChanged,
             FirstContactNameSummary.row(registration.contacts.firstContactDetails.name)
@@ -71,7 +71,7 @@ case class CheckYourAnswersViewModel(
   def contactDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = (
-        Seq(SecondContactSummary.row(registration.contacts.secondContact))
+        addIfNot(hasSecondContactDetailsPresentChanged, SecondContactSummary.row(registration.contacts.secondContact))
           ++ addIfNot(
             hasFirstContactNameChanged,
             ContactNameSummary.row(registration.contacts.firstContactDetails.name)
@@ -234,16 +234,16 @@ case class CheckYourAnswersViewModel(
           hasSecondContactDetailsPresentChanged,
           SecondContactSummary.row(registration.contacts.secondContact)
         ) ++ addIf(
-          hasSecondContactNameChanged,
+          hasSecondContactNameChanged && hasSecondContact,
           SecondContactNameSummary.row(registration.contacts.secondContactDetails.name)
         ) ++ addIf(
-          hasSecondContactRoleChanged,
+          hasSecondContactRoleChanged && hasSecondContact,
           SecondContactRoleSummary.row(registration.contacts.secondContactDetails.role)
         ) ++ addIf(
-          hasSecondContactPhoneChanged,
+          hasSecondContactPhoneChanged && hasSecondContact,
           SecondContactNumberSummary.row(registration.contacts.secondContactDetails.telephoneNumber)
         ) ++ addIf(
-          hasSecondContactEmailChanged,
+          hasSecondContactEmailChanged && hasSecondContact,
           SecondContactEmailSummary.row(registration.contacts.secondContactDetails.emailAddress)
         )).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
