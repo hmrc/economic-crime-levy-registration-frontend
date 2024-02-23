@@ -33,7 +33,6 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
       )
 
       stubSessionForStoreUrl(
-        registration.internalId,
         contacts.routes.FirstContactEmailController.onPageLoad(NormalMode)
       )
 

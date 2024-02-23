@@ -39,7 +39,6 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
         )
       )
       stubSessionForStoreUrl(
-        registration.internalId,
         contacts.routes.FirstContactNumberController.onPageLoad(NormalMode)
       )
 

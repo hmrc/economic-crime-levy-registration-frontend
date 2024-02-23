@@ -24,7 +24,6 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistration(registration)
       stubSessionForStoreUrl(
-        registration.internalId,
         contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)
       )
 

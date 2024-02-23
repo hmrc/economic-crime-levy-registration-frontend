@@ -32,7 +32,7 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       stubGetRegistration(registration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubSessionForStoreUrl(registration.internalId, routes.CompanyRegistrationNumberController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode))
 
       val result = callRoute(FakeRequest(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)))
 

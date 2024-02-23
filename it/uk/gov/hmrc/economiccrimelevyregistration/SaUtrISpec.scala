@@ -22,7 +22,7 @@ class SaUtrISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(registration.internalId, routes.SaUtrController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl(routes.SaUtrController.onPageLoad(NormalMode))
 
       val result = callRoute(FakeRequest(routes.SaUtrController.onPageLoad(NormalMode)))
 

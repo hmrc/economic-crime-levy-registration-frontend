@@ -27,7 +27,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(registration.internalId, routes.EntityTypeController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl(routes.EntityTypeController.onPageLoad(NormalMode))
 
       val result = callRoute(FakeRequest(routes.EntityTypeController.onPageLoad(NormalMode)))
 

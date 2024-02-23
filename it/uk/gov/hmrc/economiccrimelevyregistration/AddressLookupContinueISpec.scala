@@ -48,7 +48,6 @@ class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubUpsertRegistration(updatedRegistration)
       stubSessionForStoreUrl(
-        registration.internalId,
         routes.AddressLookupContinueController.continue(NormalMode, journeyId)
       )
 

@@ -32,7 +32,6 @@ class SecondContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
         )
       )
       stubSessionForStoreUrl(
-        registration.internalId,
         contacts.routes.SecondContactEmailController.onPageLoad(NormalMode)
       )
 

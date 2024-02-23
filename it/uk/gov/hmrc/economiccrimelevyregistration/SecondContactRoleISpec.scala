@@ -32,7 +32,6 @@ class SecondContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
         )
       )
       stubSessionForStoreUrl(
-        registration.internalId,
         contacts.routes.SecondContactRoleController.onPageLoad(NormalMode)
       )
 

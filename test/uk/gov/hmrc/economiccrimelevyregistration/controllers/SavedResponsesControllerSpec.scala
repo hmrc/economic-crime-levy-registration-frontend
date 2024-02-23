@@ -25,7 +25,7 @@ import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.SavedResponsesFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.SavedResponsesView
 
 import scala.concurrent.Future
@@ -36,14 +36,16 @@ class SavedResponsesControllerSpec extends SpecBase {
   val formProvider: SavedResponsesFormProvider = new SavedResponsesFormProvider()
   val form: Form[Boolean]                      = formProvider()
 
-  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  val mockSessionService: SessionService                 = mock[SessionService]
+  val mockEclRegistrationService: EclRegistrationService           = mock[EclRegistrationService]
+  val mockAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
+  val mockSessionService: SessionService                           = mock[SessionService]
 
   class TestContext(internalId: String) {
     val controller = new SavedResponsesController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(internalId),
       mockEclRegistrationService,
+      mockAdditionalInfoService,
       mockSessionService,
       formProvider,
       view
@@ -80,6 +82,9 @@ class SavedResponsesControllerSpec extends SpecBase {
     "delete registration if answer is no" in forAll { internalId: String =>
       new TestContext(internalId) {
         when(mockEclRegistrationService.deleteRegistration(any())(any(), any()))
+          .thenReturn(EitherT.fromEither[Future](Right()))
+
+        when(mockAdditionalInfoService.delete(any())(any(), any()))
           .thenReturn(EitherT.fromEither[Future](Right()))
 
         val result: Future[Result] =

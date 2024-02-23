@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedA
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.SavedResponsesFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, SavedResponsesView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -35,6 +35,7 @@ class SavedResponsesController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   eclRegistrationService: EclRegistrationService,
+  additionalInfoService: RegistrationAdditionalInfoService,
   sessionService: SessionService,
   formProvider: SavedResponsesFormProvider,
   view: SavedResponsesView
@@ -67,6 +68,7 @@ class SavedResponsesController @Inject() (
           case false =>
             (for {
               _ <- eclRegistrationService.deleteRegistration(request.internalId).asResponseError
+              _ <- additionalInfoService.delete(request.internalId).asResponseError
             } yield ()).fold(
               err => routeError(err),
               _ => Redirect(routes.AmlRegulatedActivityController.onPageLoad(NormalMode))

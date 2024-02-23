@@ -22,7 +22,7 @@ class PartnershipNameISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(registration.internalId, routes.PartnershipNameController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl(routes.PartnershipNameController.onPageLoad(NormalMode))
 
       val result = callRoute(FakeRequest(routes.PartnershipNameController.onPageLoad(NormalMode)))
 

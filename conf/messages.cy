@@ -732,7 +732,7 @@ deregistrationRequested.body.p6 = Gallwch fewngofnodi i’ch cyfrif ECL o hyd i 
 
 savedResponses.title = Mae’ch atebion wedi’u cadw
 savedResponses.h1 = Mae’ch atebion wedi’u cadw
-savedResponses.h2 = eth yr hoffech ei wneud?
+savedResponses.h2 = Beth yr hoffech ei wneud?
 savedResponses.true = Yn eich blaen â’ch atebion sydd wedi’u cadw
 savedResponses.false = Dileu’ch cynnydd hyd yma a dechrau eto
 savedResponses.error.required = Select the first option if you want to continue with your saved answers
