@@ -18,8 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithoutEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegistrationReceivedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -31,6 +30,7 @@ import scala.concurrent.ExecutionContext
 class RegistrationReceivedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithoutEnrolmentCheck,
+  getRegistrationData: DataRetrievalAction,
   view: RegistrationReceivedView,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   registrationService: EclRegistrationService
@@ -40,22 +40,22 @@ class RegistrationReceivedController @Inject() (
     with ErrorHandler
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
+  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     (for {
-      _                                        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
-      _                                        <- registrationService.deleteRegistration(request.internalId).asResponseError
-      firstContactEmailAddress: Option[String]  = request.session.get(SessionKeys.FirstContactEmailAddress)
-      secondContactEmailAddress: Option[String] = request.session.get(SessionKeys.SecondContactEmailAddress)
-      amlRegulatedActivity: Option[String]      = request.session.get(SessionKeys.AmlRegulatedActivity)
-      liabilityYear: Option[String]             = request.session.get(SessionKeys.LiabilityYear)
-      transformedLiabilityYear                  = liabilityYear.map(value => LiabilityYear(value.toInt))
-
-      registrationReceivedView = view(
-                                   firstContactEmailAddress.getOrElse(""),
-                                   secondContactEmailAddress,
-                                   transformedLiabilityYear,
-                                   amlRegulatedActivity
-                                 )
+      _                        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
+      _                        <- registrationService.deleteRegistration(request.internalId).asResponseError
+      firstContactEmailAddress <-
+        valueOrError(request.registration.contacts.firstContactDetails.emailAddress, "First contact email address")
+      secondContactEmailAddress = request.registration.contacts.secondContactDetails.emailAddress
+      amlRegulatedActivity     <-
+        valueOrError(request.registration.carriedOutAmlRegulatedActivityInCurrentFy, "AML Regulated activity")
+      liabilityYear             = request.additionalInfo.flatMap(_.liabilityYear)
+      registrationReceivedView  = view(
+                                    firstContactEmailAddress,
+                                    secondContactEmailAddress,
+                                    liabilityYear,
+                                    amlRegulatedActivity
+                                  )
     } yield registrationReceivedView).fold(
       error => routeError(error),
       registrationReceivedView => Ok(registrationReceivedView)

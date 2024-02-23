@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactEmailFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactEmailPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactEmailView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -41,8 +41,7 @@ class FirstContactEmailController @Inject() (
   eclRegistrationService: EclRegistrationService,
   formProvider: FirstContactEmailFormProvider,
   pageNavigator: FirstContactEmailPageNavigator,
-  view: FirstContactEmailView,
-  sessionService: SessionService
+  view: FirstContactEmailView
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
@@ -103,17 +102,8 @@ class FirstContactEmailController @Inject() (
               eclRegistrationService
                 .upsertRegistration(updatedRegistration)
                 .asResponseError
-            _  =
-              sessionService
-                .upsert(SessionData(request.internalId, Map(SessionKeys.FirstContactEmailAddress -> email)))
-                .asResponseError
           } yield EclRegistrationModel(updatedRegistration))
             .convertToResult(mode, pageNavigator)
-            .map(
-              _.withSession(
-                request.session ++ Seq(SessionKeys.FirstContactEmailAddress -> email)
-              )
-            )
         }
       )
   }

@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
-import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.SessionData
 
 class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -35,20 +35,8 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
       stubDeleteRegistrationAdditionalInfo()
       stubDeleteRegistration()
 
-      val session =
-        sessionData.copy(values = Map(SessionKeys.LiabilityYear -> "2020", SessionKeys.AmlRegulatedActivity -> "yes"))
-
-      stubGetSession(session)
-
-      val eclReference             = random[String]
-      val firstContactEmailAddress = emailAddress(EmailMaxLength).sample.get
-
       val result = callRoute(
         FakeRequest(routes.RegistrationSubmittedController.onPageLoad())
-          .withSession(
-            (SessionKeys.EclReference, eclReference),
-            (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
-          )
       )
 
       status(result) shouldBe OK

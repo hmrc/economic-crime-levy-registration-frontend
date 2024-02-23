@@ -17,7 +17,6 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
@@ -26,9 +25,9 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, SessionError}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
 import uk.gov.hmrc.time.TaxYear
 
@@ -41,7 +40,6 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
   val form: Form[Boolean]                                  = formProvider()
 
   val mockAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
-  val mockSessionService: SessionService                           = mock[SessionService]
   val mockAuditService: AuditService                               = mock[AuditService]
 
   class TestContext(registrationData: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None) {
@@ -51,7 +49,6 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData, additionalInfo),
       formProvider,
       mockAdditionalInfoService,
-      mockSessionService,
       view,
       mockAuditService
     )
@@ -93,14 +90,6 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
           when(mockAdditionalInfoService.upsert(any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
-          if (liabilityYear.isDefined) {
-            val liabilityYearSessionData: Map[String, String] =
-              Map(SessionKeys.LiabilityYear -> liabilityYear.value.asString)
-            val sessionData: SessionData                      = SessionData(registration.internalId, liabilityYearSessionData)
-
-            when(mockSessionService.upsert(ArgumentMatchers.eq(sessionData))(any()))
-              .thenReturn(EitherT[Future, SessionError, Unit](Future.successful(Right(()))))
-          }
 
           val result: Future[Result] =
             controller.onSubmit(CheckMode)(

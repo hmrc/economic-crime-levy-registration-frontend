@@ -32,7 +32,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactEmailPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactEmailView
 
 import scala.concurrent.Future
@@ -48,7 +48,6 @@ class SecondContactEmailControllerSpec extends SpecBase {
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  val mockSessionService: SessionService                 = mock[SessionService]
 
   class TestContext(registrationData: Registration) {
     val controller = new SecondContactEmailController(
@@ -58,8 +57,7 @@ class SecondContactEmailControllerSpec extends SpecBase {
       mockEclRegistrationService,
       formProvider,
       pageNavigator,
-      view,
-      mockSessionService
+      view
     )
   }
 

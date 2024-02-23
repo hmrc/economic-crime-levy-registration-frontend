@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYea
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
-import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityBeforeCurrentYearView}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -43,7 +43,6 @@ class LiabilityBeforeCurrentYearController @Inject() (
   getRegistrationData: DataRetrievalAction,
   formProvider: LiabilityBeforeCurrentYearFormProvider,
   additionalInfoService: RegistrationAdditionalInfoService,
-  sessionService: SessionService,
   view: LiabilityBeforeCurrentYearView,
   auditService: AuditService
 )(implicit
@@ -88,26 +87,8 @@ class LiabilityBeforeCurrentYearController @Inject() (
               .asResponseError
               .fold(
                 err => routeError(err),
-                _ =>
-                  liabilityYear match {
-                    case Some(year) =>
-                      val liabilityYearSessionData = Map(SessionKeys.LiabilityYear -> year.asString)
-
-                      sessionService.upsert(
-                        SessionData(
-                          registration.internalId,
-                          liabilityYearSessionData
-                        )
-                      )
-
-                      Redirect(navigateByMode(mode, registration, liableBeforeCurrentYear)).withSession(
-                        request.session ++ Seq(SessionKeys.LiabilityYear -> year.asString)
-                      )
-                    case None       =>
-                      Redirect(navigateByMode(mode, registration, liableBeforeCurrentYear))
-                  }
+                _ => Redirect(navigateByMode(mode, registration, liableBeforeCurrentYear))
               )
-
           }
         )
     }

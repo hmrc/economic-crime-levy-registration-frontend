@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, SessionData}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 
 class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
@@ -42,21 +42,8 @@ class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val json = Json.toJson(eclAddress).toString
 
-      stubGetSession(
-        sessionData.copy(
-          values = Map(
-            (SessionKeys.ContactAddress, json),
-            (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
-          )
-        )
-      )
-
       val result = callRoute(
         FakeRequest(routes.AmendmentRequestedController.onPageLoad())
-          .withSession(
-            (SessionKeys.ContactAddress, json),
-            (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress)
-          )
       )
 
       status(result) shouldBe OK

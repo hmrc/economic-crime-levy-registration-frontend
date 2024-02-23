@@ -16,12 +16,4 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-object SessionKeys {
-
-  val EclReference: String      = "eclReference"
-  val FirstContactEmailAddress  = "firstContactEmailAddress"
-  val SecondContactEmailAddress = "secondContactEmailAddress"
-  val LiabilityYear             = "liabilityYear"
-  val AmlRegulatedActivity      = "amlRegulatedActivity"
-  val ContactAddress            = "contactAddress"
-}
+object SessionKeys {}

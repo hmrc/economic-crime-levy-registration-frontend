@@ -32,7 +32,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactEmailPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.FirstContactEmailView
 
 import scala.concurrent.Future
@@ -42,7 +42,6 @@ class FirstContactEmailControllerSpec extends SpecBase {
   val view: FirstContactEmailView                 = app.injector.instanceOf[FirstContactEmailView]
   val formProvider: FirstContactEmailFormProvider = new FirstContactEmailFormProvider()
   val form: Form[String]                          = formProvider()
-  val mockSessionService: SessionService          = mock[SessionService]
 
   val pageNavigator: FirstContactEmailPageNavigator = new FirstContactEmailPageNavigator() {
     override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
@@ -58,8 +57,7 @@ class FirstContactEmailControllerSpec extends SpecBase {
       mockEclRegistrationService,
       formProvider,
       pageNavigator,
-      view,
-      mockSessionService
+      view
     )
   }
 
@@ -136,21 +134,6 @@ class FirstContactEmailControllerSpec extends SpecBase {
               registration.contacts.firstContactDetails.copy(emailAddress = Some(email.toLowerCase))
             )
           )
-
-        when(
-          mockSessionService.upsert(
-            ArgumentMatchers.eq(
-              SessionData(
-                updatedRegistration.internalId,
-                Map(
-                  SessionKeys.FirstContactEmailAddress -> updatedRegistration.contacts.firstContactDetails.emailAddress
-                    .getOrElse("")
-                )
-              )
-            )
-          )(any())
-        )
-          .thenReturn(EitherT.fromEither[Future](Right(())))
 
         when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))

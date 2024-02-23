@@ -23,9 +23,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlRegulatedActivityView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -38,7 +38,6 @@ class AmlRegulatedActivityController @Inject() (
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   eclRegistrationService: EclRegistrationService,
-  sessionService: SessionService,
   formProvider: AmlRegulatedActivityFormProvider,
   pageNavigator: AmlRegulatedActivityPageNavigator,
   view: AmlRegulatedActivityView
@@ -66,24 +65,9 @@ class AmlRegulatedActivityController @Inject() (
           )
 
           (for {
-            _          <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            sessionData =
-              SessionData(
-                updatedRegistration.internalId,
-                Map(SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString)
-              )
-            _           = sessionService
-                            .upsert(sessionData)
-                            .asResponseError
+            _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
           } yield EclRegistrationModel(updatedRegistration))
             .convertToResult(mode, pageNavigator)
-            .map(
-              _.withSession(
-                request.session ++ Seq(
-                  SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString
-                )
-              )
-            )
         }
       )
   }

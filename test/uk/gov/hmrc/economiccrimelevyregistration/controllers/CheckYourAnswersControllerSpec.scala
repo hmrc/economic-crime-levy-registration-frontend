@@ -50,7 +50,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
   val mockEmailService: EmailService                     = mock[EmailService]
-  val mockSessionService: SessionService                 = mock[SessionService]
 
   class TestContext(registrationData: Registration) {
     val controller = new CheckYourAnswersController(
@@ -63,7 +62,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       mockEmailService,
       pdfView,
       amendPdfView,
-      mockSessionService,
       appConfig
     )
   }
@@ -138,16 +136,11 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
           when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
-          when(mockSessionService.upsert(any())(any()))
-            .thenReturn(EitherT[Future, SessionError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
-          status(result)                                             shouldBe SEE_OTHER
-          session(result).get(SessionKeys.EclReference)              shouldBe Some(createEclSubscriptionResponse.eclReference)
-          session(result).get(SessionKeys.FirstContactEmailAddress)  shouldBe Some(firstContactEmailAddress)
-          session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe None
-          redirectLocation(result)                                   shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
+          status(result)           shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
@@ -194,15 +187,11 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           ).thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
           when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
-          when(mockSessionService.upsert(any())(any()))
-            .thenReturn(EitherT[Future, SessionError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
-          status(result)                                             shouldBe SEE_OTHER
-          session(result).get(SessionKeys.FirstContactEmailAddress)  shouldBe Some(firstContactEmailAddress)
-          session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe None
-          redirectLocation(result)                                   shouldBe Some(routes.RegistrationReceivedController.onPageLoad().url)
+          status(result)           shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.RegistrationReceivedController.onPageLoad().url)
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
@@ -258,16 +247,11 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
           when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
-          when(mockSessionService.upsert(any())(any()))
-            .thenReturn(EitherT[Future, SessionError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
-          status(result)                                             shouldBe SEE_OTHER
-          session(result).get(SessionKeys.EclReference)              shouldBe Some(createEclSubscriptionResponse.eclReference)
-          session(result).get(SessionKeys.FirstContactEmailAddress)  shouldBe Some(firstContactEmailAddress)
-          session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe Some(secondContactEmailAddress)
-          redirectLocation(result)                                   shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
+          status(result)           shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.RegistrationSubmittedController.onPageLoad().url)
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
@@ -319,15 +303,11 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             .thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
           when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
-          when(mockSessionService.upsert(any())(any()))
-            .thenReturn(EitherT[Future, SessionError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
-          status(result)                                             shouldBe SEE_OTHER
-          session(result).get(SessionKeys.FirstContactEmailAddress)  shouldBe Some(firstContactEmailAddress)
-          session(result).get(SessionKeys.SecondContactEmailAddress) shouldBe Some(secondContactEmailAddress)
-          redirectLocation(result)                                   shouldBe Some(routes.RegistrationReceivedController.onPageLoad().url)
+          status(result)           shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.RegistrationReceivedController.onPageLoad().url)
 
           verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
             ArgumentMatchers.eq(updatedRegistration.contacts),
@@ -379,8 +359,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
           when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
-          when(mockSessionService.upsert(any())(any()))
-            .thenReturn(EitherT[Future, SessionError, Unit](Future.successful(Right(()))))
 
           val result: IllegalStateException = intercept[IllegalStateException] {
             await(controller.onSubmit()(fakeRequest))
@@ -433,7 +411,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             Some(eclReference),
             Some(additionalInfo)
           ),
-          AmendRegistrationPdfViewModel(
+          PdfViewModel(
             valid.registration,
             None,
             Some(eclReference)

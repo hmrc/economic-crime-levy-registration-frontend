@@ -19,14 +19,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 import play.api.http.{ContentTypeOf, ContentTypes, Writeable}
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationType}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationAdditionalInfo, RegistrationType}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 
-case class AmendRegistrationPdfViewModel(
+case class PdfViewModel(
   registration: Registration,
   getSubscriptionResponse: Option[GetSubscriptionResponse],
-  eclReference: Option[String]
+  eclReference: Option[String],
+  additionalInfo: Option[RegistrationAdditionalInfo] = None
 ) extends TrackRegistrationChanges {
 
   val hasSecondContact: Boolean = registration.contacts.secondContact.contains(true)
@@ -281,12 +282,12 @@ case class AmendRegistrationPdfViewModel(
   private def formatRow(row: Option[SummaryListRow]): Option[SummaryListRow] = row.map(_.copy(actions = None))
 }
 
-object AmendRegistrationPdfViewModel {
-  implicit val format: OFormat[AmendRegistrationPdfViewModel] = Json.format[AmendRegistrationPdfViewModel]
+object PdfViewModel {
+  implicit val format: OFormat[PdfViewModel] = Json.format[PdfViewModel]
 
-  implicit val contentType: ContentTypeOf[AmendRegistrationPdfViewModel] =
-    ContentTypeOf[AmendRegistrationPdfViewModel](Some(ContentTypes.JSON))
-  implicit val writes: Writeable[AmendRegistrationPdfViewModel]          = Writeable(
+  implicit val contentType: ContentTypeOf[PdfViewModel] =
+    ContentTypeOf[PdfViewModel](Some(ContentTypes.JSON))
+  implicit val writes: Writeable[PdfViewModel]          = Writeable(
     Writeable.writeableOf_JsValue.transform.compose(format.writes)
   )
 }

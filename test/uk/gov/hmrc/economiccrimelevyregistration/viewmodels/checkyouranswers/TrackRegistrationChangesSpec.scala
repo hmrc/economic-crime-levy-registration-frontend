@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkyouranswers
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, ContactDetails, EclAddress, GetSecondaryContactDetails, GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, ContactDetails, EclAddress, GetSecondaryContactDetails, GetSubscriptionResponse, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers.TrackRegistrationChanges
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Hmrc, Other}
@@ -1118,5 +1118,6 @@ class TrackRegistrationChangesSpec extends SpecBase {
 
 final case class TestTrackEclReturnChanges(
   registration: Registration,
-  getSubscriptionResponse: Option[GetSubscriptionResponse]
+  getSubscriptionResponse: Option[GetSubscriptionResponse],
+  additionalInfo: Option[RegistrationAdditionalInfo] = None
 ) extends TrackRegistrationChanges
