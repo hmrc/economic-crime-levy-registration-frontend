@@ -23,7 +23,7 @@ import play.api.mvc.Results.{InternalServerError, Redirect}
 import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.twirl.api.Html
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{ErrorCode, ResponseError}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, ErrorCode, ResponseError}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 
@@ -34,6 +34,13 @@ trait BaseController extends I18nSupport {
   def valueOrError[T](value: Option[T], valueType: String) =
     EitherT {
       Future.successful(value.map(Right(_)).getOrElse(Left(ResponseError.internalServiceError(s"Missing $valueType"))))
+    }
+
+  def responseOrError[T](value: Option[T], valueType: String): EitherT[Future, DataRetrievalError, T] =
+    EitherT {
+      Future.successful(
+        value.map(Right(_)).getOrElse(Left(DataRetrievalError.InternalUnexpectedError(s"Missing $valueType", None)))
+      )
     }
 
   private def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit

@@ -22,7 +22,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, RegistrationSubmittedEmailParameters}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EntityType, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EclAddress, EntityType, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
@@ -133,7 +133,13 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
       case _                                => Left(DataRetrievalError.InternalUnexpectedError("Invalid contact details", None))
     }
 
-  private def sendEmail(emailAddress: String, name: String)(implicit
+  private def getAddressData(address: Option[EclAddress]): Either[DataRetrievalError, EclAddress] =
+    address match {
+      case Some(address) => Right(address)
+      case _             => Left(DataRetrievalError.InternalUnexpectedError("Invalid address details", None))
+    }
+
+  private def sendEmail(emailAddress: String, name: String, address: Option[EclAddress])(implicit
     hc: HeaderCarrier,
     messages: Messages
   ): ServiceResult[Unit] =
@@ -143,7 +149,12 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
           to = emailAddress,
           AmendRegistrationSubmittedEmailParameters(
             name = name,
-            dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now())
+            dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now()),
+            addressLine1 = address.flatMap(_.addressLine1),
+            addressLine2 = address.flatMap(_.addressLine2),
+            addressLine3 = address.flatMap(_.addressLine3),
+            addressLine4 = address.flatMap(_.addressLine4),
+            containsAddress = address.map(_ => true)
           )
         )
         .map(Right(_))
@@ -158,10 +169,11 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
     }
 
   def sendAmendRegistrationSubmitted(
-    contacts: Contacts
+    contacts: Contacts,
+    address: Option[EclAddress]
   )(implicit hc: HeaderCarrier, messages: Messages): ServiceResult[Unit] =
     for {
       data   <- EitherT.fromEither[Future](getContactData(contacts))
-      result <- sendEmail(data._1, data._2)
+      result <- sendEmail(data._1, data._2, address)
     } yield result
 }

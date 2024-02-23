@@ -219,19 +219,23 @@ class CheckYourAnswersController @Inject() (
     registration: Registration,
     additionalInfo: Option[RegistrationAdditionalInfo],
     eclReference: String
-  )(implicit hc: HeaderCarrier, messages: Messages): EitherT[Future, DataRetrievalError, Unit] =
+  )(implicit
+    hc: HeaderCarrier,
+    messages: Messages
+  ): EitherT[Future, DataRetrievalError, Unit] =
     registration.registrationType match {
-      case Some(Initial)   =>
+      case Some(Initial)                                       =>
         emailService.sendRegistrationSubmittedEmails(
           registration.contacts,
           eclReference,
           registration.entityType,
           additionalInfo,
           registration.carriedOutAmlRegulatedActivityInCurrentFy
-        )
-      case Some(Amendment) =>
-        emailService.sendAmendRegistrationSubmitted(registration.contacts)
-      case None            =>
+        )(hc, messages)
+      case Some(Amendment) if appConfig.getSubscriptionEnabled =>
+        emailService.sendAmendRegistrationSubmitted(registration.contacts, registration.contactAddress)(hc, messages)
+      case Some(Amendment)                                     => emailService.sendAmendRegistrationSubmitted(registration.contacts, None)(hc, messages)
+      case None                                                =>
         EitherT[Future, DataRetrievalError, Unit](
           Future.successful(Left(DataRetrievalError.InternalUnexpectedError("Registration type is null.", None)))
         )
