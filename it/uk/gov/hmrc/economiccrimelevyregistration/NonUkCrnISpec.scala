@@ -7,6 +7,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.NonUKEstablishment
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
@@ -41,14 +42,15 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
       val registration   = random[Registration]
       val additionalInfo = random[RegistrationAdditionalInfo]
 
+      val validRegistration = registration.copy(entityType = Some(NonUKEstablishment))
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
       val companyNumber = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
 
-      stubGetRegistration(registration)
+      stubGetRegistration(validRegistration)
 
       val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))
-      val updatedRegistration    = registration.copy(
+      val updatedRegistration    = validRegistration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
 
