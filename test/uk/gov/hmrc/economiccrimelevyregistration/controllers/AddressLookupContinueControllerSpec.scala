@@ -25,7 +25,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AddressLookupContinuePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupService, EclRegistrationService}
 
@@ -37,11 +37,11 @@ class AddressLookupContinueControllerSpec extends SpecBase {
 
   val pageNavigator: AddressLookupContinuePageNavigator = new AddressLookupContinuePageNavigator {
     override protected def navigateInNormalMode(
-      navigationData: Registration
+      eclRegistrationModel: EclRegistrationModel
     ): Call = onwardRoute
 
     override protected def navigateInCheckMode(
-      navigationData: Registration
+      eclRegistrationModel: EclRegistrationModel
     ): Call = onwardRoute
   }
 
@@ -64,7 +64,7 @@ class AddressLookupContinueControllerSpec extends SpecBase {
           when(mockAddressLookupFrontendService.getAddress(ArgumentMatchers.eq(journeyId))(any()))
             .thenReturn(EitherT.fromEither[Future](Right(alfAddressData)))
 
-          val updatedRegistration = registration.copy(contactAddress =
+          val updatedRegistration: Registration = registration.copy(contactAddress =
             Some(
               EclAddress(
                 organisation = alfAddressData.address.organisation,

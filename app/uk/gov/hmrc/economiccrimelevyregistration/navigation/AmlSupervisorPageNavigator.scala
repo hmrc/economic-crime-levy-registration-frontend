@@ -20,20 +20,22 @@ import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisorType, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisorType, EclRegistrationModel, NormalMode}
 
 import javax.inject.Inject
 
-class AmlSupervisorPageNavigator @Inject() () extends PageNavigator {
+class AmlSupervisorPageNavigator @Inject() extends PageNavigator {
 
   override protected def navigateInNormalMode(
-    registration: Registration
-  ): Call =
+    eclRegistrationModel: EclRegistrationModel
+  ): Call = {
+    val registration = eclRegistrationModel.registration
+
     (registration.amlSupervisor, registration.registrationType) match {
       case (Some(amlSupervisor), Some(Initial))   =>
         amlSupervisor.supervisorType match {
           case t @ (GamblingCommission | FinancialConductAuthority) =>
-            registerWithGcOrFca(t, registration)
+            registerWithGcOrFca(t)
           case Hmrc | Other                                         =>
             registration.carriedOutAmlRegulatedActivityInCurrentFy match {
               case Some(true)  => routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
@@ -42,27 +44,31 @@ class AmlSupervisorPageNavigator @Inject() () extends PageNavigator {
         }
       case (Some(amlSupervisor), Some(Amendment)) =>
         amlSupervisor.supervisorType match {
-          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t, registration)
+          case t @ (GamblingCommission | FinancialConductAuthority) => registerWithGcOrFca(t)
           case Hmrc | Other                                         => routes.BusinessSectorController.onPageLoad(NormalMode)
         }
       case _                                      => routes.NotableErrorController.answersAreInvalid()
     }
+  }
 
   override protected def navigateInCheckMode(
-    registration: Registration
-  ): Call =
+    eclRegistrationModel: EclRegistrationModel
+  ): Call = {
+    val registration = eclRegistrationModel.registration
+
     registration.amlSupervisor match {
       case Some(amlSupervisor) =>
         amlSupervisor.supervisorType match {
           case t @ (GamblingCommission | FinancialConductAuthority) =>
-            registerWithGcOrFca(t, registration)
+            registerWithGcOrFca(t)
           case Hmrc | Other                                         =>
             routes.CheckYourAnswersController.onPageLoad()
         }
       case _                   => routes.NotableErrorController.answersAreInvalid()
     }
+  }
 
-  private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType, registration: Registration): Call =
+  private def registerWithGcOrFca(amlSupervisorType: AmlSupervisorType): Call =
     amlSupervisorType match {
       case GamblingCommission        =>
         routes.RegisterWithGcController.onPageLoad()

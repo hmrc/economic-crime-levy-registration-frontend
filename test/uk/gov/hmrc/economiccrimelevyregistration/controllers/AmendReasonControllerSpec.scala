@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.AmendReasonFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmendReasonPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendReasonView
@@ -44,7 +44,7 @@ class AmendReasonControllerSpec extends SpecBase {
   val mockRegistrationService: EclRegistrationService = mock[EclRegistrationService]
   val retrievedEclRefFromAction                       = "ECLRefNumber12345"
   val pageNavigator: AmendReasonPageNavigator         = new AmendReasonPageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
   }
 
   class TestContext(registration: Registration) {

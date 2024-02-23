@@ -109,7 +109,7 @@ class FirstContactEmailController @Inject() (
               sessionService
                 .upsert(SessionData(request.internalId, Map(SessionKeys.FirstContactEmailAddress -> email)))
                 .asResponseError
-          } yield updatedRegistration)
+          } yield EclRegistrationModel(updatedRegistration))
             .convertToResult(mode, pageNavigator)
             .map(
               _.withSession(

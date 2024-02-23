@@ -27,12 +27,12 @@ class SaUtrPageDeregisterNavigatorSpec extends SpecBase {
 
   "nextPage" should {
     "return a call to the business sector page in Normal mode" in forAll { (registration: Registration) =>
-      pageNavigator.nextPage(NormalMode, registration) shouldBe
+      pageNavigator.nextPage(NormalMode, EclRegistrationModel(registration)) shouldBe
         routes.BusinessSectorController.onPageLoad(NormalMode)
     }
 
     "return a call to the check your answers page in Check mode" in forAll { (registration: Registration) =>
-      pageNavigator.nextPage(CheckMode, registration) shouldBe
+      pageNavigator.nextPage(CheckMode, EclRegistrationModel(registration)) shouldBe
         routes.CheckYourAnswersController.onPageLoad()
     }
   }

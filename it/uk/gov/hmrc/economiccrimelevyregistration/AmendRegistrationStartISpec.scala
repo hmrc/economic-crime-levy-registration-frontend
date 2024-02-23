@@ -38,7 +38,7 @@ class AmendRegistrationStartISpec extends ISpecBase {
       stubUpsertRegistrationWithoutRequestMatching(registration)
       stubGetSubscription(getSubscriptionResponse)
 
-      stubUpsertRegistrationAdditionalInfo(RegistrationAdditionalInfo(testInternalId, None, None))
+      stubUpsertRegistrationAdditionalInfo(RegistrationAdditionalInfo(testInternalId, None, None, None, None, None))
 
       val result = callRoute(FakeRequest(routes.AmendRegistrationStartController.onPageLoad(testInternalId)))
 

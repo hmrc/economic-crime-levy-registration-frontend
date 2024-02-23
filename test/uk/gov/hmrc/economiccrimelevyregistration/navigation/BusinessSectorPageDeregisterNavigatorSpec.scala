@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, CheckMode, EclRegistrationModel, NormalMode, Registration}
 
 class BusinessSectorPageDeregisterNavigatorSpec extends SpecBase {
 
@@ -30,7 +30,7 @@ class BusinessSectorPageDeregisterNavigatorSpec extends SpecBase {
       (registration: Registration, businessSector: BusinessSector) =>
         val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           contacts.routes.FirstContactNameController.onPageLoad(NormalMode)
     }
 
@@ -38,7 +38,7 @@ class BusinessSectorPageDeregisterNavigatorSpec extends SpecBase {
       (registration: Registration, businessSector: BusinessSector) =>
         val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }

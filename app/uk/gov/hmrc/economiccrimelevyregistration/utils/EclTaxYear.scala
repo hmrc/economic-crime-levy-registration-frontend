@@ -21,20 +21,20 @@ import scala.annotation.tailrec
 
 object EclTaxYear {
 
-  private def startYear       = LocalDate.now().getYear
-  private val MonthDue        = 9
-  private val DayDue          = 30
-  private val EclFyEndMonth   = 3
-  private val EclFyStartMonth = 4
-  private val EclFyEndDay     = 31
-  private val EclFyStartDay   = 1
-
-  def dueDate: LocalDate =
+  private def startYear     = LocalDate.now().getYear
+  private val MonthDue      = 9
+  private val DayDue        = 30
+  private val EclFyEndMonth = 3
+  val EclFyStartMonth       = 4
+  private val EclFyEndDay   = 31
+  val EclFyStartDay         = 1
+  val initialYear           = 2022
+  def dueDate: LocalDate    =
     LocalDate.of(calculateYearDue(), MonthDue, DayDue)
 
-  def yearDue: String                      = calculateYearDue().toString
-  private def currentFinancialYear: String = (yearDue.toInt - 1).toString
-  val YearInDays: Int                      = 365
+  def yearDue: String              = calculateYearDue().toString
+  def currentFinancialYear: String = (yearDue.toInt - 1).toString
+  val YearInDays: Int              = 365
 
   @tailrec
   def calculateYearDue(yearDue: Int = startYear, currentDate: LocalDate = LocalDate.now()): Int =
@@ -44,11 +44,12 @@ object EclTaxYear {
       yearDue
     }
 
-  private def currentFinancialYearStartDate: LocalDate =
+  def currentFinancialYearStartDate: LocalDate =
     LocalDate.of(currentFinancialYear.toInt, EclFyStartMonth, EclFyStartDay)
-  private def currentFinancialYearEndDate: LocalDate   =
+  def currentFinancialYearEndDate: LocalDate   =
     LocalDate.of(currentFinancialYear.toInt + 1, EclFyEndMonth, EclFyEndDay)
 
   def currentFyStartYear: String = currentFinancialYearStartDate.getYear.toString
   def currentFyEndYear: String   = currentFinancialYearEndDate.getYear.toString
+
 }

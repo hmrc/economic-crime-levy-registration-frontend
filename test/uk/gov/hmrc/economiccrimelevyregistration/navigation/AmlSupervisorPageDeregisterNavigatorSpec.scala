@@ -36,7 +36,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
           registrationType = Some(Initial)
         )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.RegisterWithGcController.onPageLoad()
     }
 
@@ -47,7 +47,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
           registrationType = Some(Initial)
         )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.RegisterWithGcController.onPageLoad()
     }
 
@@ -59,7 +59,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
             registrationType = Some(Initial)
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.RegisterWithFcaController.onPageLoad()
     }
 
@@ -71,7 +71,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
             registrationType = Some(Initial)
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.RegisterWithFcaController.onPageLoad()
     }
 
@@ -88,7 +88,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
             registrationType = Some(Initial)
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
       }
 
@@ -101,7 +101,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
         val updatedRegistration   =
           registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }
@@ -119,7 +119,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
           registrationType = Some(Initial)
         )
 
-      pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+      pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
         routes.EntityTypeController.onPageLoad(NormalMode)
     }
 

@@ -74,7 +74,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  private def testOnSubmit(entityType: EntityType, expectedRedirectUrl: String) = {
+  private def testOnSubmit(entityType: EntityType, expectedRedirectUrl: String): Unit = {
     stubAuthorisedWithNoGroupEnrolment()
 
     val registration      = random[Registration]

@@ -20,7 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 import javax.inject.Inject
 
-class RelevantAp12MonthsDataCleanup @Inject() () extends DataCleanup {
+class RelevantAp12MonthsDataCleanup @Inject() () extends DataCleanup[Registration] {
   def cleanup(registration: Registration): Registration =
     registration.relevantAp12Months match {
       case Some(true) => registration.copy(relevantApLength = None, revenueMeetsThreshold = None)

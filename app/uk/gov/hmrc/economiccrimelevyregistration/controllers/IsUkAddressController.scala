@@ -77,7 +77,7 @@ class IsUkAddressController @Inject() (
             _                <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
             addressLookupUrl <- addressLookupService.initJourney(contactAddressIsUk, mode).asResponseError
           } yield addressLookupUrl).fold(
-            err => Redirect(routes.NotableErrorController.answersAreInvalid()),
+            _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
             url => Redirect(Call(GET, url))
           )
         }

@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.{RegistrationWithUnincorporatedAssociation, ValidTrustRegistration}
 
 class CtUtrPageDeregisterNavigatorSpec extends SpecBase {
@@ -30,7 +30,7 @@ class CtUtrPageDeregisterNavigatorSpec extends SpecBase {
       (validTrustRegistration: ValidTrustRegistration) =>
         pageNavigator.nextPage(
           NormalMode,
-          validTrustRegistration.registration
+          EclRegistrationModel(validTrustRegistration.registration)
         ) shouldBe routes.BusinessSectorController.onPageLoad(NormalMode)
     }
 
@@ -38,7 +38,7 @@ class CtUtrPageDeregisterNavigatorSpec extends SpecBase {
       (registrationWithUnincorporatedAssociation: RegistrationWithUnincorporatedAssociation) =>
         pageNavigator.nextPage(
           NormalMode,
-          registrationWithUnincorporatedAssociation.registration
+          EclRegistrationModel(registrationWithUnincorporatedAssociation.registration)
         ) shouldBe routes.CtUtrPostcodeController.onPageLoad(NormalMode)
     }
   }

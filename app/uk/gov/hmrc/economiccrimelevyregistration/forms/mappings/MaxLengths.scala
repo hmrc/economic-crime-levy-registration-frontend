@@ -16,6 +16,10 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
 
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+
+import java.time.LocalDate
+
 object MaxLengths {
   val GeneralMaxLength                   = 60
   val EmailMaxLength                     = 132
@@ -27,5 +31,6 @@ object MaxLengths {
   val CompanyRegistrationNumberMaxLength = 8
   val UtrLength                          = 10
   val CtUtrPostcodeLength                = 8
-
+  val maximumDate                        = LocalDate.now()
+  val minimumDate                        = LocalDate.of(EclTaxYear.initialYear, EclTaxYear.EclFyStartMonth, EclTaxYear.EclFyStartDay)
 }

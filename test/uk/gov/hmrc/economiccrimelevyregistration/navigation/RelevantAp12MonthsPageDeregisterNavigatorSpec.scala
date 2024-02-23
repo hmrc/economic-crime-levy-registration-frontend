@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, Registration}
 
 class RelevantAp12MonthsPageDeregisterNavigatorSpec extends SpecBase {
 
@@ -30,7 +30,7 @@ class RelevantAp12MonthsPageDeregisterNavigatorSpec extends SpecBase {
       (registration: Registration, mode: Mode) =>
         val updatedRegistration = registration.copy(relevantAp12Months = Some(true))
 
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.UkRevenueController.onPageLoad(mode)
     }
 
@@ -38,7 +38,7 @@ class RelevantAp12MonthsPageDeregisterNavigatorSpec extends SpecBase {
       (registration: Registration, mode: Mode) =>
         val updatedRegistration = registration.copy(relevantAp12Months = Some(false))
 
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.RelevantApLengthController.onPageLoad(mode)
     }
   }

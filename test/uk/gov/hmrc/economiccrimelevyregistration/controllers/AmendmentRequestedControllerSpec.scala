@@ -33,10 +33,10 @@ import scala.concurrent.Future
 
 class AmendmentRequestedControllerSpec extends SpecBase {
 
-  val view: AmendmentRequestedView                    = app.injector.instanceOf[AmendmentRequestedView]
-  val mockSessionService: SessionService              = mock[SessionService]
-  val mockRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  val mockAdditionalInfoService                       = mock[RegistrationAdditionalInfoService]
+  val view: AmendmentRequestedView                                 = app.injector.instanceOf[AmendmentRequestedView]
+  val mockSessionService: SessionService                           = mock[SessionService]
+  val mockRegistrationService: EclRegistrationService              = mock[EclRegistrationService]
+  val mockAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
 
   val controller = new AmendmentRequestedController(
     mcc,

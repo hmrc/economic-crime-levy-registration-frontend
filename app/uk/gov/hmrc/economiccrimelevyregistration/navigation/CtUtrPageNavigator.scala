@@ -18,10 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{NonUKEstablishment, Trust}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CtUtrPageNavigator extends PageNavigator {
-  override protected def navigateInNormalMode(registration: Registration): Call =
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = {
+    val registration = eclRegistrationModel.registration
+
     registration.otherEntityJourneyData.ctUtr match {
       case None    => routes.NotableErrorController.answersAreInvalid()
       case Some(_) =>
@@ -32,8 +34,11 @@ class CtUtrPageNavigator extends PageNavigator {
           case Some(_)                     => routes.CtUtrPostcodeController.onPageLoad(NormalMode)
         }
     }
+  }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call = {
+    val registration = eclRegistrationModel.registration
+
     registration.entityType match {
       case None                        => routes.NotableErrorController.answersAreInvalid()
       case Some(_ @Trust)              => routes.CheckYourAnswersController.onPageLoad()
@@ -47,8 +52,8 @@ class CtUtrPageNavigator extends PageNavigator {
               case Some(_) => routes.CheckYourAnswersController.onPageLoad()
             }
           case Some(_)        => routes.CheckYourAnswersController.onPageLoad()
-
         }
     }
+  }
 
 }

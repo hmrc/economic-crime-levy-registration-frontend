@@ -30,7 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Other
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AuditError, DataRetrievalError}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, NormalMode, Registration, RegistrationType}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, EclRegistrationModel, NormalMode, Registration, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
@@ -52,11 +52,11 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
   val pageNavigator: AmlSupervisorPageNavigator = new AmlSupervisorPageNavigator {
     override protected def navigateInNormalMode(
-      navigationData: Registration
+      eclRegistrationModel: EclRegistrationModel
     ): Call = onwardRoute
 
     override protected def navigateInCheckMode(
-      navigationData: Registration
+      eclRegistrationModel: EclRegistrationModel
     ): Call = onwardRoute
   }
 

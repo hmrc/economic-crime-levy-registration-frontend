@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 
 class FirstContactNumberPageDeregisterNavigatorSpec extends SpecBase {
 
@@ -35,7 +35,7 @@ class FirstContactNumberPageDeregisterNavigatorSpec extends SpecBase {
             )
           )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)
     }
 
@@ -48,7 +48,7 @@ class FirstContactNumberPageDeregisterNavigatorSpec extends SpecBase {
             )
           )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }

@@ -20,7 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
 import javax.inject.Inject
 
-class EntityTypeDataCleanup @Inject() () extends DataCleanup {
+class EntityTypeDataCleanup @Inject() () extends DataCleanup[Registration] {
   def cleanup(registration: Registration): Registration =
     registration.copy(
       incorporatedEntityJourneyData = None,
@@ -30,7 +30,7 @@ class EntityTypeDataCleanup @Inject() () extends DataCleanup {
       optOtherEntityJourneyData = None
     )
 
-  def cleanupOtherEntityData(registration: Registration) = {
+  def cleanupOtherEntityData(registration: Registration): Registration = {
     val otherEntityJourneyData = registration.otherEntityJourneyData.copy(
       charityRegistrationNumber = None,
       companyRegistrationNumber = None,

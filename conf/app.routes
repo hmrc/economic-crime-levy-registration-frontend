@@ -259,3 +259,15 @@ GET         /deregister-deregistration-requested                                
 
 GET         /save-and-return                                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.SavedResponsesController.onPageLoad
 POST        /save-and-return                                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.SavedResponsesController.onSubmit
+
+GET         /register-for-current-financial-year                                uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterForCurrentYearController.onPageLoad(mode: Mode = NormalMode)
+POST        /register-for-current-financial-year                                uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterForCurrentYearController.onSubmit(mode: Mode = NormalMode)
+
+GET         /change-answer/register-for-current-financial-year                  uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterForCurrentYearController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/register-for-current-financial-year                  uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterForCurrentYearController.onSubmit(mode: Mode = CheckMode)
+
+GET         /liability-start-date                                               uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityDateController.onPageLoad(mode: Mode = NormalMode)
+POST        /liability-start-date                                               uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityDateController.onSubmit(mode: Mode = NormalMode)
+
+GET         /change-answer/liability-start-date                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityDateController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-answer/liability-start-date                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityDateController.onSubmit(mode: Mode = CheckMode)
