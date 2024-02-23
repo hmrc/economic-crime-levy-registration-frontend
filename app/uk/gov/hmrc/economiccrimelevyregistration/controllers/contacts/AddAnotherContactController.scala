@@ -77,7 +77,7 @@ class AddAnotherContactController @Inject() (
           ),
         secondContactBoolean => {
           val secondContact: Contacts = request.registration.contacts.copy(secondContact = Some(secondContactBoolean))
-          val updatedRegistration     = dataCleanup.cleanup(request.registration).copy(contacts = secondContact)
+          val updatedRegistration     = dataCleanup.cleanup(request.registration.copy(contacts = secondContact))
 
           (for {
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError

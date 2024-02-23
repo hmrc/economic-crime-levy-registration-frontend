@@ -25,7 +25,6 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{ErrorHandler, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
@@ -225,30 +224,6 @@ abstract class BaseAuthorisedAction @Inject() (
           _ => block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference)),
           _ => Future.successful(Redirect(routes.NotableErrorController.groupAlreadyEnrolled()))
         )
-    }
-
-  private def processRegistrationType[A](
-    request: Request[A],
-    internalId: String,
-    block: AuthorisedRequest[A] => Future[Result],
-    groupId: String,
-    eclRegistrationReference: Option[String],
-    registration: Registration
-  ): Future[Result] =
-    registration.registrationType match {
-      case None            =>
-        Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled()))
-      case Some(Amendment) =>
-        block(
-          AuthorisedRequest(
-            request,
-            internalId,
-            groupId,
-            eclRegistrationReference
-          )
-        )
-      case Some(Initial)   =>
-        Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled()))
     }
 
   private def processAssistant[A](
