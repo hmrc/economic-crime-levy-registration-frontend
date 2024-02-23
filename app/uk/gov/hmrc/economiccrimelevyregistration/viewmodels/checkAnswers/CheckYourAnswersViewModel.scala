@@ -22,7 +22,6 @@ import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationAdditionalInfo, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
-
 import java.time.LocalDate
 
 case class CheckYourAnswersViewModel(
@@ -265,7 +264,6 @@ case class CheckYourAnswersViewModel(
       )
     }
   }
-
 }
 
 object CheckYourAnswersViewModel {

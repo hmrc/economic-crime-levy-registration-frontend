@@ -8,8 +8,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration, RegistrationAdditionalInfo}
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
-import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
 class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBehaviour {
 
