@@ -40,7 +40,7 @@ class AmendmentRequestedControllerSpec extends SpecBase {
     val controller = new AmendmentRequestedController(
       mcc,
       view,
-      fakeAuthorisedActionWithEnrolmentCheck("test-internal-id"),
+      fakeAuthorisedActionWithEnrolmentCheck(testInternalId, Some(eclReference)),
       fakeDataRetrievalAction(registrationData),
       mockAdditionalInfoService,
       mockRegistrationService
@@ -48,7 +48,7 @@ class AmendmentRequestedControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view when there is one contact email address and aml activity in the session" in forAll {
+    "return OK and the correct view when there is an email address and contact address" in forAll {
       (
         eclAddress: EclAddress,
         firstContactEmailAddress: String,
@@ -59,8 +59,6 @@ class AmendmentRequestedControllerSpec extends SpecBase {
         )
         val updatedRegistration = registration.copy(contactAddress = Some(eclAddress), contacts = contacts)
         new TestContext(updatedRegistration) {
-          val json = Json.toJson(eclAddress).toString()
-
           when(mockAdditionalInfoService.delete(anyString())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
@@ -75,7 +73,7 @@ class AmendmentRequestedControllerSpec extends SpecBase {
 
           contentAsString(result) shouldBe view(
             firstContactEmailAddress,
-            None,
+            Some(eclReference),
             Some(eclAddress)
           )(fakeRequest, messages).toString
         }

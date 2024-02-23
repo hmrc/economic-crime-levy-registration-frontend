@@ -19,6 +19,8 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 @import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+@import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
+@import java.time.LocalDate
 
 @this(
         layout: templates.Layout,
@@ -27,7 +29,7 @@
         formHelper: FormWithCSRF,
         errorSummary: GovukErrorSummary
 )
-@(form: Form[Boolean], mode: Mode, currentYear: String)(implicit messages: Messages, request: Request[_])
+@(form: Form[Boolean], mode: Mode, currentYear: String, currentFinancialYearStartDate: LocalDate, currentFinancialYearEndDate: LocalDate)(implicit messages: Messages, request: Request[_])
 
 @layout(
     pageTitle = title(messages("register.currentYear.title")),
@@ -35,7 +37,7 @@
 ) {
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
         <h1 class="govuk-fieldset__heading">
-        @messages("register.currentYear.h1", currentYear)
+        @messages("register.currentYear.h1", ViewUtils.formatLocalDate(currentFinancialYearStartDate), ViewUtils.formatLocalDate(currentFinancialYearEndDate))
         </h1>
     </legend>
 
@@ -51,12 +53,12 @@
                     RadioItem(
                         id = Some("yes"),
                         value = Some("true"),
-                        content = Text(messages("site.yes"))
+                        content = Text(messages("register.currentYear.yes", currentYear))
                     ),
                     RadioItem(
                         id = Some("no"),
                         value = Some("false"),
-                        content = Text(messages("site.no"))
+                        content = Text(messages("register.currentYear.no"))
                     )
                 )
             )

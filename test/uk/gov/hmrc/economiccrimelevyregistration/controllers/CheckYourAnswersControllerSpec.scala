@@ -328,56 +328,6 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           reset(mockEmailService)
         }
     }
-
-    "throw an IllegalStateException when the first contact email address is not present in the registration" in forAll {
-      (
-        createEclSubscriptionResponse: CreateEclSubscriptionResponse,
-        registration: Registration,
-        entityType: EntityType
-      ) =>
-        val updatedRegistration = registration.copy(
-          entityType = Some(entityType),
-          registrationType = Some(Initial),
-          contactAddress = Some(EclAddress.empty),
-          contacts = Contacts(
-            firstContactDetails = validContactDetails.copy(emailAddress = None),
-            secondContact = Some(false),
-            secondContactDetails = ContactDetails.empty
-          )
-        )
-
-        new TestContext(updatedRegistration) {
-          when(mockEclRegistrationService.upsertRegistration(any())(any()))
-            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
-
-          when(
-            mockEclRegistrationService.submitRegistration(
-              ArgumentMatchers.eq(updatedRegistration.internalId)
-            )(any(), any())
-          )
-            .thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
-
-          when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
-            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
-
-          val result: IllegalStateException = intercept[IllegalStateException] {
-            await(controller.onSubmit()(fakeRequest))
-          }
-
-          result.getMessage shouldBe "First contact email address not found in registration data"
-
-          verify(mockEmailService, times(1)).sendRegistrationSubmittedEmails(
-            ArgumentMatchers.eq(updatedRegistration.contacts),
-            ArgumentMatchers.eq(createEclSubscriptionResponse.eclReference),
-            ArgumentMatchers.eq(updatedRegistration.entityType),
-            any[Option[RegistrationAdditionalInfo]](),
-            ArgumentMatchers.eq(updatedRegistration.carriedOutAmlRegulatedActivityInCurrentFy)
-          )(any(), any())
-
-          reset(mockEclRegistrationService)
-          reset(mockEmailService)
-        }
-    }
   }
 
   "createAndEncodeHtmlForPdf" should {

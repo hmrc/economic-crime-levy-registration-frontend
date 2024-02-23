@@ -46,7 +46,10 @@ case class PdfViewModel(
   def firstContactDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = (
-        Seq(formatRow(SecondContactSummary.row(registration.contacts.secondContact)))
+        addIfNot(
+          hasSecondContactDetailsPresentChanged,
+          formatRow(SecondContactSummary.row(registration.contacts.secondContact))
+        )
           ++ addIfNot(
             hasFirstContactNameChanged,
             formatRow(FirstContactNameSummary.row(registration.contacts.firstContactDetails.name))
@@ -73,7 +76,10 @@ case class PdfViewModel(
   def contactDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
       rows = (
-        Seq(formatRow(SecondContactSummary.row(registration.contacts.secondContact)))
+        addIfNot(
+          hasSecondContactDetailsPresentChanged,
+          formatRow(SecondContactSummary.row(registration.contacts.secondContact))
+        )
           ++ addIfNot(
             hasFirstContactNameChanged,
             formatRow(ContactNameSummary.row(registration.contacts.firstContactDetails.name))

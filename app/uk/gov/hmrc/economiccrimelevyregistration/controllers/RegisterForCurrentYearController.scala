@@ -36,7 +36,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterForCurrentYearController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  view: RegisterForCurrentYearView,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
   formProvider: RegisterForCurrentYearFormProvider,
@@ -44,7 +43,8 @@ class RegisterForCurrentYearController @Inject() (
   registrationService: EclRegistrationService,
   pageNavigator: RegisterForCurrentYearPageNavigator,
   registrationDataCleanup: LiabilityDateRegistrationCleanup,
-  additionalInfoDataCleanup: LiabilityDateAdditionalInfoCleanup
+  additionalInfoDataCleanup: LiabilityDateAdditionalInfoCleanup,
+  view: RegisterForCurrentYearView
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
@@ -59,10 +59,21 @@ class RegisterForCurrentYearController @Inject() (
           view(
             form.prepare(value.registeringForCurrentYear),
             mode,
-            s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"
+            s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
+            EclTaxYear.currentFinancialYearStartDate,
+            EclTaxYear.currentFinancialYearEndDate
           )
         )
-      case None        => Ok(view(form, mode, s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
+      case None        =>
+        Ok(
+          view(
+            form,
+            mode,
+            s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
+            EclTaxYear.currentFinancialYearStartDate,
+            EclTaxYear.currentFinancialYearEndDate
+          )
+        )
 
     }
   }
@@ -73,7 +84,15 @@ class RegisterForCurrentYearController @Inject() (
       .fold(
         formWithErrors =>
           Future.successful(
-            BadRequest(view(formWithErrors, mode, s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
+            BadRequest(
+              view(
+                formWithErrors,
+                mode,
+                s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
+                EclTaxYear.currentFinancialYearStartDate,
+                EclTaxYear.currentFinancialYearEndDate
+              )
+            )
           ),
         answer =>
           (for {
@@ -105,4 +124,5 @@ class RegisterForCurrentYearController @Inject() (
     } else {
       additionalInfo
     }
+
 }

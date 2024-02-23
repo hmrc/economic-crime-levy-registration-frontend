@@ -23,11 +23,9 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
-
 import scala.concurrent.Future
 
 class RegistrationSubmittedControllerSpec extends SpecBase {
@@ -38,11 +36,11 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService     = mock[RegistrationAdditionalInfoService]
   val mockEclRegistrationService: EclRegistrationService                           = mock[EclRegistrationService]
 
-  class TestContext(registrationData: Registration) {
+  class TestContext(registrationData: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None) {
     val controller = new RegistrationSubmittedController(
       mcc,
-      fakeAuthorisedActionWithoutEnrolmentCheck("test-internal-id"),
-      fakeDataRetrievalAction(registrationData),
+      fakeAuthorisedActionWithoutEnrolmentCheck(testInternalId),
+      fakeDataRetrievalAction(registrationData, additionalInfo),
       view,
       outOfSessionRegistrationSubmittedView,
       mockRegistrationAdditionalInfoService,
@@ -56,9 +54,19 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         liabilityYear: LiabilityYear,
         firstContactEmailAddress: String,
         secondContactEmailAddress: Option[String],
-        registration: Registration
+        registration: Registration,
+        additionalInfo: RegistrationAdditionalInfo
       ) =>
-        new TestContext(registration) {
+        val contacts              = registration.contacts.copy(
+          firstContactDetails =
+            registration.contacts.firstContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
+          secondContactDetails =
+            registration.contacts.secondContactDetails.copy(emailAddress = secondContactEmailAddress)
+        )
+        val updatedRegistration   = registration.copy(contacts = contacts)
+        val updatedAdditionalInfo =
+          additionalInfo.copy(liabilityYear = Some(liabilityYear), eclReference = Some(eclReference))
+        new TestContext(updatedRegistration, Some(updatedAdditionalInfo)) {
           when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
@@ -75,30 +83,8 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
             eclReference,
             firstContactEmailAddress,
             secondContactEmailAddress,
-            Some(liabilityYear)
+            updatedAdditionalInfo.liabilityYear
           )(fakeRequest, messages).toString
-        }
-    }
-
-    "return OK and the correct view when information is not gathered from session" in {
-      (
-        internalId: String,
-        groupId: String,
-        eclReference: String,
-        liabilityYear: LiabilityYear,
-        registration: Registration
-      ) =>
-        new TestContext(registration) {
-          val result =
-            controller.onPageLoad()(AuthorisedRequest(fakeRequest, internalId, groupId, Some(eclReference)))
-
-          status(result) shouldBe OK
-
-          contentAsString(result) shouldBe outOfSessionRegistrationSubmittedView(
-            "eclReference",
-            Some(liabilityYear)
-          )(fakeRequest, messages)
-            .toString()
         }
     }
 

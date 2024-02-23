@@ -29,6 +29,10 @@
 
 @(eclReference: String, email: String, contactAddress: GetCorrespondenceAddressDetails)(implicit request: Request[_], messages: Messages)
 
+@panelContentHtml = {
+    <p class="govuk-label--m">@messages("deregistrationRequested.panel.p2", eclReference)</p>
+}
+
 @layout(
     pageTitle = title(messages("deregistrationRequested.title")),
     timeout = false,
@@ -38,7 +42,8 @@
 ) {
 
     @govukPanel(Panel(
-        title = HtmlContent(messages(Seq("deregistrationRequested.panel.p1", "deregistrationRequested.panel.p2"), eclReference))
+        title = HtmlContent(messages("deregistrationRequested.panel.p1")),
+        content = HtmlContent(panelContentHtml)
     ))
 
     <p class="govuk-body">@messages("deregistrationRequested.body.p1",

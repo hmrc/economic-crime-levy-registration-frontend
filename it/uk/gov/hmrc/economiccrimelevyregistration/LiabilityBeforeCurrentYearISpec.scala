@@ -29,7 +29,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
 
       status(result) shouldBe OK
 
-      html(result) should include("Are you liable for any previous years?")
+      html(result) should include("Are you liable for any previous financial years?")
     }
   }
 

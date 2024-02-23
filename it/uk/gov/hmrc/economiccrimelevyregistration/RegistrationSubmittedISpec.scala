@@ -22,16 +22,22 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
-import uk.gov.hmrc.economiccrimelevyregistration.models.SessionData
-
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo, SessionData}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.RegistrationSubmittedController.onPageLoad().url}" should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(routes.RegistrationSubmittedController.onPageLoad())
 
-    "respond with 200 status and the registration submitted HTML view" in forAll { sessionData: SessionData =>
+    "respond with 200 status and the registration submitted HTML view" in {
       stubAuthorisedWithEclEnrolment()
+
+      val registration   = random[Registration]
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistration(registration)
+      stubGetRegistrationAdditionalInfo(additionalInfo)
+
       stubDeleteRegistrationAdditionalInfo()
       stubDeleteRegistration()
 

@@ -43,9 +43,8 @@ class RegistrationSubmittedController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     (for {
-      _ <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
-      _ <- registrationService.deleteRegistration(request.internalId).asResponseError
-
+      _                        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
+      _                        <- registrationService.deleteRegistration(request.internalId).asResponseError
       firstContactEmailAddress <-
         valueOrError(request.registration.contacts.firstContactDetails.emailAddress, "First contact email address")
       secondContactEmailAddress = request.registration.contacts.secondContactDetails.emailAddress

@@ -28,6 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
 import uk.gov.hmrc.time.TaxYear
 
@@ -72,7 +73,11 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
+          contentAsString(result) shouldBe view(
+            form,
+            NormalMode,
+            s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"
+          )(fakeRequest, messages).toString
         }
     }
   }
@@ -110,7 +115,11 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(
+          formWithErrors,
+          NormalMode,
+          s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"
+        )(fakeRequest, messages).toString
       }
     }
   }
