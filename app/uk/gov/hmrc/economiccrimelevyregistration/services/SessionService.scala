@@ -17,11 +17,12 @@
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import cats.data.EitherT
+import play.api.http.Status.NOT_FOUND
 import play.api.mvc.Session
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.SessionDataConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionData
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.SessionError
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -57,7 +58,7 @@ class SessionService @Inject() (sessionRetrievalConnector: SessionDataConnector)
             sessionData <- getSessionData(internalId)
             value       <- retrieveValueFromSessionData(sessionData, key)
           } yield value).fold(
-            err => Right(None),
+            _ => Right(None),
             value => Right(Some(value))
           )
         }
@@ -65,12 +66,13 @@ class SessionService @Inject() (sessionRetrievalConnector: SessionDataConnector)
 
   def upsert(sessionData: SessionData)(implicit
     hc: HeaderCarrier
-  ): EitherT[Future, SessionError, Unit]      =
+  ): EitherT[Future, SessionError, Unit] =
     for {
       oldSession    <- getSessionData(sessionData.internalId, sessionData)
-      newSessionData = sessionData.copy(values = sessionData.values ++ oldSession.values)
+      newSessionData = mergeSessionData(oldSession, sessionData)
       _             <- upsertSessions(newSessionData)
     } yield ()
+
   def delete(
     internalId: String
   )(implicit hc: HeaderCarrier): Future[Unit] =
@@ -87,19 +89,22 @@ class SessionService @Inject() (sessionRetrievalConnector: SessionDataConnector)
   private def getSessionData(
     internalId: String,
     sessionData: SessionData
-  )(implicit hc: HeaderCarrier): EitherT[Future, SessionError, SessionData] =
+  )(implicit hc: HeaderCarrier): EitherT[Future, SessionError, Option[SessionData]] =
     EitherT {
       sessionRetrievalConnector
         .get(internalId)
-        .map(Right(_))
+        .map(sessionData => Right(Some(sessionData)))
         .recover {
+          case _: NotFoundException                         => Right(None)
+          case _ @UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+            Right(None)
           case error @ UpstreamErrorResponse(message, code, _, _)
               if UpstreamErrorResponse.Upstream5xxResponse
                 .unapply(error)
                 .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
             sessionRetrievalConnector.upsert(sessionData)
             Left(SessionError.BadGateway(message, code))
-          case NonFatal(thr) =>
+          case NonFatal(thr)                                =>
             sessionRetrievalConnector.upsert(sessionData)
             Left(SessionError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
@@ -150,4 +155,13 @@ class SessionService @Inject() (sessionRetrievalConnector: SessionDataConnector)
           case NonFatal(thr) => Left(SessionError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
+
+  private def mergeSessionData(oldSessionData: Option[SessionData], newSessionData: SessionData): SessionData =
+    oldSessionData
+      .map(oldData =>
+        newSessionData.copy(
+          values = newSessionData.values ++ oldData.values.filter(e => !newSessionData.values.keySet.contains(e._1))
+        )
+      )
+      .getOrElse(newSessionData)
 }

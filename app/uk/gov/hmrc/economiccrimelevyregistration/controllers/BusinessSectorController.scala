@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.BusinessSectorFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, EclRegistrationModel, Mode}
@@ -36,6 +36,7 @@ class BusinessSectorController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: BusinessSectorFormProvider,
   pageNavigator: BusinessSectorPageNavigator,
@@ -48,15 +49,16 @@ class BusinessSectorController @Inject() (
 
   val form: Form[BusinessSector] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(
-      view(
-        form.prepare(request.registration.businessSector),
-        request.registration.registrationType,
-        mode,
-        request.eclRegistrationReference
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
+    implicit request =>
+      Ok(
+        view(
+          form.prepare(request.registration.businessSector),
+          request.registration.registrationType,
+          mode,
+          request.eclRegistrationReference
+        )
       )
-    )
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>

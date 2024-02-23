@@ -24,4 +24,5 @@ object SessionKeys {
   val LiabilityYear             = "liabilityYear"
   val AmlRegulatedActivity      = "amlRegulatedActivity"
   val ContactAddress            = "contactAddress"
+  val UrlToReturnTo             = "UrlToReturnTo"
 }

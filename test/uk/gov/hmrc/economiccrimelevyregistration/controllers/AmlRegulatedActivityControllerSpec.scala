@@ -57,6 +57,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       mockEclRegistrationService,
       mockSessionService,
       formProvider,
@@ -100,8 +101,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
           new TestContext(registration) {
             val updatedRegistration: Registration =
               registration.copy(
-                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity),
-                registrationType = Some(Initial)
+                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity)
               )
 
             when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
@@ -127,8 +127,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
           new TestContext(registration) {
             val updatedRegistration: Registration =
               registration.copy(
-                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity),
-                registrationType = Some(Initial)
+                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity)
               )
 
             when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))

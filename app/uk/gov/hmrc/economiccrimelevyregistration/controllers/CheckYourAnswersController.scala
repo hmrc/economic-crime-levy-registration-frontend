@@ -21,7 +21,7 @@ import cats.implicits.toTraverseOps
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
@@ -45,6 +45,7 @@ class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   registrationService: EclRegistrationService,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
@@ -60,7 +61,7 @@ class CheckYourAnswersController @Inject() (
     with ErrorHandler {
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen getRegistrationData).async { implicit request =>
+    (authorise andThen getRegistrationData andThen storeUrl).async { implicit request =>
       registrationService
         .getRegistrationValidationErrors(request.internalId)
         .asResponseError

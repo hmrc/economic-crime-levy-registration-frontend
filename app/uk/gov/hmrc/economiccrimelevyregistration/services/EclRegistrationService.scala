@@ -28,6 +28,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 
 @Singleton
 class EclRegistrationService @Inject() (
@@ -50,7 +51,7 @@ class EclRegistrationService @Inject() (
       case None               =>
         auditService.sendRegistrationStartedEvent(internalId)
 
-        val registration = Registration.empty(internalId)
+        val registration = Registration.empty(internalId).copy(registrationType = Some(Initial))
         upsertRegistration(registration).map(_ => registration)
     }
 

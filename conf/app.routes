@@ -5,6 +5,7 @@
 GET         /assets/*file                                                       controllers.Assets.versioned(path = "/public", file: Asset)
 
 GET         /                                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.StartController.onPageLoad()
+POST        /                                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.StartController.onSubmit()
 
 GET         /aml-regulated-activity-question                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onPageLoad(mode: Mode = NormalMode)
 POST        /aml-regulated-activity-question                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.AmlRegulatedActivityController.onSubmit(mode: Mode = NormalMode)
@@ -255,6 +256,10 @@ GET         /deregister-check-your-answers                                      
 POST        /deregister-check-your-answers                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterCheckYourAnswersController.onSubmit()
 
 GET         /deregister-deregistration-requested                                uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregistrationRequestedController.onPageLoad()
+
+GET         /save-and-return                                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.SavedResponsesController.onPageLoad
+POST        /save-and-return                                                    uk.gov.hmrc.economiccrimelevyregistration.controllers.SavedResponsesController.onSubmit
+
 GET         /register-for-current-financial-year                                uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterForCurrentYearController.onPageLoad(mode: Mode = NormalMode)
 POST        /register-for-current-financial-year                                uk.gov.hmrc.economiccrimelevyregistration.controllers.RegisterForCurrentYearController.onSubmit(mode: Mode = NormalMode)
 

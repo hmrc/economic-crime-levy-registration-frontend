@@ -726,6 +726,13 @@ deregistrationRequested.body.p4 = We will send you a letter once we have complet
 deregistrationRequested.body.p5 = We will send the letter to:
 deregistrationRequested.body.p6 = You can still log in to your ECL account to view your submitted returns and payment history.
 
+savedResponses.title = Your answers have been saved
+savedResponses.h1 = Your answers have been saved
+savedResponses.h2 = What would you like to do?
+savedResponses.true = Continue with your saved answers
+savedResponses.false = Delete your progress and start again
+savedResponses.error.required = Select the first option if you want to continue with your saved answers
+
 register.currentYear.h1 = Are you registering for the {0} to {1} financial year?
 register.currentYear.title = Are you registering for the {0} financial year?
 register.currentYear.error = Select yes if you are registering for {0}

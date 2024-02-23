@@ -48,6 +48,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       mockIncorporatedEntityIdentificationFrontendConnector,
       mockSoleTraderIdentificationFrontendConnector,
       mockPartnershipIdentificationFrontendConnector,

@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveCtUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, Registration}
@@ -37,6 +37,7 @@ class DoYouHaveCtUtrController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   formProvider: DoYouHaveCtUtrFormProvider,
   eclRegistrationService: EclRegistrationService,
   pageNavigator: DoYouHaveCtUtrPageNavigator,
@@ -52,7 +53,7 @@ class DoYouHaveCtUtrController @Inject() (
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (authorise andThen getRegistrationData) { implicit request =>
+    (authorise andThen getRegistrationData andThen storeUrl) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.isCtUtrPresent), mode))
     }
 

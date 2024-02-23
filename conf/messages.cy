@@ -639,9 +639,7 @@ register.currentYear.error = Dewiswch ‘Iawn’ os ydych yn cofrestru ar gyfer 
 register.currentYear.yes = Iawn, parhau i gofrestru ar gyfer {0}
 register.currentYear.no = Na, nodwch y dyddiad y daethoch yn atebol am ECL
 
-
 deregister.banner.title = Dadgofrestru o'r Ardoll Troseddau Economaidd
-
 deregister.start.title = Cais at CThEF i ddatgofrestru rhag yr Ardoll Troseddau Economaidd
 deregister.start.heading = Cais at CThEF i ddatgofrestru rhag yr Ardoll Troseddau Economaidd
 deregister.start.h2 = Manylion y sefydliad
@@ -734,6 +732,13 @@ deregistrationRequested.body.p3 = Byddwn yn adolygu’ch atebion. Os oes angen r
 deregistrationRequested.body.p4 = Byddwn yn anfon llythyr atoch ar ôl i ni orffen y broses o’ch datgofrestru.
 deregistrationRequested.body.p5 = Byddwn yn anfon llythyr at:
 deregistrationRequested.body.p6 = Gallwch fewngofnodi i’ch cyfrif ECL o hyd i weld y datganiadau a gyflwynwyd gennych a’ch hanes talu.
+
+savedResponses.title = Mae’ch atebion wedi’u cadw
+savedResponses.h1 = Mae’ch atebion wedi’u cadw
+savedResponses.h2 = Beth yr hoffech ei wneud?
+savedResponses.true = Yn eich blaen â’ch atebion sydd wedi’u cadw
+savedResponses.false = Dileu’ch cynnydd hyd yma a dechrau eto
+savedResponses.error.required = Select the first option if you want to continue with your saved answers
 
 liability.date.title = Nodwch y dyddiad pan ddaethoch yn agored i’r Ardoll Troseddau Economaidd (ECL)
 liability.date.h1 = Nodwch y dyddiad pan ddaethoch yn agored i’r Ardoll Troseddau Economaidd (ECL)
