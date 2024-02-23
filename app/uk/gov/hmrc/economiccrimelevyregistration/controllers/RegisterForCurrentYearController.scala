@@ -59,10 +59,21 @@ class RegisterForCurrentYearController @Inject() (
           view(
             form.prepare(value.registeringForCurrentYear),
             mode,
-            s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"
+            s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
+            EclTaxYear.currentFinancialYearStartDate,
+            EclTaxYear.currentFinancialYearEndDate
           )
         )
-      case None        => Ok(view(form, mode, s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
+      case None        =>
+        Ok(
+          view(
+            form,
+            mode,
+            s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
+            EclTaxYear.currentFinancialYearStartDate,
+            EclTaxYear.currentFinancialYearEndDate
+          )
+        )
 
     }
   }
@@ -73,7 +84,15 @@ class RegisterForCurrentYearController @Inject() (
       .fold(
         formWithErrors =>
           Future.successful(
-            BadRequest(view(formWithErrors, mode, s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
+            BadRequest(
+              view(
+                formWithErrors,
+                mode,
+                s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
+                EclTaxYear.currentFinancialYearStartDate,
+                EclTaxYear.currentFinancialYearEndDate
+              )
+            )
           ),
         answer =>
           (for {
@@ -105,4 +124,5 @@ class RegisterForCurrentYearController @Inject() (
     } else {
       additionalInfo
     }
+
 }

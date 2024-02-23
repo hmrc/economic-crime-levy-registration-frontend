@@ -44,11 +44,12 @@ object EclTaxYear {
       yearDue
     }
 
-  private def currentFinancialYearStartDate: LocalDate =
+  def currentFinancialYearStartDate: LocalDate =
     LocalDate.of(currentFinancialYear.toInt, EclFyStartMonth, EclFyStartDay)
-  private def currentFinancialYearEndDate: LocalDate   =
+  def currentFinancialYearEndDate: LocalDate   =
     LocalDate.of(currentFinancialYear.toInt + 1, EclFyEndMonth, EclFyEndDay)
 
   def currentFyStartYear: String = currentFinancialYearStartDate.getYear.toString
   def currentFyEndYear: String   = currentFinancialYearEndDate.getYear.toString
+
 }

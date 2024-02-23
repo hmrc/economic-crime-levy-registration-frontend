@@ -9,6 +9,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
 class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -30,9 +31,7 @@ class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBeh
 
       status(result) shouldBe OK
 
-      html(result) should include(
-        s"Are you registering for the ${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue} financial year?"
-      )
+      html(result) should include("enter the date you became liable for ECL")
     }
     s"POST ${routes.RegisterForCurrentYearController.onSubmit(CheckMode).url}" should {
       behave like authorisedActionWithEnrolmentCheckRoute(
