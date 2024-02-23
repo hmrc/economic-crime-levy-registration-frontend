@@ -602,8 +602,8 @@ amendmentRequested.h2 = What happens next
 amendRegistration.pdfHtml.title = Application to amend register for the Economic Crime Levy
 amendRegistration.pdfHtml.submissionDate = Submission date: {0}
 
-liabilityBeforeCurrentYear.title = Are you liable for any previous years?
-liabilityBeforeCurrentYear.h1 = Are you liable for any previous years?
+liabilityBeforeCurrentYear.title = Are you liable for any previous financial years?
+liabilityBeforeCurrentYear.h1 = Are you liable for any previous financial years?
 liabilityBeforeCurrentYear.label = Liable for any previous years
 liabilityBeforeCurrentYear.yes = Yes, enter the date you became liable for ECL
 liabilityBeforeCurrentYear.no = No, only liable for {0}
