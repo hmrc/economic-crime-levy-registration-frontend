@@ -77,18 +77,18 @@ class CheckYourAnswersController @Inject() (
 
   private def getBase64EncodedPdf(
     checkYourAnswersViewModel: CheckYourAnswersViewModel,
-    PdfViewModel: PdfViewModel
+    pdfViewModel: PdfViewModel
   )(implicit
     request: RegistrationDataRequest[_]
   ) = {
     val registrationType = checkYourAnswersViewModel.registrationType
     (checkYourAnswersViewModel.registration.entityType, registrationType) match {
       case (Some(_), Some(Amendment))                    =>
-        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, PdfViewModel)
+        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, pdfViewModel)
       case (Some(value), _) if EntityType.isOther(value) =>
-        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, PdfViewModel)
+        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, pdfViewModel)
       case (None, Some(Amendment))                       =>
-        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, PdfViewModel)
+        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, pdfViewModel)
       case _                                             =>
         ""
     }
@@ -246,7 +246,7 @@ class CheckYourAnswersController @Inject() (
 
   def createAndEncodeHtmlForPdf(
     checkYourAnswersViewModel: CheckYourAnswersViewModel,
-    PdfViewModel: PdfViewModel
+    pdfViewModel: PdfViewModel
   )(implicit request: RegistrationDataRequest[_]): String = {
     val date                      = LocalDate.now
     val organisation              = checkYourAnswersViewModel.organisationDetails()
@@ -262,7 +262,7 @@ class CheckYourAnswersController @Inject() (
         base64EncodeHtmlView(
           amendRegistrationPdfView(
             ViewUtils.formatLocalDate(date),
-            PdfViewModel
+            pdfViewModel
           ).toString()
         )
       case _               =>

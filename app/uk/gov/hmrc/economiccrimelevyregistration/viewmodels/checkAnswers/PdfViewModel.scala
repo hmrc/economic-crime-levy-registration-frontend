@@ -23,6 +23,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 
+import java.time.LocalDate
+
 case class PdfViewModel(
   registration: Registration,
   getSubscriptionResponse: Option[GetSubscriptionResponse],
@@ -197,9 +199,24 @@ case class PdfViewModel(
           ++ addIf(isInitialRegistration, formatRow(NinoSummary.row(registration.nino)))
           ++ addIf(isInitialRegistration, formatRow(DateOfBirthSummary.row(registration.dateOfBirth)))
           ++ addIf(isInitialRegistration, formatRow(liabilityRow))
+          ++ addIf(
+            isInitialRegistration || isAmendRegistration,
+            getLiabilityRow
+          )
           ++ addIfNot(hasBusinessSectorChanged, formatRow(BusinessSectorSummary.row(registration.businessSector)))
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
+
+  private def getLiabilityRow(implicit messages: Messages) = {
+    val liabilityStartDate = additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate)
+    if (liabilityStartDate.isDefined) {
+      LiabilityDateSummary.row(additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate))
+    } else {
+      LiabilityDateSummary.row(
+        getSubscriptionResponse.map(response => LocalDate.parse(response.additionalDetails.liabilityStartDate))
+      )
+    }
+  }
 
   def eclDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
