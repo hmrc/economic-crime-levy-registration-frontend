@@ -18,23 +18,23 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode}
 
 import javax.inject.Inject
 
 class ConfirmContactAddressPageNavigator @Inject() () extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    navigate(registration, NormalMode)
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
+    navigate(eclRegistrationModel, NormalMode)
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    navigate(registration, CheckMode)
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
+    navigate(eclRegistrationModel, CheckMode)
 
   private def navigate(
-    registration: Registration,
+    eclRegistrationModel: EclRegistrationModel,
     mode: Mode
   ): Call =
-    registration.useRegisteredOfficeAddressAsContactAddress match {
+    eclRegistrationModel.registration.useRegisteredOfficeAddressAsContactAddress match {
       case Some(true)  =>
         routes.CheckYourAnswersController.onPageLoad()
       case Some(false) =>

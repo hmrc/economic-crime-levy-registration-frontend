@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CharityRegistrationNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -36,6 +36,7 @@ class CharityRegistrationNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: CharityRegistrationNumberFormProvider,
   pageNavigator: CharityRegistrationNumberPageNavigator,
@@ -49,7 +50,7 @@ class CharityRegistrationNumberController @Inject() (
   val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (authorise andThen getRegistrationData) { implicit request =>
+    (authorise andThen getRegistrationData andThen storeUrl) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.charityRegistrationNumber), mode))
     }
 
@@ -68,7 +69,7 @@ class CharityRegistrationNumberController @Inject() (
 
             (for {
               _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-            } yield updatedRegistration).convertToResult(mode, pageNavigator)
+            } yield EclRegistrationModel(updatedRegistration)).convertToResult(mode, pageNavigator)
 
           }
         )

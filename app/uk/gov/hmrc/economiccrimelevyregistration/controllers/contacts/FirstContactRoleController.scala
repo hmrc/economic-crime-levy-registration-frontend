@@ -19,11 +19,11 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactRoleFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.FirstContactRolePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
@@ -38,6 +38,7 @@ class FirstContactRoleController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: FirstContactRoleFormProvider,
   pageNavigator: FirstContactRolePageNavigator,
@@ -50,22 +51,23 @@ class FirstContactRoleController @Inject() (
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    (for {
-      firstContactName <- request.firstContactNameOrError.asResponseError
-    } yield firstContactName).fold(
-      error => routeError(error),
-      name =>
-        Ok(
-          view(
-            form.prepare(request.registration.contacts.firstContactDetails.role),
-            name,
-            mode,
-            request.registration.registrationType,
-            request.eclRegistrationReference
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
+    implicit request =>
+      (for {
+        firstContactName <- request.firstContactNameOrError.asResponseError
+      } yield firstContactName).fold(
+        error => routeError(error),
+        name =>
+          Ok(
+            view(
+              form.prepare(request.registration.contacts.firstContactDetails.role),
+              name,
+              mode,
+              request.registration.registrationType,
+              request.eclRegistrationReference
+            )
           )
-        )
-    )
+      )
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
@@ -104,7 +106,7 @@ class FirstContactRoleController @Inject() (
             _ <- eclRegistrationService
                    .upsertRegistration(updatedRegistration)
                    .asResponseError
-          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+          } yield EclRegistrationModel(updatedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

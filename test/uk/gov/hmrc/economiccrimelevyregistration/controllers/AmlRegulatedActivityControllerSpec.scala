@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormP
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
@@ -45,10 +45,10 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   val mockSessionService: SessionService                 = mock[SessionService]
 
   val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: Registration): Call =
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
       onwardRoute
 
-    override protected def navigateInCheckMode(navigationData: Registration): Call =
+    override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
       onwardRoute
   }
 
@@ -57,6 +57,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       mockEclRegistrationService,
       mockSessionService,
       formProvider,
@@ -100,8 +101,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
           new TestContext(registration) {
             val updatedRegistration: Registration =
               registration.copy(
-                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity),
-                registrationType = Some(Initial)
+                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity)
               )
 
             when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
@@ -127,8 +127,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
           new TestContext(registration) {
             val updatedRegistration: Registration =
               registration.copy(
-                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity),
-                registrationType = Some(Initial)
+                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity)
               )
 
             when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))

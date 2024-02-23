@@ -38,13 +38,14 @@ trait Formatters {
 
   private[mappings] def stringFormatter(
     requiredErrorKey: String,
-    removeAllWhitespace: Boolean
+    removeAllWhitespace: Boolean,
+    messageArgs: Seq[String] = Seq.empty
   ): Formatter[String] =
     new Formatter[String] {
 
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
         data.get(key).map(s => removeWhitespace(s, removeAllWhitespace)) match {
-          case None        => Left(Seq(FormError(key, requiredErrorKey)))
+          case None        => Left(Seq(FormError(key, requiredErrorKey, messageArgs)))
           case Some(value) =>
             if (value.isEmpty) Left(Seq(FormError(key, requiredErrorKey))) else Right(value)
         }
@@ -55,11 +56,12 @@ trait Formatters {
 
   private[mappings] def booleanFormatter(
     requiredKey: String,
-    invalidKey: String
+    invalidKey: String,
+    messageArgs: Seq[String]
   ): Formatter[Boolean] =
     new Formatter[Boolean] {
 
-      private val baseFormatter = stringFormatter(requiredKey, removeAllWhitespace = true)
+      private val baseFormatter = stringFormatter(requiredKey, removeAllWhitespace = true, messageArgs)
 
       override def bind(key: String, data: Map[String, String]) =
         baseFormatter

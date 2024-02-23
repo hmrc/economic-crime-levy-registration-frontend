@@ -20,7 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWi
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, Registration}
 
 class ConfirmContactAddressPageDeregisterNavigatorSpec extends SpecBase {
 
@@ -32,7 +32,7 @@ class ConfirmContactAddressPageDeregisterNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration =
           registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(false))
 
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.IsUkAddressController.onPageLoad(mode)
     }
 
@@ -50,7 +50,7 @@ class ConfirmContactAddressPageDeregisterNavigatorSpec extends SpecBase {
           soleTraderEntityJourneyData = None
         )
 
-        pageNavigator.nextPage(mode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
   }

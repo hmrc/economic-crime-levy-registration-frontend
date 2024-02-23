@@ -30,7 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.Telep
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, EclRegistrationModel, Mode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNumberView
@@ -44,7 +44,7 @@ class SecondContactNumberControllerSpec extends SpecBase {
   val form: Form[String]                            = formProvider()
 
   val pageNavigator: SecondContactNumberPageNavigator = new SecondContactNumberPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
@@ -54,6 +54,7 @@ class SecondContactNumberControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,
       pageNavigator,
@@ -92,7 +93,7 @@ class SecondContactNumberControllerSpec extends SpecBase {
         val updatedRegistration = registration.copy(contacts = Contacts.empty)
 
         new TestContext(updatedRegistration) {
-          val result = controller.onPageLoad(NormalMode)(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }

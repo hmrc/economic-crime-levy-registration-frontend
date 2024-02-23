@@ -20,10 +20,10 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantAp12MonthsDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantAp12MonthsFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantAp12MonthsPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RelevantAp12MonthsView}
@@ -37,6 +37,7 @@ class RelevantAp12MonthsController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: RelevantAp12MonthsFormProvider,
   pageNavigator: RelevantAp12MonthsPageNavigator,
@@ -50,8 +51,9 @@ class RelevantAp12MonthsController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.relevantAp12Months), mode))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
+    implicit request =>
+      Ok(view(form.prepare(request.registration.relevantAp12Months), mode))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
@@ -64,7 +66,7 @@ class RelevantAp12MonthsController @Inject() (
             dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
           (for {
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+          } yield EclRegistrationModel(updatedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

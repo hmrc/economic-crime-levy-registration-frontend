@@ -1,7 +1,6 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -28,6 +27,7 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
+      stubSessionForStoreUrl(routes.BusinessNameController.onPageLoad(NormalMode))
 
       val result = callRoute(FakeRequest(routes.BusinessNameController.onPageLoad(NormalMode)))
 

@@ -18,9 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.libs.json.{Json, OFormat}
 
+import java.time.LocalDate
+
 case class RegistrationAdditionalInfo(
   internalId: String,
   liabilityYear: Option[LiabilityYear],
+  liabilityStartDate: Option[LocalDate],
+  registeringForCurrentYear: Option[Boolean],
+  liableForPreviousYears: Option[Boolean],
   eclReference: Option[String]
 )
 

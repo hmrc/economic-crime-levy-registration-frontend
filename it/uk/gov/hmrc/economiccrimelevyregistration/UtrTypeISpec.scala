@@ -23,6 +23,7 @@ class UtrTypeISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubGetRegistration(registration)
+      stubSessionForStoreUrl(routes.UtrTypeController.onPageLoad(NormalMode))
 
       val result = callRoute(FakeRequest(routes.UtrTypeController.onPageLoad(NormalMode)))
 

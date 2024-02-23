@@ -152,10 +152,20 @@ trait EclTestData {
 
   implicit val arbRegistrationAdditionalInfo: Arbitrary[RegistrationAdditionalInfo] = Arbitrary {
     for {
-      internalId         <- Arbitrary.arbitrary[String]
-      liabilityYear      <- Arbitrary.arbitrary[Int]
-      eclReferenceNumber <- Arbitrary.arbitrary[String]
-    } yield RegistrationAdditionalInfo(internalId, Some(LiabilityYear(liabilityYear)), Some(eclReferenceNumber))
+      internalId                <- Arbitrary.arbitrary[String]
+      liabilityYear             <- Arbitrary.arbitrary[Int]
+      liabilityStartDate        <- Arbitrary.arbitrary[LocalDate]
+      registeringForCurrentYear <- Arbitrary.arbitrary[Boolean]
+      liableForPreviousYears    <- Arbitrary.arbitrary[Boolean]
+      eclReferenceNumber        <- Arbitrary.arbitrary[String]
+    } yield RegistrationAdditionalInfo(
+      internalId,
+      Some(LiabilityYear(liabilityYear)),
+      Some(liabilityStartDate),
+      Some(registeringForCurrentYear),
+      Some(liableForPreviousYears),
+      Some(eclReferenceNumber)
+    )
   }
 
   implicit val arbLiabilityYear: Arbitrary[LiabilityYear] = Arbitrary {

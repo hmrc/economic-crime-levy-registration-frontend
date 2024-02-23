@@ -18,17 +18,17 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode}
 
 class UtrPageNavigator extends PageNavigator {
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.otherEntityJourneyData.ctUtr match {
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
+    eclRegistrationModel.registration.otherEntityJourneyData.ctUtr match {
       case None    => routes.NotableErrorController.answersAreInvalid()
       case Some(_) => routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    registration.otherEntityJourneyData.ctUtr match {
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
+    eclRegistrationModel.registration.otherEntityJourneyData.ctUtr match {
       case None    => routes.NotableErrorController.answersAreInvalid()
       case Some(_) => routes.CheckYourAnswersController.onPageLoad()
     }

@@ -33,6 +33,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
       stubGetRegistrationValidationErrors(valid = true, errors)
+      stubSessionForStoreUrl(routes.CheckYourAnswersController.onPageLoad())
 
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
 
@@ -73,7 +74,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  private def testOnSubmit(entityType: EntityType, expectedRedirectUrl: String) = {
+  private def testOnSubmit(entityType: EntityType, expectedRedirectUrl: String): Unit = {
     stubAuthorisedWithNoGroupEnrolment()
 
     val registration      = random[Registration]

@@ -57,6 +57,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       messagesApi,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       mockEclRegistrationService,
       mcc,
       view,
@@ -91,7 +92,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           CheckYourAnswersViewModel(
             validRegistration.registration,
             None,
-            Some(eclReference)
+            Some(eclReference),
+            None
           )
         )(
           fakeRequest,
@@ -211,10 +213,10 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             ArgumentMatchers.eq(updatedRegistration.carriedOutAmlRegulatedActivityInCurrentFy)
           )(any(), any())
 
-          val argCaptor                           = ArgumentCaptor.forClass(classOf[Registration])
+          val argCaptor: ArgumentCaptor[Registration] = ArgumentCaptor.forClass(classOf[Registration])
           verify(mockEclRegistrationService, times(1))
             .upsertRegistration(argCaptor.capture())(any())
-          val submittedRegistration: Registration = argCaptor.getValue
+          val submittedRegistration: Registration     = argCaptor.getValue
           submittedRegistration.base64EncodedFields.flatMap(_.dmsSubmissionHtml).getOrElse("").isBlank shouldBe false
 
           reset(mockEclRegistrationService)
@@ -336,7 +338,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             ArgumentMatchers.eq(updatedRegistration.carriedOutAmlRegulatedActivityInCurrentFy)
           )(any(), any())
 
-          val argCaptor                           = ArgumentCaptor.forClass(classOf[Registration])
+          val argCaptor: ArgumentCaptor[Registration] = ArgumentCaptor.forClass(classOf[Registration])
+
           verify(mockEclRegistrationService, times(1))
             .upsertRegistration(argCaptor.capture())(any())
           val submittedRegistration: Registration = argCaptor.getValue
@@ -403,30 +406,33 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   "createAndEncodeHtmlForPdf" should {
     "show liability start date" in forAll(
       Arbitrary.arbitrary[ValidRegistrationWithRegistrationType],
-      choose[Int](2022, TaxYear.current.startYear)
-    ) { (valid: ValidRegistrationWithRegistrationType, year: Int) =>
+      choose[Int](2022, TaxYear.current.startYear),
+      Arbitrary.arbitrary[LocalDate]
+    ) { (valid: ValidRegistrationWithRegistrationType, year: Int, liabilityStartDate: LocalDate) =>
       new TestContext(valid.registration) {
+        val additionalInfo: RegistrationAdditionalInfo                                        = RegistrationAdditionalInfo(
+          valid.registration.internalId,
+          Some(LiabilityYear(year)),
+          Some(liabilityStartDate),
+          None,
+          None,
+          None
+        )
         implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
           RegistrationDataRequest(
             fakeRequest,
             valid.registration.internalId,
             valid.registration,
-            Some(
-              RegistrationAdditionalInfo(
-                valid.registration.internalId,
-                Some(LiabilityYear(year)),
-                None
-              )
-            ),
+            Some(additionalInfo),
             None
           )
 
-        val date: LocalDate     = LocalDate.of(year, 4, 1)
         val encodedHtml: String = controller.createAndEncodeHtmlForPdf(
           CheckYourAnswersViewModel(
             valid.registration,
             None,
-            Some(eclReference)
+            Some(eclReference),
+            Some(additionalInfo)
           ),
           AmendRegistrationPdfViewModel(
             valid.registration,
@@ -437,7 +443,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         val decodedHtml         = new String(Base64.getDecoder.decode(encodedHtml))
 
         decodedHtml should include(messages("checkYourAnswers.liabilityDate.label"))
-        decodedHtml should include(ViewUtils.formatLocalDate(date)(messages))
+        decodedHtml should include(ViewUtils.formatLocalDate(liabilityStartDate)(messages))
       }
     }
   }

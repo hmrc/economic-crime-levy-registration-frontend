@@ -43,11 +43,11 @@ class UtrTypeControllerSpec extends SpecBase {
 
   val pageNavigator: UtrTypePageNavigator = new UtrTypePageNavigator() {
     override protected def navigateInNormalMode(
-      navigationData: Registration
+      eclRegistrationModel: EclRegistrationModel
     ): Call = onwardRoute
 
     override protected def navigateInCheckMode(
-      navigationData: Registration
+      eclRegistrationModel: EclRegistrationModel
     ): Call = onwardRoute
   }
 
@@ -59,6 +59,7 @@ class UtrTypeControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,
       pageNavigator,

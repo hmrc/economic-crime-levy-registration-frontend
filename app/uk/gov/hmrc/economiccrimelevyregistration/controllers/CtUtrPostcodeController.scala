@@ -19,10 +19,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrPostcodeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPostcodePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{CtUtrPostcodeView, ErrorTemplate}
@@ -36,6 +36,7 @@ class CtUtrPostcodeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: CtUtrPostcodeFormProvider,
   pageNavigator: CtUtrPostcodePageNavigator,
@@ -47,8 +48,9 @@ class CtUtrPostcodeController @Inject() (
     with BaseController {
 
   val form: Form[String]                         = formProvider()
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.otherEntityJourneyData.postcode), mode))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
+    implicit request =>
+      Ok(view(form.prepare(request.registration.otherEntityJourneyData.postcode), mode))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
@@ -61,7 +63,7 @@ class CtUtrPostcodeController @Inject() (
           val updatedRegistration = request.registration.copy(optOtherEntityJourneyData = Some(otherEntity))
           (for {
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+          } yield EclRegistrationModel(updatedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

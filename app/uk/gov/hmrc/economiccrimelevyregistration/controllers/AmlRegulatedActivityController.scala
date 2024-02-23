@@ -19,11 +19,11 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlRegulatedActivityView, ErrorTemplate}
@@ -37,6 +37,7 @@ class AmlRegulatedActivityController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   sessionService: SessionService,
   formProvider: AmlRegulatedActivityFormProvider,
@@ -50,8 +51,9 @@ class AmlRegulatedActivityController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(request.registration.carriedOutAmlRegulatedActivityInCurrentFy), mode))
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
+    implicit request =>
+      Ok(view(form.prepare(request.registration.carriedOutAmlRegulatedActivityInCurrentFy), mode))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
@@ -61,8 +63,7 @@ class AmlRegulatedActivityController @Inject() (
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         amlRegulatedActivity => {
           val updatedRegistration = request.registration.copy(
-            carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity),
-            registrationType = Some(Initial)
+            carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity)
           )
 
           (for {
@@ -75,7 +76,7 @@ class AmlRegulatedActivityController @Inject() (
             _           = sessionService
                             .upsert(sessionData)
                             .asResponseError
-          } yield updatedRegistration)
+          } yield EclRegistrationModel(updatedRegistration))
             .convertToResult(mode, pageNavigator)
             .map(
               _.withSession(

@@ -43,7 +43,7 @@ class DeregisterStartController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = authorise.async { implicit request =>
     (for {
-      eclReference <- getValue(request.eclRegistrationReference).asResponseError
+      eclReference <- valueOrError(request.eclRegistrationReference, "ECL reference")
       subscription <- eclRegistrationService.getSubscription(eclReference).asResponseError
     } yield (eclReference, subscription)).fold(
       err => routeError(err),

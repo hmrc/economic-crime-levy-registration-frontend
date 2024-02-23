@@ -20,10 +20,10 @@ import com.google.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveCrnFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveCrnPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{DoYouHaveCrnView, ErrorTemplate}
@@ -37,6 +37,7 @@ class DoYouHaveCrnController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   formProvider: DoYouHaveCrnFormProvider,
   eclRegistrationService: EclRegistrationService,
   pageNavigator: DoYouHaveCrnPageNavigator,
@@ -52,7 +53,7 @@ class DoYouHaveCrnController @Inject() (
   private val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (authorise andThen getRegistrationData) { implicit request =>
+    (authorise andThen getRegistrationData andThen storeUrl) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.isUkCrnPresent), mode))
     }
 
@@ -76,7 +77,7 @@ class DoYouHaveCrnController @Inject() (
 
           (for {
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+          } yield EclRegistrationModel(updatedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

@@ -19,12 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration}
 
 class BusinessNamePageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    navigateInMode(registration, NormalMode)
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
+    navigateInMode(eclRegistrationModel.registration, NormalMode)
 
   private def navigateInMode(registration: Registration, mode: Mode) =
     registration.entityType match {
@@ -39,7 +39,9 @@ class BusinessNamePageNavigator extends PageNavigator {
       case _           => error()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call = {
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call = {
+    val registration = eclRegistrationModel.registration
+
     val otherEntityJourneyData = registration.otherEntityJourneyData
     val isNextFieldEmpty       = registration.entityType match {
       case Some(value) =>

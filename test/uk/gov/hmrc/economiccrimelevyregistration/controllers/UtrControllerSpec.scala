@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.UtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UtrPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UtrView
@@ -43,9 +43,9 @@ class UtrControllerSpec extends SpecBase {
   override val appConfig: AppConfig = mock[AppConfig]
 
   val pageNavigator: UtrPageNavigator = new UtrPageNavigator() {
-    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
 
-    override protected def navigateInCheckMode(navigationData: Registration): Call = onwardRoute
+    override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
   }
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
@@ -55,6 +55,7 @@ class UtrControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registration.internalId),
       fakeDataRetrievalAction(registration),
+      fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,
       pageNavigator,

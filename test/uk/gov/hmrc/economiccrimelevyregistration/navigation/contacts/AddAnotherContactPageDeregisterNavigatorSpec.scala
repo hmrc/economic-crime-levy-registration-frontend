@@ -20,7 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWi
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, EclRegistrationModel, NormalMode, Registration}
 
 class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
 
@@ -31,7 +31,7 @@ class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
       registration: Registration =>
         val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(true)))
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           contacts.routes.SecondContactNameController.onPageLoad(NormalMode)
     }
 
@@ -48,7 +48,7 @@ class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
           soleTraderEntityJourneyData = None
         )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.ConfirmContactAddressController.onPageLoad(NormalMode)
     }
 
@@ -61,7 +61,10 @@ class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
           soleTraderEntityJourneyData = None
         )
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe routes.IsUkAddressController
+        pageNavigator.nextPage(
+          NormalMode,
+          EclRegistrationModel(updatedRegistration)
+        ) shouldBe routes.IsUkAddressController
           .onPageLoad(NormalMode)
     }
 
@@ -71,7 +74,10 @@ class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
           registration.contacts.copy(secondContact = Some(true), secondContactDetails = ContactDetails.empty)
         )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe contacts.routes.SecondContactNameController
+        pageNavigator.nextPage(
+          CheckMode,
+          EclRegistrationModel(updatedRegistration)
+        ) shouldBe contacts.routes.SecondContactNameController
           .onPageLoad(CheckMode)
     }
 
@@ -84,7 +90,10 @@ class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
           )
         )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(
+          CheckMode,
+          EclRegistrationModel(updatedRegistration)
+        ) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
 
     "return a Call to the check your answers page when the 'No' option is selected in CheckMode" in forAll {
@@ -93,7 +102,10 @@ class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
           registration.contacts.copy(secondContact = Some(false), secondContactDetails = ContactDetails.empty)
         )
 
-        pageNavigator.nextPage(CheckMode, updatedRegistration) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(
+          CheckMode,
+          EclRegistrationModel(updatedRegistration)
+        ) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
   }
 

@@ -18,21 +18,21 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
 class SecondContactEmailPageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    registration.contacts.secondContactDetails.emailAddress match {
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
+    eclRegistrationModel.registration.contacts.secondContactDetails.emailAddress match {
       case Some(_) => contacts.routes.SecondContactNumberController.onPageLoad(NormalMode)
       case _       => routes.NotableErrorController.answersAreInvalid()
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    registration.contacts.secondContactDetails.emailAddress match {
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
+    eclRegistrationModel.registration.contacts.secondContactDetails.emailAddress match {
       case Some(_) =>
-        registration.contacts.secondContactDetails.telephoneNumber match {
+        eclRegistrationModel.registration.contacts.secondContactDetails.telephoneNumber match {
           case Some(_) => routes.CheckYourAnswersController.onPageLoad()
           case _       => contacts.routes.SecondContactNumberController.onPageLoad(CheckMode)
         }

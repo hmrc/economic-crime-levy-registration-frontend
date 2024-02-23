@@ -21,7 +21,7 @@ import cats.implicits.toTraverseOps
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
@@ -45,6 +45,7 @@ class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   registrationService: EclRegistrationService,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
@@ -60,15 +61,14 @@ class CheckYourAnswersController @Inject() (
     with ErrorHandler {
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen getRegistrationData).async { implicit request =>
+    (authorise andThen getRegistrationData andThen storeUrl).async { implicit request =>
       registrationService
         .getRegistrationValidationErrors(request.internalId)
         .asResponseError
         .foldF(
           error => Future.successful(routeError(error)),
           {
-            case Some(e) =>
-              println("ERORROR: " + e.message)
+            case Some(_) =>
               Future.successful(Redirect(routes.NotableErrorController.answersAreInvalid()))
             case None    =>
               if (appConfig.getSubscriptionEnabled && request.registration.registrationType.contains(Amendment)) {
@@ -106,7 +106,8 @@ class CheckYourAnswersController @Inject() (
             CheckYourAnswersViewModel(
               request.registration,
               Some(getSubscriptionResponse),
-              request.eclRegistrationReference
+              request.eclRegistrationReference,
+              request.additionalInfo
             )
           )
         )
@@ -124,7 +125,8 @@ class CheckYourAnswersController @Inject() (
           CheckYourAnswersViewModel(
             request.registration,
             None,
-            request.eclRegistrationReference
+            request.eclRegistrationReference,
+            request.additionalInfo
           )
         )
       )
@@ -137,7 +139,12 @@ class CheckYourAnswersController @Inject() (
       htmlView                      = createHtmlView(getSubscriptionResponse)
       base64EncodedHtmlView         = base64EncodeHtmlView(htmlView.body)
       checkYourAnswersModel         =
-        CheckYourAnswersViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference)
+        CheckYourAnswersViewModel(
+          registration,
+          getSubscriptionResponse,
+          request.eclRegistrationReference,
+          request.additionalInfo
+        )
       amendRegistrationPdfViewModel =
         AmendRegistrationPdfViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference)
       base64EncodedHtmlViewForPdf   = getBase64EncodedPdf(checkYourAnswersModel, amendRegistrationPdfViewModel)
@@ -187,7 +194,8 @@ class CheckYourAnswersController @Inject() (
       CheckYourAnswersViewModel(
         request.registration,
         getSubscriptionResponse,
-        request.eclRegistrationReference
+        request.eclRegistrationReference,
+        request.additionalInfo
       )
     )
 
@@ -220,19 +228,23 @@ class CheckYourAnswersController @Inject() (
     registration: Registration,
     additionalInfo: Option[RegistrationAdditionalInfo],
     eclReference: String
-  )(implicit hc: HeaderCarrier, messages: Messages): EitherT[Future, DataRetrievalError, Unit] =
+  )(implicit
+    hc: HeaderCarrier,
+    messages: Messages
+  ): EitherT[Future, DataRetrievalError, Unit] =
     registration.registrationType match {
-      case Some(Initial)   =>
+      case Some(Initial)                                       =>
         emailService.sendRegistrationSubmittedEmails(
           registration.contacts,
           eclReference,
           registration.entityType,
           additionalInfo,
           registration.carriedOutAmlRegulatedActivityInCurrentFy
-        )
-      case Some(Amendment) =>
-        emailService.sendAmendRegistrationSubmitted(registration.contacts)
-      case None            =>
+        )(hc, messages)
+      case Some(Amendment) if appConfig.getSubscriptionEnabled =>
+        emailService.sendAmendRegistrationSubmitted(registration.contacts, registration.contactAddress)(hc, messages)
+      case Some(Amendment)                                     => emailService.sendAmendRegistrationSubmitted(registration.contacts, None)(hc, messages)
+      case None                                                =>
         EitherT[Future, DataRetrievalError, Unit](
           Future.successful(Left(DataRetrievalError.InternalUnexpectedError("Registration type is null.", None)))
         )
@@ -269,7 +281,7 @@ class CheckYourAnswersController @Inject() (
     amendRegistrationPdfViewModel: AmendRegistrationPdfViewModel
   )(implicit request: RegistrationDataRequest[_]): String = {
     val date                      = LocalDate.now
-    val organisation              = checkYourAnswersViewModel.organisationDetails(LiabilityYearSummary.row())
+    val organisation              = checkYourAnswersViewModel.organisationDetails()
     val contactDetails            = checkYourAnswersViewModel.contactDetails()
     val firstContact              = checkYourAnswersViewModel.firstContactDetails()
     val secondContact             = checkYourAnswersViewModel.secondContactDetails()

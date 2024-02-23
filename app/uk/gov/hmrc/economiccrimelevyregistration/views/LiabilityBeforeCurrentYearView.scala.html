@@ -19,6 +19,8 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 @import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+@import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+
 
 
 @this(
@@ -37,17 +39,6 @@
 
     <h1 class="govuk-heading-l">@messages("liabilityBeforeCurrentYear.h1")</h1>
 
-    <p class="govuk-body">@messages("liabilityBeforeCurrentYear.p1")</p>
-
-    <ul class="govuk-list govuk-list--bullet">
-        <li>@messages("liabilityBeforeCurrentYear.list.b1")</li>
-        <li>@messages("liabilityBeforeCurrentYear.list.b2")</li>
-    </ul>
-
-    <p class="govuk-body">@messages("liabilityBeforeCurrentYear.p2")</p>
-
-    <p class="govuk-body">@Html(messages("liabilityBeforeCurrentYear.p3"))</p>
-
     @formHelper(action = LiabilityBeforeCurrentYearController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
@@ -61,12 +52,12 @@
                     RadioItem(
                         id = Some("yes"),
                         value = Some("true"),
-                        content = Text(messages("site.yes"))
+                        content = Text(messages("liabilityBeforeCurrentYear.yes"))
                     ),
                     RadioItem(
                         id = Some("no"),
                         value = Some("false"),
-                        content = Text(messages("site.no"))
+                        content = Text(messages("liabilityBeforeCurrentYear.no", s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
                     )
                 )
             )

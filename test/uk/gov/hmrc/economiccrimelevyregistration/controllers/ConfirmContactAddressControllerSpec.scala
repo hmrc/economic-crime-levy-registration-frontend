@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.cleanup.ConfirmContactAddressDa
 import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
@@ -46,7 +46,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: ConfirmContactAddressPageNavigator = new ConfirmContactAddressPageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
   }
 
   val dataCleanup: ConfirmContactAddressDataCleanup = new ConfirmContactAddressDataCleanup {
@@ -58,6 +58,7 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,
       pageNavigator,
@@ -149,12 +150,12 @@ class ConfirmContactAddressControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, useRegisteredOfficeAddressAsContactAddress: Boolean) =>
         new TestContext(registration) {
-          val updatedRegistration: Registration =
+          val updatedRegistration: Registration   =
             registration.copy(useRegisteredOfficeAddressAsContactAddress =
               Some(useRegisteredOfficeAddressAsContactAddress)
             )
-          val cleanedUpRegistration             = dataCleanup.cleanup(updatedRegistration)
-          val modifiedRegistration              =
+          val cleanedUpRegistration: Registration = dataCleanup.cleanup(updatedRegistration)
+          val modifiedRegistration: Registration  =
             if (useRegisteredOfficeAddressAsContactAddress) {
               cleanedUpRegistration.copy(
                 contactAddress = cleanedUpRegistration.grsAddressToEclAddress

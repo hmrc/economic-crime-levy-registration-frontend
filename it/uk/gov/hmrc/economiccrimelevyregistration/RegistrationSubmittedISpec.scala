@@ -35,9 +35,8 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
       stubDeleteRegistrationAdditionalInfo()
       stubDeleteRegistration()
 
-      val session = sessionData.copy(values =
-        Map((SessionKeys.LiabilityYear -> "2020"), (SessionKeys.AmlRegulatedActivity -> "yes"))
-      )
+      val session =
+        sessionData.copy(values = Map(SessionKeys.LiabilityYear -> "2020", SessionKeys.AmlRegulatedActivity -> "yes"))
 
       stubGetSession(session)
 

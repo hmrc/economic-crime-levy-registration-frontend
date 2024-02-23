@@ -20,10 +20,10 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.ConfirmContactAddressDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.ConfirmContactAddressFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.ConfirmContactAddressPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
@@ -38,6 +38,7 @@ class ConfirmContactAddressController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: ConfirmContactAddressFormProvider,
   pageNavigator: ConfirmContactAddressPageNavigator,
@@ -50,20 +51,21 @@ class ConfirmContactAddressController @Inject() (
     with BaseController {
 
   val form: Form[Boolean]                        = formProvider()
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    (for {
-      address <- request.eclAddressOrError.asResponseError
-    } yield address).fold(
-      error => routeError(error),
-      address =>
-        Ok(
-          view(
-            form.prepare(request.registration.useRegisteredOfficeAddressAsContactAddress),
-            AddressViewModel.insetText(address),
-            mode
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
+    implicit request =>
+      (for {
+        address <- request.eclAddressOrError.asResponseError
+      } yield address).fold(
+        error => routeError(error),
+        address =>
+          Ok(
+            view(
+              form.prepare(request.registration.useRegisteredOfficeAddressAsContactAddress),
+              AddressViewModel.insetText(address),
+              mode
+            )
           )
-        )
-    )
+      )
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
@@ -95,7 +97,7 @@ class ConfirmContactAddressController @Inject() (
 
           (for {
             _ <- eclRegistrationService.upsertRegistration(modifiedRegistration).asResponseError
-          } yield modifiedRegistration).convertToResult(mode, pageNavigator)
+          } yield EclRegistrationModel(updatedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

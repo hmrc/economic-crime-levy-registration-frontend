@@ -19,12 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration}
 
 class NonUkCrnPageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    navigateInMode(registration, NormalMode)
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
+    navigateInMode(eclRegistrationModel.registration, NormalMode)
 
   private def navigateInMode(registration: Registration, mode: Mode) =
     if (registration.entityType.contains(UnincorporatedAssociation)) {
@@ -33,7 +33,8 @@ class NonUkCrnPageNavigator extends PageNavigator {
       routes.UtrTypeController.onPageLoad(mode)
     }
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call = {
+    val registration = eclRegistrationModel.registration
     if (
       (registration.isUnincorporatedAssociation && registration.otherEntityJourneyData.isCtUtrPresent.isEmpty)
       || (!registration.isUnincorporatedAssociation && registration.otherEntityJourneyData.utrType.isEmpty)
@@ -42,4 +43,5 @@ class NonUkCrnPageNavigator extends PageNavigator {
     } else {
       routes.CheckYourAnswersController.onPageLoad()
     }
+  }
 }

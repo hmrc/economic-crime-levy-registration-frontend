@@ -18,23 +18,25 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 import javax.inject.Inject
 
 class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
-  override protected def navigateInNormalMode(registration: Registration): Call =
-    navigateInEitherMode(registration, NormalMode)
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
+    navigateInEitherMode(eclRegistrationModel.registration, NormalMode)
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
-    navigateInEitherMode(registration, CheckMode)
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
+    navigateInEitherMode(eclRegistrationModel.registration, CheckMode)
 
   private def navigateInEitherMode(registration: Registration, mode: Mode): Call =
-    if (registration.isUnincorporatedAssociation) routeUnincorporatedAssociation(registration, mode)
-    else routeOtherEntityTypes(registration, mode)
+    if (registration.isUnincorporatedAssociation) {
+      routeUnincorporatedAssociation(registration, mode)
+    } else {
+      routeOtherEntityTypes(registration, mode)
+    }
 
-  def routeUnincorporatedAssociation(registration: Registration, mode: Mode) =
+  private def routeUnincorporatedAssociation(registration: Registration, mode: Mode) =
     if (registration.otherEntityJourneyData.isCtUtrPresent.contains(true)) {
       mode match {
         case CheckMode  =>
@@ -56,7 +58,7 @@ class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
       }
     }
 
-  def routeOtherEntityTypes(registration: Registration, mode: Mode) =
+  private def routeOtherEntityTypes(registration: Registration, mode: Mode) =
     if (registration.otherEntityJourneyData.isCtUtrPresent.contains(true)) {
       mode match {
         case CheckMode  =>

@@ -21,7 +21,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.{AmendAmlSupervisorFormProvider, AmlSupervisorFormProvider}
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{FinancialConductAuthority, GamblingCommission}
@@ -34,6 +34,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegi
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlSupervisorView, ErrorTemplate}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,6 +43,7 @@ class AmlSupervisorController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: AmlSupervisorFormProvider,
   amendFormProvider: AmendAmlSupervisorFormProvider,
@@ -63,7 +65,7 @@ class AmlSupervisorController @Inject() (
     mode: Mode,
     registrationType: RegistrationType = Initial
   ): Action[AnyContent] =
-    (authorise andThen getRegistrationData) { implicit request =>
+    (authorise andThen getRegistrationData andThen storeUrl) { implicit request =>
       registrationType match {
         case Initial   =>
           Ok(
@@ -115,7 +117,7 @@ class AmlSupervisorController @Inject() (
             (for {
               _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
               _  = registerWithGcOrFca(updatedRegistration).asResponseError
-            } yield updatedRegistration).convertToResult(mode, pageNavigator)
+            } yield EclRegistrationModel(updatedRegistration)).convertToResult(mode, pageNavigator)
           }
         )
     }

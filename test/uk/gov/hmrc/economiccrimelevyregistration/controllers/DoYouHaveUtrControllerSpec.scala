@@ -24,10 +24,11 @@ import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.cleanup.DoYouHaveUtrDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveUtrFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, OtherEntityJourneyData, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveUtrPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveUtrView
@@ -43,10 +44,10 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: DoYouHaveUtrPageNavigator = new DoYouHaveUtrPageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration): Call =
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
       onwardRoute
 
-    override protected def navigateInCheckMode(registration: Registration): Call =
+    override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
       onwardRoute
   }
 
@@ -55,6 +56,7 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       formProvider,
       mockEclRegistrationService,
       pageNavigator,
@@ -101,20 +103,13 @@ class DoYouHaveUtrControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, hasUtr: Boolean) =>
         new TestContext(registration) {
-          val otherEntityJourneyData            =
-            registration.otherEntityJourneyData.copy(
-              isCtUtrPresent = Some(hasUtr),
-              ctUtr = hasUtr match {
-                case false => None
-                case true  => registration.otherEntityJourneyData.ctUtr
-              }
-            )
-          val updatedRegistration: Registration =
-            registration.copy(
-              optOtherEntityJourneyData = Some(otherEntityJourneyData)
-            )
+          val updatedRegistration: Registration = registration.copy(optOtherEntityJourneyData =
+            Some(registration.otherEntityJourneyData.copy(isCtUtrPresent = Some(hasUtr)))
+          )
 
-          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          val cleanRegistration: Registration = DoYouHaveUtrDataCleanup.cleanup(updatedRegistration)
+
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(cleanRegistration))(any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] =

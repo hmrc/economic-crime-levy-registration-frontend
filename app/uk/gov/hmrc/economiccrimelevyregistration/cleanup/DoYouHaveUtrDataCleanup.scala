@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.cleanup
 
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 
-object DoYouHaveUtrDataCleanup extends DataCleanup {
+object DoYouHaveUtrDataCleanup extends DataCleanup[Registration] {
   def cleanup(registration: Registration): Registration = {
     val hasUtr = registration.otherEntityJourneyData.isCtUtrPresent.contains(true)
 
@@ -32,9 +32,10 @@ object DoYouHaveUtrDataCleanup extends DataCleanup {
         )
       } else {
         registration.otherEntityJourneyData.copy(
-          ctUtr = hasUtr match {
-            case false => None
-            case true  => registration.otherEntityJourneyData.ctUtr
+          ctUtr = if (hasUtr) {
+            registration.otherEntityJourneyData.ctUtr
+          } else {
+            None
           },
           utrType = registration.otherEntityJourneyData.utrType
         )

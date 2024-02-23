@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContac
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.AddAnotherContactView
@@ -43,15 +43,12 @@ class AddAnotherContactControllerSpec extends SpecBase {
   val form: Form[Boolean]                         = formProvider()
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockDataCleanup: AddAnotherContactDataCleanup      = mock[AddAnotherContactDataCleanup]
 
   val pageNavigator: AddAnotherContactPageNavigator = new AddAnotherContactPageNavigator {
-    override protected def navigateInNormalMode(navigationData: Registration): Call = onwardRoute
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
 
-    override protected def navigateInCheckMode(navigationData: Registration): Call = onwardRoute
-  }
-
-  val dataCleanup: AddAnotherContactDataCleanup = new AddAnotherContactDataCleanup {
-    override def cleanup(registration: Registration): Registration = registration
+    override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
   }
 
   class TestContext(registrationData: Registration) {
@@ -59,10 +56,11 @@ class AddAnotherContactControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,
       pageNavigator,
-      dataCleanup,
+      mockDataCleanup,
       view
     )
   }
@@ -105,17 +103,87 @@ class AddAnotherContactControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the selected answer then redirect to the next page" in forAll {
-      (registration: Registration, secondContact: Boolean) =>
+    "save the selected answer then redirect to the next page when answer is true" in forAll {
+      (registration: Registration) =>
         new TestContext(registration) {
-          val contacts            = registration.contacts.copy(secondContact = Some(secondContact))
-          val updatedRegistration = dataCleanup.cleanup(registration).copy(contacts = contacts)
+
+          val contacts: Contacts                = registration.contacts.copy(secondContact = Some(true))
+          val updatedRegistration: Registration = registration.copy(contacts = contacts)
+
+          when(mockDataCleanup.cleanup(any())).thenReturn(updatedRegistration)
 
           when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] =
-            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", secondContact.toString)))
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "true")))
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(onwardRoute.url)
+        }
+    }
+
+    "save the selected answer then redirect to the next page and the answer is no and there was an existing second contact" in forAll {
+      (registration: Registration) =>
+        new TestContext(
+          registration.copy(contacts =
+            registration.contacts.copy(
+              secondContact = Some(true),
+              secondContactDetails = ContactDetails(
+                Some(alphaNumericString),
+                Some(alphaNumericString),
+                Some(alphaNumericString),
+                Some(alphaNumericString)
+              )
+            )
+          )
+        ) {
+          val updatedRegistration: Registration = registration.copy(contacts =
+            registration.contacts.copy(
+              secondContact = Some(false),
+              secondContactDetails = ContactDetails.empty
+            )
+          )
+
+          when(mockDataCleanup.cleanup(any())).thenReturn(updatedRegistration)
+
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          val result: Future[Result] =
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "false")))
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(onwardRoute.url)
+        }
+    }
+
+    "save the selected answer then redirect to the next page and the answer is no and there was no existing second contact" in forAll {
+      (registration: Registration) =>
+        new TestContext(
+          registration.copy(contacts =
+            registration.contacts.copy(
+              secondContact = Some(false),
+              secondContactDetails = ContactDetails.empty
+            )
+          )
+        ) {
+          val updatedRegistration: Registration = registration.copy(contacts =
+            registration.contacts.copy(
+              secondContact = Some(false),
+              secondContactDetails = ContactDetails.empty
+            )
+          )
+
+          when(mockDataCleanup.cleanup(any())).thenReturn(updatedRegistration)
+
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          val result: Future[Result] =
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "false")))
 
           status(result) shouldBe SEE_OTHER
 

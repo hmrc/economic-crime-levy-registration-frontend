@@ -38,7 +38,7 @@
     @govukSummaryList(viewModel.organisationDetails())
 
 
-    @if(viewModel.hasSecondContact) {
+    @if(viewModel.hasSecondContact && !viewModel.hasSecondContactDetailsPresentChanged) {
         <h2 class="govuk-heading-m">@messages("checkYourAnswers.firstContact")</h2>
         @govukSummaryList(viewModel.firstContactDetails())
 
@@ -48,7 +48,6 @@
         <h2 class="govuk-heading-m">@messages("checkYourAnswers.contactDetails")</h2>
         @govukSummaryList(viewModel.contactDetails())
     }
-
 
     <h2 class="govuk-heading-m">@messages("checkYourAnswers.addressDetails")</h2>
     @govukSummaryList(viewModel.addressDetails())

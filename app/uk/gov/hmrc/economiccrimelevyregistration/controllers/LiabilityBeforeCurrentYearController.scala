@@ -21,13 +21,14 @@ import com.google.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityBeforeCurrentYearView}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -41,6 +42,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   formProvider: LiabilityBeforeCurrentYearFormProvider,
   additionalInfoService: RegistrationAdditionalInfoService,
   sessionService: SessionService,
@@ -57,7 +59,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (authorise andThen getRegistrationData) { implicit request =>
+    (authorise andThen getRegistrationData andThen storeUrl) { implicit request =>
       Ok(view(form.prepare(isLiableForPreviousFY(request.additionalInfo)), mode))
     }
 
@@ -77,6 +79,9 @@ class LiabilityBeforeCurrentYearController @Inject() (
             val info = RegistrationAdditionalInfo(
               registration.internalId,
               liabilityYear,
+              request.additionalInfo.flatMap(info => info.liabilityStartDate),
+              request.additionalInfo.flatMap(info => info.registeringForCurrentYear),
+              Some(liableBeforeCurrentYear),
               request.eclRegistrationReference
             )
 
@@ -120,17 +125,17 @@ class LiabilityBeforeCurrentYearController @Inject() (
   private def navigateInNormalMode(liableBeforeCurrentYear: Boolean, registration: Registration, mode: Mode)(implicit
     hc: HeaderCarrier
   ): Call =
-    (liableBeforeCurrentYear, registration.revenueMeetsThreshold) match {
-      case (false, Some(false)) =>
+    (liableBeforeCurrentYear, registration.revenueMeetsThreshold, registration.businessSector) match {
+      case (false, Some(false), None) =>
         sendNotLiableAuditEvent(registration)
         routes.NotLiableController.youDoNotNeedToRegister()
-      case (_, Some(_))         => routes.EntityTypeController.onPageLoad(mode)
-      case (false, None)        =>
+      case (false, Some(true), None)  => routes.EntityTypeController.onPageLoad(mode)
+      case (false, None, None)        =>
         sendNotLiableAuditEvent(registration)
         routes.NotLiableController.youDoNotNeedToRegister()
-      case (true, None)         =>
-        routes.AmlSupervisorController
-          .onPageLoad(mode, registration.registrationType.get)
+      case (true, _, None)            =>
+        routes.LiabilityDateController.onPageLoad(mode)
+      case (_, _, Some(_))            => routes.CheckYourAnswersController.onPageLoad()
     }
 
   private def sendNotLiableAuditEvent(registration: Registration)(implicit hc: HeaderCarrier) =

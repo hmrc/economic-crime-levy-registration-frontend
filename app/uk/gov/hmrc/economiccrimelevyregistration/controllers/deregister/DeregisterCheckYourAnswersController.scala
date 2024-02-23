@@ -54,7 +54,7 @@ class DeregisterCheckYourAnswersController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
     (for {
-      eclReference <- getValue(request.eclRegistrationReference).asResponseError
+      eclReference <- valueOrError(request.eclRegistrationReference, "ECL reference")
       subscription <- eclRegistrationService.getSubscription(eclReference).asResponseError
       _            <- deregistrationService
                         .upsert(request.deregistration.copy(eclReference = request.eclRegistrationReference))
@@ -73,13 +73,8 @@ class DeregisterCheckYourAnswersController @Inject() (
     )
   }
 
-  def onSubmit(): Action[AnyContent] = authorise.async { implicit request =>
-    (for {
-      _ <- deregistrationService.delete(request.internalId).asResponseError
-    } yield ()).fold(
-      err => routeError(err),
-      _ => Redirect(appConfig.yourEclAccountUrl)
-    )
+  def onSubmit(): Action[AnyContent] = authorise { _ =>
+    Redirect(routes.DeregistrationRequestedController.onPageLoad())
   }
 
   def organisation(eclReference: Option[String], companyName: Option[String])(implicit

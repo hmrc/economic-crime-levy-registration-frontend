@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.DoYouHaveCrnFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, OtherEntityJourneyData, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, OtherEntityJourneyData, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveCrnPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveCrnView
@@ -43,10 +43,10 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
 
   val pageNavigator: DoYouHaveCrnPageNavigator = new DoYouHaveCrnPageNavigator() {
-    override protected def navigateInNormalMode(registration: Registration): Call =
+    override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
       onwardRoute
 
-    override protected def navigateInCheckMode(registration: Registration): Call =
+    override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
       onwardRoute
   }
 
@@ -55,6 +55,7 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       formProvider,
       mockEclRegistrationService,
       pageNavigator,
@@ -101,7 +102,7 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, hasUkCrn: Boolean) =>
         new TestContext(registration) {
-          val companyRegistrationNumber                      = if (hasUkCrn) {
+          val companyRegistrationNumber: Option[String]      = if (hasUkCrn) {
             registration.otherEntityJourneyData.companyRegistrationNumber
           } else {
             None

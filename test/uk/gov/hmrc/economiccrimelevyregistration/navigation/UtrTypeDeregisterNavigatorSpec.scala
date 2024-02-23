@@ -36,7 +36,7 @@ class UtrTypeDeregisterNavigatorSpec extends SpecBase {
           case CtUtr => routes.CtUtrController.onPageLoad(NormalMode)
         }
 
-        pageNavigator.nextPage(NormalMode, updatedRegistration) shouldBe
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
           call
     }
 
@@ -49,7 +49,7 @@ class UtrTypeDeregisterNavigatorSpec extends SpecBase {
           case _                                                   => routes.CheckYourAnswersController.onPageLoad()
         }
 
-        pageNavigator.nextPage(CheckMode, registration) shouldBe
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(registration)) shouldBe
           call
     }
   }

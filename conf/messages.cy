@@ -603,14 +603,11 @@ amendmentRequested.h2 = Yr hyn sy’n digwydd nesaf
 amendRegistration.pdfHtml.title = Cais i ddiwygio cofrestriad yr Ardoll Troseddau Economaidd
 amendRegistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad {0}
 
-liabilityBeforeCurrentYear.title =A oeddech yn agored i dalu’r Ardoll Troseddau Economaidd (ECL) o 1 Ebrill 2022 i 31 Mawrth 2023?
-liabilityBeforeCurrentYear.h1 = A oeddech yn agored i dalu’r Ardoll Troseddau Economaidd (ECL) o 1 Ebrill 2022 i 31 Mawrth 2023?
-liabilityBeforeCurrentYear.p1 = Roeddech yn agored i dalu’r ECL os oedd y canlynol yn berthnasol:
-liabilityBeforeCurrentYear.list.b1 = gwnaeth eich refeniw yn y DU gyrraedd y trothwy, neu
-liabilityBeforeCurrentYear.list.b2 = gwnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
-liabilityBeforeCurrentYear.p2 = Mae’r flwyddyn ariannol yn rhedeg o 1 Ebrill i 31 Mawrth y flwyddyn ganlynol.
-liabilityBeforeCurrentYear.p3 = Mae rhagor o wybodaeth ar gael yn yr arweiniad ar yr Ardoll Troseddau Economaidd, gan gynnwys <a class="govuk-link" href="https://www.gov.uk/guidance/check-if-you-need-to-register-for-the-economic-crime-levy"> pwy sydd angen talu’r ardoll</a>.
-liabilityBeforeCurrentYear.required = Dewiswch ‘Iawn’ os oeddech yn agored i dalu’r Ardoll Troseddau Economaidd
+liabilityBeforeCurrentYear.title =A ydych yn atebol i dalu’r ardoll ar gyfer unrhyw flynyddoedd ariannol blaenorol?
+liabilityBeforeCurrentYear.h1 = A ydych yn atebol i dalu’r ardoll ar gyfer unrhyw flynyddoedd ariannol blaenorol?
+liabilityBeforeCurrentYear.label = Yn atebol am unrhyw flynyddoedd blaenorol
+liabilityBeforeCurrentYear.yes = Iawn, nodwch y dyddiad y daethoch yn atebol am ECL
+liabilityBeforeCurrentYear.no = Na, yn atebol am {0}
 
 otherEntityType.crn.question.title = Oes gennych chi rif cofrestru cwmni'r DU?
 otherEntityType.crn.question.label = Oes gennych chi rif cofrestru cwmni'r DU?
@@ -635,8 +632,14 @@ cancelRegistrationAmendment.heading = Ydych chi'n siŵr eich bod am ganslo'ch ca
 cancelRegistrationAmendment.body = Bydd eich atebion yn cael eu dileu.
 cancelRegistrationAmendment.error.required = Dewiswch 'Iawn' os ydych yn dymuno canslo eich cais i newid eich cofrestriad
 
-deregister.banner.title = Dadgofrestru o'r Ardoll Troseddau Economaidd
+register.currentYear.h1 = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0} i {1}?
+register.currentYear.title = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0}?
+register.currentYear.label = Cofrestru ar gyfer y flwyddyn ariannol gyfredol
+register.currentYear.error = Dewiswch ‘Iawn’ os ydych yn cofrestru ar gyfer blwyddyn ariannol {0}
+register.currentYear.yes = Iawn, parhau i gofrestru ar gyfer {0}
+register.currentYear.no = Na, nodwch y dyddiad y daethoch yn atebol am ECL
 
+deregister.banner.title = Dadgofrestru o'r Ardoll Troseddau Economaidd
 deregister.start.title = Cais at CThEF i ddatgofrestru rhag yr Ardoll Troseddau Economaidd
 deregister.start.heading = Cais at CThEF i ddatgofrestru rhag yr Ardoll Troseddau Economaidd
 deregister.start.h2 = Manylion y sefydliad
@@ -718,3 +721,29 @@ deregisterCya.t3.l3 = Cyfeiriad e-bost
 deregisterCya.t3.l4 = Rhif ffôn
 deregisterCya.h2 = Anfonwch eich cais i ddadgofrestru nawr
 deregisterCya.p1 = Drwy gyflwyno’r cais hwn i ddatgofrestru, rydych yn cadarnhau, hyd eithaf eich gwybodaeth, bod y manylion a roddir gennych yn gywir.
+
+deregistrationRequested.title = Cais wedi’i wneud i ddatgofrestru rhag yr Ardoll Troseddau Economaidd - Datgofrestru rhag ECL - GOV.UK
+deregistrationRequested.panel.p1 = Cais wedi’i wneud i ddatgofrestru
+deregistrationRequested.panel.p2 = Cyfeirnod ECL: {0}
+deregistrationRequested.body.p1 = Rydych wedi gwneud cais i ddatgofrestru rhag CThEF ar gyfer yr Ardoll Troseddau Economaidd ar {0}.
+deregistrationRequested.body.p2 = Rydym wedi anfon e-bost cadarnhau i {0}. Cadwch hwn ar gyfer eich cofnodion.
+deregistrationRequested.h2 = Yr hyn sy’n digwydd nesaf
+deregistrationRequested.body.p3 = Byddwn yn adolygu’ch atebion. Os oes angen rhagor o wybodaeth arnom, mae’n bosibl y byddwn yn cysylltu â chi drwy ddefnyddio’r manylion a roddwyd gennych. Bydd y broses hon yn cymryd hyd at 15 diwrnod gwaith.
+deregistrationRequested.body.p4 = Byddwn yn anfon llythyr atoch ar ôl i ni orffen y broses o’ch datgofrestru.
+deregistrationRequested.body.p5 = Byddwn yn anfon llythyr at:
+deregistrationRequested.body.p6 = Gallwch fewngofnodi i’ch cyfrif ECL o hyd i weld y datganiadau a gyflwynwyd gennych a’ch hanes talu.
+
+savedResponses.title = Mae’ch atebion wedi’u cadw
+savedResponses.h1 = Mae’ch atebion wedi’u cadw
+savedResponses.h2 = Beth yr hoffech ei wneud?
+savedResponses.true = Yn eich blaen â’ch atebion sydd wedi’u cadw
+savedResponses.false = Dileu’ch cynnydd hyd yma a dechrau eto
+savedResponses.error.required = Select the first option if you want to continue with your saved answers
+
+liability.date.title = Nodwch y dyddiad pan ddaethoch yn agored i’r Ardoll Troseddau Economaidd (ECL)
+liability.date.h1 = Nodwch y dyddiad pan ddaethoch yn agored i’r Ardoll Troseddau Economaidd (ECL)
+liability.date.hint = Dyma’r dyddiad y gwnaethoch ddechrau gweithgareddau a reoleiddir gan reoliadau AML, dechrau cael eich rheoleiddio gan CThEF neu’r dyddiad y gwnaethoch gyrraedd y trothwy refeniw ar gyfer ECL. Mae’n rhaid i’r dyddiad hwn fod ar ôl dyddiad dechrau’r ECL ar 1 Ebrill 2022.
+liability.date.label = Dyddiad cychwyn atebolrwydd
+liability.date.error.future.date = Mae’n rhaid i’r dyddiad fod yn y gorffennol
+liability.date.error.early.date = Mae’n rhaid i’r dyddiad fod ar ôl 1 Ebrill 2022
+liability.date.error.required = Nodwch y dyddiad pan ddaethoch yn agored i ECL

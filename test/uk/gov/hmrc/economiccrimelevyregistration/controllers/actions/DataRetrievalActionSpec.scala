@@ -81,9 +81,12 @@ class DataRetrievalActionSpec extends SpecBase {
         val info = RegistrationAdditionalInfo(
           registration.internalId,
           Some(liabilityYear),
+          None,
+          None,
+          None,
           None
         )
-        when(mockRegistrationAdditionalInfoService.getOrCreate(ArgumentMatchers.eq(internalId), (any()))(any()))
+        when(mockRegistrationAdditionalInfoService.getOrCreate(ArgumentMatchers.eq(internalId), any())(any()))
           .thenReturn(EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo](Future.successful(Right(info))))
 
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =

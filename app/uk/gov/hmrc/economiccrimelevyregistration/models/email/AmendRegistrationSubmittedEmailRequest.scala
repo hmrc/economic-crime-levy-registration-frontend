@@ -33,7 +33,12 @@ object AmendRegistrationSubmittedEmailRequest {
 
 case class AmendRegistrationSubmittedEmailParameters(
   name: String,
-  dateSubmitted: String
+  dateSubmitted: String,
+  addressLine1: Option[String],
+  addressLine2: Option[String],
+  addressLine3: Option[String],
+  addressLine4: Option[String],
+  containsAddress: Option[Boolean]
 )
 
 object AmendRegistrationSubmittedEmailParameters {

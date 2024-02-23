@@ -57,6 +57,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         updatedIncorporatedEntityJourneyData.registration.registeredBusinessPartnerId.get,
         EclSubscriptionStatus(NotSubscribed)
       )
+      stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId))
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 

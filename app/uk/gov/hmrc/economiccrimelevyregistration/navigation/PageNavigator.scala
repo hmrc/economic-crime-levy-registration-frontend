@@ -17,15 +17,15 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode}
 
 trait PageNavigator {
-  def nextPage(mode: Mode, registration: Registration): Call = mode match {
-    case NormalMode => navigateInNormalMode(registration)
-    case CheckMode  => navigateInCheckMode(registration)
+  def nextPage(mode: Mode, eclRegistrationModel: EclRegistrationModel): Call = mode match {
+    case NormalMode => navigateInNormalMode(eclRegistrationModel)
+    case CheckMode  => navigateInCheckMode(eclRegistrationModel)
   }
 
-  protected def navigateInNormalMode(registration: Registration): Call
+  protected def navigateInNormalMode(registration: EclRegistrationModel): Call
 
-  protected def navigateInCheckMode(registration: Registration): Call
+  protected def navigateInCheckMode(registration: EclRegistrationModel): Call
 }

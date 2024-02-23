@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantApLengthDataCle
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantApLengthFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantApLengthPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantApLengthView
@@ -46,7 +46,7 @@ class RelevantApLengthControllerSpec extends SpecBase {
 
   val pageNavigator: RelevantApLengthPageNavigator = new RelevantApLengthPageNavigator() {
     override protected def navigateInNormalMode(
-      navigationData: Registration
+      eclRegistrationModel: EclRegistrationModel
     ): Call = onwardRoute
   }
 
@@ -62,6 +62,7 @@ class RelevantApLengthControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,
       pageNavigator,

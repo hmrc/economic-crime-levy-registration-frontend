@@ -20,11 +20,11 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.AddAnotherContactDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, _}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.AddAnotherContactFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.AddAnotherContactPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
@@ -39,6 +39,7 @@ class AddAnotherContactController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: AddAnotherContactFormProvider,
   pageNavigator: AddAnotherContactPageNavigator,
@@ -52,15 +53,16 @@ class AddAnotherContactController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(
-      view(
-        form.prepare(request.registration.contacts.secondContact),
-        mode,
-        request.registration.registrationType,
-        request.eclRegistrationReference
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
+    implicit request =>
+      Ok(
+        view(
+          form.prepare(request.registration.contacts.secondContact),
+          mode,
+          request.registration.registrationType,
+          request.eclRegistrationReference
+        )
       )
-    )
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
@@ -75,11 +77,11 @@ class AddAnotherContactController @Inject() (
           ),
         secondContactBoolean => {
           val secondContact: Contacts = request.registration.contacts.copy(secondContact = Some(secondContactBoolean))
-          val updatedRegistration     = dataCleanup.cleanup(request.registration).copy(contacts = secondContact)
+          val updatedRegistration     = dataCleanup.cleanup(request.registration.copy(contacts = secondContact))
 
           (for {
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield updatedRegistration).convertToResult(mode, pageNavigator)
+          } yield EclRegistrationModel(updatedRegistration)).convertToResult(mode, pageNavigator)
         }
       )
   }

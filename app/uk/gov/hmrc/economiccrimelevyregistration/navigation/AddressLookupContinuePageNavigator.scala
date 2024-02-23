@@ -18,14 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.EclRegistrationModel
 
 class AddressLookupContinuePageNavigator extends PageNavigator {
 
-  override protected def navigateInNormalMode(registration: Registration): Call =
+  override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
     navigateInBothModes
 
-  override protected def navigateInCheckMode(registration: Registration): Call =
+  override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
     navigateInBothModes
 
   private def navigateInBothModes: Call =
