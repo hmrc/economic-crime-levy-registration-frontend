@@ -22,7 +22,7 @@ class IsUkAddressISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(routes.IsUkAddressController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.IsUkAddressController.onPageLoad(NormalMode)))
 

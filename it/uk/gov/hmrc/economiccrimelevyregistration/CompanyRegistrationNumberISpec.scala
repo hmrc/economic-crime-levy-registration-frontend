@@ -32,7 +32,7 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       stubGetRegistration(registration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubSessionForStoreUrl(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)))
 
@@ -53,13 +53,13 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       val companyNumber = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
 
-      stubGetRegistration(registration)
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-
       val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))
       val updatedRegistration    = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
+
+      stubGetRegistration(updatedRegistration)
+      stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubUpsertRegistration(updatedRegistration)
 

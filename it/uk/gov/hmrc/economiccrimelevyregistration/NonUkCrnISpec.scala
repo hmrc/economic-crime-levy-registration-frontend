@@ -24,7 +24,7 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(routes.NonUkCrnController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.NonUkCrnController.onPageLoad(NormalMode)))
 

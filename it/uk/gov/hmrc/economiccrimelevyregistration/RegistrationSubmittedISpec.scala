@@ -37,7 +37,7 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistration(registration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
-      stubSessionForStoreUrl(routes.RegistrationSubmittedController.onPageLoad())
+      stubSessionForStoreUrl()
 
       stubDeleteRegistrationAdditionalInfo()
       stubDeleteRegistration()

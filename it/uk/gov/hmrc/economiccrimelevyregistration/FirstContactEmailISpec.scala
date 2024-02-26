@@ -32,9 +32,7 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
         )
       )
 
-      stubSessionForStoreUrl(
-        contacts.routes.FirstContactEmailController.onPageLoad(NormalMode)
-      )
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(contacts.routes.FirstContactEmailController.onPageLoad(NormalMode)))
 
