@@ -52,7 +52,7 @@ class StartController @Inject() (
       urlToReturnTo =>
         Redirect(urlToReturnTo match {
           case Some(_) => routes.SavedResponsesController.onPageLoad
-          case None    => routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
+          case None    => routes.RegisterForCurrentYearController.onPageLoad(NormalMode)
         })
     )
   }
