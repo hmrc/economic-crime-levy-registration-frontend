@@ -53,7 +53,7 @@ class StartControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "redirect to AML Activity page if no return url" in {
+    "redirect to register for current year page if no return url" in {
       when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
         .thenReturn(EitherT.fromEither[Future](Right(None)))
 
@@ -61,7 +61,7 @@ class StartControllerSpec extends SpecBase {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.AmlRegulatedActivityController.onPageLoad(NormalMode).url)
+      redirectLocation(result) shouldBe Some(routes.RegisterForCurrentYearController.onPageLoad(NormalMode).url)
     }
 
     "redirect to Saved Responses page if there is a return url" in {
