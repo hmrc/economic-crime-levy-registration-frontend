@@ -254,7 +254,7 @@ case class CheckYourAnswersViewModel(
 
   val registrationType: Option[RegistrationType] = registration.registrationType
 
-  private def getLiabilityRow(implicit messages: Messages) = {
+  def getLiabilityRow(implicit messages: Messages) = {
     val liabilityStartDate = additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate)
     if (liabilityStartDate.isDefined) {
       LiabilityDateSummary.row(additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate))
