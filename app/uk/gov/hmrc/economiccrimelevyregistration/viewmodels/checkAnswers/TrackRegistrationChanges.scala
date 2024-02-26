@@ -206,7 +206,7 @@ trait TrackRegistrationChanges {
     case None           => false
   }
 
-  private val hasLiabilityStartDateChanged: Boolean = getSubscriptionResponse match {
+  val hasLiabilityStartDateChanged: Boolean = getSubscriptionResponse match {
     case Some(response) =>
       additionalInfo.exists(
         _.liabilityStartDate.exists(dateStr =>
