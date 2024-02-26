@@ -87,12 +87,15 @@ class SavedResponsesControllerSpec extends SpecBase {
         when(mockAdditionalInfoService.delete(any())(any(), any()))
           .thenReturn(EitherT.fromEither[Future](Right(())))
 
+        when(mockSessionService.delete(any())(any()))
+          .thenReturn(EitherT.fromEither[Future](Right()))
+
         val result: Future[Result] =
           controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "false")))
 
         status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result) shouldBe Some(routes.AmlRegulatedActivityController.onPageLoad(NormalMode).url)
+        redirectLocation(result) shouldBe Some(routes.RegisterForCurrentYearController.onPageLoad(NormalMode).url)
       }
     }
   }

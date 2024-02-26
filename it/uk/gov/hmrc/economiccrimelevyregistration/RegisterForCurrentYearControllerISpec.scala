@@ -7,7 +7,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration, RegistrationAdditionalInfo, SessionData}
 
 class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -18,6 +18,7 @@ class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBeh
 
     "respond with 200 status and the register for current year HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
+      stubGetSession(SessionData(random[String], Map()))
 
       val registration   = random[Registration]
       val additionalInfo = random[RegistrationAdditionalInfo]
@@ -31,12 +32,15 @@ class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBeh
 
       html(result) should include("enter the date you became liable for ECL")
     }
+
     s"POST ${routes.RegisterForCurrentYearController.onSubmit(CheckMode).url}" should {
       behave like authorisedActionWithEnrolmentCheckRoute(
         routes.RegisterForCurrentYearController.onSubmit(CheckMode)
       )
+
       "save the entered option then redirect to the aml regulated activity" in {
         stubAuthorisedWithNoGroupEnrolment()
+        stubGetSession(SessionData(random[String], Map()))
 
         val registration = random[Registration].copy(
           registrationType = Some(Initial)

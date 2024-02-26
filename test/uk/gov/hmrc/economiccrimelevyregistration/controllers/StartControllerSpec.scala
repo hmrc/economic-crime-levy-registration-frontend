@@ -16,29 +16,20 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import cats.data.EitherT
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
+import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.StartView
 
 import scala.concurrent.Future
 
 class StartControllerSpec extends SpecBase {
 
-  val mockSessionService: SessionService = mock[SessionService]
-
   val view: StartView = app.injector.instanceOf[StartView]
 
   val controller = new StartController(
     mcc,
-    fakeAuthorisedActionWithEnrolmentCheck(testInternalId),
-    mockSessionService,
     view
   )
 
@@ -53,26 +44,12 @@ class StartControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "redirect to register for current year page if no return url" in {
-      when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
-        .thenReturn(EitherT.fromEither[Future](Right(None)))
-
+    "redirect to register for current year page" in {
       val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(routes.RegisterForCurrentYearController.onPageLoad(NormalMode).url)
-    }
-
-    "redirect to Saved Responses page if there is a return url" in {
-      when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
-        .thenReturn(EitherT.fromEither[Future](Right(Some(random[String]))))
-
-      val result: Future[Result] = controller.onSubmit()(fakeRequest)
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(routes.SavedResponsesController.onPageLoad.url)
     }
   }
 }

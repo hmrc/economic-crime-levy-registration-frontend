@@ -26,8 +26,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionData
 class StartISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.StartController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.StartController.onPageLoad())
-
     "respond with 200 status and the start HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
@@ -39,11 +37,8 @@ class StartISpec extends ISpecBase with AuthorisedBehaviour {
   }
 
   s"POST ${routes.StartController.onSubmit().url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.StartController.onSubmit())
-
     "respond with the next page" in {
       stubAuthorisedWithNoGroupEnrolment()
-      stubGetSession(SessionData(random[String], Map()))
 
       val result = callRoute(FakeRequest(routes.StartController.onSubmit()))
 
