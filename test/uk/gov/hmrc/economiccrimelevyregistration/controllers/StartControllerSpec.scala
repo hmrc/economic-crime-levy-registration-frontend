@@ -16,15 +16,10 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import cats.data.EitherT
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
+import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.StartView
 
 import scala.concurrent.Future
