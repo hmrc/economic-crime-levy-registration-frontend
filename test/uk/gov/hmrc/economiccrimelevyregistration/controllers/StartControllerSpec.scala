@@ -44,7 +44,7 @@ class StartControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "redirect to AML Activity page if no return url" in {
+    "redirect to register for current year page" in {
       val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
       status(result) shouldBe SEE_OTHER
