@@ -21,14 +21,14 @@ import cats.implicits.toTraverseOps
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
-import play.api.libs.json.Json
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.StoreUrlAction
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, ErrorTemplate, OtherRegistrationPdfView}
@@ -52,7 +52,6 @@ class CheckYourAnswersController @Inject() (
   emailService: EmailService,
   otherRegistrationPdfView: OtherRegistrationPdfView,
   amendRegistrationPdfView: AmendRegistrationPdfView,
-  sessionService: SessionService,
   appConfig: AppConfig
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
@@ -80,18 +79,18 @@ class CheckYourAnswersController @Inject() (
 
   private def getBase64EncodedPdf(
     checkYourAnswersViewModel: CheckYourAnswersViewModel,
-    amendRegistrationPdfViewModel: AmendRegistrationPdfViewModel
+    pdfViewModel: PdfViewModel
   )(implicit
     request: RegistrationDataRequest[_]
   ) = {
     val registrationType = checkYourAnswersViewModel.registrationType
     (checkYourAnswersViewModel.registration.entityType, registrationType) match {
       case (Some(_), Some(Amendment))                    =>
-        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, amendRegistrationPdfViewModel)
+        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, pdfViewModel)
       case (Some(value), _) if EntityType.isOther(value) =>
-        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, amendRegistrationPdfViewModel)
+        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, pdfViewModel)
       case (None, Some(Amendment))                       =>
-        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, amendRegistrationPdfViewModel)
+        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, pdfViewModel)
       case _                                             =>
         ""
     }
@@ -135,55 +134,30 @@ class CheckYourAnswersController @Inject() (
   def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     val registration = request.registration
     (for {
-      getSubscriptionResponse      <- fetchSubscription.asResponseError
-      htmlView                      = createHtmlView(getSubscriptionResponse)
-      base64EncodedHtmlView         = base64EncodeHtmlView(htmlView.body)
-      checkYourAnswersModel         =
+      getSubscriptionResponse    <- fetchSubscription.asResponseError
+      htmlView                    = createHtmlView(getSubscriptionResponse)
+      base64EncodedHtmlView       = base64EncodeHtmlView(htmlView.body)
+      checkYourAnswersModel       =
         CheckYourAnswersViewModel(
           registration,
           getSubscriptionResponse,
           request.eclRegistrationReference,
           request.additionalInfo
         )
-      amendRegistrationPdfViewModel =
-        AmendRegistrationPdfViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference)
-      base64EncodedHtmlViewForPdf   = getBase64EncodedPdf(checkYourAnswersModel, amendRegistrationPdfViewModel)
-      _                            <- registrationService
-                                        .upsertRegistration(
-                                          getRegistrationWithEncodedFields(registration, base64EncodedHtmlView, base64EncodedHtmlViewForPdf)
-                                        )
-                                        .asResponseError
-      response                     <- registrationService.submitRegistration(request.internalId).asResponseError
-      _                            <- sendEmail(registration, request.additionalInfo, response.eclReference).asResponseError
-      email                         = registration.contacts.firstContactDetails.emailAddress
+      pdfViewModel                =
+        PdfViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference)
+      base64EncodedHtmlViewForPdf = getBase64EncodedPdf(checkYourAnswersModel, pdfViewModel)
+      _                          <- registrationService
+                                      .upsertRegistration(
+                                        getRegistrationWithEncodedFields(registration, base64EncodedHtmlView, base64EncodedHtmlViewForPdf)
+                                      )
+                                      .asResponseError
+      response                   <- registrationService.submitRegistration(request.internalId).asResponseError
+      _                          <- sendEmail(registration, request.additionalInfo, response.eclReference).asResponseError
+      email                       = registration.contacts.firstContactDetails.emailAddress
     } yield (response, email)).fold(
       error => routeError(error),
-      data => {
-        val session = registration.entityType match {
-          case Some(value) if EntityType.isOther(value) => request.session
-          case _                                        =>
-            request.session ++ Seq(
-              SessionKeys.EclReference -> data._1.eclReference
-            )
-        }
-
-        val updatedSession = session ++ Seq(
-          SessionKeys.FirstContactEmailAddress -> registration.contacts.firstContactDetails.emailAddress
-            .getOrElse(throw new IllegalStateException("First contact email address not found in registration data")),
-          SessionKeys.ContactAddress           -> Json
-            .toJson(
-              registration.contactAddress
-                .getOrElse(throw new IllegalStateException("Contact address not found in registration data"))
-            )
-            .toString
-        ) ++ registration.contacts.secondContactDetails.emailAddress.fold(Seq.empty[(String, String)])(email =>
-          Seq(SessionKeys.SecondContactEmailAddress -> email)
-        )
-
-        sessionService.upsert(SessionData(request.internalId, updatedSession.data))
-
-        Redirect(getNextPage(registration)).withSession(updatedSession)
-      }
+      _ => Redirect(getNextPage(registration))
     )
   }
 
@@ -278,7 +252,7 @@ class CheckYourAnswersController @Inject() (
 
   def createAndEncodeHtmlForPdf(
     checkYourAnswersViewModel: CheckYourAnswersViewModel,
-    amendRegistrationPdfViewModel: AmendRegistrationPdfViewModel
+    pdfViewModel: PdfViewModel
   )(implicit request: RegistrationDataRequest[_]): String = {
     val date                      = LocalDate.now
     val organisation              = checkYourAnswersViewModel.organisationDetails()
@@ -294,7 +268,7 @@ class CheckYourAnswersController @Inject() (
         base64EncodeHtmlView(
           amendRegistrationPdfView(
             ViewUtils.formatLocalDate(date),
-            amendRegistrationPdfViewModel
+            pdfViewModel
           ).toString()
         )
       case _               =>

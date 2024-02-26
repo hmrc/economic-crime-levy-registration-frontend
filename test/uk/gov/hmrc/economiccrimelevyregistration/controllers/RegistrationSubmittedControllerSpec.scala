@@ -17,17 +17,15 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
-import org.mockito.ArgumentMatchers
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, SessionError}
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
-
 import scala.concurrent.Future
 
 class RegistrationSubmittedControllerSpec extends SpecBase {
@@ -35,19 +33,20 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
   val view: RegistrationSubmittedView                                              = app.injector.instanceOf[RegistrationSubmittedView]
   val outOfSessionRegistrationSubmittedView: OutOfSessionRegistrationSubmittedView =
     app.injector.instanceOf[OutOfSessionRegistrationSubmittedView]
-  val mockSessionService: SessionService                                           = mock[SessionService]
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService     = mock[RegistrationAdditionalInfoService]
   val mockEclRegistrationService: EclRegistrationService                           = mock[EclRegistrationService]
 
-  val controller = new RegistrationSubmittedController(
-    mcc,
-    fakeAuthorisedActionWithoutEnrolmentCheck("test-internal-id"),
-    view,
-    outOfSessionRegistrationSubmittedView,
-    mockSessionService,
-    mockRegistrationAdditionalInfoService,
-    mockEclRegistrationService
-  )
+  class TestContext(registrationData: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None) {
+    val controller = new RegistrationSubmittedController(
+      mcc,
+      fakeAuthorisedActionWithoutEnrolmentCheck(testInternalId),
+      fakeDataRetrievalAction(registrationData, additionalInfo),
+      view,
+      outOfSessionRegistrationSubmittedView,
+      mockRegistrationAdditionalInfoService,
+      mockEclRegistrationService
+    )
+  }
 
   "onPageLoad" should {
     "return OK and the correct view when there is one contact email address and aml activity in the session" in forAll {
@@ -55,117 +54,38 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         liabilityYear: LiabilityYear,
         firstContactEmailAddress: String,
         secondContactEmailAddress: Option[String],
-        amlRegulatedActivity: Boolean
+        registration: Registration,
+        additionalInfo: RegistrationAdditionalInfo
       ) =>
-        when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
-          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+        val contacts              = registration.contacts.copy(
+          firstContactDetails =
+            registration.contacts.firstContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
+          secondContactDetails =
+            registration.contacts.secondContactDetails.copy(emailAddress = secondContactEmailAddress)
+        )
+        val updatedRegistration   = registration.copy(contacts = contacts)
+        val updatedAdditionalInfo =
+          additionalInfo.copy(liabilityYear = Some(liabilityYear), eclReference = Some(eclReference))
+        new TestContext(updatedRegistration, Some(updatedAdditionalInfo)) {
+          when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
-        when(mockEclRegistrationService.deleteRegistration(anyString())(any(), any()))
-          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+          when(mockEclRegistrationService.deleteRegistration(anyString())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
-        val request = fakeRequest.withSession(
-          (SessionKeys.EclReference, eclReference),
-          (SessionKeys.FirstContactEmailAddress, firstContactEmailAddress),
-          (SessionKeys.AmlRegulatedActivity, amlRegulatedActivity.toString)
-        )
-
-        when(
-          mockSessionService.get(
-            ArgumentMatchers.eq(request.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.LiabilityYear)
-          )(any())
-        )
-          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(liabilityYear.value.toString))))
-        when(
-          mockSessionService.get(
-            ArgumentMatchers.eq(request.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.AmlRegulatedActivity)
-          )(any())
-        )
-          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(amlRegulatedActivity.toString))))
-        when(
-          mockSessionService.get(
-            ArgumentMatchers.eq(request.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.FirstContactEmailAddress)
-          )(any())
-        )
-          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(firstContactEmailAddress))))
-        when(
-          mockSessionService.getOptional(
-            ArgumentMatchers.eq(request.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.SecondContactEmailAddress)
-          )(any())
-        )
-          .thenReturn(
-            EitherT[Future, SessionError, Option[String]](Future.successful(Right(secondContactEmailAddress)))
+          val result: Future[Result] = controller.onPageLoad()(
+            fakeRequest
           )
-        when(
-          mockSessionService.getOptional(
-            ArgumentMatchers.eq(request.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.EclReference)
-          )(any())
-        )
-          .thenReturn(EitherT[Future, SessionError, Option[String]](Future.successful(Right(Some(eclReference)))))
 
-        val result: Future[Result] = controller.onPageLoad()(
-          request
-        )
+          status(result) shouldBe OK
 
-        status(result) shouldBe OK
-
-        contentAsString(result) shouldBe view(
-          eclReference,
-          firstContactEmailAddress,
-          secondContactEmailAddress,
-          Some(liabilityYear),
-          Some(amlRegulatedActivity.toString)
-        )(fakeRequest, messages).toString
-    }
-
-    "return OK and the correct view when information is not gathered from session" in {
-      (
-        internalId: String,
-        groupId: String,
-        eclReference: String,
-        liabilityYear: LiabilityYear,
-        amlRegulatedActivity: Option[String]
-      ) =>
-        when(
-          mockSessionService.get(
-            ArgumentMatchers.eq(fakeRequest.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.LiabilityYear)
-          )(any())
-        )
-          .thenReturn(EitherT.fromEither[Future](Right(liabilityYear.asString)))
-
-        when(
-          mockSessionService.get(
-            ArgumentMatchers.eq(fakeRequest.session),
-            anyString(),
-            ArgumentMatchers.eq(SessionKeys.AmlRegulatedActivity)
-          )(
-            any()
-          )
-        )
-          .thenReturn(EitherT[Future, SessionError, String](Future.successful(Right(amlRegulatedActivity.toString))))
-
-        val result =
-          controller.onPageLoad()(AuthorisedRequest(fakeRequest, internalId, groupId, Some(eclReference)))
-
-        status(result) shouldBe OK
-
-        contentAsString(result) shouldBe outOfSessionRegistrationSubmittedView(
-          "eclReference",
-          Some(liabilityYear),
-          amlRegulatedActivity
-        )(fakeRequest, messages)
-          .toString()
+          contentAsString(result) shouldBe view(
+            eclReference,
+            firstContactEmailAddress,
+            secondContactEmailAddress,
+            updatedAdditionalInfo.liabilityYear
+          )(fakeRequest, messages).toString
+        }
     }
 
   }

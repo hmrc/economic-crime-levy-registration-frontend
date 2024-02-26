@@ -29,10 +29,12 @@ trait SessionDataStubs { self: WireMockStubs =>
         .withBody(Json.toJson(sessionData).toString())
     )
 
-  def stubSessionForStoreUrl(call: Call) =
+  def stubSessionForStoreUrl(call: Call) = {
+    stubGetSession(SessionData(testInternalId, Map()))
     stubUpsertSession(SessionData(testInternalId, Map(SessionKeys.UrlToReturnTo -> call.url)))
+  }
 
-  def stubDeleteSession(): StubMapping   =
+  def stubDeleteSession(): StubMapping =
     stub(
       delete(urlEqualTo(s"/economic-crime-levy-registration/session/$testInternalId")),
       aResponse()

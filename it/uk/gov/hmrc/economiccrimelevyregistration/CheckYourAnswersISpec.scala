@@ -52,6 +52,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
       stubGetRegistrationValidationErrors(valid = false, errors)
+      stubSessionForStoreUrl(routes.CheckYourAnswersController.onPageLoad())
 
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
 

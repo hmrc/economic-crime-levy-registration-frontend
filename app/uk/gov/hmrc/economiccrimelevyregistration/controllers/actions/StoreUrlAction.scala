@@ -48,7 +48,7 @@ class StoreUrlAction @Inject() (
     (for {
       _ <- request.registration.registrationType match {
              case Some(Initial) => sessionService.upsert(sessionData).asResponseError
-             case _             => EitherT[Future, SessionError, Unit](Future.successful(Right())).asResponseError
+             case _             => EitherT[Future, SessionError, Unit](Future.successful(Right(()))).asResponseError
            }
     } yield ()).foldF(
       error => Future.failed(new Exception(error.message)),

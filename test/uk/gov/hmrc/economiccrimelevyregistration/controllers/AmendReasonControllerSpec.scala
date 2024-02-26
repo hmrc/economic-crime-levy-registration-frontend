@@ -99,7 +99,7 @@ class AmendReasonControllerSpec extends SpecBase {
       new TestContext(updatedRegistration) {
 
         when(mockRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(updatedRegistration))))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> reason))

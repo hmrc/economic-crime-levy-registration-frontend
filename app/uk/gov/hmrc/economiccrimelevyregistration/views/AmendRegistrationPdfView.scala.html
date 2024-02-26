@@ -15,12 +15,12 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.PdfLayout
-@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers.AmendRegistrationPdfViewModel
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers.PdfViewModel
 @import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 
 @this(pdfLayout: PdfLayout, govukSummaryList: GovukSummaryList)
 
-@(date: String, viewModel: AmendRegistrationPdfViewModel)(implicit request: RegistrationDataRequest[_], messages: Messages)
+@(date: String, viewModel: PdfViewModel)(implicit request: RegistrationDataRequest[_], messages: Messages)
 
 @pdfLayout(messages("amendRegistration.pdfHtml.title")) {
 

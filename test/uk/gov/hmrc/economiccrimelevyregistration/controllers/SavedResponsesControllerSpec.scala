@@ -82,9 +82,12 @@ class SavedResponsesControllerSpec extends SpecBase {
     "delete registration if answer is no" in forAll { internalId: String =>
       new TestContext(internalId) {
         when(mockEclRegistrationService.deleteRegistration(any())(any(), any()))
-          .thenReturn(EitherT.fromEither[Future](Right()))
+          .thenReturn(EitherT.fromEither[Future](Right(())))
 
         when(mockAdditionalInfoService.delete(any())(any(), any()))
+          .thenReturn(EitherT.fromEither[Future](Right(())))
+
+        when(mockSessionService.delete(any())(any()))
           .thenReturn(EitherT.fromEither[Future](Right()))
 
         val result: Future[Result] =
@@ -92,7 +95,7 @@ class SavedResponsesControllerSpec extends SpecBase {
 
         status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result) shouldBe Some(routes.AmlRegulatedActivityController.onPageLoad(NormalMode).url)
+        redirectLocation(result) shouldBe Some(routes.RegisterForCurrentYearController.onPageLoad(NormalMode).url)
       }
     }
   }

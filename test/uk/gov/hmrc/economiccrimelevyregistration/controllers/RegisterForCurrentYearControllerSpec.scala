@@ -17,6 +17,8 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.{OK, SEE_OTHER}
@@ -27,9 +29,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.cleanup.{LiabilityDateAdditiona
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RegisterForCurrentYearView
 
@@ -43,6 +45,7 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
 
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
   val mockEclRegistrationService: EclRegistrationService                       = mock[EclRegistrationService]
+  val mockSessionService: SessionService                                       = mock[SessionService]
 
   val pageNavigator: RegisterForCurrentYearPageNavigator = new RegisterForCurrentYearPageNavigator() {
     override protected def navigateInNormalMode(
@@ -67,6 +70,7 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData, Some(registrationAdditionalInfo)),
+      mockSessionService,
       formProvider,
       mockRegistrationAdditionalInfoService,
       mockEclRegistrationService,
@@ -81,6 +85,9 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
     "return OK with correct view when no answers has been provided" in forAll {
       (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
         new TestContext(registration, additionalInfo.copy(registeringForCurrentYear = None)) {
+          when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(None)))
+
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
@@ -97,6 +104,9 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
 
     "return OK with correct view when true as answer has been provided" in forAll {
       (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
+        when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
+          .thenReturn(EitherT.fromEither[Future](Right(None)))
+
         new TestContext(registration, additionalInfo.copy(registeringForCurrentYear = Some(true))) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
@@ -115,6 +125,9 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
     "return OK with correct view when false as answer has been provided" in forAll {
       (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
         new TestContext(registration, additionalInfo.copy(registeringForCurrentYear = Some(false))) {
+          when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(None)))
+
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result) shouldBe OK
@@ -128,8 +141,23 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
           )(messages, fakeRequest).toString()
         }
     }
+
+    "redirect to Saved Responses page if there is a return url" in forAll {
+      (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
+        new TestContext(registration, additionalInfo.copy(registeringForCurrentYear = Some(false))) {
+          when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(Some(random[String]))))
+
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(routes.SavedResponsesController.onPageLoad.url)
+        }
+    }
   }
-  "onSubmit"   should {
+
+  "onSubmit" should {
     "save the answer and redirect to the correct page in NormalMode" in forAll {
       (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
         new TestContext(registration, additionalInfo) {

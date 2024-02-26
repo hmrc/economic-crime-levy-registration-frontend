@@ -18,11 +18,13 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkyouranswers
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, ContactDetails, EclAddress, GetSecondaryContactDetails, GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, ContactDetails, EclAddress, GetSecondaryContactDetails, GetSubscriptionResponse, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers.TrackRegistrationChanges
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Hmrc, Other}
 import uk.gov.hmrc.economiccrimelevyregistration.models.BusinessSector.{InsolvencyPractitioner, TaxAdviser}
+
+import java.time.LocalDate
 
 class TrackRegistrationChangesSpec extends SpecBase {
 
@@ -1114,9 +1116,52 @@ class TrackRegistrationChangesSpec extends SpecBase {
         sut.hasSecondContactEmailChanged shouldBe true
     }
   }
+
+  "hasLiabilityStartDateChanged" should {
+    "return true when liability start date in additional info is different to the date in getSubscriptionResponse" in forAll {
+      (
+        registration: Registration,
+        getSubscriptionResponse: GetSubscriptionResponse,
+        additionalInfo: RegistrationAdditionalInfo
+      ) =>
+        val updatedAdditionalInfo = additionalInfo.copy(liabilityStartDate = Some(LocalDate.parse("2023-04-01")))
+        val updatedResponse       = getSubscriptionResponse.copy(additionalDetails =
+          getSubscriptionResponse.additionalDetails.copy(liabilityStartDate = "2022-11-12")
+        )
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(registration),
+          Some(updatedResponse),
+          Some(updatedAdditionalInfo)
+        )
+
+        sut.hasLiabilityStartDateChanged shouldBe true
+    }
+
+    "return false when liability start date in additional info is the same as the date in getSubscriptionResponse" in forAll {
+      (
+        registration: Registration,
+        getSubscriptionResponse: GetSubscriptionResponse,
+        additionalInfo: RegistrationAdditionalInfo
+      ) =>
+        val updatedAdditionalInfo = additionalInfo.copy(liabilityStartDate = Some(LocalDate.parse("2023-04-01")))
+        val updatedResponse       = getSubscriptionResponse.copy(additionalDetails =
+          getSubscriptionResponse.additionalDetails.copy(liabilityStartDate = "2023-04-01")
+        )
+
+        val sut = TestTrackEclReturnChanges(
+          defaultEclRegistration(registration),
+          Some(updatedResponse),
+          Some(updatedAdditionalInfo)
+        )
+
+        sut.hasLiabilityStartDateChanged shouldBe false
+    }
+  }
 }
 
 final case class TestTrackEclReturnChanges(
   registration: Registration,
-  getSubscriptionResponse: Option[GetSubscriptionResponse]
+  getSubscriptionResponse: Option[GetSubscriptionResponse],
+  additionalInfo: Option[RegistrationAdditionalInfo] = None
 ) extends TrackRegistrationChanges

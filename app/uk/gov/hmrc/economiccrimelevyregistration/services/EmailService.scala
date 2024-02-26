@@ -133,12 +133,6 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
       case _                                => Left(DataRetrievalError.InternalUnexpectedError("Invalid contact details", None))
     }
 
-  private def getAddressData(address: Option[EclAddress]): Either[DataRetrievalError, EclAddress] =
-    address match {
-      case Some(address) => Right(address)
-      case _             => Left(DataRetrievalError.InternalUnexpectedError("Invalid address details", None))
-    }
-
   private def sendEmail(emailAddress: String, name: String, address: Option[EclAddress])(implicit
     hc: HeaderCarrier,
     messages: Messages

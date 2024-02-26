@@ -207,11 +207,11 @@ abstract class BaseAuthorisedAction @Inject() (
             _ => Future.successful(Redirect(routes.NotableErrorController.registrationFailed())),
             registration =>
               registration.registrationType match {
-                case None            =>
+                case None                             =>
                   Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
-                case Some(Amendment) =>
+                case Some(Amendment | DeRegistration) =>
                   block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
-                case Some(Initial)   =>
+                case Some(Initial)                    =>
                   Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
               }
           )

@@ -93,7 +93,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -139,7 +139,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(CheckMode, journeyId)(fakeRequest)
 
@@ -176,7 +176,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             )
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -217,7 +217,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             )
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -258,7 +258,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             )
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -295,7 +295,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             )
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -342,7 +342,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             ).thenReturn(Future.successful(EclSubscriptionStatus(Subscribed(eclRegistrationReference))))
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -390,7 +390,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
           ).thenReturn(Future.successful(EclSubscriptionStatus(DeRegistered(eclRegistrationReference))))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+            .thenReturn(Future.successful(()))
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -435,7 +435,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -478,7 +478,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(CheckMode, journeyId)(fakeRequest)
 
@@ -512,7 +512,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             )
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -550,7 +550,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             )
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -588,7 +588,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             )
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -622,7 +622,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             )
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -666,7 +666,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             ).thenReturn(Future.successful(EclSubscriptionStatus(Subscribed(eclRegistrationReference))))
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -711,7 +711,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
           ).thenReturn(Future.successful(EclSubscriptionStatus(DeRegistered(eclRegistrationReference))))
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+            .thenReturn(Future.successful(()))
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -755,7 +755,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -801,7 +801,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -846,7 +846,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(CheckMode, journeyId)(fakeRequest)
 
@@ -882,7 +882,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             )
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -922,7 +922,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             )
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -962,7 +962,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             )
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -998,7 +998,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             )
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -1044,7 +1044,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
             ).thenReturn(Future.successful(EclSubscriptionStatus(Subscribed(eclRegistrationReference))))
 
             when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(Future.successful(updatedRegistration))
+              .thenReturn(Future.successful(()))
 
             val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
@@ -1094,7 +1094,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
           )
 
           when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(Future.successful(updatedRegistration))
+            .thenReturn(Future.successful(()))
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 
