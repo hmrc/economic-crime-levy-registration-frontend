@@ -48,8 +48,7 @@ class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubUpsertRegistration(updatedRegistration)
       stubSessionForStoreUrl(
-        routes.AddressLookupContinueController.continue(NormalMode, journeyId),
-        updatedRegistration.internalId
+        routes.AddressLookupContinueController.continue(NormalMode, journeyId)
       )
 
       val result = callRoute(FakeRequest(routes.AddressLookupContinueController.continue(NormalMode, journeyId)))

@@ -22,7 +22,7 @@ class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(routes.DoYouHaveUtrController.onPageLoad(NormalMode), registration.internalId)
+      stubSessionForStoreUrl(routes.DoYouHaveUtrController.onPageLoad(NormalMode))
 
       val result = callRoute(FakeRequest(routes.DoYouHaveUtrController.onPageLoad(NormalMode)))
 
