@@ -86,10 +86,10 @@ class DeregistrationServiceSpec extends SpecBase {
   "delete" should {
     "return normally" in forAll { internalId: String =>
       when(mockDeregistrationConnector.deleteDeregistration(any())(any()))
-        .thenReturn(Future.successful())
+        .thenReturn(Future.successful(()))
 
       val result = await(service.delete(internalId).value)
-      result shouldBe Right()
+      result shouldBe Right(())
     }
 
     "return an error if failed" in forAll { internalId: String =>

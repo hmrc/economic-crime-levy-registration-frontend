@@ -18,9 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithoutEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -31,9 +30,9 @@ import scala.concurrent.ExecutionContext
 class RegistrationSubmittedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithoutEnrolmentCheck,
+  getRegistrationData: DataRetrievalAction,
   view: RegistrationSubmittedView,
   outOfSessionRegistrationSubmittedView: OutOfSessionRegistrationSubmittedView,
-  sessionService: SessionService,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   registrationService: EclRegistrationService
 )(implicit ec: ExecutionContext)
@@ -42,38 +41,32 @@ class RegistrationSubmittedController @Inject() (
     with BaseController
     with ErrorHandler {
 
-  def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
+  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     (for {
-      _                    <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
-      _                    <- registrationService.deleteRegistration(request.internalId).asResponseError
-      liabilityYear        <-
-        sessionService.get(request.session, request.internalId, SessionKeys.LiabilityYear).asResponseError
-      amlRegulatedActivity <-
-        sessionService.get(request.session, request.internalId, SessionKeys.AmlRegulatedActivity).asResponseError
-      firstContactEmail    <-
-        sessionService.get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress).asResponseError
-      secondContactEmail   <- sessionService
-                                .getOptional(request.session, request.internalId, SessionKeys.SecondContactEmailAddress)
-                                .asResponseError
-      eclReference         <-
-        sessionService.getOptional(request.session, request.internalId, SessionKeys.EclReference).asResponseError
-    } yield (liabilityYear, amlRegulatedActivity, firstContactEmail, secondContactEmail, eclReference)).fold(
-      _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
-      data => {
-        val liabilityYear        = Some(LiabilityYear(data._1.toInt))
-        val amlRegulatedActivity = data._2
-        val firstContactEmail    = data._3
-        val secondContactEmail   = data._4
-        val eclReference         = data._5
-        (eclReference, request.eclRegistrationReference) match {
-          case (Some(eclReference), _) =>
-            Ok(view(eclReference, firstContactEmail, secondContactEmail, liabilityYear, Some(amlRegulatedActivity)))
-          case (_, Some(eclReference)) =>
-            Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear, Some(amlRegulatedActivity)))
-          case _                       =>
-            Redirect(routes.NotableErrorController.answersAreInvalid())
+      _                        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
+      _                        <- registrationService.deleteRegistration(request.internalId).asResponseError
+      firstContactEmailAddress <-
+        valueOrError(request.registration.contacts.firstContactDetails.emailAddress, "First contact email address")
+      secondContactEmailAddress = request.registration.contacts.secondContactDetails.emailAddress
+      liabilityYear             = request.additionalInfo.flatMap(_.liabilityYear)
+      eclReference              = request.additionalInfo.flatMap(_.eclReference)
+    } yield (liabilityYear, firstContactEmailAddress, secondContactEmailAddress, eclReference))
+      .fold(
+        _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
+        data => {
+          val liabilityYear      = data._1
+          val firstContactEmail  = data._2
+          val secondContactEmail = data._3
+          val eclReference       = data._4
+          (eclReference, request.eclRegistrationReference) match {
+            case (Some(eclReference), _) =>
+              Ok(view(eclReference, firstContactEmail, secondContactEmail, liabilityYear))
+            case (_, Some(eclReference)) =>
+              Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear))
+            case _                       =>
+              Redirect(routes.NotableErrorController.answersAreInvalid())
+          }
         }
-      }
-    )
+      )
   }
 }

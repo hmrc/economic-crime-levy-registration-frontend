@@ -22,6 +22,7 @@ import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationAdditionalInfo, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import java.time.LocalDate
 
 case class CheckYourAnswersViewModel(
   registration: Registration,
@@ -184,8 +185,8 @@ case class CheckYourAnswersViewModel(
             )
           )
           ++ addIf(
-            isInitialRegistration,
-            LiabilityDateSummary.row(additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate))
+            isInitialRegistration || isAmendRegistration,
+            getLiabilityRow
           )
           ++ addIf(
             isInitialRegistration,
@@ -252,6 +253,17 @@ case class CheckYourAnswersViewModel(
   private def addIfNot[T](condition: Boolean, value: T): Seq[T] = if (!condition) Seq(value) else Seq.empty
 
   val registrationType: Option[RegistrationType] = registration.registrationType
+
+  def getLiabilityRow(implicit messages: Messages) = {
+    val liabilityStartDate = additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate)
+    if (liabilityStartDate.isDefined) {
+      LiabilityDateSummary.row(additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate))
+    } else {
+      LiabilityDateSummary.row(
+        getSubscriptionResponse.map(response => LocalDate.parse(response.additionalDetails.liabilityStartDate))
+      )
+    }
+  }
 }
 
 object CheckYourAnswersViewModel {

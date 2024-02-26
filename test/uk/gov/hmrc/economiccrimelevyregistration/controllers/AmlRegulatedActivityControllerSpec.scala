@@ -26,11 +26,10 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
 
 import scala.concurrent.Future
@@ -42,7 +41,6 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   val form: Form[Boolean]                            = formProvider()
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  val mockSessionService: SessionService                 = mock[SessionService]
 
   val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator() {
     override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
@@ -59,7 +57,6 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
-      mockSessionService,
       formProvider,
       pageNavigator,
       view
@@ -107,9 +104,6 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
             when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
               .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
-            when(mockSessionService.upsert(any())(any()))
-              .thenReturn(EitherT.fromEither[Future](Right(())))
-
             val result: Future[Result] =
               controller.onSubmit(NormalMode)(
                 fakeRequest.withFormUrlEncodedBody(("value", carriedOutAmlRegulatedActivity.toString))
@@ -131,7 +125,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
               )
 
             when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-              .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
+              .thenReturn(EitherT.fromEither[Future](Right(())))
 
             val result: Future[Result] =
               controller.onSubmit(NormalMode)(

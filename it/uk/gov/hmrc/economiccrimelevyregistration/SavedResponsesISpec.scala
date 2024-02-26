@@ -21,7 +21,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionData, SessionKeys}
 
 class SavedResponsesISpec extends ISpecBase with AuthorisedBehaviour {
 

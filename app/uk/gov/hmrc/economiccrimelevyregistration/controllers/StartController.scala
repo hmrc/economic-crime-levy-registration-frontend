@@ -33,8 +33,6 @@ class StartController @Inject() (
   view: StartView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with BaseController
-    with ErrorHandler
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
