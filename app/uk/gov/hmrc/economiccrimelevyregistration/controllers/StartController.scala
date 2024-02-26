@@ -30,30 +30,18 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class StartController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  authorise: AuthorisedActionWithEnrolmentCheck,
-  sessionService: SessionService,
   view: StartView
-)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
+)(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with BaseController
     with ErrorHandler
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
+  def onPageLoad: Action[AnyContent] = Action { implicit request =>
     Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = authorise.async { implicit request =>
-    (for {
-      urlToReturnTo <-
-        sessionService.getOptional(request.session, request.internalId, SessionKeys.UrlToReturnTo).asResponseError
-    } yield urlToReturnTo).fold(
-      err => routeError(err),
-      urlToReturnTo =>
-        Redirect(urlToReturnTo match {
-          case Some(_) => routes.SavedResponsesController.onPageLoad
-          case None    => routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
-        })
-    )
+  def onSubmit: Action[AnyContent] = Action { implicit request =>
+    Redirect(routes.RegisterForCurrentYearController.onPageLoad(NormalMode))
   }
 }

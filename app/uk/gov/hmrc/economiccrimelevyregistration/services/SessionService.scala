@@ -75,15 +75,20 @@ class SessionService @Inject() (sessionRetrievalConnector: SessionDataConnector)
 
   def delete(
     internalId: String
-  )(implicit hc: HeaderCarrier): Future[Unit] =
-    sessionRetrievalConnector.delete(internalId).recover {
-      case error @ UpstreamErrorResponse(message, code, _, _)
-          if UpstreamErrorResponse.Upstream5xxResponse
-            .unapply(error)
-            .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
-        Left(SessionError.BadGateway(message, code))
-      case NonFatal(thr) =>
-        Left(SessionError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+  )(implicit hc: HeaderCarrier): EitherT[Future, SessionError, Unit] =
+    EitherT {
+      sessionRetrievalConnector
+        .delete(internalId)
+        .map(Right(_))
+        .recover {
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse
+                .unapply(error)
+                .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            Left(SessionError.BadGateway(message, code))
+          case NonFatal(thr) =>
+            Left(SessionError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+        }
     }
 
   private def getSessionData(

@@ -31,14 +31,10 @@ import scala.concurrent.Future
 
 class StartControllerSpec extends SpecBase {
 
-  val mockSessionService: SessionService = mock[SessionService]
-
   val view: StartView = app.injector.instanceOf[StartView]
 
   val controller = new StartController(
     mcc,
-    fakeAuthorisedActionWithEnrolmentCheck(testInternalId),
-    mockSessionService,
     view
   )
 
@@ -54,25 +50,11 @@ class StartControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "redirect to AML Activity page if no return url" in {
-      when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
-        .thenReturn(EitherT.fromEither[Future](Right(None)))
-
       val result: Future[Result] = controller.onSubmit()(fakeRequest)
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.AmlRegulatedActivityController.onPageLoad(NormalMode).url)
-    }
-
-    "redirect to Saved Responses page if there is a return url" in {
-      when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
-        .thenReturn(EitherT.fromEither[Future](Right(Some(random[String]))))
-
-      val result: Future[Result] = controller.onSubmit()(fakeRequest)
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(routes.SavedResponsesController.onPageLoad.url)
+      redirectLocation(result) shouldBe Some(routes.RegisterForCurrentYearController.onPageLoad(NormalMode).url)
     }
   }
 }

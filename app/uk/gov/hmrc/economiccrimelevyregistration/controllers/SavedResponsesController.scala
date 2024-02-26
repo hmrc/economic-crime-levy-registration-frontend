@@ -69,9 +69,10 @@ class SavedResponsesController @Inject() (
             (for {
               _ <- eclRegistrationService.deleteRegistration(request.internalId).asResponseError
               _ <- additionalInfoService.delete(request.internalId).asResponseError
+              _ <- sessionService.delete(request.internalId).asResponseError
             } yield ()).fold(
               err => routeError(err),
-              _ => Redirect(routes.AmlRegulatedActivityController.onPageLoad(NormalMode))
+              _ => Redirect(routes.RegisterForCurrentYearController.onPageLoad(NormalMode))
             )
         }
       )

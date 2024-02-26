@@ -24,9 +24,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegisterForCurrentYearView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -38,6 +38,7 @@ class RegisterForCurrentYearController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  sessionService: SessionService,
   formProvider: RegisterForCurrentYearFormProvider,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   registrationService: EclRegistrationService,
@@ -51,31 +52,41 @@ class RegisterForCurrentYearController @Inject() (
     with BaseController
     with ErrorHandler {
 
-  val form: Form[Boolean]                        = formProvider()
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    request.additionalInfo match {
-      case Some(value) =>
-        Ok(
-          view(
-            form.prepare(value.registeringForCurrentYear),
-            mode,
-            s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
-            EclTaxYear.currentFinancialYearStartDate,
-            EclTaxYear.currentFinancialYearEndDate
-          )
-        )
-      case None        =>
-        Ok(
-          view(
-            form,
-            mode,
-            s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
-            EclTaxYear.currentFinancialYearStartDate,
-            EclTaxYear.currentFinancialYearEndDate
-          )
-        )
+  val form: Form[Boolean] = formProvider()
 
-    }
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+    (for {
+      urlToReturnTo <-
+        sessionService.getOptional(request.session, request.internalId, SessionKeys.UrlToReturnTo).asResponseError
+    } yield urlToReturnTo).fold(
+      err => routeError(err),
+      {
+        case Some(_) => Redirect(routes.SavedResponsesController.onPageLoad)
+        case None    =>
+          request.additionalInfo match {
+            case Some(value) =>
+              Ok(
+                view(
+                  form.prepare(value.registeringForCurrentYear),
+                  mode,
+                  s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
+                  EclTaxYear.currentFinancialYearStartDate,
+                  EclTaxYear.currentFinancialYearEndDate
+                )
+              )
+            case None        =>
+              Ok(
+                view(
+                  form,
+                  mode,
+                  s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
+                  EclTaxYear.currentFinancialYearStartDate,
+                  EclTaxYear.currentFinancialYearEndDate
+                )
+              )
+          }
+      }
+    )
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
