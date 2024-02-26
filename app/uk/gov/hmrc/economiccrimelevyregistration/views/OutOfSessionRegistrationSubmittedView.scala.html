@@ -23,7 +23,7 @@
         appConfig: AppConfig
 )
 
-@(eclReference: String, liabilityYear: Option[LiabilityYear], amlRegulatedActivity: Option[String])(implicit request: Request[_], messages: Messages)
+@(eclReference: String, liabilityYear: Option[LiabilityYear])(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = title(messages("submitted.title")),

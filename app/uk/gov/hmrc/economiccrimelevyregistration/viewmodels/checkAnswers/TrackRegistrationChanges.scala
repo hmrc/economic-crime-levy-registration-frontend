@@ -17,11 +17,15 @@
 package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationAdditionalInfo}
+
+import java.time.LocalDate
 
 trait TrackRegistrationChanges {
 
   val registration: Registration
+
+  val additionalInfo: Option[RegistrationAdditionalInfo]
 
   val getSubscriptionResponse: Option[GetSubscriptionResponse]
 
@@ -202,6 +206,16 @@ trait TrackRegistrationChanges {
     case None           => false
   }
 
+  val hasLiabilityStartDateChanged: Boolean = getSubscriptionResponse match {
+    case Some(response) =>
+      additionalInfo.exists(
+        _.liabilityStartDate.exists(dateStr =>
+          dateStr != LocalDate.parse(response.additionalDetails.liabilityStartDate)
+        )
+      )
+    case None           => false
+  }
+
   val hasAnyAmends: Boolean = Seq(
     hasBusinessSectorChanged,
     hasAddressChanged,
@@ -214,6 +228,7 @@ trait TrackRegistrationChanges {
     hasSecondContactNameChanged,
     hasSecondContactRoleChanged,
     hasSecondContactPhoneChanged,
-    hasSecondContactEmailChanged
+    hasSecondContactEmailChanged,
+    hasLiabilityStartDateChanged
   ).contains(true)
 }

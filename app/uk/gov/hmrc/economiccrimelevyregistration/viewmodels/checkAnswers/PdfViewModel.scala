@@ -19,14 +19,17 @@ package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers
 import play.api.http.{ContentTypeOf, ContentTypes, Writeable}
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationType}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationAdditionalInfo, RegistrationType}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.summarylist._
 
-case class AmendRegistrationPdfViewModel(
+import java.time.LocalDate
+
+case class PdfViewModel(
   registration: Registration,
   getSubscriptionResponse: Option[GetSubscriptionResponse],
-  eclReference: Option[String]
+  eclReference: Option[String],
+  additionalInfo: Option[RegistrationAdditionalInfo] = None
 ) extends TrackRegistrationChanges {
 
   val hasSecondContact: Boolean = registration.contacts.secondContact.contains(true)
@@ -196,9 +199,24 @@ case class AmendRegistrationPdfViewModel(
           ++ addIf(isInitialRegistration, formatRow(NinoSummary.row(registration.nino)))
           ++ addIf(isInitialRegistration, formatRow(DateOfBirthSummary.row(registration.dateOfBirth)))
           ++ addIf(isInitialRegistration, formatRow(liabilityRow))
+          ++ addIf(
+            isInitialRegistration || isAmendRegistration,
+            getLiabilityRow
+          )
           ++ addIfNot(hasBusinessSectorChanged, formatRow(BusinessSectorSummary.row(registration.businessSector)))
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
+
+  private def getLiabilityRow(implicit messages: Messages) = {
+    val liabilityStartDate = additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate)
+    if (liabilityStartDate.isDefined) {
+      LiabilityDateSummary.row(additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate))
+    } else {
+      LiabilityDateSummary.row(
+        getSubscriptionResponse.map(response => LocalDate.parse(response.additionalDetails.liabilityStartDate))
+      )
+    }
+  }
 
   def eclDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
@@ -287,12 +305,12 @@ case class AmendRegistrationPdfViewModel(
   private def formatRow(row: Option[SummaryListRow]): Option[SummaryListRow] = row.map(_.copy(actions = None))
 }
 
-object AmendRegistrationPdfViewModel {
-  implicit val format: OFormat[AmendRegistrationPdfViewModel] = Json.format[AmendRegistrationPdfViewModel]
+object PdfViewModel {
+  implicit val format: OFormat[PdfViewModel] = Json.format[PdfViewModel]
 
-  implicit val contentType: ContentTypeOf[AmendRegistrationPdfViewModel] =
-    ContentTypeOf[AmendRegistrationPdfViewModel](Some(ContentTypes.JSON))
-  implicit val writes: Writeable[AmendRegistrationPdfViewModel]          = Writeable(
+  implicit val contentType: ContentTypeOf[PdfViewModel] =
+    ContentTypeOf[PdfViewModel](Some(ContentTypes.JSON))
+  implicit val writes: Writeable[PdfViewModel]          = Writeable(
     Writeable.writeableOf_JsValue.transform.compose(format.writes)
   )
 }

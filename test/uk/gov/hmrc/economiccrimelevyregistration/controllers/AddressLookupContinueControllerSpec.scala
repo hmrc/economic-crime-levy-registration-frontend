@@ -82,7 +82,7 @@ class AddressLookupContinueControllerSpec extends SpecBase {
 
           when(
             mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any())
-          ).thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
+          ).thenReturn(EitherT.fromEither[Future](Right(())))
 
           val result: Future[Result] = controller.continue(NormalMode, journeyId)(fakeRequest)
 

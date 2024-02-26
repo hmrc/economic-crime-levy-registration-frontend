@@ -16,23 +16,21 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendmentRequestedView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.models.EclAddress
 
 @Singleton
 class AmendmentRequestedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: AmendmentRequestedView,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  sessionService: SessionService,
+  getRegistrationData: DataRetrievalAction,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   registrationService: EclRegistrationService
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
@@ -40,19 +38,18 @@ class AmendmentRequestedController @Inject() (
     with BaseController
     with ErrorHandler {
 
-  def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
+  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     (for {
       _                        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
       _                        <- registrationService.deleteRegistration(request.internalId).asResponseError
       firstContactEmailAddress <-
-        sessionService.get(request.session, request.internalId, SessionKeys.FirstContactEmailAddress).asResponseError
-      contactAddress           <-
-        sessionService.get(request.session, request.internalId, SessionKeys.ContactAddress).asResponseError
+        valueOrError(request.registration.contacts.firstContactDetails.emailAddress, "First contact email address")
+      contactAddress            = request.registration.contactAddress
     } yield (firstContactEmailAddress, contactAddress)).fold(
       error => routeError(error),
       emailAndAddress => {
         val firstContactEmail = emailAndAddress._1
-        val contactAddress    = Json.fromJson[EclAddress](Json.parse(emailAndAddress._2)).asOpt
+        val contactAddress    = emailAndAddress._2
         Ok(
           view(
             firstContactEmail,
