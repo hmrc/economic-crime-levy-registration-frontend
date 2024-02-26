@@ -26,7 +26,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
@@ -56,6 +55,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,
       pageNavigator,
@@ -98,8 +98,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
           new TestContext(registration) {
             val updatedRegistration: Registration =
               registration.copy(
-                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity),
-                registrationType = Some(Initial)
+                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity)
               )
 
             when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
@@ -122,8 +121,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
           new TestContext(registration) {
             val updatedRegistration: Registration =
               registration.copy(
-                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity),
-                registrationType = Some(Initial)
+                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity)
               )
 
             when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))

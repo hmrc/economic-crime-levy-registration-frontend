@@ -28,6 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import scala.concurrent.Future
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 
 class EclRegistrationServiceSpec extends SpecBase {
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
@@ -47,7 +48,7 @@ class EclRegistrationServiceSpec extends SpecBase {
   "getOrCreateRegistration" should {
     "return a created registration when one does not exist" in forAll {
       (internalId: String, registration: Registration) =>
-        val emptyRegistration = Registration.empty(internalId)
+        val emptyRegistration = Registration.empty(internalId).copy(registrationType = Some(Initial))
         when(mockEclRegistrationConnector.getRegistration(any())(any()))
           .thenReturn(Future.failed(UpstreamErrorResponse("Not found", NOT_FOUND)))
 

@@ -48,6 +48,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData, additionalInfo),
+      fakeStoreUrlAction(),
       formProvider,
       mockAdditionalInfoService,
       view,

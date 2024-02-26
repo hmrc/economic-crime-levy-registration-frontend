@@ -91,6 +91,8 @@ trait SpecBase
     new FakeAuthorisedActionAssistantsAllowed(bodyParsers)
   def fakeDataRetrievalAction(data: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None)         =
     new FakeDataRetrievalAction(data, additionalInfo)
+  def fakeStoreUrlAction()                                                                                           =
+    new FakeStoreUrlAction()
 
   def onwardRoute: Call = Call(GET, "/foo")
 

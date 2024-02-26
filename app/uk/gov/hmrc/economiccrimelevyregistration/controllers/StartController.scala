@@ -18,19 +18,42 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.StartView
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, StartView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class StartController @Inject() (
   val controllerComponents: MessagesControllerComponents,
+  authorise: AuthorisedActionWithEnrolmentCheck,
+  sessionService: SessionService,
   view: StartView
-) extends FrontendBaseController
+)(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
+    extends FrontendBaseController
+    with BaseController
+    with ErrorHandler
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = Action { implicit request =>
+  def onPageLoad: Action[AnyContent] = authorise { implicit request =>
     Ok(view())
+  }
+
+  def onSubmit: Action[AnyContent] = authorise.async { implicit request =>
+    (for {
+      urlToReturnTo <-
+        sessionService.getOptional(request.session, request.internalId, SessionKeys.UrlToReturnTo).asResponseError
+    } yield urlToReturnTo).fold(
+      err => routeError(err),
+      urlToReturnTo =>
+        Redirect(urlToReturnTo match {
+          case Some(_) => routes.SavedResponsesController.onPageLoad
+          case None    => routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
+        })
+    )
   }
 }

@@ -6,6 +6,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Trust
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
@@ -21,6 +22,7 @@ class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
+      stubSessionForStoreUrl(routes.DoYouHaveUtrController.onPageLoad(NormalMode))
 
       val result = callRoute(FakeRequest(routes.DoYouHaveUtrController.onPageLoad(NormalMode)))
 
@@ -36,22 +38,23 @@ class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val hasUtr       = random[Boolean]
-      val registration = random[Registration]
+      val hasUtr            = random[Boolean]
+      val registration      = random[Registration]
+      val validRegistration = registration.copy(entityType = Some(Trust))
 
-      val otherEntityJourneyData = registration.otherEntityJourneyData.copy(
+      val otherEntityJourneyData = validRegistration.otherEntityJourneyData.copy(
         isCtUtrPresent = Some(hasUtr),
         ctUtr = if (hasUtr) {
-          registration.otherEntityJourneyData.ctUtr
+          validRegistration.otherEntityJourneyData.ctUtr
         } else {
           None
         }
       )
-      val updatedRegistration    = registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+      val updatedRegistration    = validRegistration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
       val additionalInfo         = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistration(validRegistration)
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(

@@ -16,14 +16,21 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionData}
 
-class StartISpec extends ISpecBase {
+class StartISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.StartController.onPageLoad().url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.StartController.onPageLoad())
+
     "respond with 200 status and the start HTML view" in {
+      stubAuthorisedWithNoGroupEnrolment()
+
       val result = callRoute(FakeRequest(routes.StartController.onPageLoad()))
 
       status(result) shouldBe OK
@@ -31,4 +38,18 @@ class StartISpec extends ISpecBase {
     }
   }
 
+  s"POST ${routes.StartController.onSubmit().url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.StartController.onSubmit())
+
+    "respond with the next page" in {
+      stubAuthorisedWithNoGroupEnrolment()
+      stubGetSession(SessionData(random[String], Map()))
+
+      val result = callRoute(FakeRequest(routes.StartController.onSubmit()))
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.AmlRegulatedActivityController.onPageLoad(NormalMode).url)
+    }
+  }
 }

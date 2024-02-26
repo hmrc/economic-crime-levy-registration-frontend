@@ -22,6 +22,7 @@ import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.StoreUrlAction
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -44,6 +45,7 @@ class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   registrationService: EclRegistrationService,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
@@ -58,7 +60,7 @@ class CheckYourAnswersController @Inject() (
     with ErrorHandler {
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen getRegistrationData).async { implicit request =>
+    (authorise andThen getRegistrationData andThen storeUrl).async { implicit request =>
       registrationService
         .getRegistrationValidationErrors(request.internalId)
         .asResponseError
@@ -200,19 +202,23 @@ class CheckYourAnswersController @Inject() (
     registration: Registration,
     additionalInfo: Option[RegistrationAdditionalInfo],
     eclReference: String
-  )(implicit hc: HeaderCarrier, messages: Messages): EitherT[Future, DataRetrievalError, Unit] =
+  )(implicit
+    hc: HeaderCarrier,
+    messages: Messages
+  ): EitherT[Future, DataRetrievalError, Unit] =
     registration.registrationType match {
-      case Some(Initial)   =>
+      case Some(Initial)                                       =>
         emailService.sendRegistrationSubmittedEmails(
           registration.contacts,
           eclReference,
           registration.entityType,
           additionalInfo,
           registration.carriedOutAmlRegulatedActivityInCurrentFy
-        )
-      case Some(Amendment) =>
-        emailService.sendAmendRegistrationSubmitted(registration.contacts)
-      case None            =>
+        )(hc, messages)
+      case Some(Amendment) if appConfig.getSubscriptionEnabled =>
+        emailService.sendAmendRegistrationSubmitted(registration.contacts, registration.contactAddress)(hc, messages)
+      case Some(Amendment)                                     => emailService.sendAmendRegistrationSubmitted(registration.contacts, None)(hc, messages)
+      case None                                                =>
         EitherT[Future, DataRetrievalError, Unit](
           Future.successful(Left(DataRetrievalError.InternalUnexpectedError("Registration type is null.", None)))
         )

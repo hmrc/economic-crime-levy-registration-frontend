@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNumberFormProvider
@@ -38,6 +38,7 @@ class SecondContactNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: SecondContactNumberFormProvider,
   pageNavigator: SecondContactNumberPageNavigator,
@@ -50,22 +51,23 @@ class SecondContactNumberController @Inject() (
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    (for {
-      secondContactName <- request.secondContactNameOrError.asResponseError
-    } yield secondContactName).fold(
-      error => routeError(error),
-      name =>
-        Ok(
-          view(
-            form.prepare(request.registration.contacts.secondContactDetails.telephoneNumber),
-            name,
-            mode,
-            request.registration.registrationType,
-            request.eclRegistrationReference
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
+    implicit request =>
+      (for {
+        secondContactName <- request.secondContactNameOrError.asResponseError
+      } yield secondContactName).fold(
+        error => routeError(error),
+        name =>
+          Ok(
+            view(
+              form.prepare(request.registration.contacts.secondContactDetails.telephoneNumber),
+              name,
+              mode,
+              request.registration.registrationType,
+              request.eclRegistrationReference
+            )
           )
-        )
-    )
+      )
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>

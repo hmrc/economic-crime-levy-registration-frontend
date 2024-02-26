@@ -56,6 +56,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       messagesApi,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       mockEclRegistrationService,
       mcc,
       view,

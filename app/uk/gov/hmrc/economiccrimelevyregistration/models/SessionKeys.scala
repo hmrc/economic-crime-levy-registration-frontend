@@ -16,4 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-object SessionKeys {}
+object SessionKeys {
+  val UrlToReturnTo = "UrlToReturnTo"
+}

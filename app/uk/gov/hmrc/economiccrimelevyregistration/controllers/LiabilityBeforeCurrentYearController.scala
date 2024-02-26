@@ -21,7 +21,7 @@ import com.google.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -41,6 +41,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   formProvider: LiabilityBeforeCurrentYearFormProvider,
   additionalInfoService: RegistrationAdditionalInfoService,
   view: LiabilityBeforeCurrentYearView,
@@ -56,13 +57,8 @@ class LiabilityBeforeCurrentYearController @Inject() (
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (authorise andThen getRegistrationData) { implicit request =>
-      Ok(
-        view(
-          form.prepare(isLiableForPreviousFY(request.additionalInfo)),
-          mode
-        )
-      )
+    (authorise andThen getRegistrationData andThen storeUrl) { implicit request =>
+      Ok(view(form.prepare(isLiableForPreviousFY(request.additionalInfo)), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
@@ -71,10 +67,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors =>
-            Future.successful(
-              BadRequest(view(formWithErrors, mode))
-            ),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
           liableBeforeCurrentYear => {
             val liabilityYear = getFirstLiabilityYear(
               registration.carriedOutAmlRegulatedActivityInCurrentFy,

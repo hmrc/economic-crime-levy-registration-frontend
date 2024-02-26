@@ -32,6 +32,7 @@ class UtrISpec extends ISpecBase with AuthorisedBehaviour {
           None
         )
       )
+      stubSessionForStoreUrl(routes.UtrController.onPageLoad(NormalMode))
 
       val result = callRoute(FakeRequest(routes.UtrController.onPageLoad(NormalMode)))
 

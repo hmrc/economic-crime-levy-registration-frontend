@@ -50,6 +50,7 @@ class AddressLookupContinueControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData),
+      fakeStoreUrlAction(),
       mockAddressLookupFrontendService,
       mockEclRegistrationService,
       pageNavigator
