@@ -294,7 +294,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
 
         new TestContext(updatedRegistration) {
           when(mockEclRegistrationService.upsertRegistration(any())(any()))
-            .thenReturn(EitherT.fromEither[Future](Right(updatedRegistration)))
+            .thenReturn(EitherT.fromEither[Future](Right(())))
 
           when(
             mockEclRegistrationService.submitRegistration(

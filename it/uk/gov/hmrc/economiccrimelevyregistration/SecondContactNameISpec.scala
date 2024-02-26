@@ -25,7 +25,8 @@ class SecondContactNameISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
       stubSessionForStoreUrl(
-        contacts.routes.SecondContactNameController.onPageLoad(NormalMode)
+        contacts.routes.SecondContactNameController.onPageLoad(NormalMode),
+        registration.internalId
       )
 
       val result = callRoute(FakeRequest(contacts.routes.SecondContactNameController.onPageLoad(NormalMode)))

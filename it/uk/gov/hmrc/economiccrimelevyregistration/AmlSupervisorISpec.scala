@@ -26,7 +26,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial))
+      stubSessionForStoreUrl(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial), registration.internalId)
 
       val result = callRoute(FakeRequest(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial)))
 

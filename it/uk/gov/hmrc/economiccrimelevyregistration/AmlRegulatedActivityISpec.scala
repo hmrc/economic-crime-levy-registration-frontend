@@ -26,7 +26,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
       val registration = random[Registration]
 
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(routes.AmlRegulatedActivityController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl(routes.AmlRegulatedActivityController.onPageLoad(NormalMode), registration.internalId)
 
       val result = callRoute(FakeRequest(routes.AmlRegulatedActivityController.onPageLoad(NormalMode)))
 

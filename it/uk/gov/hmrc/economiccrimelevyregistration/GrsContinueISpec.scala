@@ -57,7 +57,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         updatedIncorporatedEntityJourneyData.registration.registeredBusinessPartnerId.get,
         EclSubscriptionStatus(NotSubscribed)
       )
-      stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId))
+      stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId), registration.internalId)
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
@@ -149,6 +149,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         updatedSoleTraderEntityJourneyData.registration.registeredBusinessPartnerId.get,
         EclSubscriptionStatus(NotSubscribed)
       )
+      stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId), registration.internalId)
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
@@ -192,6 +193,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         updatedSoleTraderEntityJourneyData.registration.registeredBusinessPartnerId.get,
         EclSubscriptionStatus(Subscribed(testEclRegistrationReference))
       )
+
+      stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId), registration.internalId)
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
@@ -243,6 +246,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
           EclSubscriptionStatus(NotSubscribed)
         )
 
+        stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId), registration.internalId)
+
         val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
         status(result) shouldBe SEE_OTHER
@@ -291,6 +296,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
           EclSubscriptionStatus(NotSubscribed)
         )
 
+        stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId), registration.internalId)
+
         val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
         status(result) shouldBe SEE_OTHER
@@ -334,6 +341,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         updatedPartnershipEntityJourneyData.registration.registeredBusinessPartnerId.get,
         EclSubscriptionStatus(Subscribed(testEclRegistrationReference))
       )
+
+      stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId), registration.internalId)
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 

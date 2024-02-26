@@ -25,7 +25,7 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(routes.RelevantApLengthController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl(routes.RelevantApLengthController.onPageLoad(NormalMode), registration.internalId)
 
       val result = callRoute(FakeRequest(routes.RelevantApLengthController.onPageLoad(NormalMode)))
 

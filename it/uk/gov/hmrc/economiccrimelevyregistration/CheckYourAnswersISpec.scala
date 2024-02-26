@@ -33,7 +33,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
       stubGetRegistrationValidationErrors(valid = true, errors)
-      stubSessionForStoreUrl(routes.CheckYourAnswersController.onPageLoad())
+      stubSessionForStoreUrl(routes.CheckYourAnswersController.onPageLoad(), registration.internalId)
 
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
 
@@ -52,6 +52,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
       stubGetRegistrationValidationErrors(valid = false, errors)
+      stubSessionForStoreUrl(routes.CheckYourAnswersController.onPageLoad(), registration.internalId)
 
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
 

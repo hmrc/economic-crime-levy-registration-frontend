@@ -28,7 +28,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(routes.UkRevenueController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl(routes.UkRevenueController.onPageLoad(NormalMode), registration.internalId)
 
       val result = callRoute(FakeRequest(routes.UkRevenueController.onPageLoad(NormalMode)))
 

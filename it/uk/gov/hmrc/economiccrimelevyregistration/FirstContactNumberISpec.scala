@@ -39,7 +39,8 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
         )
       )
       stubSessionForStoreUrl(
-        contacts.routes.FirstContactNumberController.onPageLoad(NormalMode)
+        contacts.routes.FirstContactNumberController.onPageLoad(NormalMode),
+        registration.internalId
       )
 
       val result = callRoute(FakeRequest(contacts.routes.FirstContactNumberController.onPageLoad(NormalMode)))
