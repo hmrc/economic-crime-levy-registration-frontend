@@ -18,6 +18,10 @@ class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -40,6 +44,10 @@ class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
 
       val hasUtr            = random[Boolean]
       val registration      = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val validRegistration = registration.copy(entityType = Some(Trust))
 
       val otherEntityJourneyData = validRegistration.otherEntityJourneyData.copy(

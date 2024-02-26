@@ -21,6 +21,10 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
 
       stubGetRegistration(registration)
       stubSessionForStoreUrl()
@@ -42,6 +46,10 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       stubGetRegistration(registration)
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -64,6 +72,10 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration                                         = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val incorporatedEntityJourneyDataWithValidCompanyProfile =
         random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
 
@@ -98,6 +110,10 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
       val contactEmail                                         = random[String]
       val contactTelephone                                     = random[String]
       val registration                                         = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val incorporatedEntityJourneyDataWithValidCompanyProfile =
         random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
 

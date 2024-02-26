@@ -20,6 +20,10 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -43,9 +47,12 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       stubAuthorisedWithNoGroupEnrolment()
 
       val liableBeforeCurrentYear = random[Boolean]
-      val registration            = random[Registration].copy(
-        registrationType = Some(Initial)
-      )
+      val registration            = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          registrationType = Some(Initial),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo          = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)

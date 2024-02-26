@@ -24,6 +24,10 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
 
       stubGetRegistration(registration)
       stubSessionForStoreUrl()
@@ -44,11 +48,15 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected AML regulated activity option then redirect to the AML supervisor page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration      = random[Registration]
-      val validRegistration = registration.copy(registrationType = Some(Initial))
-      stubGetRegistration(validRegistration)
+      val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          registrationType = Some(Initial),
+          relevantApRevenue = Some(randomApRevenue())
+        )
+      stubGetRegistration(registration)
 
-      val updatedRegistration = validRegistration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
+      val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
 
       stubUpsertRegistration(updatedRegistration)
       val additionalInfo = random[RegistrationAdditionalInfo]
@@ -67,7 +75,12 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected AML regulated activity option then redirect to the liable for previous year page when the No option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration].copy(internalId = testInternalId)
+      val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          internalId = testInternalId,
+          relevantApRevenue = Some(randomApRevenue())
+        )
 
       stubGetRegistration(registration)
       val additionalInfo = random[RegistrationAdditionalInfo]

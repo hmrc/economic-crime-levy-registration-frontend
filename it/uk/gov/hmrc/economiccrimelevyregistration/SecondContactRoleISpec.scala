@@ -20,6 +20,10 @@ class SecondContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val name           = random[String]
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -52,6 +56,10 @@ class SecondContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val name         = random[String]
       val role         = stringsWithMaxLength(RoleMaxLength).sample.get
 

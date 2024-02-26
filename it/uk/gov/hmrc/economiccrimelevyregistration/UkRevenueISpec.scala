@@ -24,6 +24,10 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -45,6 +49,10 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val ukRevenue      = revenueGen.sample.get
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -77,7 +85,12 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
     "save the UK revenue then redirect to the liable for previous year page if the amount due is 0" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration].copy(internalId = testInternalId)
+      val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          internalId = testInternalId,
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val ukRevenue    = revenueGen.sample.get
       stubGetRegistration(registration.copy(relevantAp12Months = Some(true)))
 

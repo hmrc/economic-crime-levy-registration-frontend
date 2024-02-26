@@ -12,9 +12,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
   private def randomRegistration() =
-    random[Registration].copy(
-      optOtherEntityJourneyData = None
-    )
+    random[Registration]
+      .copy(
+        entityType = Some(random[EntityType]),
+        optOtherEntityJourneyData = None,
+        relevantApRevenue = Some(randomApRevenue())
+      )
 
   s"GET ${routes.EntityTypeController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.EntityTypeController.onPageLoad(NormalMode))

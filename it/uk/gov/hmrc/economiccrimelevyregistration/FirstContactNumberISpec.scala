@@ -20,6 +20,10 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val name           = random[String]
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -57,6 +61,10 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val name           = random[String]
       val number         = telephoneNumber(TelephoneNumberMaxLength).sample.get
       val additionalInfo = random[RegistrationAdditionalInfo]

@@ -20,6 +20,10 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val name           = random[String]
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -51,6 +55,10 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val name         = random[String]
       val email        = emailAddress(EmailMaxLength).sample.get
 

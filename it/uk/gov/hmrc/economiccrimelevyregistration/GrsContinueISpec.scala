@@ -26,6 +26,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         random[Registration]
           .copy(
             entityType = Some(UkLimitedCompany),
+            relevantApRevenue = Some(randomApRevenue()),
             incorporatedEntityJourneyData = None,
             soleTraderEntityJourneyData = None,
             partnershipEntityJourneyData = None
@@ -76,7 +77,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
             entityType = Some(UkLimitedCompany),
             incorporatedEntityJourneyData = None,
             soleTraderEntityJourneyData = None,
-            partnershipEntityJourneyData = None
+            partnershipEntityJourneyData = None,
+            relevantApRevenue = Some(randomApRevenue())
           )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -126,7 +128,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
             entityType = Some(SoleTrader),
             incorporatedEntityJourneyData = None,
             soleTraderEntityJourneyData = None,
-            partnershipEntityJourneyData = None
+            partnershipEntityJourneyData = None,
+            relevantApRevenue = Some(randomApRevenue())
           )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -173,7 +176,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
             entityType = Some(SoleTrader),
             incorporatedEntityJourneyData = None,
             soleTraderEntityJourneyData = None,
-            partnershipEntityJourneyData = None
+            partnershipEntityJourneyData = None,
+            relevantApRevenue = Some(randomApRevenue())
           )
 
       stubGetRegistration(registration)
@@ -222,7 +226,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
               entityType = Some(entityType),
               incorporatedEntityJourneyData = None,
               soleTraderEntityJourneyData = None,
-              partnershipEntityJourneyData = None
+              partnershipEntityJourneyData = None,
+              relevantApRevenue = Some(randomApRevenue())
             )
 
         stubGetRegistration(registration)
@@ -270,7 +275,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
               entityType = Some(entityType),
               incorporatedEntityJourneyData = None,
               soleTraderEntityJourneyData = None,
-              partnershipEntityJourneyData = None
+              partnershipEntityJourneyData = None,
+              relevantApRevenue = Some(randomApRevenue())
             )
         val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -319,7 +325,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
             entityType = Some(entityType),
             incorporatedEntityJourneyData = None,
             soleTraderEntityJourneyData = None,
-            partnershipEntityJourneyData = None
+            partnershipEntityJourneyData = None,
+            relevantApRevenue = Some(randomApRevenue())
           )
       val additionalInfo = random[RegistrationAdditionalInfo]
 

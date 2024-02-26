@@ -7,7 +7,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration, RegistrationAdditionalInfo, SessionData}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType, NormalMode, Registration, RegistrationAdditionalInfo, SessionData}
 
 class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -21,6 +21,10 @@ class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBeh
       stubGetSession(SessionData(random[String], Map()))
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -42,9 +46,14 @@ class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBeh
         stubAuthorisedWithNoGroupEnrolment()
         stubGetSession(SessionData(random[String], Map()))
 
-        val registration = random[Registration].copy(
-          registrationType = Some(Initial)
-        )
+        val registration = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
+          .copy(
+            registrationType = Some(Initial)
+          )
 
         val additionalInfo = random[RegistrationAdditionalInfo]
 

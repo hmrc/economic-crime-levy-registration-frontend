@@ -22,7 +22,11 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
         .copy(businessName = Some(alphaNumericString))
 
       val registration   = random[Registration]
-        .copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+        .copy(
+          entityType = Some(random[EntityType]),
+          optOtherEntityJourneyData = Some(otherEntityJourneyData),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -63,8 +67,9 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
 
       val registration = random[Registration]
         .copy(
+          entityType = Some(UnlimitedCompany),
           optOtherEntityJourneyData = Some(otherEntityJourneyData),
-          entityType = Some(UnlimitedCompany)
+          relevantApRevenue = Some(randomApRevenue())
         )
 
       val additionalInfo = random[RegistrationAdditionalInfo]
