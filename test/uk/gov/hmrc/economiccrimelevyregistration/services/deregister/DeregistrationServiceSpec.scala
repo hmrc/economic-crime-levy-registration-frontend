@@ -68,7 +68,7 @@ class DeregistrationServiceSpec extends SpecBase {
   "upsert" should {
     "return an upserted deregistration" in forAll { deregistration: Deregistration =>
       when(mockDeregistrationConnector.upsertDeregistration(any())(any()))
-        .thenReturn(Future.successful(deregistration))
+        .thenReturn(Future.successful(()))
 
       val result = await(service.upsert(deregistration).value)
       result shouldBe Right(deregistration)

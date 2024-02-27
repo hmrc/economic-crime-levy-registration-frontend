@@ -19,13 +19,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Arbitrary
 import play.api.data.Form
-import play.api.http.Status.SEE_OTHER
+import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
 import uk.gov.hmrc.economiccrimelevyregistration.RegistrationWithUnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrPostcodeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
@@ -108,6 +110,21 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
         status(result) shouldBe SEE_OTHER
 
         redirectLocation(result) shouldBe Some(onwardRoute.url)
+      }
+    }
+
+    "return a Bad Request with form errors when user has provided wrong input" in forAll(
+      Arbitrary.arbitrary[Registration]
+    ) { (registration: Registration) =>
+      new TestContext(registration) {
+
+        val result: Future[Result]       =
+          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value" -> "")))
+        val formWithErrors: Form[String] = form.bind(Map("value" -> ""))
+
+        status(result) shouldBe BAD_REQUEST
+
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString()
       }
     }
   }
