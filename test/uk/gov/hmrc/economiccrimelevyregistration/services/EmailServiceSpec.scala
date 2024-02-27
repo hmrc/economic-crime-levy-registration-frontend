@@ -185,7 +185,7 @@ class EmailServiceSpec extends SpecBase {
           eclAddress.addressLine2,
           eclAddress.addressLine3,
           eclAddress.addressLine4,
-          Some(true)
+          Some("true")
         )
 
         when(

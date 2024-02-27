@@ -21,8 +21,9 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration, RegistrationAdditionalInfo}
+
 class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.RegistrationSubmittedController.onPageLoad().url}" should {
@@ -31,14 +32,23 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the registration submitted HTML view" in {
       stubAuthorisedWithEclEnrolment()
 
-      val registration   = random[Registration]
+      val registration = random[Registration]
+
+      val validRegistration = registration
         .copy(
+          contacts = registration.contacts
+            .copy(firstContactDetails =
+              registration.contacts.firstContactDetails.copy(
+                emailAddress = Some(alphaNumericString)
+              )
+            ),
           entityType = Some(random[EntityType]),
           relevantApRevenue = Some(randomApRevenue())
         )
+
       val additionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistration(registration)
+      stubGetRegistration(validRegistration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubSessionForStoreUrl()

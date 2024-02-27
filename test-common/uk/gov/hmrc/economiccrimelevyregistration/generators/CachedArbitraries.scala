@@ -66,4 +66,5 @@ object CachedArbitraries extends EclTestData {
   implicit lazy val arbDeregistration: Arbitrary[Deregistration]                                        = mkArb
   implicit lazy val arbGetCorrespondenceAddressDetails: Arbitrary[GetCorrespondenceAddressDetails]      = mkArb
   implicit lazy val arbRegistrationType: Arbitrary[RegistrationType]                                    = mkArb
+  implicit lazy val arbEclRegistrationModel: Arbitrary[EclRegistrationModel]                            = mkArb
 }
