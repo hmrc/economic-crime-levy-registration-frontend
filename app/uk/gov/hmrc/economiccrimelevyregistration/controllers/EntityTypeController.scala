@@ -65,14 +65,15 @@ class EntityTypeController @Inject() (
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType => {
           val previousEntityType = request.registration.entityType
-          val event              = EntityTypeSelectedEvent(
+
+          val event = EntityTypeSelectedEvent(
             request.internalId,
             entityType
           ).extendedDataEvent
 
           auditService.sendEvent(event)
 
-          val updatedRegistration = cleanup(request.registration, entityType)
+          val updatedRegistration = cleanupIfChange(request.registration, entityType, previousEntityType)
 
           (for {
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
@@ -126,17 +127,20 @@ class EntityTypeController @Inject() (
       url => Redirect(Call(GET, url))
     )
 
-  private def cleanup(
+  private def cleanupIfChange(
     registration: Registration,
-    newEntityType: EntityType
+    newEntityType: EntityType,
+    previousEntityType: Option[EntityType]
   ) =
-    if (EntityType.isOther(newEntityType)) {
-      dataCleanup.cleanupOtherEntityData(
-        registration.copy(entityType = Some(newEntityType))
-      )
+    if (previousEntityType.contains(newEntityType)) {
+      registration
+    } else if (EntityType.isOther(newEntityType)) {
+      dataCleanup
+        .cleanupOtherEntityData(registration)
+        .copy(entityType = Some(newEntityType))
     } else {
-      dataCleanup.cleanup(
-        registration.copy(entityType = Some(newEntityType))
-      )
+      dataCleanup
+        .cleanup(registration)
+        .copy(entityType = Some(newEntityType))
     }
 }

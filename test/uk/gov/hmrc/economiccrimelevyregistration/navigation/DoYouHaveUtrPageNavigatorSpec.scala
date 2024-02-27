@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class DoYouHaveUtrPageDeregisterNavigatorSpec extends SpecBase {
+class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
 
   val pageNavigator = new DoYouHaveUtrPageNavigator()
 
@@ -82,7 +83,8 @@ class DoYouHaveUtrPageDeregisterNavigatorSpec extends SpecBase {
               Some(utr)
             } else {
               None
-            }
+            },
+            companyRegistrationNumber = Some(random[String])
           )
 
         val updatedRegistration: Registration =

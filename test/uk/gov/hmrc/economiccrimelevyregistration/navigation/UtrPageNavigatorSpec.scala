@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.scalacheck.Arbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
@@ -23,19 +24,19 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class CharityRegistrationNumberPageDeregisterNavigatorSpec extends SpecBase {
+class UtrPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new CharityRegistrationNumberPageNavigator()
+  val pageNavigator = new UtrPageNavigator()
 
   "nextPage" should {
-    "(Normal Mode) return a call to the utr question page" in forAll(
+    "(Normal Mode) return a call to the company registration number page" in forAll(
       Arbitrary.arbitrary[Registration],
       stringsLongerThan(1)
-    ) { (registration: Registration, charityRegistrationNumber: String) =>
+    ) { (registration: Registration, utr: String) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
-          charityRegistrationNumber = Some(charityRegistrationNumber)
+          ctUtr = Some(utr)
         )
 
       val updatedRegistration: Registration =
@@ -45,25 +46,25 @@ class CharityRegistrationNumberPageDeregisterNavigatorSpec extends SpecBase {
         )
 
       pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
-        routes.DoYouHaveUtrController.onPageLoad(NormalMode)
+        routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
     }
 
-    "(Check Mode) return a call to the check your answers page" in forAll {
-      (registration: Registration, number: String) =>
-        val otherEntityJourneyData = OtherEntityJourneyData
-          .empty()
-          .copy(
-            companyRegistrationNumber = Some(number)
-          )
+    "(Check Mode) return a call to the check your answers page" in forAll { (registration: Registration, utr: String) =>
+      val otherEntityJourneyData = OtherEntityJourneyData
+        .empty()
+        .copy(
+          ctUtr = Some(utr),
+          companyRegistrationNumber = Some(random[String])
+        )
 
-        val updatedRegistration: Registration =
-          registration.copy(
-            entityType = Some(Charity),
-            optOtherEntityJourneyData = Some(otherEntityJourneyData)
-          )
+      val updatedRegistration: Registration =
+        registration.copy(
+          entityType = Some(Charity),
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
 
-        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+      pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+        routes.CheckYourAnswersController.onPageLoad()
     }
   }
 
