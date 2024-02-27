@@ -64,7 +64,8 @@ class EntityTypeController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType => {
-          val event = EntityTypeSelectedEvent(
+          val previousEntityType = request.registration.entityType
+          val event              = EntityTypeSelectedEvent(
             request.internalId,
             entityType
           ).extendedDataEvent
@@ -80,7 +81,7 @@ class EntityTypeController @Inject() (
             _ =>
               mode match {
                 case NormalMode => navigateInNormalMode(entityType)
-                case CheckMode  => navigateInCheckMode(entityType)
+                case CheckMode  => navigateInCheckMode(entityType, previousEntityType)
               }
           )
         }
@@ -94,8 +95,10 @@ class EntityTypeController @Inject() (
       redirectToGRS(NormalMode, newEntityType)
     }
 
-  private def navigateInCheckMode(newEntityType: EntityType)(implicit request: RegistrationDataRequest[_]) = {
-    val sameEntityTypeAsPrevious = request.registration.entityType.contains(newEntityType)
+  private def navigateInCheckMode(newEntityType: EntityType, previousEntityType: Option[EntityType])(implicit
+    request: RegistrationDataRequest[_]
+  ) = {
+    val sameEntityTypeAsPrevious = previousEntityType.contains(newEntityType)
 
     (sameEntityTypeAsPrevious, EntityType.isOther(newEntityType)) match {
       case (true, true)   => Future.successful(Redirect(routes.CheckYourAnswersController.onPageLoad()))
