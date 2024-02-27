@@ -21,7 +21,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 
 class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
@@ -34,6 +34,10 @@ class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val fistContactEmailAddress = random[String]
       val registration            = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val contacts                = registration.contacts.copy(
         firstContactDetails =
           registration.contacts.firstContactDetails.copy(emailAddress = Some(fistContactEmailAddress))

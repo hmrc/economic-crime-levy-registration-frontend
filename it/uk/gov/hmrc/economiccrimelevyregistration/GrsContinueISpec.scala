@@ -26,6 +26,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         random[Registration]
           .copy(
             entityType = Some(UkLimitedCompany),
+            relevantApRevenue = Some(randomApRevenue()),
             incorporatedEntityJourneyData = None,
             soleTraderEntityJourneyData = None,
             partnershipEntityJourneyData = None
@@ -57,7 +58,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         updatedIncorporatedEntityJourneyData.registration.registeredBusinessPartnerId.get,
         EclSubscriptionStatus(NotSubscribed)
       )
-      stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId))
+
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
@@ -75,7 +77,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
             entityType = Some(UkLimitedCompany),
             incorporatedEntityJourneyData = None,
             soleTraderEntityJourneyData = None,
-            partnershipEntityJourneyData = None
+            partnershipEntityJourneyData = None,
+            relevantApRevenue = Some(randomApRevenue())
           )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -104,6 +107,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         updatedIncorporatedEntityJourneyData.registration.registeredBusinessPartnerId.get,
         EclSubscriptionStatus(Subscribed(testEclRegistrationReference))
       )
+
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
@@ -123,7 +128,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
             entityType = Some(SoleTrader),
             incorporatedEntityJourneyData = None,
             soleTraderEntityJourneyData = None,
-            partnershipEntityJourneyData = None
+            partnershipEntityJourneyData = None,
+            relevantApRevenue = Some(randomApRevenue())
           )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -149,7 +155,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         updatedSoleTraderEntityJourneyData.registration.registeredBusinessPartnerId.get,
         EclSubscriptionStatus(NotSubscribed)
       )
-      stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId))
+
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
@@ -169,7 +176,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
             entityType = Some(SoleTrader),
             incorporatedEntityJourneyData = None,
             soleTraderEntityJourneyData = None,
-            partnershipEntityJourneyData = None
+            partnershipEntityJourneyData = None,
+            relevantApRevenue = Some(randomApRevenue())
           )
 
       stubGetRegistration(registration)
@@ -194,7 +202,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         EclSubscriptionStatus(Subscribed(testEclRegistrationReference))
       )
 
-      stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId))
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
@@ -218,7 +226,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
               entityType = Some(entityType),
               incorporatedEntityJourneyData = None,
               soleTraderEntityJourneyData = None,
-              partnershipEntityJourneyData = None
+              partnershipEntityJourneyData = None,
+              relevantApRevenue = Some(randomApRevenue())
             )
 
         stubGetRegistration(registration)
@@ -246,7 +255,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
           EclSubscriptionStatus(NotSubscribed)
         )
 
-        stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId))
+        stubSessionForStoreUrl()
 
         val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
@@ -266,7 +275,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
               entityType = Some(entityType),
               incorporatedEntityJourneyData = None,
               soleTraderEntityJourneyData = None,
-              partnershipEntityJourneyData = None
+              partnershipEntityJourneyData = None,
+              relevantApRevenue = Some(randomApRevenue())
             )
         val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -296,7 +306,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
           EclSubscriptionStatus(NotSubscribed)
         )
 
-        stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId))
+        stubSessionForStoreUrl()
 
         val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 
@@ -315,7 +325,8 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
             entityType = Some(entityType),
             incorporatedEntityJourneyData = None,
             soleTraderEntityJourneyData = None,
-            partnershipEntityJourneyData = None
+            partnershipEntityJourneyData = None,
+            relevantApRevenue = Some(randomApRevenue())
           )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -342,7 +353,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
         EclSubscriptionStatus(Subscribed(testEclRegistrationReference))
       )
 
-      stubSessionForStoreUrl(routes.GrsContinueController.continue(NormalMode, journeyId))
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.GrsContinueController.continue(NormalMode, journeyId)))
 

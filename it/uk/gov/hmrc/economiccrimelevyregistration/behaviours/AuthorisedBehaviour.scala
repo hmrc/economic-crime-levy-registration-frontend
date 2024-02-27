@@ -6,7 +6,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationType}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 
 import scala.concurrent.Future
@@ -32,6 +32,10 @@ trait AuthorisedBehaviour {
         stubAuthorisedWithEclEnrolment()
 
         val registration = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
 
         stubGetRegistration(registration.copy(registrationType = Some(registrationType)))
 

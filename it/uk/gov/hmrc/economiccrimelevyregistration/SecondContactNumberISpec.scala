@@ -20,6 +20,10 @@ class SecondContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val name           = random[String]
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -31,9 +35,7 @@ class SecondContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
           )
         )
       )
-      stubSessionForStoreUrl(
-        contacts.routes.SecondContactNumberController.onPageLoad(NormalMode)
-      )
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(contacts.routes.SecondContactNumberController.onPageLoad(NormalMode)))
 
@@ -52,6 +54,10 @@ class SecondContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration                                         = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val incorporatedEntityJourneyDataWithValidCompanyProfile =
         random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
       val name                                                 = random[String]
