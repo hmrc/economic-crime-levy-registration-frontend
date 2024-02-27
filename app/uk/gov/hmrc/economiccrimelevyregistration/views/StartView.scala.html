@@ -68,13 +68,12 @@
         <li>@messages("start.doNotUse.b3")</li>
     </ul>
 
-    @formHelper(action = StartController.onSubmit()) {
-        @button(
-            ButtonViewModel(messages("site.start"))
-                .asStartButton()
-                .withAttribute("id" -> "start")
-                .withAttribute("type" -> "submit")
-            )
-        }
+    @button(
+        ButtonViewModel(messages("site.start"))
+        .asLink(RegisterForCurrentYearController.onPageLoad(NormalMode).url)
+        .asStartButton()
+        .withAttribute("id" -> "start")
+        .withCssClass("govuk-!-margin-top-2 govuk-!-margin-bottom-8")
+    )
     }
 
