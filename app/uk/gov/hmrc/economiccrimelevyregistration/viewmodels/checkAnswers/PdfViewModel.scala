@@ -200,23 +200,12 @@ case class PdfViewModel(
           ++ addIf(isInitialRegistration, formatRow(DateOfBirthSummary.row(registration.dateOfBirth)))
           ++ addIf(isInitialRegistration, formatRow(liabilityRow))
           ++ addIf(
-            isInitialRegistration || isAmendRegistration,
-            getLiabilityRow
+            (isInitialRegistration || isAmendRegistration) && !hasLiabilityStartDateChanged,
+            getLiabilityStartDateRow
           )
           ++ addIfNot(hasBusinessSectorChanged, formatRow(BusinessSectorSummary.row(registration.businessSector)))
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
-
-  private def getLiabilityRow(implicit messages: Messages) = {
-    val liabilityStartDate = additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate)
-    if (liabilityStartDate.isDefined) {
-      LiabilityDateSummary.row(additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate))
-    } else {
-      LiabilityDateSummary.row(
-        getSubscriptionResponse.map(response => LocalDate.parse(response.additionalDetails.liabilityStartDate))
-      )
-    }
-  }
 
   def eclDetails()(implicit messages: Messages): SummaryList =
     SummaryListViewModel(
@@ -294,9 +283,23 @@ case class PdfViewModel(
           ++ addIf(
             hasSecondContactEmailChanged,
             formatRow(SecondContactEmailSummary.row(registration.contacts.secondContactDetails.emailAddress))
+          ) ++ addIf(
+            hasLiabilityStartDateChanged,
+            getLiabilityStartDateRow
           )
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
+
+  private def getLiabilityStartDateRow(implicit messages: Messages) = {
+    val liabilityStartDate = additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate)
+    if (liabilityStartDate.isDefined) {
+      LiabilityDateSummary.row(additionalInfo.flatMap(additionalInfo => additionalInfo.liabilityStartDate))
+    } else {
+      LiabilityDateSummary.row(
+        getSubscriptionResponse.map(response => LocalDate.parse(response.additionalDetails.liabilityStartDate))
+      )
+    }
+  }
 
   private def addIf[T](condition: Boolean, value: T): Seq[T]    = if (condition) Seq(value) else Seq.empty
   private def addIfNot[T](condition: Boolean, value: T): Seq[T] = if (!condition) Seq(value) else Seq.empty
