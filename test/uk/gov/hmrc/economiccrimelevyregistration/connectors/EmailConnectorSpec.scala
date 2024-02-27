@@ -90,7 +90,7 @@ class EmailConnectorSpec extends SpecBase {
   }
   "sendAmendRegistrationSubmittedEmail" should {
     "return unit when the http client returns a successful http response" in forAll {
-      (name: String, eclAddress: EclAddress, containsAddress: Option[Boolean]) =>
+      (name: String, eclAddress: EclAddress, containsAddress: Option[String]) =>
         beforeEach()
 
         val date            = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages)
@@ -119,7 +119,7 @@ class EmailConnectorSpec extends SpecBase {
     }
 
     "return an internal server error when the http client returns an upstream error response" in forAll {
-      (name: String, email: String, eclAddress: EclAddress, containsAddress: Option[Boolean]) =>
+      (name: String, email: String, eclAddress: EclAddress, containsAddress: Option[String]) =>
         beforeEach()
         val date            = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages)
         val emailParameters = AmendRegistrationSubmittedEmailParameters(
