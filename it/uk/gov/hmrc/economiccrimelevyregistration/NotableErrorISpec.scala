@@ -35,6 +35,10 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
 
       stubGetRegistration(registration)
 
@@ -150,6 +154,10 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorised()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val entityType     = random[EntityType]
       val additionalInfo = random[RegistrationAdditionalInfo]
 

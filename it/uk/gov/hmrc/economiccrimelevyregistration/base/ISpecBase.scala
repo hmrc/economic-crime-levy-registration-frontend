@@ -124,4 +124,7 @@ abstract class ISpecBase
     Jsoup.parse(contentAsString(result)).html()
   }
 
+  val apRevenueMin: Double          = 10_200_000
+  val apRevenueMax: Double          = 999_999_999.99
+  def randomApRevenue(): BigDecimal = bigDecimalInRange(apRevenueMin.doubleValue, apRevenueMax.doubleValue).sample.value
 }

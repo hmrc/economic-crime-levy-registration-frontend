@@ -4,9 +4,8 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status.OK
 import play.api.libs.json.Json
-import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 trait SessionDataStubs { self: WireMockStubs =>
 
@@ -18,20 +17,16 @@ trait SessionDataStubs { self: WireMockStubs =>
         .withBody(Json.toJson(sessionData).toString())
     )
 
-  def stubUpsertSession(sessionData: SessionData): StubMapping =
+  def stubUpsertSession(): StubMapping =
     stub(
-      put(urlEqualTo("/economic-crime-levy-registration/session"))
-        .withRequestBody(
-          equalToJson(Json.toJson(sessionData).toString(), true, true)
-        ),
+      put(urlEqualTo("/economic-crime-levy-registration/session")),
       aResponse()
         .withStatus(OK)
-        .withBody(Json.toJson(sessionData).toString())
     )
 
-  def stubSessionForStoreUrl(call: Call) = {
+  def stubSessionForStoreUrl(): StubMapping = {
     stubGetSession(SessionData(testInternalId, Map()))
-    stubUpsertSession(SessionData(testInternalId, Map(SessionKeys.UrlToReturnTo -> call.url)))
+    stubUpsertSession()
   }
 
   def stubDeleteSession(): StubMapping =

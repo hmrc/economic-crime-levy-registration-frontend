@@ -19,7 +19,12 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
     "respond with 200 status and the cancel registration view" in {
       stubAuthorisedWithEclEnrolment()
 
-      val registration   = random[Registration].copy(registrationType = Some(Amendment))
+      val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
+        .copy(registrationType = Some(Amendment))
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistration(registration)
@@ -41,7 +46,12 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
     "delete the registration when the Yes option is selected" in {
       stubAuthorisedWithEclEnrolment()
 
-      val registration   = random[Registration].copy(registrationType = Some(Amendment))
+      val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          registrationType = Some(Amendment),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistration(registration)

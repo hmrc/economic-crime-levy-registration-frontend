@@ -6,7 +6,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, NormalMode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, EntityType, NormalMode, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -21,6 +21,10 @@ class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -47,9 +51,7 @@ class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetAlfAddressData(journeyId, alfAddressData)
 
       stubUpsertRegistration(updatedRegistration)
-      stubSessionForStoreUrl(
-        routes.AddressLookupContinueController.continue(NormalMode, journeyId)
-      )
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.AddressLookupContinueController.continue(NormalMode, journeyId)))
 

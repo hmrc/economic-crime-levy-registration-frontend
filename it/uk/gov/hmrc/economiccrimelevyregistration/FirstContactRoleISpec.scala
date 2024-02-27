@@ -20,6 +20,10 @@ class FirstContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val name           = random[String]
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -31,7 +35,7 @@ class FirstContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
           )
         )
       )
-      stubSessionForStoreUrl(contacts.routes.FirstContactRoleController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(contacts.routes.FirstContactRoleController.onPageLoad(NormalMode)))
 
@@ -48,6 +52,10 @@ class FirstContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val name           = random[String]
       val role           = stringsWithMaxLength(RoleMaxLength).sample.get
       val additionalInfo = random[RegistrationAdditionalInfo]

@@ -22,11 +22,15 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial))
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial)))
 
@@ -46,9 +50,12 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
       val carriedOutAmlRegulatedActivityInCurrentFy = random[Boolean]
       val registration                              =
-        random[Registration].copy(carriedOutAmlRegulatedActivityInCurrentFy =
-          Some(carriedOutAmlRegulatedActivityInCurrentFy)
-        )
+        random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
+          .copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivityInCurrentFy))
       val validRegistration                         = registration.copy(registrationType = Some(Initial))
       val additionalInfo                            = random[RegistrationAdditionalInfo]
 
@@ -89,7 +96,13 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option then redirect to the register with GC page when the answer is GC" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration].copy(internalId = testInternalId, registrationType = Some(Initial))
+      val registration   = random[Registration]
+        .copy(
+          internalId = testInternalId,
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue()),
+          registrationType = Some(Initial)
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -116,7 +129,13 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option then redirect to the register with FCA page when the answer is FCA" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration].copy(internalId = testInternalId, registrationType = Some(Initial))
+      val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          internalId = testInternalId,
+          registrationType = Some(Initial),
+          relevantApRevenue = Some(randomApRevenue())
+        )
 
       val amlSupervisor  =
         AmlSupervisor(FinancialConductAuthority, None)

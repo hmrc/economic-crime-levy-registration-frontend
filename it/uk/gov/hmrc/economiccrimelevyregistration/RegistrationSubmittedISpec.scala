@@ -21,7 +21,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -32,12 +32,16 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithEclEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistration(registration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
-      stubSessionForStoreUrl(routes.RegistrationSubmittedController.onPageLoad())
+      stubSessionForStoreUrl()
 
       stubDeleteRegistrationAdditionalInfo()
       stubDeleteRegistration()

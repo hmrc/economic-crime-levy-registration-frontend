@@ -7,7 +7,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType, NormalMode, Registration, RegistrationAdditionalInfo}
 
 import java.time.LocalDate
 
@@ -22,6 +22,10 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -42,9 +46,12 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
 
         val date = LocalDate.now()
 
-        val registration = random[Registration].copy(
-          registrationType = Some(Initial)
-        )
+        val registration = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            registrationType = Some(Initial),
+            relevantApRevenue = Some(randomApRevenue())
+          )
 
         val additionalInfo = random[RegistrationAdditionalInfo]
 
