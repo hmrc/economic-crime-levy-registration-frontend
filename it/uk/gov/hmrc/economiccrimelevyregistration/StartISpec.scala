@@ -34,16 +34,4 @@ class StartISpec extends ISpecBase with AuthorisedBehaviour {
       html(result)     should include("Register for the Economic Crime Levy")
     }
   }
-
-  s"POST ${routes.StartController.onSubmit().url}"  should {
-    "respond with the next page" in {
-      stubAuthorisedWithNoGroupEnrolment()
-
-      val result = callRoute(FakeRequest(routes.StartController.onSubmit()))
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(routes.RegisterForCurrentYearController.onPageLoad(NormalMode).url)
-    }
-  }
 }

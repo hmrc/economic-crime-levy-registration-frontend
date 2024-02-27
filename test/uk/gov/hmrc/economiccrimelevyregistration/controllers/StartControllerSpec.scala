@@ -42,14 +42,4 @@ class StartControllerSpec extends SpecBase {
       contentAsString(result) shouldBe view()(fakeRequest, messages).toString
     }
   }
-
-  "onSubmit" should {
-    "redirect to register for current year page" in {
-      val result: Future[Result] = controller.onSubmit()(fakeRequest)
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(routes.RegisterForCurrentYearController.onPageLoad(NormalMode).url)
-    }
-  }
 }

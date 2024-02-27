@@ -36,8 +36,4 @@ class StartController @Inject() (
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
     Ok(view())
   }
-
-  def onSubmit: Action[AnyContent] = Action { implicit request =>
-    Redirect(routes.RegisterForCurrentYearController.onPageLoad(NormalMode))
-  }
 }
