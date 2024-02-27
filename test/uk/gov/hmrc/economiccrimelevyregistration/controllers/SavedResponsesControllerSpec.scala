@@ -88,7 +88,7 @@ class SavedResponsesControllerSpec extends SpecBase {
           .thenReturn(EitherT.fromEither[Future](Right(())))
 
         when(mockSessionService.delete(any())(any()))
-          .thenReturn(EitherT.fromEither[Future](Right()))
+          .thenReturn(EitherT.fromEither[Future](Right(())))
 
         val result: Future[Result] =
           controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "false")))
