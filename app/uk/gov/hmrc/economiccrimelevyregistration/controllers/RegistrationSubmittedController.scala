@@ -19,12 +19,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithoutEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RegistrationSubmittedController @Inject() (
@@ -42,31 +44,40 @@ class RegistrationSubmittedController @Inject() (
     with ErrorHandler {
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+    val sessionEclReference = request.session.get(SessionKeys.EclReference)
+    (request.additionalInfo.flatMap(_.eclReference), sessionEclReference) match {
+      case (Some(eclReference), _) => registrationSubmittedRouting(eclReference)
+      case (_, Some(eclReference)) => outOfSessionRouting(eclReference)
+      case _                       =>
+        Future.successful(Redirect(routes.NotableErrorController.answersAreInvalid()))
+    }
+  }
+
+  private def registrationSubmittedRouting(eclReference: String)(implicit request: RegistrationDataRequest[_]) =
     (for {
       _                        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
       _                        <- registrationService.deleteRegistration(request.internalId).asResponseError
       firstContactEmailAddress <-
         valueOrError(request.registration.contacts.firstContactDetails.emailAddress, "First contact email address")
       secondContactEmailAddress = request.registration.contacts.secondContactDetails.emailAddress
-      liabilityYear             = request.additionalInfo.flatMap(_.liabilityYear)
-      eclReference              = request.additionalInfo.flatMap(_.eclReference)
-    } yield (liabilityYear, firstContactEmailAddress, secondContactEmailAddress, eclReference))
+      liabilityYear             =
+        request.additionalInfo.flatMap(_.liabilityStartDate.map(_.getYear)).map(year => LiabilityYear(year))
+    } yield (liabilityYear, firstContactEmailAddress, secondContactEmailAddress))
       .fold(
         _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
         data => {
           val liabilityYear      = data._1
           val firstContactEmail  = data._2
           val secondContactEmail = data._3
-          val eclReference       = data._4
-          (eclReference, request.eclRegistrationReference) match {
-            case (Some(eclReference), _) =>
-              Ok(view(eclReference, firstContactEmail, secondContactEmail, liabilityYear))
-            case (_, Some(eclReference)) =>
-              Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear))
-            case _                       =>
-              Redirect(routes.NotableErrorController.answersAreInvalid())
-          }
+          Ok(view(eclReference, firstContactEmail, secondContactEmail, liabilityYear))
         }
       )
+
+  private def outOfSessionRouting(eclReference: String)(implicit
+    request: RegistrationDataRequest[_]
+  ) = {
+    val liabilityYear = request.session.get(SessionKeys.LiabilityYear).map(year => LiabilityYear(year.toInt))
+
+    Future.successful(Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear)))
   }
 }
