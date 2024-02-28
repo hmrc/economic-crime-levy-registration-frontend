@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
 import com.google.inject.{ImplementedBy, Inject}
+import play.api.Logging
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
@@ -31,7 +32,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedReque
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
-import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -118,15 +118,14 @@ abstract class BaseAuthorisedAction @Inject() (
     extends AuthorisedAction
     with FrontendHeaderCarrierProvider
     with AuthorisedFunctions
-    with ErrorHandler {
+    with ErrorHandler
+    with Logging {
 
   val checkForEclEnrolment: Boolean
   val agentsAllowed: Boolean
   val assistantsAllowed: Boolean
 
-  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
-    implicit val hcFromRequest: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-
+  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
     authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup and credentialRole) {
       case Some(internalId) ~ enrolments ~ Some(groupId) ~ Some(affinityGroup) ~ Some(credentialRole) =>
         val eclEnrolment: Option[Enrolment]          = enrolments.enrolments.find(_.key == EclEnrolment.ServiceName)
@@ -142,17 +141,19 @@ abstract class BaseAuthorisedAction @Inject() (
                 processAssistant(request, internalId, block, groupId, eclRegistrationReference)
               case _         =>
                 if (checkForEclEnrolment) {
-                  processEnrolment(request, internalId, block, groupId, eclEnrolment, eclRegistrationReference)
+                  processEnrolment(request, internalId, block, groupId, eclEnrolment, eclRegistrationReference)(
+                    hc(request)
+                  )
                 } else {
-                  processEclReference(request, internalId, block, groupId, eclRegistrationReference)
+                  processEclReference(request, internalId, block, groupId, eclRegistrationReference)(hc(request))
                 }
             }
         }
       case _                                                                                          => Future.failed(new Exception("Failed to authorise due to missing data"))
-    } recover { case _: NoActiveSession =>
+    }(hc(request), executionContext) recover { case e: NoActiveSession =>
+      logger.warn(s"[BaseAuthorisedAction][invokeBlock] NoActiveSession failure: ${e.reason}")
       Redirect(config.signInUrl, Map("continue" -> Seq(s"${config.host}${request.uri}")))
     }
-  }
 
   private def processEclReference[A](
     request: Request[A],
