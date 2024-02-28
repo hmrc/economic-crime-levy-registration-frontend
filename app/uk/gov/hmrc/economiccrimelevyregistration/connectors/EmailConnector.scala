@@ -22,6 +22,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.AmendRegistrationSubmittedEmailParameters.AmendRegistrationTemplateId
+import uk.gov.hmrc.economiccrimelevyregistration.models.email.DeregistrationRequestedEmailParameters.DeregistrationTemplateId
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.{NormalEntityTemplateId, OtherEntityTemplateId}
 import uk.gov.hmrc.economiccrimelevyregistration.models.email._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -75,6 +76,21 @@ class EmailConnector @Inject() (
         .executeAndContinue
     }
 
+  def sendDeregistrationRequestedEmail(
+    to: String,
+    deregistrationRequestedEmailParameters: DeregistrationRequestedEmailParameters
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[Unit] =
+    retryFor[Unit]("HMRC email - Send deregistration requested")(retryCondition) {
+      httpClient
+        .post(sendEmailUrl)
+        .withBody(
+          Json.toJson(toDeregistrationRequestedEmailRequest(to, deregistrationRequestedEmailParameters))
+        )
+        .executeAndContinue
+    }
+
   private def toRegistrationSubmittedEmailRequest(
     to: String,
     registrationSubmittedEmailParameters: RegistrationSubmittedEmailParameters,
@@ -94,6 +110,15 @@ class EmailConnector @Inject() (
       to = Seq(to),
       templateId = AmendRegistrationTemplateId,
       parameters = amendRegistrationSubmittedEmailParameters
+    )
+
+  private def toDeregistrationRequestedEmailRequest(
+    to: String,
+    deregistrationRequestedEmailParameters: DeregistrationRequestedEmailParameters
+  ): DeregistrationRequestedEmailRequest =
+    DeregistrationRequestedEmailRequest(
+      to = Seq(to),
+      parameters = deregistrationRequestedEmailParameters
     )
 
   private def templateIdByEntityType(entityType: Option[EntityType]) =

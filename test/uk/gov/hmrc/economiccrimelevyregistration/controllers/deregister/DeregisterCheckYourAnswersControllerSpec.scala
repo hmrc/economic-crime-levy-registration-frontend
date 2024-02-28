@@ -17,15 +17,17 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister
 
 import cats.data.EitherT
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.{arbDeregistration, arbGetSubscriptionResponse}
-import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, GetSubscriptionResponse}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterCheckYourAnswersView
 
@@ -37,6 +39,7 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
   val mockDeregistrationService: DeregistrationService   = mock[DeregistrationService]
+  val mockEmailService: EmailService                     = mock[EmailService]
 
   class TestContext(internalId: String, eclReference: String) {
     val controller = new DeregisterCheckYourAnswersController(
@@ -45,7 +48,7 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
       new DeregistrationDataRetrievalAction(mockDeregistrationService),
       mockEclRegistrationService,
       mockDeregistrationService,
-      appConfig,
+      mockEmailService,
       view
     )
   }
@@ -81,16 +84,39 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "go to the deregistration requested page" in forAll { deregistration: Deregistration =>
-      new TestContext(deregistration.internalId, "") {
+    "go to the deregistration requested page" in forAll {
+      (
+        deregistration: Deregistration,
+        subscription: GetSubscriptionResponse,
+        email: String,
+        name: String,
+        eclReference: String
+      ) =>
+        new TestContext(deregistration.internalId, "") {
+          val validDeregistration =
+            deregistration.copy(contactDetails = ContactDetails(Some(name), None, Some(email), None))
 
-        val result: Future[Result] =
-          controller.onSubmit()(fakeRequest)
+          when(mockDeregistrationService.getOrCreate(anyString())(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(validDeregistration)))
+          when(mockEclRegistrationService.getSubscription(anyString())(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(subscription)))
+          when(
+            mockEmailService.sendDeregistrationEmail(
+              ArgumentMatchers.eq(email),
+              ArgumentMatchers.eq(name),
+              ArgumentMatchers.eq(eclReference),
+              ArgumentMatchers.eq(subscription.correspondenceAddressDetails)
+            )(any(), any())
+          )
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
-        status(result) shouldBe SEE_OTHER
+          val result: Future[Result] =
+            controller.onSubmit()(fakeRequest)
 
-        redirectLocation(result) shouldBe Some(routes.DeregistrationRequestedController.onPageLoad().url)
-      }
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(routes.DeregistrationRequestedController.onPageLoad().url)
+        }
     }
   }
 }

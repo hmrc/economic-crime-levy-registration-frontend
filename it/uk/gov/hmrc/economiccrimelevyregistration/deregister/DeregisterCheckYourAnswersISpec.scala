@@ -65,8 +65,10 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
       stubAuthorisedWithEclEnrolment()
 
       val deregistration = random[Deregistration].copy(internalId = testInternalId)
+      val subscription   = random[GetSubscriptionResponse]
       val role           = stringsWithMaxLength(RoleMaxLength).sample.get
       stubGetDeregistration(deregistration)
+      stubGetSubscription(subscription)
 
       val result = callRoute(
         FakeRequest(
