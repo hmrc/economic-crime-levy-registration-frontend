@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendm
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, ErrorTemplate, OtherRegistrationPdfView}
@@ -48,6 +48,7 @@ class CheckYourAnswersController @Inject() (
   storeUrl: StoreUrlAction,
   registrationService: EclRegistrationService,
   val controllerComponents: MessagesControllerComponents,
+  registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   view: CheckYourAnswersView,
   emailService: EmailService,
   otherRegistrationPdfView: OtherRegistrationPdfView,
@@ -145,7 +146,7 @@ class CheckYourAnswersController @Inject() (
           request.additionalInfo
         )
       pdfViewModel                =
-        PdfViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference)
+        PdfViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference, request.additionalInfo)
       base64EncodedHtmlViewForPdf = getBase64EncodedPdf(checkYourAnswersModel, pdfViewModel)
       _                          <- registrationService
                                       .upsertRegistration(
@@ -153,11 +154,23 @@ class CheckYourAnswersController @Inject() (
                                       )
                                       .asResponseError
       response                   <- registrationService.submitRegistration(request.internalId).asResponseError
+      additionalInfo             <- valueOrError(request.additionalInfo, "additional info")
+      updatedAdditionalInfo       = additionalInfo.copy(eclReference = Some(response.eclReference))
+      _                          <- registrationAdditionalInfoService.upsert(updatedAdditionalInfo).asResponseError
       _                          <- sendEmail(registration, request.additionalInfo, response.eclReference).asResponseError
       email                       = registration.contacts.firstContactDetails.emailAddress
     } yield (response, email)).fold(
       error => routeError(error),
-      _ => Redirect(getNextPage(registration))
+      data => {
+        val session = registration.entityType match {
+          case Some(value) if EntityType.isOther(value) => request.session
+          case _                                        =>
+            request.session ++ Seq(
+              SessionKeys.EclReference -> data._1.eclReference
+            )
+        }
+        Redirect(getNextPage(registration)).withSession(session)
+      }
     )
   }
 

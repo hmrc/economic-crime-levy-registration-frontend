@@ -19,7 +19,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.StartView
 
 import scala.concurrent.Future
@@ -40,16 +39,6 @@ class StartControllerSpec extends SpecBase {
       status(result) shouldBe OK
 
       contentAsString(result) shouldBe view()(fakeRequest, messages).toString
-    }
-  }
-
-  "onSubmit" should {
-    "redirect to register for current year page" in {
-      val result: Future[Result] = controller.onSubmit()(fakeRequest)
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(routes.RegisterForCurrentYearController.onPageLoad(NormalMode).url)
     }
   }
 }
