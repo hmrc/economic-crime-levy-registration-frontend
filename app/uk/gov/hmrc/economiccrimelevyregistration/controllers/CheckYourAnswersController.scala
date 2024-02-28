@@ -67,7 +67,7 @@ class CheckYourAnswersController @Inject() (
         .foldF(
           error => Future.successful(routeError(error)),
           {
-            case Some(_) =>
+            case Some() =>
               Future.successful(Redirect(routes.NotableErrorController.answersAreInvalid()))
             case None    =>
               if (appConfig.getSubscriptionEnabled && request.registration.registrationType.contains(Amendment)) {
@@ -145,7 +145,7 @@ class CheckYourAnswersController @Inject() (
           request.additionalInfo
         )
       pdfViewModel                =
-        PdfViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference)
+        PdfViewModel(registration, getSubscriptionResponse, request.eclRegistrationReference, request.additionalInfo)
       base64EncodedHtmlViewForPdf = getBase64EncodedPdf(checkYourAnswersModel, pdfViewModel)
       _                          <- registrationService
                                       .upsertRegistration(
