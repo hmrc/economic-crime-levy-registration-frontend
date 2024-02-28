@@ -22,7 +22,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityDateFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityDatePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityDateView}
@@ -69,7 +69,8 @@ class LiabilityDateController @Inject() (
             } yield EclRegistrationModel(registration, Some(additionalInfo)))
               .convertToResult(
                 mode = mode,
-                pageNavigator = pageNavigator
+                pageNavigator = pageNavigator,
+                session = Map(SessionKeys.LiabilityYear -> liabilityDate.getYear.toString)
               )
           }
         )

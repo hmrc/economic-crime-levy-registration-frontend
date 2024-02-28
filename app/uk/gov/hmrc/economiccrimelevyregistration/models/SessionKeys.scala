@@ -17,5 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
 object SessionKeys {
-  val UrlToReturnTo = "UrlToReturnTo"
+  val UrlToReturnTo        = "UrlToReturnTo"
+  val EclReference: String = "eclReference"
+  val LiabilityYear        = "liabilityYear"
 }
