@@ -16,12 +16,10 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionData}
 
 class StartISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -33,18 +31,6 @@ class StartISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe OK
       html(result)     should include("Register for the Economic Crime Levy")
-    }
-  }
-
-  s"POST ${routes.StartController.onSubmit().url}"  should {
-    "respond with the next page" in {
-      stubAuthorisedWithNoGroupEnrolment()
-
-      val result = callRoute(FakeRequest(routes.StartController.onSubmit()))
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(routes.RegisterForCurrentYearController.onPageLoad(NormalMode).url)
     }
   }
 }

@@ -20,6 +20,10 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val name           = random[String]
       val additionalInfo = random[RegistrationAdditionalInfo]
 
@@ -32,9 +36,7 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
         )
       )
 
-      stubSessionForStoreUrl(
-        contacts.routes.FirstContactEmailController.onPageLoad(NormalMode)
-      )
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(contacts.routes.FirstContactEmailController.onPageLoad(NormalMode)))
 
@@ -53,6 +55,10 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val name         = random[String]
       val email        = emailAddress(EmailMaxLength).sample.get
 

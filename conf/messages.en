@@ -229,6 +229,7 @@ partnershipName.error.required = Enter a partnership name
 partnershipName.error.length = Partnership name must be {0} characters or less
 
 businessSector.title = What is your business sector?
+businessSector.hint = Select the business sector that describes your organisation the best.
 businessSector.Auditor = Auditor
 businessSector.CreditInstitution = Credit institution
 businessSector.CryptoAssetExchangeProvider = Cryptoasset exchange provider or custodian wallet provider

@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, EntityType, Registration}
 
 class RegisterWithFcaISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -34,6 +34,10 @@ class RegisterWithFcaISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
 
       stubGetRegistration(registration.copy(amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None))))
 

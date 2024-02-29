@@ -19,12 +19,16 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(routes.NonUkCrnController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.NonUkCrnController.onPageLoad(NormalMode)))
 
@@ -41,6 +45,10 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       val validRegistration = registration.copy(entityType = Some(NonUKEstablishment))

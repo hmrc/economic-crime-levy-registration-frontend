@@ -40,10 +40,9 @@ class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
     if (registration.otherEntityJourneyData.isCtUtrPresent.contains(true)) {
       mode match {
         case CheckMode  =>
-          val utr = registration.otherEntityJourneyData.ctUtr
-          utr match {
+          registration.otherEntityJourneyData.ctUtr match {
             case Some(_) =>
-              routes.UtrTypeController.onPageLoad(mode)
+              routes.CheckYourAnswersController.onPageLoad()
             case None    =>
               routes.UtrTypeController.onPageLoad(mode)
           }
@@ -54,31 +53,34 @@ class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
       mode match {
         case NormalMode =>
           routes.BusinessSectorController.onPageLoad(mode)
-        case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
+        case CheckMode  =>
+          routes.CheckYourAnswersController.onPageLoad()
       }
     }
 
   private def routeOtherEntityTypes(registration: Registration, mode: Mode) =
     if (registration.otherEntityJourneyData.isCtUtrPresent.contains(true)) {
       mode match {
+        case NormalMode =>
+          routes.UtrController.onPageLoad(mode)
         case CheckMode  =>
-          val utr = registration.otherEntityJourneyData.ctUtr
-          utr match {
+          registration.otherEntityJourneyData.ctUtr match {
             case Some(_) =>
               routes.CheckYourAnswersController.onPageLoad()
             case None    =>
               routes.UtrController.onPageLoad(mode)
-
           }
-        case NormalMode =>
-          routes.UtrController.onPageLoad(mode)
-
       }
     } else {
       mode match {
         case NormalMode =>
           routes.CompanyRegistrationNumberController.onPageLoad(mode)
-        case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
+        case CheckMode  =>
+          if (registration.otherEntityJourneyData.companyRegistrationNumber.isEmpty) {
+            routes.CompanyRegistrationNumberController.onPageLoad(mode)
+          } else {
+            routes.CheckYourAnswersController.onPageLoad()
+          }
       }
     }
 }

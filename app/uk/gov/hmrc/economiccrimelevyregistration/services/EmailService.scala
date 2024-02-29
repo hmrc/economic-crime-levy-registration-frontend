@@ -148,7 +148,7 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
             addressLine2 = address.flatMap(_.addressLine2),
             addressLine3 = address.flatMap(_.addressLine3),
             addressLine4 = address.flatMap(_.addressLine4),
-            containsAddress = address.map(_ => true)
+            containsAddress = address.map(_ => "true")
           )
         )
         .map(Right(_))

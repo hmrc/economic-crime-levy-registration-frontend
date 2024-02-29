@@ -17,11 +17,15 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(routes.RelevantAp12MonthsController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.RelevantAp12MonthsController.onPageLoad(NormalMode)))
 
@@ -38,6 +42,10 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -61,6 +69,10 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)

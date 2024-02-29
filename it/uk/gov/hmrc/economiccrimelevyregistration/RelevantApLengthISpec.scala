@@ -21,11 +21,15 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(routes.RelevantApLengthController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.RelevantApLengthController.onPageLoad(NormalMode)))
 
@@ -42,6 +46,10 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration     = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val relevantApLength = Gen.chooseNum[Int](minDays, maxDays).sample.get
       val additionalInfo   = random[RegistrationAdditionalInfo]
 

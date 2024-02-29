@@ -16,43 +16,73 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import org.scalacheck.Arbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class CharityRegistrationNumberPageDeregisterNavigatorSpec extends SpecBase {
+class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new CharityRegistrationNumberPageNavigator()
+  val pageNavigator = new DoYouHaveUtrPageNavigator()
 
   "nextPage" should {
-    "(Normal Mode) return a call to the utr question page" in forAll(
-      Arbitrary.arbitrary[Registration],
-      stringsLongerThan(1)
-    ) { (registration: Registration, charityRegistrationNumber: String) =>
+    "(Normal Mode) return a call to the utr page when answer is yes" in forAll { (registration: Registration) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
-          charityRegistrationNumber = Some(charityRegistrationNumber)
+          isCtUtrPresent = Some(true)
         )
 
       val updatedRegistration: Registration =
         registration.copy(
-          entityType = Some(Charity),
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
+      val nextPage = if (registration.entityType.contains(UnincorporatedAssociation)) {
+        routes.UtrTypeController.onPageLoad(NormalMode)
+      } else {
+        routes.UtrController.onPageLoad(NormalMode)
+      }
+
       pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
-        routes.DoYouHaveUtrController.onPageLoad(NormalMode)
+        nextPage
     }
 
-    "(Check Mode) return a call to the check your answers page" in forAll {
-      (registration: Registration, number: String) =>
+    "(Normal Mode) return a call to the company registration number page when answer is no" in forAll {
+      (registration: Registration) =>
         val otherEntityJourneyData = OtherEntityJourneyData
           .empty()
           .copy(
+            isCtUtrPresent = Some(false)
+          )
+
+        val updatedRegistration: Registration =
+          registration.copy(
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
+
+        val nextPage = if (registration.entityType.contains(UnincorporatedAssociation)) {
+          routes.BusinessSectorController.onPageLoad(NormalMode)
+        } else {
+          routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
+        }
+
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          nextPage
+    }
+
+    "(Check Mode) return a call to the check your answers page if ctUtr is present" in forAll {
+      (registration: Registration, isUtrPresent: Boolean, utr: String, number: String) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            isCtUtrPresent = Some(isUtrPresent),
+            ctUtr = if (isUtrPresent) {
+              Some(utr)
+            } else {
+              None
+            },
             companyRegistrationNumber = Some(number)
           )
 

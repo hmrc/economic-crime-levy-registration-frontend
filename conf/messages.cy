@@ -230,6 +230,7 @@ partnershipName.error.required = Nodwch enw partneriaeth
 partnershipName.error.length = Mae’n rhaid i enw partneriaeth fod yn {0} o gymeriadau neu lai
 
 businessSector.title = Beth yw sector eich busnes?
+businessSector.hint = Dewiswch y sector busnes sy’n disgrifio’ch sefydliad orau.
 businessSector.Auditor = Archwilydd
 businessSector.CreditInstitution = Sefydliad credyd
 businessSector.CryptoAssetExchangeProvider = Darparwr cyfnewidfeydd cryptoasedion neu ddarparwr waledi gwarchodol

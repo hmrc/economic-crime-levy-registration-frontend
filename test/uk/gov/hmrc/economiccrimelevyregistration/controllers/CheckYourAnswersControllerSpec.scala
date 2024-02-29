@@ -48,17 +48,19 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val pdfView: OtherRegistrationPdfView      = app.injector.instanceOf[OtherRegistrationPdfView]
   val amendPdfView: AmendRegistrationPdfView = app.injector.instanceOf[AmendRegistrationPdfView]
 
-  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  val mockEmailService: EmailService                     = mock[EmailService]
+  val mockEclRegistrationService: EclRegistrationService                       = mock[EclRegistrationService]
+  val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
+  val mockEmailService: EmailService                                           = mock[EmailService]
 
-  class TestContext(registrationData: Registration) {
+  class TestContext(registrationData: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None) {
     val controller = new CheckYourAnswersController(
       messagesApi,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeDataRetrievalAction(registrationData, additionalInfo),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       mcc,
+      mockRegistrationAdditionalInfoService,
       view,
       mockEmailService,
       pdfView,
@@ -105,12 +107,14 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "redirect to the registration submitted page after submitting the registration with one contact and sending email successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[RegistrationAdditionalInfo],
       Arbitrary.arbitrary[EntityType].retryUntil(!EntityType.isOther(_)),
       emailAddress(EmailMaxLength)
     ) {
       (
         createEclSubscriptionResponse: CreateEclSubscriptionResponse,
         registration: Registration,
+        additionalInfo: RegistrationAdditionalInfo,
         entityType: EntityType,
         firstContactEmailAddress: String
       ) =>
@@ -124,9 +128,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             secondContactDetails = ContactDetails.empty
           )
         )
-        new TestContext(updatedRegistration) {
+        new TestContext(updatedRegistration, Some(additionalInfo)) {
           when(mockEclRegistrationService.upsertRegistration(any())(any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
           when(
             mockEclRegistrationService
               .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
@@ -152,6 +160,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )(any(), any())
 
           reset(mockEclRegistrationService)
+          reset(mockRegistrationAdditionalInfoService)
           reset(mockEmailService)
         }
     }
@@ -159,12 +168,14 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "redirect to the registration received page after submitting the registration with one contact and sending email successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[RegistrationAdditionalInfo],
       Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther),
       emailAddress(EmailMaxLength)
     ) {
       (
         createEclSubscriptionResponse: CreateEclSubscriptionResponse,
         registration: Registration,
+        additionalInfo: RegistrationAdditionalInfo,
         entityType: EntityType,
         firstContactEmailAddress: String
       ) =>
@@ -179,9 +190,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
         )
 
-        new TestContext(updatedRegistration) {
+        new TestContext(updatedRegistration, Some(additionalInfo)) {
           when(mockEclRegistrationService.upsertRegistration(any())(any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
           when(
             mockEclRegistrationService
               .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
@@ -209,6 +224,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           submittedRegistration.base64EncodedFields.flatMap(_.dmsSubmissionHtml).getOrElse("").isBlank shouldBe false
 
           reset(mockEclRegistrationService)
+          reset(mockRegistrationAdditionalInfoService)
           reset(mockEmailService)
         }
     }
@@ -216,6 +232,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "redirect to the registration submitted page after submitting the registration with two contacts and sending emails successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[RegistrationAdditionalInfo],
       Arbitrary.arbitrary[EntityType].retryUntil(!EntityType.isOther(_)),
       emailAddress(EmailMaxLength),
       emailAddress(EmailMaxLength)
@@ -223,6 +240,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       (
         createEclSubscriptionResponse: CreateEclSubscriptionResponse,
         registration: Registration,
+        additionalInfo: RegistrationAdditionalInfo,
         entityType: EntityType,
         firstContactEmailAddress: String,
         secondContactEmailAddress: String
@@ -238,7 +256,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
         )
 
-        new TestContext(updatedRegistration) {
+        new TestContext(updatedRegistration, Some(additionalInfo)) {
           when(mockEclRegistrationService.upsertRegistration(any())(any()))
             .thenReturn(EitherT.fromEither[Future](Right(())))
           when(
@@ -246,6 +264,10 @@ class CheckYourAnswersControllerSpec extends SpecBase {
               .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
           )
             .thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
+
+          when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
           when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
@@ -263,6 +285,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )(any(), any())
 
           reset(mockEclRegistrationService)
+          reset(mockRegistrationAdditionalInfoService)
           reset(mockEmailService)
         }
     }
@@ -270,6 +293,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "redirect to the registration received page after submitting the registration with two contacts and sending emails successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[RegistrationAdditionalInfo],
       Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther),
       emailAddress(EmailMaxLength),
       emailAddress(EmailMaxLength)
@@ -277,6 +301,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       (
         createEclSubscriptionResponse: CreateEclSubscriptionResponse,
         registration: Registration,
+        additionalInfo: RegistrationAdditionalInfo,
         entityType: EntityType,
         firstContactEmailAddress: String,
         secondContactEmailAddress: String
@@ -292,9 +317,12 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           )
         )
 
-        new TestContext(updatedRegistration) {
+        new TestContext(updatedRegistration, Some(additionalInfo)) {
           when(mockEclRegistrationService.upsertRegistration(any())(any()))
             .thenReturn(EitherT.fromEither[Future](Right(())))
+
+          when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           when(
             mockEclRegistrationService.submitRegistration(
@@ -326,6 +354,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           submittedRegistration.base64EncodedFields.flatMap(_.dmsSubmissionHtml).getOrElse("").isBlank shouldBe false
 
           reset(mockEclRegistrationService)
+          reset(mockRegistrationAdditionalInfoService)
           reset(mockEmailService)
         }
     }

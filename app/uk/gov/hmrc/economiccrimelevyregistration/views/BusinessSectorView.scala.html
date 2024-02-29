@@ -40,12 +40,14 @@
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
         }
 
+
+
         @radios(
             RadiosViewModel(
                 field = form("value"),
                 legend = LegendViewModel(messages("businessSector.title")).asPageHeading(LegendSize.Large),
                 items = BusinessSector.options
-            )
+            ).withHint(Hint(content = Text(messages("businessSector.hint"))))
         )
 
         @button(

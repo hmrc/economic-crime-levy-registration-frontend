@@ -26,14 +26,19 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the Check your answers HTML view when the registration data is valid" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration].copy(registrationType = Some(Amendment))
+      val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          registrationType = Some(Amendment),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val errors         = random[DataValidationError]
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
       stubGetRegistrationValidationErrors(valid = true, errors)
-      stubSessionForStoreUrl(routes.CheckYourAnswersController.onPageLoad())
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
 
@@ -46,13 +51,17 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val errors         = random[DataValidationError]
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
       stubGetRegistrationValidationErrors(valid = false, errors)
-      stubSessionForStoreUrl(routes.CheckYourAnswersController.onPageLoad())
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
 
@@ -79,6 +88,10 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     stubAuthorisedWithNoGroupEnrolment()
 
     val registration      = random[Registration]
+      .copy(
+        entityType = Some(random[EntityType]),
+        relevantApRevenue = Some(randomApRevenue())
+      )
     val eclReference      = random[String]
     val contactDetails    = random[ContactDetails]
     val firstContactName  = random[String]

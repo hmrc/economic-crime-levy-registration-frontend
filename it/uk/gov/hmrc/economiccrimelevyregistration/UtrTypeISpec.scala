@@ -18,12 +18,16 @@ class UtrTypeISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubGetRegistration(registration)
-      stubSessionForStoreUrl(routes.UtrTypeController.onPageLoad(NormalMode))
+      stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.UtrTypeController.onPageLoad(NormalMode)))
 
@@ -40,6 +44,10 @@ class UtrTypeISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)

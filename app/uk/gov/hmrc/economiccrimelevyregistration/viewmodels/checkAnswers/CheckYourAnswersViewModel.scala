@@ -185,7 +185,7 @@ case class CheckYourAnswersViewModel(
             )
           )
           ++ addIf(
-            isInitialRegistration || isAmendRegistration,
+            (isInitialRegistration || isAmendRegistration) && !hasLiabilityStartDateChanged,
             getLiabilityRow
           )
           ++ addIf(
@@ -246,6 +246,9 @@ case class CheckYourAnswersViewModel(
         ) ++ addIf(
           hasSecondContactEmailChanged && hasSecondContact,
           SecondContactEmailSummary.row(registration.contacts.secondContactDetails.emailAddress)
+        ) ++ addIf(
+          hasLiabilityStartDateChanged,
+          getLiabilityRow
         )).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
 

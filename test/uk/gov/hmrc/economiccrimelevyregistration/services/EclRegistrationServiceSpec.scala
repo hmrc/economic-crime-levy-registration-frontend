@@ -53,7 +53,7 @@ class EclRegistrationServiceSpec extends SpecBase {
           .thenReturn(Future.failed(UpstreamErrorResponse("Not found", NOT_FOUND)))
 
         when(mockEclRegistrationConnector.upsertRegistration(any())(any()))
-          .thenReturn(Future.successful(emptyRegistration))
+          .thenReturn(Future.successful(()))
 
         val result = await(service.getOrCreate(internalId).value)
         result shouldBe Right(emptyRegistration)

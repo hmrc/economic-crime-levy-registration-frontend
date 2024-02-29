@@ -22,7 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
-import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, GetSubscriptionResponse, Registration, RegistrationAdditionalInfo}
 
 class AmendRegistrationStartISpec extends ISpecBase {
 
@@ -31,7 +31,12 @@ class AmendRegistrationStartISpec extends ISpecBase {
 
       stubAuthorisedWithEclEnrolment()
 
-      val registration            = random[Registration].copy(registrationType = Some(Amendment))
+      val registration            = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          registrationType = Some(Amendment),
+          relevantApRevenue = Some(randomApRevenue())
+        )
       val getSubscriptionResponse = random[GetSubscriptionResponse]
 
       stubGetRegistration(registration)
