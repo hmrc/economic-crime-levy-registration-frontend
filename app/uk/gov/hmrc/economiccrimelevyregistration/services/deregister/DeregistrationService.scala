@@ -110,11 +110,11 @@ class DeregistrationService @Inject() (
     internalId: String
   )(implicit
     hc: HeaderCarrier
-  ): EitherT[Future, DataRetrievalError, Deregistration] =
+  ): EitherT[Future, DataRetrievalError, Unit] =
     EitherT {
       deregistrationConnector
         .submitDeregistration(internalId)
-        .map(Right(_))
+        .map(_ => Right(()))
         .recover {
           case error @ UpstreamErrorResponse(message, code, _, _)
               if UpstreamErrorResponse.Upstream5xxResponse.unapply(error).isDefined ||

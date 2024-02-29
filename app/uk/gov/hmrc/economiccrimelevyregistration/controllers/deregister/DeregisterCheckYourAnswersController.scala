@@ -18,11 +18,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister
 
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Base64EncodedFields, ContactDetails, GetSubscriptionResponse}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, GetSubscriptionResponse}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.deregister.DeregistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
@@ -30,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.Deregistrat
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.deregister._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.SummaryListFluency
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterCheckYourAnswersView
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.{DeregisterCheckYourAnswersView, DeregistrationPdfView}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -45,7 +44,8 @@ class DeregisterCheckYourAnswersController @Inject() (
   getDeregistrationData: DeregistrationDataRetrievalAction,
   eclRegistrationService: EclRegistrationService,
   deregistrationService: DeregistrationService,
-  view: DeregisterCheckYourAnswersView
+  view: DeregisterCheckYourAnswersView,
+  pdfView: DeregistrationPdfView
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
@@ -55,15 +55,24 @@ class DeregisterCheckYourAnswersController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
     (for {
-      eclReference      <- valueOrError(request.eclRegistrationReference, "ECL reference")
-      subscription      <- eclRegistrationService.getSubscription(eclReference).asResponseError
-      deregisterHtmlView = createHtmlView(subscription)
-      _                 <- deregistrationService
-                             .upsert(request.deregistration.copy(eclReference = request.eclRegistrationReference))
-                             .asResponseError
-    } yield deregisterHtmlView).fold(
+      eclReference <- valueOrError(request.eclRegistrationReference, "ECL reference")
+      subscription <- eclRegistrationService.getSubscription(eclReference).asResponseError
+      _            <- deregistrationService
+                        .upsert(request.deregistration.copy(eclReference = request.eclRegistrationReference))
+                        .asResponseError
+    } yield subscription).fold(
       err => routeError(err),
-      deregisterCheckYourAnswersView => Ok(deregisterCheckYourAnswersView)
+      subscription =>
+        Ok(
+          view(
+            organisation(
+              request.eclRegistrationReference,
+              subscription.legalEntityDetails.organisationName
+            ),
+            additionalInfo(request.deregistration),
+            contact(request.deregistration.contactDetails)
+          )
+        )
     )
   }
 
@@ -71,8 +80,8 @@ class DeregisterCheckYourAnswersController @Inject() (
     (for {
       eclReference               <- valueOrError(request.eclRegistrationReference, "ECL reference")
       subscription               <- eclRegistrationService.getSubscription(eclReference).asResponseError
-      deregisterHtmlView          = createHtmlView(subscription)
-      base64EncodedHtmlViewForPdf = base64EncodeHtmlView(deregisterHtmlView.body)
+      deregisterHtmlView          = createPdfView(subscription)
+      base64EncodedHtmlViewForPdf = base64EncodeHtmlView(deregisterHtmlView.toString())
       updatedDeregistration       =
         request.deregistration
           .copy(dmsSubmissionHtml = Some(base64EncodedHtmlViewForPdf))
@@ -86,17 +95,16 @@ class DeregisterCheckYourAnswersController @Inject() (
     )
   }
 
-  private def createHtmlView(
+  private def createPdfView(
     subscription: GetSubscriptionResponse
   )(implicit request: DeregistrationDataRequest[_]) =
-    view(
+    pdfView(
       organisation(
         request.eclRegistrationReference,
         subscription.legalEntityDetails.organisationName
       ),
       additionalInfo(request.deregistration),
-      contact(request.deregistration.contactDetails),
-      request.deregistration.registrationType
+      contact(request.deregistration.contactDetails)
     )
 
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder

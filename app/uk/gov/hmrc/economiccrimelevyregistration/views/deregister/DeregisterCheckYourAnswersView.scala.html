@@ -17,6 +17,7 @@
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 @import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates._
+@import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.DeRegistration
 
 @this(
         layout: Layout,
@@ -25,10 +26,10 @@
         govukButton: GovukButton
 )
 
-@(organisation: SummaryList, additionalInfo: SummaryList, contact: SummaryList, registrationType: RegistrationType )(implicit request: Request[_], messages: Messages)
+@(organisation: SummaryList, additionalInfo: SummaryList, contact: SummaryList)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(messages("deregisterCya.title")),
-    registrationTypeForTopBanner = Some(registrationType)
+    registrationTypeForTopBanner = Some(DeRegistration)
 ) {
 
     @formHelper(action = DeregisterCheckYourAnswersController.onSubmit()) {
