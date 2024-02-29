@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.scalacheck.Arbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
@@ -50,12 +49,12 @@ class CharityRegistrationNumberPageNavigatorSpec extends SpecBase {
     }
 
     "(Check Mode) return a call to the check your answers page" in forAll {
-      (registration: Registration, number: String) =>
+      (registration: Registration, number: String, isCtUtrPresent: Boolean) =>
         val otherEntityJourneyData = OtherEntityJourneyData
           .empty()
           .copy(
             companyRegistrationNumber = Some(number),
-            isCtUtrPresent = Some(random[Boolean])
+            isCtUtrPresent = Some(isCtUtrPresent)
           )
 
         val updatedRegistration: Registration =

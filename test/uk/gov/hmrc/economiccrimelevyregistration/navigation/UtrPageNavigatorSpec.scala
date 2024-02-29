@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.scalacheck.Arbitrary
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
@@ -49,22 +48,23 @@ class UtrPageNavigatorSpec extends SpecBase {
         routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
     }
 
-    "(Check Mode) return a call to the check your answers page" in forAll { (registration: Registration, utr: String) =>
-      val otherEntityJourneyData = OtherEntityJourneyData
-        .empty()
-        .copy(
-          ctUtr = Some(utr),
-          companyRegistrationNumber = Some(random[String])
-        )
+    "(Check Mode) return a call to the check your answers page" in forAll {
+      (registration: Registration, utr: String, number: String) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            ctUtr = Some(utr),
+            companyRegistrationNumber = Some(number)
+          )
 
-      val updatedRegistration: Registration =
-        registration.copy(
-          entityType = Some(Charity),
-          optOtherEntityJourneyData = Some(otherEntityJourneyData)
-        )
+        val updatedRegistration: Registration =
+          registration.copy(
+            entityType = Some(Charity),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
 
-      pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-        routes.CheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
     }
   }
 

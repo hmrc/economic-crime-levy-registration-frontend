@@ -71,11 +71,10 @@ class EntityTypeController @Inject() (
             entityType
           ).extendedDataEvent
 
-          auditService.sendEvent(event)
-
           val updatedRegistration = cleanupIfChange(request.registration, entityType, previousEntityType)
 
           (for {
+            _ <- auditService.sendEvent(event).asResponseError
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
           } yield updatedRegistration).foldF(
             err => Future.successful(routeError(err)),
@@ -132,15 +131,16 @@ class EntityTypeController @Inject() (
     newEntityType: EntityType,
     previousEntityType: Option[EntityType]
   ) =
-    if (previousEntityType.contains(newEntityType)) {
-      registration
-    } else if (EntityType.isOther(newEntityType)) {
-      dataCleanup
-        .cleanupOtherEntityData(registration)
-        .copy(entityType = Some(newEntityType))
-    } else {
-      dataCleanup
-        .cleanup(registration)
-        .copy(entityType = Some(newEntityType))
+    previousEntityType match {
+      case Some(value) if value == newEntityType  =>
+        registration
+      case _ if EntityType.isOther(newEntityType) =>
+        dataCleanup
+          .cleanupOtherEntityData(registration)
+          .copy(entityType = Some(newEntityType))
+      case _                                      =>
+        dataCleanup
+          .cleanup(registration)
+          .copy(entityType = Some(newEntityType))
     }
 }

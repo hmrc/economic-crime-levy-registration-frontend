@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
@@ -74,7 +73,7 @@ class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
     }
 
     "(Check Mode) return a call to the check your answers page if ctUtr is present" in forAll {
-      (registration: Registration, isUtrPresent: Boolean, utr: String) =>
+      (registration: Registration, isUtrPresent: Boolean, utr: String, number: String) =>
         val otherEntityJourneyData = OtherEntityJourneyData
           .empty()
           .copy(
@@ -84,7 +83,7 @@ class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
             } else {
               None
             },
-            companyRegistrationNumber = Some(random[String])
+            companyRegistrationNumber = Some(number)
           )
 
         val updatedRegistration: Registration =
