@@ -22,7 +22,6 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.AmendRegistrationSubmittedEmailParameters.AmendRegistrationTemplateId
-import uk.gov.hmrc.economiccrimelevyregistration.models.email.DeregistrationRequestedEmailParameters.DeregistrationTemplateId
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest.{NormalEntityTemplateId, OtherEntityTemplateId}
 import uk.gov.hmrc.economiccrimelevyregistration.models.email._
 import uk.gov.hmrc.http.client.HttpClientV2

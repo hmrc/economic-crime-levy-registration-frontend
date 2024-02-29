@@ -80,17 +80,10 @@ class DeregisterCheckYourAnswersController @Inject() (
       address       = subscription.correspondenceAddressDetails
       name         <- valueOrError(deregistration.contactDetails.name, "Name")
       email        <- valueOrError(deregistration.contactDetails.emailAddress, "Email address")
-    } yield (email, name, eclReference, address)).fold(
+      _            <- emailService.sendDeregistrationEmail(email, name, eclReference, address).asResponseError
+    } yield ()).fold(
       err => routeError(err),
-      data => {
-        emailService.sendDeregistrationEmail(
-          emailAddress = data._1,
-          name = data._2,
-          eclReference = data._3,
-          address = data._4
-        )
-        Redirect(routes.DeregistrationRequestedController.onPageLoad())
-      }
+      _ => Redirect(routes.DeregistrationRequestedController.onPageLoad())
     )
 
   }

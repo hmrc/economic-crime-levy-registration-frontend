@@ -5,7 +5,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status.ACCEPTED
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
-import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmittedEmailRequest
+import uk.gov.hmrc.economiccrimelevyregistration.models.email.{DeregistrationRequestedEmailRequest, RegistrationSubmittedEmailRequest}
 
 trait EmailStubs { self: WireMockStubs =>
 
@@ -17,6 +17,20 @@ trait EmailStubs { self: WireMockStubs =>
         .withRequestBody(
           equalToJson(
             Json.toJson(registrationSubmittedEmailRequest).toString()
+          )
+        ),
+      aResponse()
+        .withStatus(ACCEPTED)
+    )
+
+  def stubSendDeregistrationRequestedEmail(
+    deregistrationRequestedEmailRequest: DeregistrationRequestedEmailRequest
+  ): StubMapping =
+    stub(
+      post(urlEqualTo("/hmrc/email"))
+        .withRequestBody(
+          equalToJson(
+            Json.toJson(deregistrationRequestedEmailRequest).toString()
           )
         ),
       aResponse()
