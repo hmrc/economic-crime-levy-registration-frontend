@@ -64,23 +64,24 @@ class EntityTypeController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         entityType => {
+          val previousEntityType = request.registration.entityType
+
           val event = EntityTypeSelectedEvent(
             request.internalId,
             entityType
           ).extendedDataEvent
 
-          auditService.sendEvent(event)
-
-          val updatedRegistration = cleanup(request.registration, entityType)
+          val updatedRegistration = cleanupIfChange(request.registration, entityType, previousEntityType)
 
           (for {
+            _ <- auditService.sendEvent(event).asResponseError
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
           } yield updatedRegistration).foldF(
             err => Future.successful(routeError(err)),
             _ =>
               mode match {
                 case NormalMode => navigateInNormalMode(entityType)
-                case CheckMode  => navigateInCheckMode(entityType)
+                case CheckMode  => navigateInCheckMode(entityType, previousEntityType)
               }
           )
         }
@@ -94,8 +95,10 @@ class EntityTypeController @Inject() (
       redirectToGRS(NormalMode, newEntityType)
     }
 
-  private def navigateInCheckMode(newEntityType: EntityType)(implicit request: RegistrationDataRequest[_]) = {
-    val sameEntityTypeAsPrevious = request.registration.entityType.contains(newEntityType)
+  private def navigateInCheckMode(newEntityType: EntityType, previousEntityType: Option[EntityType])(implicit
+    request: RegistrationDataRequest[_]
+  ) = {
+    val sameEntityTypeAsPrevious = previousEntityType.contains(newEntityType)
 
     (sameEntityTypeAsPrevious, EntityType.isOther(newEntityType)) match {
       case (true, true)   => Future.successful(Redirect(routes.CheckYourAnswersController.onPageLoad()))
@@ -123,17 +126,21 @@ class EntityTypeController @Inject() (
       url => Redirect(Call(GET, url))
     )
 
-  private def cleanup(
+  private def cleanupIfChange(
     registration: Registration,
-    newEntityType: EntityType
+    newEntityType: EntityType,
+    previousEntityType: Option[EntityType]
   ) =
-    if (EntityType.isOther(newEntityType)) {
-      dataCleanup.cleanupOtherEntityData(
-        registration.copy(entityType = Some(newEntityType))
-      )
-    } else {
-      dataCleanup.cleanup(
-        registration.copy(entityType = Some(newEntityType))
-      )
+    previousEntityType match {
+      case Some(value) if value == newEntityType  =>
+        registration
+      case _ if EntityType.isOther(newEntityType) =>
+        dataCleanup
+          .cleanupOtherEntityData(registration)
+          .copy(entityType = Some(newEntityType))
+      case _                                      =>
+        dataCleanup
+          .cleanup(registration)
+          .copy(entityType = Some(newEntityType))
     }
 }

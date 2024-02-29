@@ -26,8 +26,8 @@ class CharityRegistrationNumberPageNavigator extends PageNavigator {
     routes.DoYouHaveUtrController.onPageLoad(NormalMode)
 
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
-    if (eclRegistrationModel.registration.otherEntityJourneyData.companyRegistrationNumber.isEmpty) {
-      routes.CompanyRegistrationNumberController.onPageLoad(CheckMode)
+    if (eclRegistrationModel.registration.otherEntityJourneyData.isCtUtrPresent.isEmpty) {
+      routes.DoYouHaveUtrController.onPageLoad(CheckMode)
     } else {
       routes.CheckYourAnswersController.onPageLoad()
     }

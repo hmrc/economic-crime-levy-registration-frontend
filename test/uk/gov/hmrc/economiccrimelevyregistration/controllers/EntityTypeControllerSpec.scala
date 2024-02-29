@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.Result
@@ -28,10 +29,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AuditError, DataRetrievalError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
+
 import scala.concurrent.Future
 
 class EntityTypeControllerSpec extends SpecBase {
@@ -87,25 +89,29 @@ class EntityTypeControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the selected entity type then redirect to the next page" in forAll {
-      (registration: Registration, mode: Mode) =>
-        new TestContext(registration) {
-          val entityType                        = Charity
-          val updatedRegistration: Registration = registration.copy(
-            entityType = Some(entityType)
-          )
+    "save the selected entity type then redirect to the next page" in forAll(
+      Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther)
+    ) { (registration: Registration, entityType: EntityType) =>
+      new TestContext(registration) {
+        val updatedRegistration: Registration = registration.copy(
+          entityType = Some(entityType)
+        )
 
-          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
-          val result: Future[Result] =
-            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
+        when(mockAuditConnector.sendEvent(any())(any()))
+          .thenReturn(EitherT[Future, AuditError, Unit](Future.successful(Right(()))))
 
-          status(result) shouldBe SEE_OTHER
+        val result: Future[Result] =
+          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
 
-          redirectLocation(result) shouldBe Some(routes.BusinessNameController.onPageLoad(NormalMode).url)
+        status(result) shouldBe SEE_OTHER
 
-        }
+        redirectLocation(result) shouldBe Some(routes.BusinessNameController.onPageLoad(NormalMode).url)
+
+      }
     }
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll {
