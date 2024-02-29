@@ -105,4 +105,23 @@ class DeregistrationService @Inject() (
           case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
+
+  def submit(
+    internalId: String
+  )(implicit
+    hc: HeaderCarrier
+  ): EitherT[Future, DataRetrievalError, Deregistration] =
+    EitherT {
+      deregistrationConnector
+        .submitDeregistration(internalId)
+        .map(Right(_))
+        .recover {
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse.unapply(error).isDefined ||
+                UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            Left(DataRetrievalError.BadGateway(message, code))
+          case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+        }
+    }
+
 }

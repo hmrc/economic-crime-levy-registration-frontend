@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.deregister
 
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.DeRegistration
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, RegistrationType}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Base64EncodedFields, ContactDetails, RegistrationType}
 
 import java.time.{Instant, LocalDate}
 
@@ -29,7 +29,8 @@ case class Deregistration(
   date: Option[LocalDate],
   contactDetails: ContactDetails,
   registrationType: RegistrationType,
-  lastUpdated: Option[Instant] = None
+  lastUpdated: Option[Instant] = None,
+  dmsSubmissionHtml: Option[String] = None
 )
 
 object Deregistration {
@@ -41,6 +42,7 @@ object Deregistration {
     reason = None,
     date = None,
     contactDetails = ContactDetails(None, None, None, None),
-    DeRegistration
+    DeRegistration,
+    dmsSubmissionHtml = None
   )
 }
