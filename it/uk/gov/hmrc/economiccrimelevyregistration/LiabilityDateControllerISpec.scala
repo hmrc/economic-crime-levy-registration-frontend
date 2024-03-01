@@ -20,6 +20,7 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the liability date HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
+      stubSessionForStoreUrl()
 
       val registration   = random[Registration]
         .copy(
@@ -37,10 +38,12 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
 
       html(result) should include("Enter the date you became liable for ECL")
     }
+
     s"POST ${routes.LiabilityDateController.onSubmit(CheckMode).url}" should {
       behave like authorisedActionWithEnrolmentCheckRoute(
         routes.LiabilityDateController.onSubmit(CheckMode)
       )
+
       "save the entered date then redirect to the check your answers page" in {
         stubAuthorisedWithNoGroupEnrolment()
 
