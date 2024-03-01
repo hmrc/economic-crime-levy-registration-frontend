@@ -25,6 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleM
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregistrationPdfView
 
 class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -67,6 +68,11 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
       val deregistration = random[Deregistration].copy(internalId = testInternalId)
       val role           = stringsWithMaxLength(RoleMaxLength).sample.get
       stubGetDeregistration(deregistration)
+
+      val getSubscriptionResponse = random[GetSubscriptionResponse]
+      stubGetSubscription(getSubscriptionResponse)
+
+      stubUpsertDeregistration(deregistration)
 
       val result = callRoute(
         FakeRequest(
