@@ -188,10 +188,6 @@ case class CheckYourAnswersViewModel(
             (isInitialRegistration || isAmendRegistration) && !hasLiabilityStartDateChanged,
             getLiabilityRow
           )
-          ++ addIf(
-            isInitialRegistration,
-            AmlRegulatedActivitySummary.row(registration.carriedOutAmlRegulatedActivityInCurrentFy)
-          )
           ++ addIfNot(hasBusinessSectorChanged, BusinessSectorSummary.row(registration.businessSector))
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
