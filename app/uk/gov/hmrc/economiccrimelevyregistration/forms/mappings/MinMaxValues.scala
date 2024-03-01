@@ -16,8 +16,10 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
 
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+
 import java.time.LocalDate
 
 object MinMaxValues {
-  val eclStartDate = LocalDate.of(2022, 4, 1)
+  val eclStartDate = LocalDate.of(EclTaxYear.initialYear, EclTaxYear.EclFyStartMonth, EclTaxYear.EclFyStartDay)
 }
