@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityDateFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, SessionKeys}
@@ -36,6 +36,7 @@ class LiabilityDateController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
   getRegistrationData: DataRetrievalAction,
+  storeUrl: StoreUrlAction,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   formProvider: LiabilityDateFormProvider,
   pageNavigator: LiabilityDatePageNavigator,
@@ -46,12 +47,12 @@ class LiabilityDateController @Inject() (
     with ErrorHandler
     with BaseController {
   val form: Form[LocalDate]                      = formProvider()
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    request.additionalInfo match {
-      case Some(value) => Ok(view(mode, form.prepare(value.liabilityStartDate)))
-      case None        => Ok(view(mode, form))
-    }
-
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
+    implicit request =>
+      request.additionalInfo match {
+        case Some(value) => Ok(view(mode, form.prepare(value.liabilityStartDate)))
+        case None        => Ok(view(mode, form))
+      }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
