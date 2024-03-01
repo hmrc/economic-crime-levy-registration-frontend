@@ -17,8 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{maximumDate, minimumDate}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.{Mappings, MinMaxValues}
 
 import java.time.LocalDate
 
@@ -29,8 +28,8 @@ class LiabilityDateFormProvider extends Mappings {
       "value" -> localDate(
         invalidKey = "invalidKey",
         requiredKey = "liability.date.error.required",
-        minDateConstraint = Some(minDate(minimumDate, "liability.date.error.early.date")),
-        maxDateConstraint = Some(maxDate(maximumDate, "liability.date.error.future.date"))
+        minDateConstraint = Some(minDate(MinMaxValues.eclStartDate, "liability.date.error.early.date")),
+        maxDateConstraint = Some(maxDate(LocalDate.now(), "liability.date.error.future.date"))
       )
     )
 }
