@@ -31,6 +31,4 @@ object MaxLengths {
   val CompanyRegistrationNumberMaxLength = 8
   val UtrLength                          = 10
   val CtUtrPostcodeLength                = 8
-  val maximumDate                        = LocalDate.now()
-  val minimumDate                        = LocalDate.of(EclTaxYear.initialYear, EclTaxYear.EclFyStartMonth, EclTaxYear.EclFyStartDay)
 }
