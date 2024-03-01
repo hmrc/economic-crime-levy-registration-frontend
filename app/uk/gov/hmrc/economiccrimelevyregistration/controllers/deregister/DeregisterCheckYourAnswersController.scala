@@ -18,13 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister
 
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.models.ContactDetails
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.deregister._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.SummaryListFluency
@@ -43,7 +42,7 @@ class DeregisterCheckYourAnswersController @Inject() (
   getDeregistrationData: DeregistrationDataRetrievalAction,
   eclRegistrationService: EclRegistrationService,
   deregistrationService: DeregistrationService,
-  appConfig: AppConfig,
+  emailService: EmailService,
   view: DeregisterCheckYourAnswersView
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
@@ -73,8 +72,20 @@ class DeregisterCheckYourAnswersController @Inject() (
     )
   }
 
-  def onSubmit(): Action[AnyContent] = authorise { _ =>
-    Redirect(routes.DeregistrationRequestedController.onPageLoad())
+  def onSubmit(): Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
+    val deregistration = request.deregistration
+    (for {
+      eclReference <- valueOrError(request.eclRegistrationReference, "ECL reference")
+      subscription <- eclRegistrationService.getSubscription(eclReference).asResponseError
+      address       = subscription.correspondenceAddressDetails
+      name         <- valueOrError(deregistration.contactDetails.name, "Name")
+      email        <- valueOrError(deregistration.contactDetails.emailAddress, "Email address")
+      _            <- emailService.sendDeregistrationEmail(email, name, eclReference, address).asResponseError
+    } yield ()).fold(
+      err => routeError(err),
+      _ => Redirect(routes.DeregistrationRequestedController.onPageLoad())
+    )
+
   }
 
   def organisation(eclReference: Option[String], companyName: Option[String])(implicit
@@ -104,4 +115,5 @@ class DeregisterCheckYourAnswersController @Inject() (
         DeregisterNumberSummary.row(contactDetails.telephoneNumber)
       ).flatten
     ).withCssClass("govuk-!-margin-bottom-9")
+
 }

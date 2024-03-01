@@ -20,9 +20,9 @@ import cats.data.EitherT
 import play.api.Logging
 import play.api.i18n.Messages
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
-import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, RegistrationSubmittedEmailParameters}
+import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, DeregistrationRequestedEmailParameters, RegistrationSubmittedEmailParameters}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EclAddress, EntityType, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EclAddress, EntityType, GetCorrespondenceAddressDetails, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
@@ -170,4 +170,35 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
       data   <- EitherT.fromEither[Future](getContactData(contacts))
       result <- sendEmail(data._1, data._2, address)
     } yield result
+
+  def sendDeregistrationEmail(
+    emailAddress: String,
+    name: String,
+    eclReference: String,
+    address: GetCorrespondenceAddressDetails
+  )(implicit hc: HeaderCarrier, messages: Messages): ServiceResult[Unit] =
+    EitherT {
+      emailConnector
+        .sendDeregistrationRequestedEmail(
+          emailAddress,
+          DeregistrationRequestedEmailParameters(
+            name = name,
+            dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now()),
+            eclReferenceNumber = eclReference,
+            addressLine1 = Some(address.addressLine1),
+            addressLine2 = address.addressLine2.map(line => line),
+            addressLine3 = address.addressLine3.map(line => line),
+            addressLine4 = address.addressLine4.map(line => line)
+          )
+        )
+        .map(Right(_))
+        .recover {
+          case error @ UpstreamErrorResponse(message, code, _, _)
+              if UpstreamErrorResponse.Upstream5xxResponse
+                .unapply(error)
+                .isDefined || UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
+            Left(DataRetrievalError.BadGateway(message, code))
+          case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
+        }
+    }
 }

@@ -21,10 +21,12 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, GetSubscriptionResponse, Languages}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
+import uk.gov.hmrc.economiccrimelevyregistration.models.email.{DeregistrationRequestedEmailParameters, DeregistrationRequestedEmailRequest}
+import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
+import java.time.{LocalDate, ZoneOffset}
 
 class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -61,19 +63,42 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
         .onSubmit()
     )
 
-    "delete the deregistration then redirect the account dashboard" in {
+    "send email and redirect the deregistration requested page" in {
       stubAuthorisedWithEclEnrolment()
 
-      val deregistration = random[Deregistration].copy(internalId = testInternalId)
-      val role           = stringsWithMaxLength(RoleMaxLength).sample.get
-      stubGetDeregistration(deregistration)
+      val email                 = alphaNumericString
+      val name                  = alphaNumericString
+      val date                  = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(
+        messagesApi.preferred(Seq(Languages.english))
+      )
+      val deregistration        = random[Deregistration]
+      val updatedDeregistration = deregistration.copy(
+        internalId = testInternalId,
+        eclReference = Some(testEclRegistrationReference),
+        contactDetails = ContactDetails(Some(name), None, Some(email), None)
+      )
+      val subscription          = random[GetSubscriptionResponse]
+      val emailParams           = random[DeregistrationRequestedEmailParameters]
+        .copy(
+          name = name,
+          dateSubmitted = date,
+          eclReferenceNumber = updatedDeregistration.eclReference.get,
+          addressLine1 = Some(subscription.correspondenceAddressDetails.addressLine1),
+          addressLine2 = subscription.correspondenceAddressDetails.addressLine2,
+          addressLine3 = subscription.correspondenceAddressDetails.addressLine3,
+          addressLine4 = subscription.correspondenceAddressDetails.addressLine4
+        )
+
+      val emailRequest = DeregistrationRequestedEmailRequest(Seq(email), parameters = emailParams)
+      stubGetDeregistration(updatedDeregistration)
+      stubGetSubscription(subscription)
+      stubSendDeregistrationRequestedEmail(emailRequest)
 
       val result = callRoute(
         FakeRequest(
           DeregisterCheckYourAnswersController
             .onSubmit()
         )
-          .withFormUrlEncodedBody(("value", role))
       )
 
       status(result) shouldBe SEE_OTHER

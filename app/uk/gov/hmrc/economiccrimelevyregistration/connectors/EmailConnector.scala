@@ -75,6 +75,21 @@ class EmailConnector @Inject() (
         .executeAndContinue
     }
 
+  def sendDeregistrationRequestedEmail(
+    to: String,
+    deregistrationRequestedEmailParameters: DeregistrationRequestedEmailParameters
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[Unit] =
+    retryFor[Unit]("HMRC email - Send deregistration requested")(retryCondition) {
+      httpClient
+        .post(sendEmailUrl)
+        .withBody(
+          Json.toJson(toDeregistrationRequestedEmailRequest(to, deregistrationRequestedEmailParameters))
+        )
+        .executeAndContinue
+    }
+
   private def toRegistrationSubmittedEmailRequest(
     to: String,
     registrationSubmittedEmailParameters: RegistrationSubmittedEmailParameters,
@@ -94,6 +109,15 @@ class EmailConnector @Inject() (
       to = Seq(to),
       templateId = AmendRegistrationTemplateId,
       parameters = amendRegistrationSubmittedEmailParameters
+    )
+
+  private def toDeregistrationRequestedEmailRequest(
+    to: String,
+    deregistrationRequestedEmailParameters: DeregistrationRequestedEmailParameters
+  ): DeregistrationRequestedEmailRequest =
+    DeregistrationRequestedEmailRequest(
+      to = Seq(to),
+      parameters = deregistrationRequestedEmailParameters
     )
 
   private def templateIdByEntityType(entityType: Option[EntityType]) =
