@@ -51,7 +51,8 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
         .copy(
           entityType = Some(random[EntityType]),
           registrationType = Some(Initial),
-          relevantApRevenue = Some(randomApRevenue())
+          relevantApRevenue = Some(randomApRevenue()),
+          businessSector = None
         )
       val additionalInfo          = random[RegistrationAdditionalInfo]
 

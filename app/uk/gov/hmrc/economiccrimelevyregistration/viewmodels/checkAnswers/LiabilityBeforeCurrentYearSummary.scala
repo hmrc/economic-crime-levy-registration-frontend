@@ -35,7 +35,7 @@ object LiabilityBeforeCurrentYearSummary {
         key = Key("liabilityBeforeCurrentYear.label"),
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.RegisterForCurrentYearController.onPageLoad(CheckMode).url)
+          ActionItemViewModel("site.change", routes.LiabilityBeforeCurrentYearController.onPageLoad(CheckMode).url)
             .withVisuallyHiddenText(
               messages("liabilityBeforeCurrentYear.label")
             )
