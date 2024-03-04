@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -24,7 +25,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.SessionError
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
@@ -56,8 +58,16 @@ class RegisterForCurrentYearController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     (for {
-      urlToReturnTo <-
-        sessionService.getOptional(request.session, request.internalId, SessionKeys.UrlToReturnTo).asResponseError
+      urlToReturnTo <- mode match {
+                         case NormalMode =>
+                           sessionService
+                             .getOptional(request.session, request.internalId, SessionKeys.UrlToReturnTo)
+                             .asResponseError
+                         case CheckMode  =>
+                           EitherT[Future, SessionError, Option[String]] {
+                             Future.successful(Right(None))
+                           }.asResponseError
+                       }
     } yield urlToReturnTo).fold(
       err => routeError(err),
       {

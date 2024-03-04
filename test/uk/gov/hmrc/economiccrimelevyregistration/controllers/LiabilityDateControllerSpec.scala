@@ -59,6 +59,7 @@ class LiabilityDateControllerSpec extends SpecBase {
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeDataRetrievalAction(registrationData, additionalInfo),
+      fakeStoreUrlAction(),
       mockRegistrationAdditionalInfoService,
       formProvider,
       pageNavigator,

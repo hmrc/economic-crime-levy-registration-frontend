@@ -18,31 +18,31 @@ package uk.gov.hmrc.economiccrimelevyregistration.models.email
 
 import play.api.libs.json.{Json, OFormat}
 
-case class AmendRegistrationSubmittedEmailRequest(
+case class DeregistrationRequestedEmailRequest(
   to: Seq[String],
-  templateId: String = AmendRegistrationSubmittedEmailParameters.AmendRegistrationTemplateId,
-  parameters: AmendRegistrationSubmittedEmailParameters,
+  templateId: String = DeregistrationRequestedEmailParameters.DeregistrationTemplateId,
+  parameters: DeregistrationRequestedEmailParameters,
   force: Boolean = false,
   eventUrl: Option[String] = None
 )
 
-object AmendRegistrationSubmittedEmailRequest {
-  implicit val format: OFormat[AmendRegistrationSubmittedEmailRequest] =
-    Json.format[AmendRegistrationSubmittedEmailRequest]
+object DeregistrationRequestedEmailRequest {
+  implicit val format: OFormat[DeregistrationRequestedEmailRequest] =
+    Json.format[DeregistrationRequestedEmailRequest]
 }
 
-case class AmendRegistrationSubmittedEmailParameters(
+case class DeregistrationRequestedEmailParameters(
   name: String,
   dateSubmitted: String,
+  eclReferenceNumber: String,
   addressLine1: Option[String],
   addressLine2: Option[String],
   addressLine3: Option[String],
-  addressLine4: Option[String],
-  containsAddress: Option[String]
+  addressLine4: Option[String]
 )
 
-object AmendRegistrationSubmittedEmailParameters {
-  val AmendRegistrationTemplateId: String                                 = "ecl_amend_registration_submitted"
-  implicit val format: OFormat[AmendRegistrationSubmittedEmailParameters] =
-    Json.format[AmendRegistrationSubmittedEmailParameters]
+object DeregistrationRequestedEmailParameters {
+  val DeregistrationTemplateId: String                                 = "ecl_deregistration_requested"
+  implicit val format: OFormat[DeregistrationRequestedEmailParameters] =
+    Json.format[DeregistrationRequestedEmailParameters]
 }

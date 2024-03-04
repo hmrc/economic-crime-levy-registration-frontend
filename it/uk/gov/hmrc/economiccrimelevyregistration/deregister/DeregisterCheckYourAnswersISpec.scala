@@ -23,11 +23,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterPdfEncoder
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, GetSubscriptionResponse, Languages}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregistrationPdfView
+import uk.gov.hmrc.economiccrimelevyregistration.models.email.{DeregistrationRequestedEmailParameters, DeregistrationRequestedEmailRequest}
+import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
+import java.time.{LocalDate, ZoneOffset}
 
 class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour with DeregisterPdfEncoder {
 
@@ -64,15 +66,39 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
         .onSubmit()
     )
 
-    "delete the deregistration then redirect the account dashboard" in {
+    "send email and redirect the deregistration requested page" in {
       stubAuthorisedWithEclEnrolment()
 
-      val deregistration = random[Deregistration].copy(internalId = testInternalId)
-      val role           = stringsWithMaxLength(RoleMaxLength).sample.get
+      val email = alphaNumericString
+      val name  = alphaNumericString
+      val date  = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(
+        messagesApi.preferred(Seq(Languages.english))
+      )
+
+      val subscription = random[GetSubscriptionResponse]
+      val emailParams  = random[DeregistrationRequestedEmailParameters]
+        .copy(
+          name = name,
+          dateSubmitted = date,
+          eclReferenceNumber = testEclRegistrationReference,
+          addressLine1 = Some(subscription.correspondenceAddressDetails.addressLine1),
+          addressLine2 = subscription.correspondenceAddressDetails.addressLine2,
+          addressLine3 = subscription.correspondenceAddressDetails.addressLine3,
+          addressLine4 = subscription.correspondenceAddressDetails.addressLine4
+        )
+
+      val deregistration = random[Deregistration].copy(
+        internalId = testInternalId,
+        eclReference = Some(testEclRegistrationReference),
+        contactDetails = ContactDetails(Some(name), None, Some(email), None)
+      )
+
       stubGetDeregistration(deregistration)
 
-      val getSubscriptionResponse = random[GetSubscriptionResponse]
-      stubGetSubscription(getSubscriptionResponse)
+      val emailRequest = DeregistrationRequestedEmailRequest(Seq(email), parameters = emailParams)
+
+      stubGetSubscription(subscription)
+      stubSendDeregistrationRequestedEmail(emailRequest)
 
       val pdfView: DeregistrationPdfView = app.injector.instanceOf[DeregistrationPdfView]
 
@@ -84,22 +110,23 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
       val messages: Messages = messagesApi.preferred(fakeRequest)
 
       val deregisterHtmlView =
-        createPdfView(getSubscriptionResponse, pdfView, Some(testEclRegistrationReference), deregistration)(
+        createPdfView(subscription, pdfView, Some(testEclRegistrationReference), deregistration)(
           messages
         )
 
       val base64EncodedHtmlViewForPdf = base64EncodeHtmlView(deregisterHtmlView.toString())
-      val updatedDeregistration       =
+
+      val updatedDeregistration =
         deregistration
-          .copy(dmsSubmissionHtml = Some(base64EncodedHtmlViewForPdf))
+          .copy(
+            dmsSubmissionHtml = Some(base64EncodedHtmlViewForPdf)
+          )
 
       stubUpsertDeregistration(updatedDeregistration)
 
       stubSubmitDeregistration()
 
-      val result = callRoute(
-        fakeRequest.withFormUrlEncodedBody(("value", role))
-      )
+      val result = callRoute(fakeRequest)
 
       status(result) shouldBe SEE_OTHER
 

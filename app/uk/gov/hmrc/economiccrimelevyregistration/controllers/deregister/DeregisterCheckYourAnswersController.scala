@@ -18,10 +18,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.{DeregisterCheckYourAnswersView, DeregistrationPdfView}
@@ -37,6 +37,7 @@ class DeregisterCheckYourAnswersController @Inject() (
   getDeregistrationData: DeregistrationDataRetrievalAction,
   eclRegistrationService: EclRegistrationService,
   deregistrationService: DeregistrationService,
+  emailService: EmailService,
   view: DeregisterCheckYourAnswersView,
   pdfView: DeregistrationPdfView
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
@@ -83,10 +84,13 @@ class DeregisterCheckYourAnswersController @Inject() (
                                       .upsert(updatedDeregistration)
                                       .asResponseError
       _                          <- deregistrationService.submit(request.internalId).asResponseError
+      address                     = subscription.correspondenceAddressDetails
+      name                       <- valueOrError(request.deregistration.contactDetails.name, "Name")
+      email                      <- valueOrError(request.deregistration.contactDetails.emailAddress, "Email address")
+      _                          <- emailService.sendDeregistrationEmail(email, name, eclReference, address).asResponseError
     } yield ()).fold(
       err => routeError(err),
       _ => Redirect(routes.DeregistrationRequestedController.onPageLoad())
     )
   }
-
 }
