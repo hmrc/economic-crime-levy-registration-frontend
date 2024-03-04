@@ -12,17 +12,26 @@ import java.time.Instant
 
 trait EclRegistrationStubs { self: WireMockStubs =>
 
-  def stubGetRegistration(registration: Registration): StubMapping = {
+  def stubGetRegistrationWithEmptyAdditionalInfo(registration: Registration): StubMapping = {
     stub(
       get(urlEqualTo(s"/economic-crime-levy-registration/registrations/$testInternalId")),
       aResponse()
         .withStatus(OK)
         .withBody(Json.toJson(registration).toString())
     )
+
     stubGetRegistrationAdditionalInfo(
       new RegistrationAdditionalInfo(registration.internalId, None, None, None, None, None)
     )
   }
+
+  def stubGetRegistration(registration: Registration): StubMapping =
+    stub(
+      get(urlEqualTo(s"/economic-crime-levy-registration/registrations/$testInternalId")),
+      aResponse()
+        .withStatus(OK)
+        .withBody(Json.toJson(registration).toString())
+    )
 
   def stubGetSubscription(getSubscriptionResponse: GetSubscriptionResponse): StubMapping =
     stub(

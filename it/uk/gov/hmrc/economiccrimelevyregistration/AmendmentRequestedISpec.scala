@@ -46,7 +46,7 @@ class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val additionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistration(updatedRegistration)
+      stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubDeleteRegistration()

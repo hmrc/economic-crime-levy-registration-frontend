@@ -37,7 +37,7 @@ trait AuthorisedBehaviour {
             relevantApRevenue = Some(randomApRevenue())
           )
 
-        stubGetRegistration(registration.copy(registrationType = Some(registrationType)))
+        stubGetRegistrationWithEmptyAdditionalInfo(registration.copy(registrationType = Some(registrationType)))
 
         val result: Future[Result] = callRoute(FakeRequest(call))
 

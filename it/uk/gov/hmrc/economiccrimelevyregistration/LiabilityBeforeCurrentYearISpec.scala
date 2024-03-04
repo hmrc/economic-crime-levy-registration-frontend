@@ -8,6 +8,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.time.TaxYear
 
 import java.time.LocalDate
 
@@ -29,7 +30,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode)))
@@ -59,7 +60,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       val additionalInfo          = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val info = RegistrationAdditionalInfo(
         registration.internalId,
@@ -98,7 +99,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       val additionalInfo          = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val info = RegistrationAdditionalInfo(
         registration.internalId,
@@ -131,34 +132,30 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
     "redirect to check your answers page if nothing changed" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val liableBeforeCurrentYear = random[Boolean]
+      val liableBeforeCurrentYear = true
       val registration            = random[Registration]
         .copy(
+          internalId = testInternalId,
           entityType = Some(random[EntityType]),
           registrationType = Some(Initial),
           relevantApRevenue = Some(randomApRevenue()),
           businessSector = None,
-          revenueMeetsThreshold = Some(true)
+          revenueMeetsThreshold = Some(true),
+          carriedOutAmlRegulatedActivityInCurrentFy = Some(true)
         )
       val additionalInfo          =
         random[RegistrationAdditionalInfo].copy(
+          internalId = registration.internalId,
           liableForPreviousYears = Some(liableBeforeCurrentYear),
-          liabilityStartDate = Some(random[LocalDate])
+          liabilityStartDate = Some(random[LocalDate]),
+          liabilityYear = Some(LiabilityYear(TaxYear.current.previous.startYear)),
+          eclReference = None
         )
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistration(registration)
 
-      val info = RegistrationAdditionalInfo(
-        registration.internalId,
-        None,
-        None,
-        None,
-        None,
-        None
-      )
-
-      stubUpsertRegistrationAdditionalInfo(info)
+      stubUpsertRegistrationAdditionalInfo(additionalInfo)
       stubUpsertRegistration(registration)
 
       val result = callRoute(
@@ -189,7 +186,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
         )
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val info = RegistrationAdditionalInfo(
         registration.internalId,

@@ -48,7 +48,7 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val additionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistration(validRegistration)
+      stubGetRegistrationWithEmptyAdditionalInfo(validRegistration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubSessionForStoreUrl()

@@ -29,7 +29,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.EntityTypeController.onPageLoad(NormalMode)))
@@ -59,7 +59,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       stubCreateGrsJourney(s"/incorporated-entity-identification/api/$urlIncorporatedEntityType")
 
@@ -90,7 +90,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubCreateGrsJourney("/sole-trader-identification/api/sole-trader-journey")
 
       val updatedRegistration = registration.copy(
@@ -130,7 +130,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     val additionalInfo             = random[RegistrationAdditionalInfo]
 
     stubGetRegistrationAdditionalInfo(additionalInfo)
-    stubGetRegistration(registration)
+    stubGetRegistrationWithEmptyAdditionalInfo(registration)
     stubCreateGrsJourney(s"/partnership-identification/api/$urlPartnershipType")
 
     val updatedRegistration = registration.copy(
