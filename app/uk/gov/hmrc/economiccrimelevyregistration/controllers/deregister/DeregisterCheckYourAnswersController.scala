@@ -16,24 +16,17 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister
 
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, GetSubscriptionResponse}
-import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.deregister.DeregistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.deregister._
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.SummaryListFluency
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.{DeregisterCheckYourAnswersView, DeregistrationPdfView}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
-import java.util.Base64
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
@@ -51,7 +44,7 @@ class DeregisterCheckYourAnswersController @Inject() (
     with I18nSupport
     with BaseController
     with ErrorHandler
-    with SummaryListFluency {
+    with DeregisterPdfEncoder {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
     (for {
@@ -80,7 +73,8 @@ class DeregisterCheckYourAnswersController @Inject() (
     (for {
       eclReference               <- valueOrError(request.eclRegistrationReference, "ECL reference")
       subscription               <- eclRegistrationService.getSubscription(eclReference).asResponseError
-      deregisterHtmlView          = createPdfView(subscription)
+      deregisterHtmlView          =
+        createPdfView(subscription, pdfView, request.eclRegistrationReference, request.deregistration)
       base64EncodedHtmlViewForPdf = base64EncodeHtmlView(deregisterHtmlView.toString())
       updatedDeregistration       =
         request.deregistration
@@ -95,46 +89,4 @@ class DeregisterCheckYourAnswersController @Inject() (
     )
   }
 
-  private def createPdfView(
-    subscription: GetSubscriptionResponse
-  )(implicit request: DeregistrationDataRequest[_]) =
-    pdfView(
-      organisation(
-        request.eclRegistrationReference,
-        subscription.legalEntityDetails.organisationName
-      ),
-      additionalInfo(request.deregistration),
-      contact(request.deregistration.contactDetails)
-    )
-
-  private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
-    .encodeToString(html.getBytes)
-
-  def organisation(eclReference: Option[String], companyName: Option[String])(implicit
-    messages: Messages
-  ): SummaryList =
-    SummaryListViewModel(
-      rows = Seq(
-        EclReferenceSummary.row(eclReference),
-        CompanyNameSummary.row(companyName)
-      ).flatten
-    ).withCssClass("govuk-!-margin-bottom-9")
-
-  def additionalInfo(deregistration: Deregistration)(implicit messages: Messages): SummaryList =
-    SummaryListViewModel(
-      rows = Seq(
-        DeregisterReasonSummary.row(deregistration.reason),
-        DeregisterDateSummary.row(deregistration.date)
-      ).flatten
-    ).withCssClass("govuk-!-margin-bottom-9")
-
-  def contact(contactDetails: ContactDetails)(implicit messages: Messages): SummaryList =
-    SummaryListViewModel(
-      rows = Seq(
-        DeregisterNameSummary.row(contactDetails.name),
-        DeregisterRoleSummary.row(contactDetails.role),
-        DeregisterEmailSummary.row(contactDetails.emailAddress),
-        DeregisterNumberSummary.row(contactDetails.telephoneNumber)
-      ).flatten
-    ).withCssClass("govuk-!-margin-bottom-9")
 }

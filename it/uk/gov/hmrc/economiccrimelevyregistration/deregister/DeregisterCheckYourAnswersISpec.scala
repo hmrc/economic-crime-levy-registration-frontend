@@ -17,9 +17,11 @@
 package uk.gov.hmrc.economiccrimelevyregistration.deregister
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
+import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.DeregisterPdfEncoder
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
@@ -27,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregistrationPdfView
 
-class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
+class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour with DeregisterPdfEncoder {
 
   s"GET ${DeregisterCheckYourAnswersController.onPageLoad().url}"  should {
     behave like authorisedActionWithoutEnrolmentCheckRoute(
@@ -72,14 +74,31 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
       val getSubscriptionResponse = random[GetSubscriptionResponse]
       stubGetSubscription(getSubscriptionResponse)
 
-      stubUpsertDeregistration(deregistration)
+      val pdfView: DeregistrationPdfView = app.injector.instanceOf[DeregistrationPdfView]
+
+      val fakeRequest = FakeRequest(
+        DeregisterCheckYourAnswersController
+          .onSubmit()
+      )
+
+      val messages: Messages = messagesApi.preferred(fakeRequest)
+
+      val deregisterHtmlView =
+        createPdfView(getSubscriptionResponse, pdfView, Some(testEclRegistrationReference), deregistration)(
+          messages
+        )
+
+      val base64EncodedHtmlViewForPdf = base64EncodeHtmlView(deregisterHtmlView.toString())
+      val updatedDeregistration       =
+        deregistration
+          .copy(dmsSubmissionHtml = Some(base64EncodedHtmlViewForPdf))
+
+      stubUpsertDeregistration(updatedDeregistration)
+
+      stubSubmitDeregistration()
 
       val result = callRoute(
-        FakeRequest(
-          DeregisterCheckYourAnswersController
-            .onSubmit()
-        )
-          .withFormUrlEncodedBody(("value", role))
+        fakeRequest.withFormUrlEncodedBody(("value", role))
       )
 
       status(result) shouldBe SEE_OTHER
