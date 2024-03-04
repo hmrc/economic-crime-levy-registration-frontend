@@ -84,25 +84,29 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, liableBeforeCurrentYear: Boolean) =>
-        new TestContext(registration) {
-          val liabilityYear: Option[LiabilityYear] =
-            (registration.carriedOutAmlRegulatedActivityInCurrentFy, liableBeforeCurrentYear) match {
-              case (Some(_), true)     => Some(LiabilityYear(TaxYear.current.previous.startYear))
-              case (Some(true), false) => Some(LiabilityYear(TaxYear.current.currentYear))
-              case _                   => None
-            }
+        new TestContext(
+          registration.copy(
+            revenueMeetsThreshold = Some(true),
+            businessSector = None
+          )
+        ) {
 
           when(mockAdditionalInfoService.upsert(any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
+          val nextPage = liableBeforeCurrentYear match {
+            case false => routes.EntityTypeController.onPageLoad(NormalMode)
+            case true  => routes.LiabilityDateController.onPageLoad(NormalMode)
+          }
+
           val result: Future[Result] =
-            controller.onSubmit(CheckMode)(
+            controller.onSubmit(NormalMode)(
               fakeRequest.withFormUrlEncodedBody(("value", liableBeforeCurrentYear.toString))
             )
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+          redirectLocation(result) shouldBe Some(nextPage.url)
         }
     }
 
