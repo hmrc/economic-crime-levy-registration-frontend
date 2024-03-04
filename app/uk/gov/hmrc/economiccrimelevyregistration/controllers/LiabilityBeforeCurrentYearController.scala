@@ -27,6 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYea
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityBeforeCurrentYearView}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -77,7 +78,13 @@ class LiabilityBeforeCurrentYearController @Inject() (
             val info = RegistrationAdditionalInfo(
               registration.internalId,
               liabilityYear,
-              request.additionalInfo.flatMap(info => info.liabilityStartDate),
+              request.additionalInfo.flatMap(info =>
+                if (liableBeforeCurrentYear) {
+                  info.liabilityStartDate
+                } else {
+                  None
+                }
+              ),
               request.additionalInfo.flatMap(info => info.registeringForCurrentYear),
               Some(liableBeforeCurrentYear),
               request.eclRegistrationReference
@@ -88,18 +95,28 @@ class LiabilityBeforeCurrentYearController @Inject() (
               .asResponseError
               .fold(
                 err => routeError(err),
-                _ => Redirect(navigateByMode(mode, registration, liableBeforeCurrentYear))
+                _ => Redirect(navigateByMode(mode, registration, info, liableBeforeCurrentYear))
               )
           }
         )
     }
 
-  private def navigateByMode(mode: Mode, registration: Registration, liableBeforeCurrentYear: Boolean)(implicit
+  private def navigateByMode(
+    mode: Mode,
+    registration: Registration,
+    info: RegistrationAdditionalInfo,
+    liableBeforeCurrentYear: Boolean
+  )(implicit
     hc: HeaderCarrier
   ): Call =
     mode match {
       case NormalMode => navigateInNormalMode(liableBeforeCurrentYear, registration, mode)
-      case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
+      case CheckMode  =>
+        if (!liableBeforeCurrentYear || info.liabilityStartDate.isDefined) {
+          routes.CheckYourAnswersController.onPageLoad()
+        } else {
+          routes.LiabilityDateController.onPageLoad(CheckMode)
+        }
     }
 
   private def navigateInNormalMode(liableBeforeCurrentYear: Boolean, registration: Registration, mode: Mode)(implicit
