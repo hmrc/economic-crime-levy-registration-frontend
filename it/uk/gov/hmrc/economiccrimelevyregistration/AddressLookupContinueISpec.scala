@@ -28,7 +28,7 @@ class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val alfAddressData = random[AlfAddressData]
 

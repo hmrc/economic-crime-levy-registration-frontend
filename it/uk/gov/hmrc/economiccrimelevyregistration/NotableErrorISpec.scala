@@ -40,7 +40,7 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
           relevantApRevenue = Some(randomApRevenue())
         )
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val result = callRoute(FakeRequest(routes.NotableErrorController.answersAreInvalid()))
 
@@ -162,7 +162,7 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration.copy(entityType = Some(entityType)))
+      stubGetRegistrationWithEmptyAdditionalInfo(registration.copy(entityType = Some(entityType)))
 
       val result = callRoute(FakeRequest(routes.NotableErrorController.verificationFailed()))
 

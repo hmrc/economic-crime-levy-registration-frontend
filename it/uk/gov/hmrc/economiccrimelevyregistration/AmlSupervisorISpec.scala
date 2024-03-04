@@ -29,7 +29,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.AmlSupervisorController.onPageLoad(NormalMode, Initial)))
@@ -72,7 +72,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
         case _                                                 => Seq(("value", amlSupervisor.supervisorType.toString))
       }
 
-      stubGetRegistration(validRegistration)
+      stubGetRegistrationWithEmptyAdditionalInfo(validRegistration)
 
       val updatedRegistration = validRegistration.copy(amlSupervisor = Some(amlSupervisor))
 
@@ -110,7 +110,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       val amlSupervisor =
         AmlSupervisor(GamblingCommission, None)
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val updatedRegistration = registration.copy(amlSupervisor = Some(amlSupervisor))
 
@@ -142,7 +142,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val updatedRegistration = registration.copy(amlSupervisor = Some(amlSupervisor))
 

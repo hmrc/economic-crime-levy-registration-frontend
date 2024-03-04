@@ -29,7 +29,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
           relevantApRevenue = Some(randomApRevenue())
         )
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.AmlRegulatedActivityController.onPageLoad(NormalMode)))
@@ -54,7 +54,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
           registrationType = Some(Initial),
           relevantApRevenue = Some(randomApRevenue())
         )
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
 
@@ -82,7 +82,7 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
           relevantApRevenue = Some(randomApRevenue())
         )
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)

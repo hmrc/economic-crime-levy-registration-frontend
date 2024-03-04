@@ -26,7 +26,7 @@ class UtrTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.UtrTypeController.onPageLoad(NormalMode)))
@@ -53,7 +53,7 @@ class UtrTypeISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistrationAdditionalInfo(additionalInfo)
       val utrType = random[UtrType]
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(utrType = Some(utrType))
       val updatedRegistration    = registration.copy(

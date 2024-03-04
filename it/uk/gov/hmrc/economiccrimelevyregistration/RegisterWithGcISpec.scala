@@ -39,7 +39,9 @@ class RegisterWithGcISpec extends ISpecBase with AuthorisedBehaviour {
           relevantApRevenue = Some(randomApRevenue())
         )
 
-      stubGetRegistration(registration.copy(amlSupervisor = Some(AmlSupervisor(GamblingCommission, None))))
+      stubGetRegistrationWithEmptyAdditionalInfo(
+        registration.copy(amlSupervisor = Some(AmlSupervisor(GamblingCommission, None)))
+      )
 
       val result = callRoute(FakeRequest(routes.RegisterWithGcController.onPageLoad()))
 

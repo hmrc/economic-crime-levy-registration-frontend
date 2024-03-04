@@ -25,7 +25,7 @@ class UtrISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubGetRegistrationAdditionalInfo(
         RegistrationAdditionalInfo.apply(
           registration.internalId,
@@ -62,7 +62,7 @@ class UtrISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistrationAdditionalInfo(additionalInfo)
       val Utr = numStringsWithConcreteLength(UtrLength).sample.get
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()

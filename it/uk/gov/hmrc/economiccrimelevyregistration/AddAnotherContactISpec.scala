@@ -26,7 +26,7 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
           relevantApRevenue = Some(randomApRevenue())
         )
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)))
@@ -50,7 +50,7 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
           entityType = Some(random[EntityType]),
           relevantApRevenue = Some(randomApRevenue())
         )
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -90,7 +90,7 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
         soleTraderEntityJourneyData = None
       )
 
-      stubGetRegistration(updatedRegistration)
+      stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
@@ -145,7 +145,7 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
         soleTraderEntityJourneyData = None
       )
 
-      stubGetRegistration(regWithSecondContact)
+      stubGetRegistrationWithEmptyAdditionalInfo(regWithSecondContact)
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(

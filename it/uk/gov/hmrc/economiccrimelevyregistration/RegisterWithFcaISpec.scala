@@ -39,7 +39,9 @@ class RegisterWithFcaISpec extends ISpecBase with AuthorisedBehaviour {
           relevantApRevenue = Some(randomApRevenue())
         )
 
-      stubGetRegistration(registration.copy(amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None))))
+      stubGetRegistrationWithEmptyAdditionalInfo(
+        registration.copy(amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None)))
+      )
 
       val result = callRoute(FakeRequest(routes.RegisterWithFcaController.onPageLoad()))
 

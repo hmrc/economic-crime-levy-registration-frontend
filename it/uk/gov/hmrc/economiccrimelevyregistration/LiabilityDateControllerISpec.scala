@@ -30,7 +30,7 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val result = callRoute(FakeRequest(routes.LiabilityDateController.onPageLoad(NormalMode)))
 
@@ -59,7 +59,7 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
         val additionalInfo = random[RegistrationAdditionalInfo]
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
-        stubGetRegistration(registration)
+        stubGetRegistrationWithEmptyAdditionalInfo(registration)
         val info = RegistrationAdditionalInfo(
           testInternalId,
           None,

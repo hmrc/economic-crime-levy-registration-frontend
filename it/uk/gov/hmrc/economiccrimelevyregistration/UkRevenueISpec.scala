@@ -31,7 +31,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.UkRevenueController.onPageLoad(NormalMode)))
@@ -57,7 +57,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration.copy(relevantAp12Months = Some(true)))
+      stubGetRegistrationWithEmptyAdditionalInfo(registration.copy(relevantAp12Months = Some(true)))
 
       val updatedRegistration = registration.copy(
         relevantAp12Months = Some(true),
@@ -92,7 +92,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
           relevantApRevenue = Some(randomApRevenue())
         )
       val ukRevenue    = revenueGen.sample.get
-      stubGetRegistration(registration.copy(relevantAp12Months = Some(true)))
+      stubGetRegistrationWithEmptyAdditionalInfo(registration.copy(relevantAp12Months = Some(true)))
 
       val updatedRegistration = registration.copy(
         relevantAp12Months = Some(true),

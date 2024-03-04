@@ -25,7 +25,7 @@ class PartnershipNameISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.PartnershipNameController.onPageLoad(NormalMode)))
@@ -51,7 +51,7 @@ class PartnershipNameISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo  = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val updatedRegistration = registration.copy(partnershipName = Some(partnershipName))
 
