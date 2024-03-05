@@ -73,7 +73,6 @@ abstract class ISpecBase
 
   override def fakeApplication(): Application =
     GuiceApplicationBuilder()
-      .disable[com.kenshoo.play.metrics.PlayModule]
       .configure(additionalAppConfig)
       .in(Mode.Test)
       .build()
