@@ -23,8 +23,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequ
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDataRetrievalAction(data: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None)
-    extends DataRetrievalAction {
+class FakeDataRetrievalAction(
+  registration: Registration,
+  registrationAdditionalInfo: Option[RegistrationAdditionalInfo] = None,
+  eclRegistrationReference: Option[String] = None
+) extends DataRetrievalAction {
 
   override protected implicit val executionContext: ExecutionContext =
     scala.concurrent.ExecutionContext.Implicits.global
@@ -32,7 +35,13 @@ class FakeDataRetrievalAction(data: Registration, additionalInfo: Option[Registr
   override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, RegistrationDataRequest[A]]] =
     Future(
       Right(
-        RegistrationDataRequest(request.request, request.internalId, data, additionalInfo, Some("ECLRefNumber12345"))
+        RegistrationDataRequest(
+          request.request,
+          request.internalId,
+          registration,
+          registrationAdditionalInfo,
+          eclRegistrationReference
+        )
       )
     )
 }

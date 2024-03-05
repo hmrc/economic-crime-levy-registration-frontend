@@ -31,15 +31,15 @@ import scala.concurrent.Future
 
 class AmendmentRequestedControllerSpec extends SpecBase {
 
-  val view: AmendmentRequestedView                    = app.injector.instanceOf[AmendmentRequestedView]
-  val mockRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  val mockAdditionalInfoService                       = mock[RegistrationAdditionalInfoService]
+  val view: AmendmentRequestedView                                 = app.injector.instanceOf[AmendmentRequestedView]
+  val mockRegistrationService: EclRegistrationService              = mock[EclRegistrationService]
+  val mockAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
 
   class TestContext(registrationData: Registration) {
     val controller = new AmendmentRequestedController(
       mcc,
       view,
-      fakeAuthorisedActionWithEnrolmentCheck(testInternalId, Some(eclReference)),
+      fakeAuthorisedActionWithEnrolmentCheck(testInternalId, Some(testEclRegistrationReference)),
       fakeDataRetrievalAction(registrationData),
       mockAdditionalInfoService,
       mockRegistrationService
@@ -72,7 +72,7 @@ class AmendmentRequestedControllerSpec extends SpecBase {
 
           contentAsString(result) shouldBe view(
             firstContactEmailAddress,
-            Some(eclReference),
+            Some(testEclRegistrationReference),
             eclAddress
           )(fakeRequest, messages).toString
         }

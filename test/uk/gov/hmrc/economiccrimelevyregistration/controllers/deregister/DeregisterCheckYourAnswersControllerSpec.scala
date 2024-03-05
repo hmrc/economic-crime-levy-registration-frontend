@@ -26,13 +26,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.{arbDeregistration, arbGetSubscriptionResponse}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, GetSubscriptionResponse}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.{DeregisterCheckYourAnswersView, DeregistrationPdfView}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, GetSubscriptionResponse}
-import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterCheckYourAnswersView
 
 import scala.concurrent.Future
 

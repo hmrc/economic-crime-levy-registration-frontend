@@ -42,7 +42,6 @@ class AmendReasonControllerSpec extends SpecBase {
   val formProvider: AmendReasonFormProvider           = new AmendReasonFormProvider()
   val form: Form[String]                              = formProvider()
   val mockRegistrationService: EclRegistrationService = mock[EclRegistrationService]
-  val retrievedEclRefFromAction                       = "ECLRefNumber12345"
   val pageNavigator: AmendReasonPageNavigator         = new AmendReasonPageNavigator() {
     override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute
   }
@@ -66,7 +65,7 @@ class AmendReasonControllerSpec extends SpecBase {
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode, Some(Amendment), Some(retrievedEclRefFromAction))(
+        contentAsString(result) shouldBe view(form, NormalMode, Some(Amendment), Some(testEclRegistrationReference))(
           fakeRequest,
           messages
         ).toString
@@ -84,7 +83,7 @@ class AmendReasonControllerSpec extends SpecBase {
             form.fill(reason),
             NormalMode,
             Some(Amendment),
-            Some(retrievedEclRefFromAction)
+            Some(testEclRegistrationReference)
           )(fakeRequest, messages).toString()
         }
     }
@@ -125,7 +124,7 @@ class AmendReasonControllerSpec extends SpecBase {
           formWithErrors,
           NormalMode,
           Some(Amendment),
-          Some(retrievedEclRefFromAction)
+          Some(testEclRegistrationReference)
         )(fakeRequest, messages).toString()
       }
 
