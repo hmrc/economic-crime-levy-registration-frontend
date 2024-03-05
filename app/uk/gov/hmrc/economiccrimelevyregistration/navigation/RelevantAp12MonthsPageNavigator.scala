@@ -26,13 +26,27 @@ class RelevantAp12MonthsPageNavigator extends PageNavigator {
     navigate(eclRegistrationModel.registration, NormalMode)
 
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
-    navigate(eclRegistrationModel.registration, CheckMode)
+    navigate(eclRegistrationModel.registration, CheckMode, eclRegistrationModel.hasRegistrationChanged)
 
-  private def navigate(registration: Registration, mode: Mode): Call =
-    registration.relevantAp12Months match {
-      case Some(true)  => routes.UkRevenueController.onPageLoad(mode)
-      case Some(false) => routes.RelevantApLengthController.onPageLoad(mode)
-      case _           => routes.NotableErrorController.answersAreInvalid()
+  private def navigate(registration: Registration, mode: Mode, hasRegistrationChanged: Boolean = true): Call =
+    if (hasRegistrationChanged) {
+      (mode, registration.relevantAp12Months) match {
+        case (NormalMode, Some(true))  =>
+          routes.UkRevenueController.onPageLoad(mode)
+        case (NormalMode, Some(false)) =>
+          routes.RelevantApLengthController.onPageLoad(mode)
+        case (CheckMode, Some(true))   =>
+          routes.UkRevenueController.onPageLoad(mode)
+        case (CheckMode, Some(false))  =>
+          if (registration.relevantApLength.isEmpty) {
+            routes.RelevantApLengthController.onPageLoad(mode)
+          } else {
+            routes.UkRevenueController.onPageLoad(mode)
+          }
+        case _                         => routes.NotableErrorController.answersAreInvalid()
+      }
+    } else {
+      routes.CheckYourAnswersController.onPageLoad()
     }
 
 }
