@@ -39,7 +39,7 @@ class AmendRegistrationStartISpec extends ISpecBase {
         )
       val getSubscriptionResponse = random[GetSubscriptionResponse]
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubUpsertRegistrationWithoutRequestMatching(registration)
       stubGetSubscription(getSubscriptionResponse)
 

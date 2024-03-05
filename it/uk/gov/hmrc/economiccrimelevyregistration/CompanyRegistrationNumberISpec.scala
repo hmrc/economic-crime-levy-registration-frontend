@@ -34,7 +34,7 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       val additionalInfo: RegistrationAdditionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubSessionForStoreUrl()
 
@@ -66,7 +66,7 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
 
-      stubGetRegistration(updatedRegistration)
+      stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubUpsertRegistration(updatedRegistration)

@@ -27,7 +27,7 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubSessionForStoreUrl()
 
       val result = callRoute(FakeRequest(routes.NonUkCrnController.onPageLoad(NormalMode)))
@@ -56,7 +56,7 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
 
       val companyNumber = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
 
-      stubGetRegistration(validRegistration)
+      stubGetRegistrationWithEmptyAdditionalInfo(validRegistration)
 
       val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))
       val updatedRegistration    = validRegistration.copy(

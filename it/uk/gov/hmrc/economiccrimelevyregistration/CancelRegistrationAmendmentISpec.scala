@@ -27,7 +27,7 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
         .copy(registrationType = Some(Amendment))
       val additionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
       val result = callRoute(FakeRequest(routes.CancelRegistrationAmendmentController.onPageLoad()))
@@ -54,7 +54,7 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
         )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubDeleteRegistration()
 

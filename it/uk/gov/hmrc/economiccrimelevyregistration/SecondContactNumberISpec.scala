@@ -28,7 +28,7 @@ class SecondContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(
+      stubGetRegistrationWithEmptyAdditionalInfo(
         registration.copy(contacts =
           registration.contacts.copy(secondContactDetails =
             registration.contacts.secondContactDetails.copy(name = Some(name))
@@ -75,7 +75,7 @@ class SecondContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
         soleTraderEntityJourneyData = None
       )
 
-      stubGetRegistration(updatedRegistration)
+      stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(

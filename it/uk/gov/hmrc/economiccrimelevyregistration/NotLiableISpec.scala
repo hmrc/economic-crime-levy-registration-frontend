@@ -38,7 +38,7 @@ class NotLiableISpec extends ISpecBase with AuthorisedBehaviour {
           relevantApRevenue = Some(randomApRevenue())
         )
 
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val result = callRoute(FakeRequest(routes.NotLiableController.notLiable()))
 

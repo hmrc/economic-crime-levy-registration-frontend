@@ -28,7 +28,7 @@ class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBeh
       val additionalInfo = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistration(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
       val result = callRoute(FakeRequest(routes.RegisterForCurrentYearController.onPageLoad(NormalMode)))
 
@@ -58,7 +58,7 @@ class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBeh
         val additionalInfo = random[RegistrationAdditionalInfo]
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
-        stubGetRegistration(registration)
+        stubGetRegistrationWithEmptyAdditionalInfo(registration)
         val info = RegistrationAdditionalInfo(
           testInternalId,
           None,
