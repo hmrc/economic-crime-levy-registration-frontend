@@ -29,7 +29,8 @@ case class Deregistration(
   date: Option[LocalDate],
   contactDetails: ContactDetails,
   registrationType: RegistrationType,
-  lastUpdated: Option[Instant] = None
+  lastUpdated: Option[Instant] = None,
+  dmsSubmissionHtml: Option[String] = None
 )
 
 object Deregistration {
@@ -41,6 +42,7 @@ object Deregistration {
     reason = None,
     date = None,
     contactDetails = ContactDetails(None, None, None, None),
-    DeRegistration
+    DeRegistration,
+    dmsSubmissionHtml = None
   )
 }

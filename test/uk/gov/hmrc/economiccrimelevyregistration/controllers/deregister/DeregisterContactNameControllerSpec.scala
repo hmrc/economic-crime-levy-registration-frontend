@@ -68,8 +68,7 @@ class DeregisterContactNameControllerSpec extends SpecBase {
 
         contentAsString(result) shouldBe view(
           form,
-          mode,
-          deregistration.registrationType
+          mode
         )(fakeRequest, messages).toString
       }
     }

@@ -17,6 +17,7 @@
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
 @import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates._
+@import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.DeRegistration
 
 @this(
         layout: Layout,
@@ -27,11 +28,10 @@
 )
 
 @(form: Form[String],
-        mode: Mode,
-        registrationType: RegistrationType)(implicit request: Request[_], messages: Messages)
+        mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleWithForm(form, messages("deregisterContactName.title")),
-        registrationTypeForTopBanner = Some(registrationType)
+        registrationTypeForTopBanner = Some(DeRegistration)
 ) {
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))

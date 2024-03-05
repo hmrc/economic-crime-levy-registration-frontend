@@ -16,10 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
 
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
-
-import java.time.LocalDate
-
 object MaxLengths {
   val GeneralMaxLength                   = 60
   val EmailMaxLength                     = 132
