@@ -79,7 +79,6 @@ trait SpecBase
   implicit val errorTemplate: ErrorTemplate            = app.injector.instanceOf[ErrorTemplate]
   val config: Config                                   = app.injector.instanceOf[Config]
   val actorSystem: ActorSystem                         = ActorSystem("actor")
-  val eclReference: String                             = "ECLRefNumber12345"
 
   def fakeAuthorisedActionWithEnrolmentCheck(internalId: String, eclRegistrationReference: Option[String] = None)    =
     new FakeAuthorisedActionWithEnrolmentCheck(internalId, bodyParsers, eclRegistrationReference)
@@ -89,8 +88,12 @@ trait SpecBase
     new FakeAuthorisedActionAgentsAllowed(bodyParsers)
   def fakeAuthorisedActionAssistantsAllowed                                                                          =
     new FakeAuthorisedActionAssistantsAllowed(bodyParsers)
-  def fakeDataRetrievalAction(data: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None)         =
-    new FakeDataRetrievalAction(data, additionalInfo)
+  def fakeDataRetrievalAction(
+    registration: Registration,
+    registrationAdditionalInfo: Option[RegistrationAdditionalInfo] = None,
+    eclRegistrationReference: String = testEclRegistrationReference
+  )                                                                                                                  =
+    new FakeDataRetrievalAction(registration, registrationAdditionalInfo, eclRegistrationReference)
   def fakeStoreUrlAction()                                                                                           =
     new FakeStoreUrlAction()
 
