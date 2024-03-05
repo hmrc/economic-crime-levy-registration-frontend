@@ -59,7 +59,7 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
       ) =>
         val updatedDeregistration =
           deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email)))
-        new TestContext(updatedDeregistration, Some(eclReference)) {
+        new TestContext(updatedDeregistration, Some(testEclRegistrationReference)) {
           when(mockDeregistrationService.delete(anyString())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
@@ -77,7 +77,7 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
           status(result) shouldBe OK
 
           contentAsString(result) shouldBe view(
-            eclReference,
+            testEclRegistrationReference,
             email,
             subscriptionResponse.correspondenceAddressDetails
           )(fakeRequest, messages).toString

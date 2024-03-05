@@ -46,14 +46,14 @@ class CancelRegistrationAmendmentController @Inject() (
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
-    Ok(view(form.prepare(None)))
+    Ok(view(form.prepare(None), request.eclRegistrationReference))
   }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, request.eclRegistrationReference))),
         cancelRegistrationAmendment =>
           if (cancelRegistrationAmendment) {
             eclRegistrationConnector

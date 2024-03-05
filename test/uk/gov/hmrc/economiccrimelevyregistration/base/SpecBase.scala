@@ -79,19 +79,27 @@ trait SpecBase
   implicit val errorTemplate: ErrorTemplate            = app.injector.instanceOf[ErrorTemplate]
   val config: Config                                   = app.injector.instanceOf[Config]
   val actorSystem: ActorSystem                         = ActorSystem("actor")
-  val eclReference: String                             = "ECLRefNumber12345"
 
-  def fakeAuthorisedActionWithEnrolmentCheck(internalId: String, eclRegistrationReference: Option[String] = None)    =
+  def fakeAuthorisedActionWithEnrolmentCheck(internalId: String, eclRegistrationReference: Option[String] = None) =
     new FakeAuthorisedActionWithEnrolmentCheck(internalId, bodyParsers, eclRegistrationReference)
+
   def fakeAuthorisedActionWithoutEnrolmentCheck(internalId: String, eclRegistrationReference: Option[String] = None) =
     new FakeAuthorisedActionWithoutEnrolmentCheck(eclRegistrationReference, internalId, bodyParsers)
-  def fakeAuthorisedActionAgentsAllowed                                                                              =
+
+  def fakeAuthorisedActionAgentsAllowed =
     new FakeAuthorisedActionAgentsAllowed(bodyParsers)
-  def fakeAuthorisedActionAssistantsAllowed                                                                          =
+
+  def fakeAuthorisedActionAssistantsAllowed =
     new FakeAuthorisedActionAssistantsAllowed(bodyParsers)
-  def fakeDataRetrievalAction(data: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None)         =
-    new FakeDataRetrievalAction(data, additionalInfo)
-  def fakeStoreUrlAction()                                                                                           =
+
+  def fakeDataRetrievalAction(
+    registration: Registration,
+    registrationAdditionalInfo: Option[RegistrationAdditionalInfo] = None,
+    eclRegistrationReference: Option[String] = Some(testEclRegistrationReference)
+  ) =
+    new FakeDataRetrievalAction(registration, registrationAdditionalInfo, eclRegistrationReference)
+
+  def fakeStoreUrlAction() =
     new FakeStoreUrlAction()
 
   def onwardRoute: Call = Call(GET, "/foo")

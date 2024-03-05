@@ -78,7 +78,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             validRegistration.registration.internalId,
             validRegistration.registration,
             None,
-            Some(eclReference)
+            Some(testEclRegistrationReference)
           )
         implicit val messages: Messages                                                       = messagesApi.preferred(registrationDataRequest)
 
@@ -92,7 +92,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           CheckYourAnswersViewModel(
             validRegistration.registration,
             None,
-            Some(eclReference),
+            Some(testEclRegistrationReference),
             None
           )
         )(
@@ -396,7 +396,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
             CheckYourAnswersViewModel(
               updatedRegistration,
               None,
-              Some(eclReference),
+              Some(testEclRegistrationReference),
               Some(additionalInfo)
             )
           )(registrationDataRequest)

@@ -15,9 +15,11 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
+@import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 
 @this(
-        layout: templates.Layout,
+        layout: Layout,
         formHelper: FormWithCSRF,
         errorSummary: GovukErrorSummary,
         radios: GovukRadios,
@@ -25,9 +27,13 @@
         button: GovukButton
 )
 
-@(form: Form[Boolean])(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], eclReference: Option[String])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleWithForm(form, messages("cancelRegistrationAmendment.title"))) {
+@layout(
+    pageTitle = titleWithForm(form, messages("cancelRegistrationAmendment.title")),
+    registrationTypeForTopBanner = Some(Amendment),
+    eclReferenceForStartLink = eclReference
+) {
     @if(form.errors.nonEmpty) {
         @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
     }

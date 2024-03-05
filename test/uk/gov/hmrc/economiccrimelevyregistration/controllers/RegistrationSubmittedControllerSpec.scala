@@ -65,7 +65,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         )
         val updatedRegistration   = registration.copy(contacts = contacts)
         val updatedAdditionalInfo =
-          additionalInfo.copy(liabilityYear = Some(liabilityYear), eclReference = Some(eclReference))
+          additionalInfo.copy(liabilityYear = Some(liabilityYear), eclReference = Some(testEclRegistrationReference))
         new TestContext(updatedRegistration, Some(updatedAdditionalInfo)) {
           when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
@@ -80,7 +80,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
           status(result) shouldBe OK
 
           contentAsString(result) shouldBe view(
-            eclReference,
+            testEclRegistrationReference,
             firstContactEmailAddress,
             secondContactEmailAddress,
             updatedAdditionalInfo.liabilityYear
