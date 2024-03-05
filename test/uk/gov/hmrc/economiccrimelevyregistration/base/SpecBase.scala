@@ -80,21 +80,26 @@ trait SpecBase
   val config: Config                                   = app.injector.instanceOf[Config]
   val actorSystem: ActorSystem                         = ActorSystem("actor")
 
-  def fakeAuthorisedActionWithEnrolmentCheck(internalId: String, eclRegistrationReference: Option[String] = None)    =
+  def fakeAuthorisedActionWithEnrolmentCheck(internalId: String, eclRegistrationReference: Option[String] = None) =
     new FakeAuthorisedActionWithEnrolmentCheck(internalId, bodyParsers, eclRegistrationReference)
+
   def fakeAuthorisedActionWithoutEnrolmentCheck(internalId: String, eclRegistrationReference: Option[String] = None) =
     new FakeAuthorisedActionWithoutEnrolmentCheck(eclRegistrationReference, internalId, bodyParsers)
-  def fakeAuthorisedActionAgentsAllowed                                                                              =
+
+  def fakeAuthorisedActionAgentsAllowed =
     new FakeAuthorisedActionAgentsAllowed(bodyParsers)
-  def fakeAuthorisedActionAssistantsAllowed                                                                          =
+
+  def fakeAuthorisedActionAssistantsAllowed =
     new FakeAuthorisedActionAssistantsAllowed(bodyParsers)
+
   def fakeDataRetrievalAction(
     registration: Registration,
     registrationAdditionalInfo: Option[RegistrationAdditionalInfo] = None,
-    eclRegistrationReference: String = testEclRegistrationReference
-  )                                                                                                                  =
+    eclRegistrationReference: Option[String] = Some(testEclRegistrationReference)
+  ) =
     new FakeDataRetrievalAction(registration, registrationAdditionalInfo, eclRegistrationReference)
-  def fakeStoreUrlAction()                                                                                           =
+
+  def fakeStoreUrlAction() =
     new FakeStoreUrlAction()
 
   def onwardRoute: Call = Call(GET, "/foo")

@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class FakeDataRetrievalAction(
   registration: Registration,
   registrationAdditionalInfo: Option[RegistrationAdditionalInfo] = None,
-  eclRegistrationReference: String
+  eclRegistrationReference: Option[String] = None
 ) extends DataRetrievalAction {
 
   override protected implicit val executionContext: ExecutionContext =
@@ -40,7 +40,7 @@ class FakeDataRetrievalAction(
           request.internalId,
           registration,
           registrationAdditionalInfo,
-          Some(eclRegistrationReference)
+          eclRegistrationReference
         )
       )
     )
