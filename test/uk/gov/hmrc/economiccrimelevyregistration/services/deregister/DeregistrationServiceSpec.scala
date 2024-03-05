@@ -71,7 +71,7 @@ class DeregistrationServiceSpec extends SpecBase {
         .thenReturn(Future.successful(()))
 
       val result = await(service.upsert(deregistration).value)
-      result shouldBe Right(deregistration)
+      result shouldBe Right(())
     }
 
     "return an error if failed" in forAll { deregistration: Deregistration =>

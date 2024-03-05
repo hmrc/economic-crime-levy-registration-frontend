@@ -364,44 +364,48 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     "show liability start date" in forAll(
       Arbitrary.arbitrary[ValidRegistrationWithRegistrationType],
       choose[Int](2022, TaxYear.current.startYear),
-      Arbitrary.arbitrary[LocalDate]
-    ) { (valid: ValidRegistrationWithRegistrationType, year: Int, liabilityStartDate: LocalDate) =>
-      new TestContext(valid.registration) {
-        val additionalInfo: RegistrationAdditionalInfo                                        = RegistrationAdditionalInfo(
-          valid.registration.internalId,
-          Some(LiabilityYear(year)),
-          Some(liabilityStartDate),
-          None,
-          None,
-          None
-        )
-        implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
-          RegistrationDataRequest(
-            fakeRequest,
+      Arbitrary.arbitrary[LocalDate],
+      Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther)
+    ) {
+      (
+        valid: ValidRegistrationWithRegistrationType,
+        year: Int,
+        liabilityStartDate: LocalDate,
+        entityType: EntityType
+      ) =>
+        val updatedRegistration = valid.registration.copy(entityType = Some(entityType))
+        new TestContext(updatedRegistration) {
+          val additionalInfo: RegistrationAdditionalInfo                                        = RegistrationAdditionalInfo(
             valid.registration.internalId,
-            valid.registration,
-            Some(additionalInfo),
+            Some(LiabilityYear(year)),
+            Some(liabilityStartDate),
+            None,
+            None,
             None
           )
+          implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
+            RegistrationDataRequest(
+              fakeRequest,
+              updatedRegistration.internalId,
+              updatedRegistration,
+              Some(additionalInfo),
+              None
+            )
 
-        val encodedHtml: String = controller.createAndEncodeHtmlForPdf(
-          CheckYourAnswersViewModel(
-            valid.registration,
-            None,
-            Some(eclReference),
-            Some(additionalInfo)
-          ),
-          PdfViewModel(
-            valid.registration,
-            None,
-            Some(eclReference)
-          )
-        )(registrationDataRequest)
-        val decodedHtml         = new String(Base64.getDecoder.decode(encodedHtml))
+          val encodedHtml: String = controller.encodeOtherRegistrationHtmlForPdf(
+            CheckYourAnswersViewModel(
+              updatedRegistration,
+              None,
+              Some(eclReference),
+              Some(additionalInfo)
+            )
+          )(registrationDataRequest)
+          val decodedHtml         = new String(Base64.getDecoder.decode(encodedHtml))
 
-        decodedHtml should include(messages("checkYourAnswers.liabilityDate.label"))
-        decodedHtml should include(ViewUtils.formatLocalDate(liabilityStartDate)(messages))
-      }
+          decodedHtml should include(messages("checkYourAnswers.liabilityDate.label"))
+          decodedHtml should include(ViewUtils.formatLocalDate(liabilityStartDate)(messages))
+        }
     }
+
   }
 }
