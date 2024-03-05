@@ -27,7 +27,7 @@
         appConfig: AppConfig
 )
 
-@(email: String, eclReference: Option[String], contactAddress: Option[EclAddress])(implicit request: Request[_], messages: Messages)
+@(email: String, eclReference: Option[String], contactAddress: EclAddress)(implicit request: Request[_], messages: Messages)
 
 
 @layout(
@@ -68,9 +68,7 @@
     <p class="govuk-body">@messages("amendmentRequested.body.address.heading")</p>
 
     <p class="govuk-body">
-        @{contactAddress.map { answer =>
-            Html(AddressViewModel.html(answer))
-        }}
+        @Html(AddressViewModel.html(contactAddress))
     </p>
 
     <p class="govuk-body">@Html(messages("amendmentRequested.body.p7", messages("amendmentRequested.body.p7.link", appConfig.exitSurveyUrl)))</p>

@@ -16,14 +16,19 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
+import cats.data.EitherT
+import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendmentRequestedView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.ResponseError
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 
 @Singleton
 class AmendmentRequestedController @Inject() (
@@ -40,12 +45,10 @@ class AmendmentRequestedController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     (for {
-      _                        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
-      _                        <- registrationService.deleteRegistration(request.internalId).asResponseError
-      firstContactEmailAddress <-
-        valueOrError(request.registration.contacts.firstContactDetails.emailAddress, "First contact email address")
-      contactAddress            = request.registration.contactAddress
-    } yield (firstContactEmailAddress, contactAddress)).fold(
+      _               <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
+      _               <- registrationService.deleteRegistration(request.internalId).asResponseError
+      emailAndAddress <- retrieveFromRequestOrSession
+    } yield emailAndAddress).fold(
       error => routeError(error),
       emailAndAddress => {
         val firstContactEmail = emailAndAddress._1
@@ -56,8 +59,38 @@ class AmendmentRequestedController @Inject() (
             request.eclRegistrationReference,
             contactAddress
           )
+        ).withSession(
+          request.session ++ Map(
+            (SessionKeys.FirstContactEmail -> firstContactEmail),
+            (SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(contactAddress)))
+          )
         )
       }
     )
   }
+
+  private def retrieveFromRequestOrSession(implicit
+    request: RegistrationDataRequest[_]
+  ): EitherT[Future, ResponseError, (String, EclAddress)] =
+    (request.registration.contacts.firstContactDetails.emailAddress, request.registration.contactAddress) match {
+      case (Some(email), Some(address)) =>
+        EitherT[Future, ResponseError, (String, EclAddress)](Future.successful(Right((email, address))))
+      case _                            =>
+        for {
+
+          email           <- valueOrError(request.session.get(SessionKeys.FirstContactEmail), "First contact email")
+          address         <- valueOrError(
+                               request.session
+                                 .get(SessionKeys.ContactAddress),
+                               "Contact address in session"
+                             )
+          eclAddressResult = Json.fromJson[EclAddress](Json.parse(address))
+          eclAddress      <- valueOrError(
+                               eclAddressResult.asOpt,
+                               "Contact address parsed from session"
+                             )
+        } yield (email, eclAddress)
+
+    }
+
 }

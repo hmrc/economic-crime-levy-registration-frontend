@@ -73,7 +73,7 @@ class AmendmentRequestedControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             firstContactEmailAddress,
             Some(eclReference),
-            Some(eclAddress)
+            eclAddress
           )(fakeRequest, messages).toString
         }
     }
