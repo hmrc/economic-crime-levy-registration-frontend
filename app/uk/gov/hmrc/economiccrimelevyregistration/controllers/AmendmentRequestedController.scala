@@ -16,26 +16,22 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import cats.data.EitherT
 import play.api.libs.json.Json
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendmentRequestedView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.ResponseError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 
 @Singleton
 class AmendmentRequestedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: AmendmentRequestedView,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   registrationService: EclRegistrationService
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
@@ -43,54 +39,34 @@ class AmendmentRequestedController @Inject() (
     with BaseController
     with ErrorHandler {
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+  def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     (for {
-      _               <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
-      _               <- registrationService.deleteRegistration(request.internalId).asResponseError
-      emailAndAddress <- retrieveFromRequestOrSession
-    } yield emailAndAddress).fold(
+      _              <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
+      _              <- registrationService.deleteRegistration(request.internalId).asResponseError
+      email          <- valueOrError(request.session.get(SessionKeys.FirstContactEmail), "First contact email")
+      contactAddress <- valueOrError(
+                          request.session
+                            .get(SessionKeys.ContactAddress),
+                          "Contact address in session"
+                        )
+      eclAddress     <- valueOrError(
+                          Json.fromJson[EclAddress](Json.parse(contactAddress)).asOpt,
+                          "Contact address parsed from session"
+                        )
+    } yield (email, eclAddress)).fold(
       error => routeError(error),
       emailAndAddress => {
         val firstContactEmail = emailAndAddress._1
-        val contactAddress    = emailAndAddress._2
+        val address           = emailAndAddress._2
         Ok(
           view(
             firstContactEmail,
             request.eclRegistrationReference,
-            contactAddress
-          )
-        ).withSession(
-          request.session ++ Map(
-            (SessionKeys.FirstContactEmail -> firstContactEmail),
-            (SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(contactAddress)))
+            address
           )
         )
       }
     )
   }
-
-  private def retrieveFromRequestOrSession(implicit
-    request: RegistrationDataRequest[_]
-  ): EitherT[Future, ResponseError, (String, EclAddress)] =
-    (request.registration.contacts.firstContactDetails.emailAddress, request.registration.contactAddress) match {
-      case (Some(email), Some(address)) =>
-        EitherT[Future, ResponseError, (String, EclAddress)](Future.successful(Right((email, address))))
-      case _                            =>
-        for {
-
-          email           <- valueOrError(request.session.get(SessionKeys.FirstContactEmail), "First contact email")
-          address         <- valueOrError(
-                               request.session
-                                 .get(SessionKeys.ContactAddress),
-                               "Contact address in session"
-                             )
-          eclAddressResult = Json.fromJson[EclAddress](Json.parse(address))
-          eclAddress      <- valueOrError(
-                               eclAddressResult.asOpt,
-                               "Contact address parsed from session"
-                             )
-        } yield (email, eclAddress)
-
-    }
 
 }
