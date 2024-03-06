@@ -62,7 +62,8 @@ class GrsContinueController @Inject() (
                                                             journeyData.businessVerification,
                                                             journeyData.registration,
                                                             e,
-                                                            mode
+                                                            mode,
+                                                            request.registration
                                                           )
           } yield result
         case Some(e @ SoleTrader)                                                =>
@@ -74,7 +75,8 @@ class GrsContinueController @Inject() (
                              journeyData.businessVerification,
                              journeyData.registration,
                              e,
-                             mode
+                             mode,
+                             request.registration
                            )
           } yield result
 
@@ -85,7 +87,14 @@ class GrsContinueController @Inject() (
           partnershipIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(partnershipEntityJourneyData = Some(jd))
               .flatMap(_ =>
-                handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, e, mode)
+                handleGrsAndBvResult(
+                  jd.identifiersMatch,
+                  jd.businessVerification,
+                  jd.registration,
+                  e,
+                  mode,
+                  request.registration
+                )
               )
           }
 
@@ -119,7 +128,8 @@ class GrsContinueController @Inject() (
     bvResult: Option[BusinessVerificationResult],
     grsResult: GrsRegistrationResult,
     entityType: EntityType,
-    mode: Mode
+    mode: Mode,
+    registration: Registration
   )(implicit hc: HeaderCarrier, request: Request[_]): Future[Result] =
     (identifiersMatch, bvResult, grsResult.registrationStatus, grsResult.registeredBusinessPartnerId) match {
       case (false, _, _, _)                                  => Future.successful(Redirect(routes.NotableErrorController.verificationFailed()))
@@ -135,7 +145,17 @@ class GrsContinueController @Inject() (
                     Redirect(routes.PartnershipNameController.onPageLoad(NormalMode))
                   case _                                        => Redirect(routes.BusinessSectorController.onPageLoad(NormalMode))
                 }
-              case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad())
+              case CheckMode  =>
+                Redirect(entityType match {
+                  case GeneralPartnership | ScottishPartnership =>
+                    if (registration.partnershipName.isEmpty) {
+                      routes.PartnershipNameController.onPageLoad(mode)
+                    } else {
+                      routes.CheckYourAnswersController.onPageLoad()
+                    }
+                  case _                                        =>
+                    routes.CheckYourAnswersController.onPageLoad()
+                })
             }
           case EclSubscriptionStatus(Subscribed(eclRegistrationReference))   =>
             Redirect(routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference))
