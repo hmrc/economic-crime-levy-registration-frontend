@@ -36,13 +36,12 @@
     pageTitle = title(messages("liabilityBeforeCurrentYear.title")),
     showBackLink = true
 ) {
-
-    <h1 class="govuk-heading-l">@messages("liabilityBeforeCurrentYear.h1")</h1>
-
     @formHelper(action = LiabilityBeforeCurrentYearController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }
+
+        <h1 class="govuk-heading-l">@messages("liabilityBeforeCurrentYear.h1")</h1>
 
         @radios(
             RadiosViewModel(

@@ -35,16 +35,17 @@
     pageTitle = title(messages("register.currentYear.title")),
     showBackLink = true
 ) {
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-        <h1 class="govuk-fieldset__heading">
-        @messages("register.currentYear.h1", ViewUtils.formatLocalDate(currentFinancialYearStartDate), ViewUtils.formatLocalDate(currentFinancialYearEndDate))
-        </h1>
-    </legend>
-
     @formHelper(action = RegisterForCurrentYearController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }
+
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+            @messages("register.currentYear.h1", ViewUtils.formatLocalDate(currentFinancialYearStartDate), ViewUtils.formatLocalDate(currentFinancialYearEndDate))
+            </h1>
+        </legend>
+
         @radios(
             RadiosViewModel(
                 field = form("value"),
