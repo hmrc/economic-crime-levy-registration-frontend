@@ -23,10 +23,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister._
 
 class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregistrationRequestedController.onPageLoad().url}" should {
+  s"GET ${routes.DeregistrationRequestedController.onPageLoad().url}" should {
 
     "respond with 200 status and the start HTML view" in {
       stubAuthorisedWithEclEnrolment()
@@ -44,9 +45,9 @@ class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregistrationRequestedController
+          routes.DeregistrationRequestedController
             .onPageLoad()
-        ).withSession(SessionKeys.EmailAddress -> email)
+        ).withSession(SessionKeys.FirstContactEmail -> email)
       )
 
       status(result) shouldBe OK

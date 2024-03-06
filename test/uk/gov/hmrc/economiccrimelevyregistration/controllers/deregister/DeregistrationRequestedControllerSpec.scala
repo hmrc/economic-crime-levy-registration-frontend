@@ -70,7 +70,7 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
             )
 
           val result: Future[Result] = controller.onPageLoad()(
-            fakeRequest.withSession(SessionKeys.EmailAddress -> email)
+            fakeRequest.withSession(SessionKeys.FirstContactEmail -> email)
           )
 
           status(result) shouldBe OK

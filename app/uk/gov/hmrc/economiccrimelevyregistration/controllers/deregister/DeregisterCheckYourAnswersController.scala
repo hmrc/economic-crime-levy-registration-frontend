@@ -93,7 +93,7 @@ class DeregisterCheckYourAnswersController @Inject() (
       err => routeError(err),
       email =>
         Redirect(routes.DeregistrationRequestedController.onPageLoad())
-          .withSession(request.session ++ Seq(SessionKeys.EmailAddress -> email))
+          .withSession(request.session ++ Seq(SessionKeys.FirstContactEmail -> email))
     )
   }
 }
