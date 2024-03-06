@@ -204,10 +204,6 @@ entityType.NonUKEstablishment = Non-UK Establishment
 entityType.UnincorporatedAssociation = Unincorporated Association
 entityType.error.required = Please select your entity type
 
-otherEntityType.ctutr.question.title = Do you have a Corporation Tax Unique Taxpayer Reference?
-otherEntityType.ctutr.question.label = Do you have a Corporation Tax Unique Taxpayer Reference?
-otherEntityType.ctutr.question.h1 = Do you have a Corporation Tax Unique Taxpayer Reference?
-otherEntityType.ctutr.question.body = Your Corporation Tax (CT) Unique Taxpayer Reference (UTR) is 10 numbers long.
 otherEntityType.ctutr.question.hint = For example, 0123456789
 otherEntityType.addCtutr.title = What is your corporation tax unique taxpayer reference?
 otherEntityType.addCtutr.h1 = What is your corporation tax unique taxpayer reference?
@@ -608,6 +604,7 @@ liabilityBeforeCurrentYear.h1 = Are you liable for any previous financial years?
 liabilityBeforeCurrentYear.label = Liable for any previous years
 liabilityBeforeCurrentYear.yes = Yes, enter the date you became liable for ECL
 liabilityBeforeCurrentYear.no = No, only liable for {0}
+liabilityBeforeCurrentYear.required = Select yes if you were liable for any previous financial years
 
 otherEntityType.crn.question.title = Do you have a UK company registration number?
 otherEntityType.crn.question.label = Do you have a UK company registration number?

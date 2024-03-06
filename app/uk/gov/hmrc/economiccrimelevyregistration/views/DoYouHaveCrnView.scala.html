@@ -34,13 +34,12 @@
     pageTitle = title(messages("otherEntityType.crn.question.title")),
     showBackLink = true
 ) {
-
-    <h1 class="govuk-heading-l">@messages("otherEntityType.crn.question.h1")</h1>
-
     @formHelper(action = DoYouHaveCrnController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }
+
+        <h1 class="govuk-heading-l">@messages("otherEntityType.crn.question.h1")</h1>
 
         @radios(
             RadiosViewModel(

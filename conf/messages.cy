@@ -205,11 +205,6 @@ entityType.NonUKEstablishment = Sefydliad y tu allan i’r DU
 entityType.UnincorporatedAssociation = Cymdeithas anghorfforedig
 entityType.error.required = Dewiswch eich math o endid
 
-otherEntityType.ctutr.question.title = A oes gennych Gyfeirnod Unigryw y Trethdalwr ar gyfer Treth Gorfforaeth?
-otherEntityType.ctutr.question.label = A oes gennych Gyfeirnod Unigryw y Trethdalwr ar gyfer Treth Gorfforaeth?
-otherEntityType.ctutr.question.h1 = A oes gennych Gyfeirnod Unigryw y Trethdalwr ar gyfer Treth Gorfforaeth?
-otherEntityType.ctutr.question.body = Mae’ch Cyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth (CT) yn 10 digid.
-otherEntityType.ctutr.question.hint = Er enghraifft, 0123456789
 otherEntityType.addCtutr.title = Beth yw eich Cyfeirnod Unigryw y Trethdalwr ar gyfer Treth Gorfforaeth?
 otherEntityType.addCtutr.h1 = Beth yw eich Cyfeirnod Unigryw y Trethdalwr ar gyfer Treth Gorfforaeth?
 otherEntityType.addCtutr.body = Mae’ch Cyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth (CT) yn 10 digid.
@@ -609,6 +604,7 @@ liabilityBeforeCurrentYear.h1 = A ydych yn atebol i dalu’r ardoll ar gyfer unr
 liabilityBeforeCurrentYear.label = Yn atebol am unrhyw flynyddoedd blaenorol
 liabilityBeforeCurrentYear.yes = Iawn, nodwch y dyddiad y daethoch yn atebol am ECL
 liabilityBeforeCurrentYear.no = Na, yn atebol am {0}
+liabilityBeforeCurrentYear.required = Dewiswch ''Iawn'' os oeddech yn atebol i dalu''r ardoll ar gyfer unrhyw flynyddoedd ariannol blaenorol
 
 otherEntityType.crn.question.title = Oes gennych chi rif cofrestru cwmni'r DU?
 otherEntityType.crn.question.label = Oes gennych chi rif cofrestru cwmni'r DU?
