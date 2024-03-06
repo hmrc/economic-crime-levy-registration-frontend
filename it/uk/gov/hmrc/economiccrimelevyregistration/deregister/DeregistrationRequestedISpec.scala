@@ -21,7 +21,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 
 class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
@@ -30,7 +30,9 @@ class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the start HTML view" in {
       stubAuthorisedWithEclEnrolment()
-      val deregistration        = random[Deregistration]
+      val email                 = random[String]
+      val deregistration        =
+        random[Deregistration].copy(contactDetails = validContactDetails.copy(emailAddress = Some(email)))
       val updatedDeregistration =
         deregistration.copy(
           internalId = testInternalId,
@@ -44,7 +46,7 @@ class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
         FakeRequest(
           uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregistrationRequestedController
             .onPageLoad()
-        )
+        ).withSession(SessionKeys.EmailAddress -> email)
       )
 
       status(result) shouldBe OK

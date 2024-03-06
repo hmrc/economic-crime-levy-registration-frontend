@@ -21,6 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
+import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
@@ -34,7 +35,6 @@ import scala.concurrent.ExecutionContext
 class DeregistrationRequestedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getDeregistrationData: DeregistrationDataRetrievalAction,
   deregistrationService: DeregistrationService,
   registrationService: EclRegistrationService,
   view: DeregistrationRequestedView
@@ -44,13 +44,13 @@ class DeregistrationRequestedController @Inject() (
     with BaseController
     with ErrorHandler {
 
-  def onPageLoad: Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
+  def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     (for {
       _                    <- deregistrationService.delete(request.internalId).asResponseError
       eclReference         <- valueOrError(request.eclRegistrationReference, "ECL reference")
       subscriptionResponse <- registrationService.getSubscription(eclReference).asResponseError
       address               = subscriptionResponse.correspondenceAddressDetails
-      email                <- valueOrError(request.deregistration.contactDetails.emailAddress, "contact email address")
+      email                <- valueOrError(request.session.get(SessionKeys.EmailAddress), "contact email address")
     } yield (eclReference, email, address)).fold(
       error => routeError(error),
       tuple => {

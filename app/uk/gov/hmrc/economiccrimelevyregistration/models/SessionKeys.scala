@@ -20,4 +20,5 @@ object SessionKeys {
   val UrlToReturnTo = "UrlToReturnTo"
   val EclReference  = "eclReference"
   val LiabilityYear = "liabilityYear"
+  val EmailAddress  = "EmailAddress"
 }

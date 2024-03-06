@@ -23,7 +23,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregistrationRequestedView
@@ -43,7 +43,6 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
     val controller = new DeregistrationRequestedController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck("test-internal-id", eclReference),
-      new FakeDeregistrationRetrievalAction(mockDeregistrationService, deregistration),
       mockDeregistrationService,
       mockEclRegistrationService,
       view
@@ -71,7 +70,7 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
             )
 
           val result: Future[Result] = controller.onPageLoad()(
-            fakeRequest
+            fakeRequest.withSession(SessionKeys.EmailAddress -> email)
           )
 
           status(result) shouldBe OK
