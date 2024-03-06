@@ -101,17 +101,12 @@ class EntityTypeController @Inject() (
     val sameEntityTypeAsPrevious = previousEntityType.contains(newEntityType)
 
     (sameEntityTypeAsPrevious, EntityType.isOther(newEntityType)) match {
-      case (true, true)   => Future.successful(Redirect(routes.CheckYourAnswersController.onPageLoad()))
+      case (true, _)      =>
+        Future.successful(Redirect(routes.CheckYourAnswersController.onPageLoad()))
       case (false, true)  =>
         Future.successful(Redirect(routes.BusinessNameController.onPageLoad(CheckMode)))
-      case (true, false)  =>
-        (for {
-          grsJourneyUrl <- eclRegistrationService.registerEntityType(newEntityType, NormalMode).asResponseError
-        } yield grsJourneyUrl).fold(
-          err => routeError(err),
-          url => Redirect(Call(GET, url))
-        )
-      case (false, false) => redirectToGRS(CheckMode, newEntityType)
+      case (false, false) =>
+        redirectToGRS(CheckMode, newEntityType)
     }
   }
 
