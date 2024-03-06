@@ -20,6 +20,7 @@ import cats.data.EitherT
 import cats.implicits.toTraverseOps
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.StoreUrlAction
@@ -156,17 +157,24 @@ class CheckYourAnswersController @Inject() (
       updatedAdditionalInfo       = additionalInfo.copy(eclReference = Some(response.eclReference))
       _                          <- registrationAdditionalInfoService.upsert(updatedAdditionalInfo).asResponseError
       _                          <- sendEmail(registration, request.additionalInfo, response.eclReference).asResponseError
-      email                       = registration.contacts.firstContactDetails.emailAddress
-    } yield (response, email)).fold(
+      email                      <- valueOrError(request.registration.contacts.firstContactDetails.emailAddress, "First contact email")
+      address                    <- valueOrError(request.registration.contactAddress, "Contact address")
+    } yield (response, email, address)).fold(
       error => routeError(error),
       data => {
         val session = registration.entityType match {
           case Some(value) if EntityType.isOther(value) => request.session
           case _                                        =>
+            val response = data._1
+            val email    = data._2
+            val address  = data._3
             request.session ++ Seq(
-              SessionKeys.EclReference -> data._1.eclReference
+              (SessionKeys.EclReference      -> response.eclReference),
+              (SessionKeys.FirstContactEmail -> email),
+              (SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(address)))
             )
         }
+
         Redirect(getNextPage(registration)).withSession(session)
       }
     )
