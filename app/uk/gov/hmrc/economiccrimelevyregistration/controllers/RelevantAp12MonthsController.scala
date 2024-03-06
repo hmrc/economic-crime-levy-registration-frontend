@@ -62,11 +62,17 @@ class RelevantAp12MonthsController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         relevantAp12Months => {
-          val updatedRegistration =
-            dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
+          val hasRegistrationChanged = !request.registration.relevantAp12Months.contains(relevantAp12Months)
+          val updatedRegistration    = hasRegistrationChanged match {
+            case false => request.registration
+            case true  => dataCleanup.cleanup(request.registration.copy(relevantAp12Months = Some(relevantAp12Months)))
+          }
           (for {
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield EclRegistrationModel(updatedRegistration)).convertToResult(mode, pageNavigator)
+          } yield EclRegistrationModel(
+            registration = updatedRegistration,
+            hasRegistrationChanged = hasRegistrationChanged
+          )).convertToResult(mode, pageNavigator)
         }
       )
   }
