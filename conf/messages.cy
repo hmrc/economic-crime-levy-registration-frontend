@@ -609,6 +609,7 @@ liabilityBeforeCurrentYear.h1 = A ydych yn atebol i dalu’r ardoll ar gyfer unr
 liabilityBeforeCurrentYear.label = Yn atebol am unrhyw flynyddoedd blaenorol
 liabilityBeforeCurrentYear.yes = Iawn, nodwch y dyddiad y daethoch yn atebol am ECL
 liabilityBeforeCurrentYear.no = Na, yn atebol am {0}
+liabilityBeforeCurrentYear.required = Dewiswch ''Iawn'' os oeddech yn atebol i dalu''r ardoll ar gyfer unrhyw flynyddoedd ariannol blaenorol
 
 otherEntityType.crn.question.title = Oes gennych chi rif cofrestru cwmni'r DU?
 otherEntityType.crn.question.label = Oes gennych chi rif cofrestru cwmni'r DU?

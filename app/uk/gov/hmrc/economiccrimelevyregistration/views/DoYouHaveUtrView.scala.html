@@ -34,13 +34,12 @@
     pageTitle = title(messages("otherEntityType.utr.question.title")),
     showBackLink = true
 ) {
-
-    <h1 class="govuk-heading-l">@messages("otherEntityType.utr.question.h1")</h1>
-
     @formHelper(action = DoYouHaveUtrController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }
+
+        <h1 class="govuk-heading-l">@messages("otherEntityType.utr.question.h1")</h1>
 
         @radios(
             RadiosViewModel(
