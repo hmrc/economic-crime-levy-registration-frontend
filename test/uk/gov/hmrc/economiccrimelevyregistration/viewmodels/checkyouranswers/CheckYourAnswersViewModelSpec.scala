@@ -30,8 +30,7 @@ class CheckYourAnswersViewModelSpec extends SpecBase {
       (
         registration: Registration,
         getSubscriptionResponse: GetSubscriptionResponse,
-        additionalInfo: RegistrationAdditionalInfo,
-        liabilityStartDate: LocalDate
+        additionalInfo: RegistrationAdditionalInfo
       ) =>
         val updatedSubcriptionResponse = getSubscriptionResponse.copy(additionalDetails =
           getSubscriptionResponse.additionalDetails.copy(liabilityStartDate = "2018-12-27")
@@ -41,7 +40,7 @@ class CheckYourAnswersViewModelSpec extends SpecBase {
         val viewModel = CheckYourAnswersViewModel(
           registration.copy(registrationType = Some(Amendment)),
           Some(updatedSubcriptionResponse),
-          Some(eclReference),
+          Some(testEclRegistrationReference),
           Some(updatedAdditionalInfo)
         )
 
@@ -56,7 +55,6 @@ class CheckYourAnswersViewModelSpec extends SpecBase {
     "contains liability start date when it is present in the additional info" in forAll {
       (
         registration: Registration,
-        getSubscriptionResponse: GetSubscriptionResponse,
         additionalInfo: RegistrationAdditionalInfo,
         liabilityStartDate: LocalDate
       ) =>
@@ -65,7 +63,7 @@ class CheckYourAnswersViewModelSpec extends SpecBase {
         val viewModel = CheckYourAnswersViewModel(
           registration.copy(registrationType = Some(Amendment)),
           None,
-          Some(eclReference),
+          Some(testEclRegistrationReference),
           Some(additionalInfoWithLiabilityDate)
         )
 

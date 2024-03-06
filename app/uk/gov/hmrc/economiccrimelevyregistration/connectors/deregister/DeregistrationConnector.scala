@@ -53,4 +53,9 @@ class DeregistrationConnector @Inject() (
       .delete(url"$deregistrationUrl/deregistration/$internalId")
       .executeAndContinue
 
+  def submitDeregistration(internalId: String)(implicit hc: HeaderCarrier): Future[Unit] =
+    httpClient
+      .post(url"$deregistrationUrl/submit-deregistration/$internalId")
+      .executeAndContinue
+
 }

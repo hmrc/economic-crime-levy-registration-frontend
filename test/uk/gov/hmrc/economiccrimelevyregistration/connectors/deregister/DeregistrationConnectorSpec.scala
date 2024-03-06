@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.connectors.deregister
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR, NO_CONTENT}
+import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR, NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
@@ -105,6 +105,41 @@ class DeregistrationConnectorSpec extends SpecBase {
 
       val result = await(connector.upsertDeregistration(deregistration))
       result shouldBe ()
+    }
+  }
+
+  "submitDeregistration" should {
+    "return unit when the submission succeeds" in forAll { (internalId: String, authorization: Authorization) =>
+      beforeEach()
+      val hc: HeaderCarrier = HeaderCarrier(Some(authorization))
+      val expectedUrl       = url"$deregistrationUrl/submit-deregistration/$internalId"
+      val response          = HttpResponse(OK, "")
+
+      when(mockHttpClient.post(ArgumentMatchers.eq(expectedUrl))(any()))
+        .thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+        .thenReturn(Future.successful(response))
+
+      val result = await(connector.submitDeregistration(internalId)(hc))
+
+      result shouldBe ()
+    }
+
+    "throw an UpstreamErrorResponse exception when the http client returns a error response" in forAll {
+      internalId: String =>
+        beforeEach()
+        val expectedUrl = url"$deregistrationUrl/submit-deregistration/$internalId"
+        val msg         = "Internal server error"
+
+        when(mockHttpClient.post(ArgumentMatchers.eq(expectedUrl))(any()))
+          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+          .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, msg)))
+
+        Try(await(connector.submitDeregistration(internalId)(hc))) match {
+          case Failure(thr) => thr.getMessage shouldBe msg
+          case Success(_)   => fail("expected exception to be thrown")
+        }
     }
   }
 }

@@ -86,12 +86,10 @@ class CheckYourAnswersController @Inject() (
   ) = {
     val registrationType = checkYourAnswersViewModel.registrationType
     (checkYourAnswersViewModel.registration.entityType, registrationType) match {
-      case (Some(_), Some(Amendment))                    =>
-        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, pdfViewModel)
+      case (_, Some(Amendment))                          =>
+        encodeAmendmentHtmlForPdf(pdfViewModel)
       case (Some(value), _) if EntityType.isOther(value) =>
-        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, pdfViewModel)
-      case (None, Some(Amendment))                       =>
-        createAndEncodeHtmlForPdf(checkYourAnswersViewModel, pdfViewModel)
+        encodeOtherRegistrationHtmlForPdf(checkYourAnswersViewModel)
       case _                                             =>
         ""
     }
@@ -263,9 +261,20 @@ class CheckYourAnswersController @Inject() (
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
     .encodeToString(html.getBytes)
 
-  def createAndEncodeHtmlForPdf(
-    checkYourAnswersViewModel: CheckYourAnswersViewModel,
+  def encodeAmendmentHtmlForPdf(
     pdfViewModel: PdfViewModel
+  )(implicit request: RegistrationDataRequest[_]): String = {
+    val date = LocalDate.now
+    base64EncodeHtmlView(
+      amendRegistrationPdfView(
+        ViewUtils.formatLocalDate(date),
+        pdfViewModel
+      ).toString()
+    )
+  }
+
+  def encodeOtherRegistrationHtmlForPdf(
+    checkYourAnswersViewModel: CheckYourAnswersViewModel
   )(implicit request: RegistrationDataRequest[_]): String = {
     val date                      = LocalDate.now
     val organisation              = checkYourAnswersViewModel.organisationDetails()
@@ -276,27 +285,17 @@ class CheckYourAnswersController @Inject() (
     val otherEntity               = checkYourAnswersViewModel.otherEntityDetails()
     val hasSecondContact: Boolean = request.registration.contacts.secondContact.contains(true)
 
-    checkYourAnswersViewModel.registrationType match {
-      case Some(Amendment) =>
-        base64EncodeHtmlView(
-          amendRegistrationPdfView(
-            ViewUtils.formatLocalDate(date),
-            pdfViewModel
-          ).toString()
-        )
-      case _               =>
-        base64EncodeHtmlView(
-          otherRegistrationPdfView(
-            ViewUtils.formatLocalDate(date),
-            organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
-            contactDetails.copy(rows = contactDetails.rows.map(_.copy(actions = None))),
-            firstContact.copy(rows = firstContact.rows.map(_.copy(actions = None))),
-            secondContact.copy(rows = secondContact.rows.map(_.copy(actions = None))),
-            otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None))),
-            addressDetails.copy(rows = addressDetails.rows.map(_.copy(actions = None))),
-            hasSecondContact
-          ).toString()
-        )
-    }
+    base64EncodeHtmlView(
+      otherRegistrationPdfView(
+        ViewUtils.formatLocalDate(date),
+        organisation.copy(rows = organisation.rows.map(_.copy(actions = None))),
+        contactDetails.copy(rows = contactDetails.rows.map(_.copy(actions = None))),
+        firstContact.copy(rows = firstContact.rows.map(_.copy(actions = None))),
+        secondContact.copy(rows = secondContact.rows.map(_.copy(actions = None))),
+        otherEntity.copy(rows = otherEntity.rows.map(_.copy(actions = None))),
+        addressDetails.copy(rows = addressDetails.rows.map(_.copy(actions = None))),
+        hasSecondContact
+      ).toString()
+    )
   }
 }

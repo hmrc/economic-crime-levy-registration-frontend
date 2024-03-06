@@ -49,7 +49,7 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
   class TestContext(registrationData: Registration) {
     val controller = new CancelRegistrationAmendmentController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
+      fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId, Some(testEclRegistrationReference)),
       fakeDataRetrievalAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
@@ -65,7 +65,7 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form, Some(testEclRegistrationReference))(fakeRequest, messages).toString
       }
     }
   }
@@ -83,7 +83,7 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
               fakeRequest.withFormUrlEncodedBody(("value", cancelRegistrationAmendment.toString))
             )
 
-          val expected = getExpectedValues(cancelRegistrationAmendment)
+          val expected: (String, Int) = getExpectedValues(cancelRegistrationAmendment)
 
           status(result) shouldBe SEE_OTHER
 
@@ -102,7 +102,10 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors, Some(testEclRegistrationReference))(
+          fakeRequest,
+          messages
+        ).toString
       }
     }
   }

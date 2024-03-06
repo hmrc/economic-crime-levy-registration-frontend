@@ -52,15 +52,14 @@ class DeregisterContactNameController @Inject() (
   val form: Form[String] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getDeregistrationData) { implicit request =>
-    Ok(view(form.prepare(request.deregistration.contactDetails.name), mode, request.deregistration.registrationType))
+    Ok(view(form.prepare(request.deregistration.contactDetails.name), mode))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getDeregistrationData).async { implicit request =>
     form
       .bindFromRequest()
       .fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode, request.deregistration.registrationType))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         name => {
 
           val updatedDeregistration = request.deregistration.copy(

@@ -27,15 +27,16 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.{a
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, GetSubscriptionResponse}
-import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService}
-import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterCheckYourAnswersView
+import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.{DeregisterCheckYourAnswersView, DeregistrationPdfView}
 
 import scala.concurrent.Future
 
 class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
 
   val view: DeregisterCheckYourAnswersView = app.injector.instanceOf[DeregisterCheckYourAnswersView]
+  val pdfView: DeregistrationPdfView       = app.injector.instanceOf[DeregistrationPdfView]
 
   val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
   val mockDeregistrationService: DeregistrationService   = mock[DeregistrationService]
@@ -52,14 +53,15 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
       mockEclRegistrationService,
       mockDeregistrationService,
       mockEmailService,
-      view
+      view,
+      pdfView
     )
   }
 
   "onPageLoad" should {
     "return OK and the correct view" in forAll {
       (subscription: GetSubscriptionResponse, deregistration: Deregistration) =>
-        new TestContext(testInternalId, Some(testEclRegistrationReference)) {
+        new TestContext(deregistration.internalId, Some(testEclRegistrationReference)) {
           when(mockDeregistrationService.getOrCreate(anyString())(any()))
             .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 
@@ -81,8 +83,7 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
               subscription.legalEntityDetails.organisationName
             )(messages),
             controller.additionalInfo(deregistration)(messages),
-            controller.contact(deregistration.contactDetails)(messages),
-            deregistration.registrationType
+            controller.contact(deregistration.contactDetails)(messages)
           )(fakeRequest, messages).toString
 
           verify(mockDeregistrationService, times(1)).upsert(any())(any())
@@ -131,7 +132,7 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
             )(any())
           )
             .thenReturn(
-              EitherT[Future, DataRetrievalError, Deregistration](
+              EitherT[Future, DataRetrievalError, Unit](
                 Future.successful(Left(DataRetrievalError.InternalUnexpectedError("", None)))
               )
             )
@@ -160,8 +161,15 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
 
           when(mockDeregistrationService.getOrCreate(anyString())(any()))
             .thenReturn(EitherT.fromEither[Future](Right(validDeregistration)))
+
           when(mockEclRegistrationService.getSubscription(anyString())(any()))
             .thenReturn(EitherT.fromEither[Future](Right(subscription)))
+
+          when(mockDeregistrationService.upsert(any())(any()))
+            .thenReturn(
+              EitherT.fromEither[Future](Right(deregistration.copy(eclReference = Some(testEclRegistrationReference))))
+            )
+
           when(
             mockEmailService.sendDeregistrationEmail(
               ArgumentMatchers.eq(email),
@@ -171,6 +179,12 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
             )(any(), any())
           )
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          when(mockDeregistrationService.submit(any())(any())).thenReturn(
+            EitherT[Future, DataRetrievalError, Unit](
+              Future.successful(Right(()))
+            )
+          )
 
           val result: Future[Result] =
             controller.onSubmit()(fakeRequest)
@@ -214,6 +228,17 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
 
           when(mockDeregistrationService.getOrCreate(ArgumentMatchers.eq(testInternalId))(any()))
             .thenReturn(EitherT.fromEither[Future](Right(updatedDeregistration)))
+
+          when(mockDeregistrationService.upsert(any())(any()))
+            .thenReturn(
+              EitherT.fromEither[Future](Right(deregistration.copy(eclReference = Some(testEclRegistrationReference))))
+            )
+
+          when(mockDeregistrationService.submit(any())(any())).thenReturn(
+            EitherT[Future, DataRetrievalError, Unit](
+              Future.successful(Right(()))
+            )
+          )
 
           when(mockEclRegistrationService.getSubscription(anyString())(any()))
             .thenReturn(EitherT.fromEither[Future](Right(subscription)))
@@ -280,7 +305,19 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
 
           redirectLocation(result) shouldBe Some(routes.DeregistrationRequestedController.onPageLoad().url)
         }
+    }
 
+    "return internal server error when the ecl reference is not present in the request" in forAll {
+      (deregistration: Deregistration) =>
+        new TestContext(deregistration.internalId, None) {
+          when(mockDeregistrationService.getOrCreate(anyString())(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
+
+          val result: Future[Result] =
+            controller.onSubmit()(fakeRequest)
+
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
     }
   }
 }
