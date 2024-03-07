@@ -176,10 +176,12 @@ class CheckYourAnswersController @Inject() (
         val session = registration.entityType match {
           case Some(value) if EntityType.isOther(value) =>
             request.session ++ Seq(
-                SessionKeys.FirstContactEmail    -> firstEmail,
-                SessionKeys.AmlRegulatedActivity -> amlActivity.toString,
-                SessionKeys.LiabilityYear        -> liabilityYear.asString,
-              ) ++ secondEmail.fold(Seq.empty[(String, String)])(secondEmail => Seq(SessionKeys.SecondContactEmail -> secondEmail))
+              SessionKeys.FirstContactEmail    -> firstEmail,
+              SessionKeys.AmlRegulatedActivity -> amlActivity.toString,
+              SessionKeys.LiabilityYear        -> liabilityYear.asString
+            ) ++ secondEmail.fold(Seq.empty[(String, String)])(secondEmail =>
+              Seq(SessionKeys.SecondContactEmail -> secondEmail)
+            )
           case _                                        =>
             request.session ++ Seq(
               SessionKeys.EclReference      -> response.eclReference,
