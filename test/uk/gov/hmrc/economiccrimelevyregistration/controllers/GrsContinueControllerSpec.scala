@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import org.scalacheck.Arbitrary
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
@@ -818,10 +819,16 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
           registration: Registration,
           partnershipEntityJourneyData: PartnershipEntityJourneyData,
           partnershipType: PartnershipType,
-          businessPartnerId: String
+          businessPartnerId: String,
+          partnershipName: String
         ) =>
           val entityType = partnershipType.entityType
-          new TestContext(registration.copy(entityType = Some(entityType))) {
+          new TestContext(
+            registration.copy(
+              entityType = Some(entityType),
+              partnershipName = Some(partnershipName)
+            )
+          ) {
             val updatedPartnershipEntityJourneyData: PartnershipEntityJourneyData =
               partnershipEntityJourneyData.copy(
                 identifiersMatch = true,
@@ -838,7 +845,8 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
               entityType = Some(entityType),
               partnershipEntityJourneyData = Some(updatedPartnershipEntityJourneyData),
               incorporatedEntityJourneyData = None,
-              soleTraderEntityJourneyData = None
+              soleTraderEntityJourneyData = None,
+              partnershipName = Some(partnershipName)
             )
 
             when(
@@ -1102,5 +1110,62 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
         }
     }
 
+    "redirect to partnership name pge in check mode if no name in registration" in forAll(
+      Arbitrary.arbitrary[String],
+      Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[PartnershipEntityJourneyData],
+      Arbitrary
+        .arbitrary[PartnershipType]
+        .retryUntil(p => Seq(GeneralPartnership, ScottishPartnership).contains(p.entityType)),
+      Arbitrary.arbitrary[String]
+    ) {
+      (
+        journeyId: String,
+        registration: Registration,
+        partnershipEntityJourneyData: PartnershipEntityJourneyData,
+        partnershipType: PartnershipType,
+        businessPartnerId: String
+      ) =>
+        val entityType = partnershipType.entityType
+        new TestContext(
+          registration.copy(
+            entityType = Some(entityType),
+            partnershipName = None
+          )
+        ) {
+          val updatedPartnershipEntityJourneyData: PartnershipEntityJourneyData =
+            partnershipEntityJourneyData.copy(
+              identifiersMatch = true,
+              registration = successfulGrsRegistrationResult(businessPartnerId),
+              businessVerification = None
+            )
+
+          when(
+            mockPartnershipIdentificationFrontendConnector.getJourneyData(ArgumentMatchers.eq(journeyId))(any())
+          )
+            .thenReturn(Future.successful(updatedPartnershipEntityJourneyData))
+
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(entityType),
+            partnershipEntityJourneyData = Some(updatedPartnershipEntityJourneyData),
+            incorporatedEntityJourneyData = None,
+            soleTraderEntityJourneyData = None,
+            partnershipName = None
+          )
+
+          when(
+            mockEclRegistrationConnector.getSubscriptionStatus(ArgumentMatchers.eq(businessPartnerId))(any())
+          ).thenReturn(Future.successful(EclSubscriptionStatus(NotSubscribed)))
+
+          when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(Future.successful(()))
+
+          val result: Future[Result] = controller.continue(CheckMode, journeyId)(fakeRequest)
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(routes.PartnershipNameController.onPageLoad(CheckMode).url)
+        }
+    }
   }
 }
