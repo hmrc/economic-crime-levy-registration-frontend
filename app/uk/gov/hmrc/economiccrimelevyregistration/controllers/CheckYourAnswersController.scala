@@ -157,21 +157,39 @@ class CheckYourAnswersController @Inject() (
       updatedAdditionalInfo       = additionalInfo.copy(eclReference = Some(response.eclReference))
       _                          <- registrationAdditionalInfoService.upsert(updatedAdditionalInfo).asResponseError
       _                          <- sendEmail(registration, request.additionalInfo, response.eclReference).asResponseError
-      email                      <- valueOrError(request.registration.contacts.firstContactDetails.emailAddress, "First contact email")
+      firstEmail                 <- valueOrError(request.registration.contacts.firstContactDetails.emailAddress, "First contact email")
       address                    <- valueOrError(request.registration.contactAddress, "Contact address")
-    } yield (response, email, address)).fold(
+      secondEmail                 = request.registration.contacts.secondContactDetails.emailAddress
+      amlRegulatedActivity       <-
+        valueOrError(request.registration.carriedOutAmlRegulatedActivityInCurrentFy, "Aml regulated activity")
+      liabilityYear              <- valueOrError(updatedAdditionalInfo.liabilityYear, "Liability Year")
+    } yield (response, firstEmail, address, secondEmail, amlRegulatedActivity, liabilityYear)).fold(
       error => routeError(error),
       data => {
+        val response      = data._1
+        val firstEmail    = data._2
+        val address       = data._3
+        val secondEmail   = data._4
+        val amlActivity   = data._5
+        val liabilityYear = data._6
+
         val session = registration.entityType match {
-          case Some(value) if EntityType.isOther(value) => request.session
+          case Some(value) if EntityType.isOther(value) =>
+            request.session ++ Seq(
+              SessionKeys.FirstContactEmail    -> firstEmail,
+              SessionKeys.AmlRegulatedActivity -> amlActivity.toString,
+              SessionKeys.LiabilityYear        -> liabilityYear.asString
+            ) ++ secondEmail.fold(Seq.empty[(String, String)])(secondEmail =>
+              Seq(SessionKeys.SecondContactEmail -> secondEmail)
+            )
           case _                                        =>
             val response = data._1
             val email    = data._2
             val address  = data._3
             request.session ++ Seq(
-              (SessionKeys.EclReference      -> response.eclReference),
-              (SessionKeys.FirstContactEmail -> email),
-              (SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(address)))
+              SessionKeys.EclReference      -> response.eclReference,
+              SessionKeys.FirstContactEmail -> firstEmail,
+              SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(address))
             )
         }
 

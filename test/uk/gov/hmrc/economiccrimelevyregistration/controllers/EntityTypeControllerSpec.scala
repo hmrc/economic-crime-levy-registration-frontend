@@ -17,19 +17,20 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import cats.data.EitherT
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.Result
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AuditError, DataRetrievalError}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType, Mode, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 
@@ -88,29 +89,43 @@ class EntityTypeControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "save the selected entity type then redirect to the next page" in forAll(
-      Arbitrary.arbitrary[Registration],
-      Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther)
-    ) { (registration: Registration, entityType: EntityType) =>
-      new TestContext(registration) {
-        val updatedRegistration: Registration = registration.copy(
-          entityType = Some(entityType)
-        )
+    "save the selected entity type then redirect to the next page" in forAll {
+      (randomReg: Registration, entityType: EntityType, url: String, mode: Mode) =>
+        val registration = mode match {
+          case NormalMode => randomReg.copy(entityType = None)
+          case CheckMode  => randomReg.copy(entityType = Some(random[EntityType]))
+        }
 
-        when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
-          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+        new TestContext(registration) {
+          val updatedRegistration: Registration = registration.copy(
+            entityType = Some(entityType)
+          )
 
-        when(mockAuditConnector.sendEvent(any())(any()))
-          .thenReturn(EitherT[Future, AuditError, Unit](Future.successful(Right(()))))
+          when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
-        val result: Future[Result] =
-          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
+          when(mockAuditConnector.sendEvent(any())(any()))
+            .thenReturn(EitherT[Future, AuditError, Unit](Future.successful(Right(()))))
 
-        status(result) shouldBe SEE_OTHER
+          when(mockEclRegistrationService.registerEntityType(any(), any())(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, String](Future.successful(Right(url))))
 
-        redirectLocation(result) shouldBe Some(routes.BusinessNameController.onPageLoad(NormalMode).url)
+          val nextPage = if (registration.entityType.contains(entityType)) {
+            routes.CheckYourAnswersController.onPageLoad()
+          } else if (EntityType.isOther(entityType)) {
+            routes.BusinessNameController.onPageLoad(mode)
+          } else {
+            Call(GET, url)
+          }
 
-      }
+          val result: Future[Result] =
+            controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody(("value", entityType.toString)))
+
+          status(result) shouldBe SEE_OTHER
+
+          redirectLocation(result) shouldBe Some(nextPage.url)
+
+        }
     }
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll {

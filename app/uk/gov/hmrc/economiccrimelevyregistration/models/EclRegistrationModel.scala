@@ -18,5 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.models
 
 case class EclRegistrationModel(
   registration: Registration,
-  registrationAdditionalInfo: Option[RegistrationAdditionalInfo] = None
+  registrationAdditionalInfo: Option[RegistrationAdditionalInfo] = None,
+  hasRegistrationChanged: Boolean = false
 )
