@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
@@ -62,8 +62,7 @@ class GrsContinueController @Inject() (
                                                             journeyData.businessVerification,
                                                             journeyData.registration,
                                                             e,
-                                                            mode,
-                                                            request.registration
+                                                            mode
                                                           )
           } yield result
         case Some(e @ SoleTrader)                                                =>
@@ -75,8 +74,7 @@ class GrsContinueController @Inject() (
                              journeyData.businessVerification,
                              journeyData.registration,
                              e,
-                             mode,
-                             request.registration
+                             mode
                            )
           } yield result
 
@@ -92,8 +90,7 @@ class GrsContinueController @Inject() (
                   jd.businessVerification,
                   jd.registration,
                   e,
-                  mode,
-                  request.registration
+                  mode
                 )
               )
           }
@@ -128,9 +125,8 @@ class GrsContinueController @Inject() (
     bvResult: Option[BusinessVerificationResult],
     grsResult: GrsRegistrationResult,
     entityType: EntityType,
-    mode: Mode,
-    registration: Registration
-  )(implicit hc: HeaderCarrier, request: Request[_]): Future[Result] =
+    mode: Mode
+  )(implicit hc: HeaderCarrier, request: RegistrationDataRequest[_]): Future[Result] =
     (identifiersMatch, bvResult, grsResult.registrationStatus, grsResult.registeredBusinessPartnerId) match {
       case (false, _, _, _)                                  => Future.successful(Redirect(routes.NotableErrorController.verificationFailed()))
       case (_, Some(BusinessVerificationResult(Fail)), _, _) =>
@@ -148,7 +144,7 @@ class GrsContinueController @Inject() (
               case CheckMode  =>
                 Redirect(entityType match {
                   case GeneralPartnership | ScottishPartnership =>
-                    if (registration.partnershipName.isEmpty) {
+                    if (request.registration.partnershipName.isEmpty) {
                       routes.PartnershipNameController.onPageLoad(mode)
                     } else {
                       routes.CheckYourAnswersController.onPageLoad()
