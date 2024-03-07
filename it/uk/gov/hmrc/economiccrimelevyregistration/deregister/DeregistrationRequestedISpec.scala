@@ -55,4 +55,27 @@ class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
+  "respond with an error is no email on session" in {
+    stubAuthorisedWithEclEnrolment()
+    val email                 = random[String]
+    val deregistration        =
+      random[Deregistration].copy(contactDetails = validContactDetails.copy(emailAddress = Some(email)))
+    val updatedDeregistration =
+      deregistration.copy(
+        internalId = testInternalId,
+        contactDetails = deregistration.contactDetails.copy(emailAddress = Some(random[String]))
+      )
+    stubGetDeregistration(updatedDeregistration)
+    stubDeleteDeregistration()
+    stubGetSubscription(random[GetSubscriptionResponse])
+
+    val result = callRoute(
+      FakeRequest(
+        routes.DeregistrationRequestedController
+          .onPageLoad()
+      )
+    )
+
+    status(result) shouldBe INTERNAL_SERVER_ERROR
+  }
 }

@@ -103,7 +103,7 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
             )
 
           val result: Future[Result] = controller.onPageLoad()(
-            fakeRequest
+            fakeRequest.withSession(SessionKeys.FirstContactEmail -> email)
           )
 
           status(result) shouldBe INTERNAL_SERVER_ERROR
@@ -122,20 +122,20 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] = controller.onPageLoad()(
-            fakeRequest
+            fakeRequest.withSession(SessionKeys.FirstContactEmail -> email)
           )
 
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
     }
 
-    "return InternalServerError when the email address is not present in the deregistration" in forAll {
+    "return InternalServerError when the email address is not present on the session" in forAll {
       (
         email: String,
         deregistration: Deregistration
       ) =>
         val updatedDeregistration =
-          deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = None))
+          deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email)))
         new TestContext(updatedDeregistration, None) {
           when(mockDeregistrationService.delete(anyString())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
