@@ -70,9 +70,9 @@
             id = "value",
             name = "value",
             value =  form("value").value,
+            label = LabelViewModel(Text(messages("ukRevenue.h2"))).asHiddenPageHeading(),
             classes = "govuk-input--width-10",
             hint = Some(Hint(content = messages("ukRevenue.hint"))),
-            label =  LabelViewModel(Empty),
             errorMessage = form("value").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
             ))
 

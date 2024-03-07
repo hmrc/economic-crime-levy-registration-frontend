@@ -41,7 +41,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text("charityRegistrationNumber.heading")).asHiddenPageHeading()
+                label = LabelViewModel(Text(messages("charityRegistrationNumber.heading"))).asHiddenPageHeading()
             ).withHint(Hint(content = Text(messages("charityRegistrationNumber.hint"))))
         )
 

@@ -46,7 +46,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text("firstContactRole.heading")).asHiddenPageHeading()
+                label = LabelViewModel(Text(messages("firstContactRole.heading"))).asHiddenPageHeading()
             ).withWidth(Fixed20).withHint(Hint(content = Text(messages("firstContactRole.hint"))))
         )
 

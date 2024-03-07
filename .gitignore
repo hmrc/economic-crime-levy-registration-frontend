@@ -36,3 +36,4 @@ bin
 /migrations
 /generated-test
 /.g8
+package-lock.json
