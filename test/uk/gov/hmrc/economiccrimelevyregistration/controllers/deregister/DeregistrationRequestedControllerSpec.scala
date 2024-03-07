@@ -56,9 +56,7 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
         subscriptionResponse: GetSubscriptionResponse,
         deregistration: Deregistration
       ) =>
-        val updatedDeregistration =
-          deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email)))
-        new TestContext(updatedDeregistration, Some(testEclRegistrationReference)) {
+        new TestContext(deregistration, Some(testEclRegistrationReference)) {
           when(mockDeregistrationService.delete(anyString())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
@@ -89,9 +87,7 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
         subscriptionResponse: GetSubscriptionResponse,
         deregistration: Deregistration
       ) =>
-        val updatedDeregistration =
-          deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email)))
-        new TestContext(updatedDeregistration, None) {
+        new TestContext(deregistration, None) {
           when(mockDeregistrationService.delete(anyString())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
@@ -115,9 +111,7 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
         email: String,
         deregistration: Deregistration
       ) =>
-        val updatedDeregistration =
-          deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email)))
-        new TestContext(updatedDeregistration, None) {
+        new TestContext(deregistration, None) {
           when(mockDeregistrationService.delete(anyString())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
@@ -131,12 +125,9 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
 
     "return InternalServerError when the email address is not present on the session" in forAll {
       (
-        email: String,
         deregistration: Deregistration
       ) =>
-        val updatedDeregistration =
-          deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email)))
-        new TestContext(updatedDeregistration, None) {
+        new TestContext(deregistration, None) {
           when(mockDeregistrationService.delete(anyString())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
