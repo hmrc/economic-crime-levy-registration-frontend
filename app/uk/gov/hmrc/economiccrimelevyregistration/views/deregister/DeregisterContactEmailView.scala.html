@@ -48,7 +48,7 @@
                 field = form("value"),
                 label = LabelViewModel(Text(messages("deregisterContactEmail.heading", name))).asHiddenPageHeading(),
                 attributes = Map("autocomplete" -> "email")
-            ).withWidth(Fixed20)
+            ).asEmail().withWidth(Fixed20)
         )
 
         @govukButton(

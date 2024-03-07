@@ -83,6 +83,8 @@ class FirstContactEmailControllerSpec extends SpecBase {
           ).toString
 
           resultAsString should include("autocomplete=\"email\"")
+          resultAsString should include("type=\"email\"")
+          resultAsString should include("spellcheck=\"false\"")
         }
     }
 
