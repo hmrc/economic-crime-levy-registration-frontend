@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
@@ -85,7 +85,13 @@ class GrsContinueController @Inject() (
           partnershipIdentificationFrontendConnector.getJourneyData(journeyId).flatMap { jd =>
             updateRegistrationWithJourneyData(partnershipEntityJourneyData = Some(jd))
               .flatMap(_ =>
-                handleGrsAndBvResult(jd.identifiersMatch, jd.businessVerification, jd.registration, e, mode)
+                handleGrsAndBvResult(
+                  jd.identifiersMatch,
+                  jd.businessVerification,
+                  jd.registration,
+                  e,
+                  mode
+                )
               )
           }
 
@@ -120,7 +126,7 @@ class GrsContinueController @Inject() (
     grsResult: GrsRegistrationResult,
     entityType: EntityType,
     mode: Mode
-  )(implicit hc: HeaderCarrier, request: Request[_]): Future[Result] =
+  )(implicit hc: HeaderCarrier, request: RegistrationDataRequest[_]): Future[Result] =
     (identifiersMatch, bvResult, grsResult.registrationStatus, grsResult.registeredBusinessPartnerId) match {
       case (false, _, _, _)                                  => Future.successful(Redirect(routes.NotableErrorController.verificationFailed()))
       case (_, Some(BusinessVerificationResult(Fail)), _, _) =>
@@ -135,7 +141,17 @@ class GrsContinueController @Inject() (
                     Redirect(routes.PartnershipNameController.onPageLoad(NormalMode))
                   case _                                        => Redirect(routes.BusinessSectorController.onPageLoad(NormalMode))
                 }
-              case CheckMode  => Redirect(routes.CheckYourAnswersController.onPageLoad())
+              case CheckMode  =>
+                Redirect(entityType match {
+                  case GeneralPartnership | ScottishPartnership =>
+                    if (request.registration.partnershipName.isEmpty) {
+                      routes.PartnershipNameController.onPageLoad(mode)
+                    } else {
+                      routes.CheckYourAnswersController.onPageLoad()
+                    }
+                  case _                                        =>
+                    routes.CheckYourAnswersController.onPageLoad()
+                })
             }
           case EclSubscriptionStatus(Subscribed(eclRegistrationReference))   =>
             Redirect(routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference))

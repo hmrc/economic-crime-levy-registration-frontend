@@ -17,11 +17,12 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 
 class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
@@ -32,32 +33,55 @@ class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the registration submitted HTML view" in {
       stubAuthorisedWithEclEnrolment()
 
-      val fistContactEmailAddress = random[String]
-      val registration            = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
-        )
-      val contacts                = registration.contacts.copy(
-        firstContactDetails =
-          registration.contacts.firstContactDetails.copy(emailAddress = Some(fistContactEmailAddress))
-      )
-      val updatedRegistration     = registration.copy(contacts = contacts)
-
-      val additionalInfo = random[RegistrationAdditionalInfo]
-
-      stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-
       stubDeleteRegistration()
       stubDeleteRegistrationAdditionalInfo()
 
+      val email      = random[String]
+      val eclAddress = random[EclAddress]
+
       val result = callRoute(
-        FakeRequest(routes.AmendmentRequestedController.onPageLoad())
+        FakeRequest(routes.AmendmentRequestedController.onPageLoad()).withSession(
+          (SessionKeys.FirstContactEmail -> email),
+          (SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(eclAddress)))
+        )
       )
 
       status(result) shouldBe OK
       html(result)     should include("Economic Crime Levy registration amendment requested")
+    }
+
+    "respond with 500 status if the contact address is not present in the request" in {
+      stubAuthorisedWithEclEnrolment()
+
+      stubDeleteRegistration()
+      stubDeleteRegistrationAdditionalInfo()
+
+      val email = random[String]
+
+      val result = callRoute(
+        FakeRequest(routes.AmendmentRequestedController.onPageLoad()).withSession(
+          (SessionKeys.FirstContactEmail -> email)
+        )
+      )
+
+      status(result) shouldBe INTERNAL_SERVER_ERROR
+    }
+
+    "respond with 500 status if the email address is not present in the request" in {
+      stubAuthorisedWithEclEnrolment()
+
+      stubDeleteRegistration()
+      stubDeleteRegistrationAdditionalInfo()
+
+      val eclAddress = random[EclAddress]
+
+      val result = callRoute(
+        FakeRequest(routes.AmendmentRequestedController.onPageLoad()).withSession(
+          (SessionKeys.ContactAddress -> Json.stringify(Json.toJson(eclAddress)))
+        )
+      )
+
+      status(result) shouldBe INTERNAL_SERVER_ERROR
     }
   }
 
