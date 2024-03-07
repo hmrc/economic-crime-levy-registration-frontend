@@ -17,9 +17,11 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
 object SessionKeys {
-  val UrlToReturnTo     = "UrlToReturnTo"
-  val EclReference      = "eclReference"
-  val LiabilityYear     = "liabilityYear"
-  val FirstContactEmail = "firstContactEmail"
-  val ContactAddress    = "contactAddress"
+  val UrlToReturnTo        = "UrlToReturnTo"
+  val EclReference         = "eclReference"
+  val LiabilityYear        = "liabilityYear"
+  val FirstContactEmail    = "firstContactEmail"
+  val ContactAddress       = "contactAddress"
+  val SecondContactEmail   = "secondContactEmail"
+  val AmlRegulatedActivity = "amlRegulatedActivity"
 }

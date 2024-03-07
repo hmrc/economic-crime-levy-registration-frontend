@@ -101,6 +101,28 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         ).toString
       }
     }
+
+    "return a DataRetrieval error when getRegistrationValidationErrors returns an error" in forAll {
+      validRegistration: ValidRegistrationWithRegistrationType =>
+        new TestContext(validRegistration.registration) {
+          implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
+            RegistrationDataRequest(
+              fakeRequest,
+              validRegistration.registration.internalId,
+              validRegistration.registration,
+              None,
+              Some(testEclRegistrationReference)
+            )
+          implicit val messages: Messages                                                       = messagesApi.preferred(registrationDataRequest)
+
+          when(mockEclRegistrationService.getRegistrationValidationErrors(anyString())(any()))
+            .thenReturn(EitherT.fromEither[Future](Left(DataRetrievalError.InternalUnexpectedError("", None))))
+
+          val result: Future[Result] = controller.onPageLoad()(registrationDataRequest)
+
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+    }
   }
 
   "onSubmit" should {
@@ -119,6 +141,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         firstContactEmailAddress: String
       ) =>
         val updatedRegistration = registration.copy(
+          carriedOutAmlRegulatedActivityInCurrentFy = Some(true),
           entityType = Some(entityType),
           registrationType = Some(Initial),
           contactAddress = Some(EclAddress.empty),
@@ -138,11 +161,13 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           when(
             mockEclRegistrationService
               .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
-          ).thenReturn(
-            EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse](
-              Future.successful(Right(createEclSubscriptionResponse))
-            )
           )
+            .thenReturn(
+              EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse](
+                Future.successful(Right(createEclSubscriptionResponse))
+              )
+            )
+
           when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
@@ -165,7 +190,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         }
     }
 
-    "redirect to the registration received page after submitting the registration with one contact and sending email successfully" in forAll(
+    "redirect to the registration received page when entity type is other, after submitting the registration with one contact and sending email successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
       Arbitrary.arbitrary[RegistrationAdditionalInfo],
@@ -180,6 +205,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         firstContactEmailAddress: String
       ) =>
         val updatedRegistration = registration.copy(
+          carriedOutAmlRegulatedActivityInCurrentFy = Some(true),
           entityType = Some(entityType),
           registrationType = Some(Initial),
           contactAddress = Some(EclAddress.empty),
@@ -200,7 +226,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           when(
             mockEclRegistrationService
               .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
-          ).thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
+          )
+            .thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
+
           when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
@@ -246,6 +274,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         secondContactEmailAddress: String
       ) =>
         val updatedRegistration = registration.copy(
+          carriedOutAmlRegulatedActivityInCurrentFy = Some(true),
           entityType = Some(entityType),
           registrationType = Some(Initial),
           contactAddress = Some(EclAddress.empty),
@@ -290,46 +319,48 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         }
     }
 
-    "redirect to the registration received page after submitting the registration with two contacts and sending emails successfully" in forAll(
+    "redirect to the registration received page when entity type is 'other' after submitting the registration with two contacts and sending emails successfully" in forAll(
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
       Arbitrary.arbitrary[RegistrationAdditionalInfo],
       Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther),
       emailAddress(EmailMaxLength),
-      emailAddress(EmailMaxLength)
+      Arbitrary.arbitrary[LiabilityYear]
     ) {
       (
         createEclSubscriptionResponse: CreateEclSubscriptionResponse,
         registration: Registration,
         additionalInfo: RegistrationAdditionalInfo,
         entityType: EntityType,
-        firstContactEmailAddress: String,
-        secondContactEmailAddress: String
+        emailAddress: String,
+        liabilityYear: LiabilityYear
       ) =>
-        val updatedRegistration = registration.copy(
+        val updatedRegistration   = registration.copy(
+          carriedOutAmlRegulatedActivityInCurrentFy = Some(true),
           entityType = Some(entityType),
           registrationType = Some(Initial),
           contactAddress = Some(EclAddress.empty),
           contacts = Contacts(
-            firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
+            firstContactDetails = validContactDetails.copy(emailAddress = Some(emailAddress)),
             secondContact = Some(true),
-            secondContactDetails = validContactDetails.copy(emailAddress = Some(secondContactEmailAddress))
+            secondContactDetails = validContactDetails.copy(emailAddress = Some(emailAddress))
           )
         )
+        val updatedAdditionalInfo = additionalInfo.copy(liabilityYear = Some(liabilityYear))
 
-        new TestContext(updatedRegistration, Some(additionalInfo)) {
+        new TestContext(updatedRegistration, Some(updatedAdditionalInfo)) {
           when(mockEclRegistrationService.upsertRegistration(any())(any()))
             .thenReturn(EitherT.fromEither[Future](Right(())))
+
+          when(
+            mockEclRegistrationService
+              .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
+          )
+            .thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
 
           when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
-          when(
-            mockEclRegistrationService.submitRegistration(
-              ArgumentMatchers.eq(updatedRegistration.internalId)
-            )(any(), any())
-          )
-            .thenReturn(EitherT.fromEither[Future](Right(createEclSubscriptionResponse)))
           when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
