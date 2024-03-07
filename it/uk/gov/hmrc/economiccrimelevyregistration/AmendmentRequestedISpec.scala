@@ -22,7 +22,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, EntityType, Registration, RegistrationAdditionalInfo, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 
 class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
