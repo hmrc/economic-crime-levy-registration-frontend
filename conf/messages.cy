@@ -749,3 +749,5 @@ liability.date.label = Dyddiad cychwyn atebolrwydd
 liability.date.error.future.date = Mae’n rhaid i’r dyddiad fod yn y gorffennol
 liability.date.error.early.date = Mae’n rhaid i’r dyddiad fod ar ôl 1 Ebrill 2022
 liability.date.error.required = Nodwch y dyddiad pan ddaethoch yn agored i ECL
+
+govukErrorMessage.visuallyHiddenText = Gwall

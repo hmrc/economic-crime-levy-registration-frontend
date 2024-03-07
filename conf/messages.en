@@ -752,3 +752,5 @@ liability.date.error.required = Enter the date you became liable for ECL
 
 deregistration.pdfHtml.title = Application to deregister
 deregistration.pdfHtml.submissionDate = Submission date: {0}
+
+govukErrorMessage.visuallyHiddenText = Error
