@@ -38,7 +38,6 @@
         registrationTypeForTopBanner = registrationType,
         eclReferenceForStartLink = eclReference
     ) {
-
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
@@ -53,9 +52,11 @@
                     id = "value",
                     name = "value",
                     value = form("value").value,
+                    label = LabelViewModel(Text(messages("amendReason.h1"))).asHidden(),
                     errorMessage = errorMessage
                 )
             )
+
             @govukButton(
                 ButtonViewModel(messages("site.saveAndContinue"))
             )

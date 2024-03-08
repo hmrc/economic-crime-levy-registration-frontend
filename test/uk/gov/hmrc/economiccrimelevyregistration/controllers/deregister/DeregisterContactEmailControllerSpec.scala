@@ -71,8 +71,11 @@ class DeregisterContactEmailControllerSpec extends SpecBase {
         }
 
         status(result) shouldBe OK
+        val resultAsString = contentAsString(result)
+        resultAsString should include("type=\"email\"")
+        resultAsString should include("spellcheck=\"false\"")
 
-        contentAsString(result) shouldBe view(
+        resultAsString shouldBe view(
           form,
           name,
           mode,
