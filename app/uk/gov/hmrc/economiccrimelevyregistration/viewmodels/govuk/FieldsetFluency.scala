@@ -20,6 +20,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
 import uk.gov.hmrc.govukfrontend.views.viewmodels.fieldset.{Fieldset, Legend}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
 
 object fieldset extends FieldsetFluency
 
@@ -67,5 +68,10 @@ trait FieldsetFluency {
 
     def asHiddenPageHeading(size: LegendSize = LegendSize.ExtraLarge): Legend =
       asPageHeading(size).withCssClass("govuk-visually-hidden")
+
+    def asHidden(): Legend =
+      legend
+        .copy(isPageHeading = false)
+        .withCssClass("govuk-visually-hidden")
   }
 }

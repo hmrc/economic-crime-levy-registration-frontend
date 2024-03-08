@@ -46,7 +46,7 @@
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(Empty),
+                legend = LegendViewModel(messages("cancelRegistrationAmendment.heading")).asHidden(),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),
