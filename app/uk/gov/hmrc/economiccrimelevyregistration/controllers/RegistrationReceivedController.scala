@@ -42,20 +42,20 @@ class RegistrationReceivedController @Inject() (
 
   def onPageLoad: Action[AnyContent] = authorise.async { implicit request =>
     (for {
-      _                        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
-      _                        <- registrationService.deleteRegistration(request.internalId).asResponseError
-      firstContactEmailAddress <-
+      _                         <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
+      _                         <- registrationService.deleteRegistration(request.internalId).asResponseError
+      firstContactEmailAddress  <-
         valueOrError(request.session.get(SessionKeys.FirstContactEmail), "First contact email address")
-      secondContactEmailAddress = request.session.get(SessionKeys.SecondContactEmail)
-      amlRegulatedActivity     <-
-        valueOrError(request.session.get(SessionKeys.AmlRegulatedActivity), "AML Regulated activity")
-      liabilityYear            <- valueOrError(request.session.get(SessionKeys.LiabilityYear), "Liability Year")
-      registrationReceivedView  = view(
-                                    firstContactEmailAddress,
-                                    secondContactEmailAddress,
-                                    Some(LiabilityYear(liabilityYear.toInt)),
-                                    amlRegulatedActivity.toBoolean
-                                  )
+      secondContactEmailAddress  = request.session.get(SessionKeys.SecondContactEmail)
+      registeringForCurrentYear <-
+        valueOrError(request.session.get(SessionKeys.RegisteringForCurrentFY), "Registering for current FY")
+      liabilityYear             <- valueOrError(request.session.get(SessionKeys.LiabilityYear), "Liability Year")
+      registrationReceivedView   = view(
+                                     firstContactEmailAddress,
+                                     secondContactEmailAddress,
+                                     Some(LiabilityYear(liabilityYear.toInt)),
+                                     registeringForCurrentYear.toBoolean
+                                   )
     } yield registrationReceivedView).fold(
       error => routeError(error),
       registrationReceivedView => Ok(registrationReceivedView)

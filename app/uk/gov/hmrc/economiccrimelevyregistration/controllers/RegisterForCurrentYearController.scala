@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.SessionError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, LiabilityYear, Mode, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
@@ -118,7 +118,11 @@ class RegisterForCurrentYearController @Inject() (
         answer =>
           (for {
             additionalInfo         <- registrationAdditionalInfoService.get(request.internalId).asResponseError
-            updatedAdditionalInfo   = additionalInfo.get.copy(registeringForCurrentYear = Some(answer))
+            liabilityYear           = if (answer) Some(EclTaxYear.currentFinancialYear.toInt) else None
+            updatedAdditionalInfo   = additionalInfo.get.copy(
+                                        registeringForCurrentYear = Some(answer),
+                                        liabilityYear = liabilityYear.map(value => LiabilityYear(value))
+                                      )
             cleanedUpAdditionalInfo = additionalInfoCleanup(updatedAdditionalInfo)
             _                      <- registrationAdditionalInfoService.upsert(cleanedUpAdditionalInfo).asResponseError
             updatedRegistration     = request.registration.copy(registrationType = Some(Initial))

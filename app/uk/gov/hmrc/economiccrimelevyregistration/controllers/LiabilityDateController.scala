@@ -22,7 +22,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityDateFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, LiabilityYear, Mode, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityDatePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityDateView}
@@ -63,7 +63,10 @@ class LiabilityDateController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(mode, formWithErrors))),
           liabilityDate => {
             val registration   = request.registration
-            val additionalInfo = request.additionalInfo.get.copy(liabilityStartDate = Some(liabilityDate))
+            val additionalInfo = request.additionalInfo.get.copy(
+              liabilityStartDate = Some(liabilityDate),
+              liabilityYear = Some(LiabilityYear(liabilityDate.getYear))
+            )
 
             (for {
               _ <- registrationAdditionalInfoService.upsert(additionalInfo).asResponseError
