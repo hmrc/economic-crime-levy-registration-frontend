@@ -59,6 +59,11 @@
     }
 }
 @head = {
+    <link rel="stylesheet" href="@{
+        controllers.routes.Assets.versioned("stylesheets/custom-styles.css")
+    }" @{
+        CSPNonce.attr
+    }>
 @if(autoCompleteEnabled) {
     @autocompleteCss()
     <link rel="stylesheet" href="@{

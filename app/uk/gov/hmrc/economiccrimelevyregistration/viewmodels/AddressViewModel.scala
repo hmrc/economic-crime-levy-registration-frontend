@@ -45,13 +45,15 @@ object AddressViewModel {
 
   def html(eclAddress: GetCorrespondenceAddressDetails): String = eclAddressToSeq(eclAddress)
     .filter(_.isDefined)
-    .map(value => HtmlFormat.escape(value.get))
-    .mkString("<br/>")
+    .map(value => HtmlFormat.raw(value.get.prependedAll("<p id=\"address\">")))
+    .mkString("</p>")
+    .appendedAll("</p>")
 
   def html(eclAddress: EclAddress): String = eclAddressToSeq(eclAddress)
     .filter(_.isDefined)
-    .map(value => HtmlFormat.escape(value.get))
-    .mkString("<br/>")
+    .map(value => HtmlFormat.raw(value.get.prependedAll("<p id=\"address\">")))
+    .mkString("</p>")
+    .appendedAll("</p>")
 
   def htmlContent(eclAddress: EclAddress): HtmlContent = HtmlContent(html(eclAddress))
 
