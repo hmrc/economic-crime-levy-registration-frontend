@@ -203,7 +203,6 @@ class CheckYourAnswersController @Inject() (
       address                <- valueOrError(registration.contactAddress, "Contact address")
       secondEmail             = registration.contacts.secondContactDetails.emailAddress
       registeredForCurrentFY <- valueOrError(additionalInfo.registeringForCurrentYear, "Registered for current FY")
-//        valueOrError(registration.carriedOutAmlRegulatedActivityInCurrentFy, "Aml Regulated Activity")
       liabilityYear          <- valueOrError(additionalInfo.liabilityYear, "Liability Year")
     } yield (firstEmail, address, secondEmail, registeredForCurrentFY, liabilityYear)).fold(
       err => routeError(err),
