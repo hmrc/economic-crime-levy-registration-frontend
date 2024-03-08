@@ -39,11 +39,11 @@
         eclReferenceForStartLink = eclReference
     ) {
 
+        <h1 class="govuk-heading-l">@messages("amendReason.h1")</h1>
+
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
-
-        <h1 class="govuk-heading-l">@messages("amendReason.h1")</h1>
 
         <p class="govuk-body">@messages("amendReason.p1")</p>
 
@@ -53,10 +53,11 @@
                     id = "value",
                     name = "value",
                     value = form("value").value,
-                    label = LabelViewModel(Text(messages("amendReason.h1"))).asHiddenPageHeading(),
+                    label = LabelViewModel(Text(messages("amendReason.h1"))).asHidden(),
                     errorMessage = errorMessage
                 )
             )
+
             @govukButton(
                 ButtonViewModel(messages("site.saveAndContinue"))
             )
