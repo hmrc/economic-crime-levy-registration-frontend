@@ -21,16 +21,19 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
+import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister._
 
 class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregistrationRequestedController.onPageLoad().url}" should {
+  s"GET ${routes.DeregistrationRequestedController.onPageLoad().url}" should {
 
     "respond with 200 status and the start HTML view" in {
       stubAuthorisedWithEclEnrolment()
-      val deregistration        = random[Deregistration]
+      val email                 = random[String]
+      val deregistration        =
+        random[Deregistration].copy(contactDetails = validContactDetails.copy(emailAddress = Some(email)))
       val updatedDeregistration =
         deregistration.copy(
           internalId = testInternalId,
@@ -42,9 +45,9 @@ class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(
-          uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregistrationRequestedController
+          routes.DeregistrationRequestedController
             .onPageLoad()
-        )
+        ).withSession(SessionKeys.FirstContactEmail -> email)
       )
 
       status(result) shouldBe OK
@@ -52,4 +55,27 @@ class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
+  "respond with an error is no email on session" in {
+    stubAuthorisedWithEclEnrolment()
+    val email                 = random[String]
+    val deregistration        =
+      random[Deregistration].copy(contactDetails = validContactDetails.copy(emailAddress = Some(email)))
+    val updatedDeregistration =
+      deregistration.copy(
+        internalId = testInternalId,
+        contactDetails = deregistration.contactDetails.copy(emailAddress = Some(random[String]))
+      )
+    stubGetDeregistration(updatedDeregistration)
+    stubDeleteDeregistration()
+    stubGetSubscription(random[GetSubscriptionResponse])
+
+    val result = callRoute(
+      FakeRequest(
+        routes.DeregistrationRequestedController
+          .onPageLoad()
+      )
+    )
+
+    status(result) shouldBe INTERNAL_SERVER_ERROR
+  }
 }

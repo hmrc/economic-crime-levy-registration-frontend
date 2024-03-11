@@ -21,6 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
+import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
@@ -88,9 +89,11 @@ class DeregisterCheckYourAnswersController @Inject() (
       name                       <- valueOrError(request.deregistration.contactDetails.name, "Name")
       email                      <- valueOrError(request.deregistration.contactDetails.emailAddress, "Email address")
       _                          <- emailService.sendDeregistrationEmail(email, name, eclReference, address).asResponseError
-    } yield ()).fold(
+    } yield email).fold(
       err => routeError(err),
-      _ => Redirect(routes.DeregistrationRequestedController.onPageLoad())
+      email =>
+        Redirect(routes.DeregistrationRequestedController.onPageLoad())
+          .withSession(request.session ++ Seq(SessionKeys.FirstContactEmail -> email))
     )
   }
 }
