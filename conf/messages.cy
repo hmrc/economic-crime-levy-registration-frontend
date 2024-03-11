@@ -482,7 +482,7 @@ exit.survey = {0} Mae’r arolwg ymadael yn (cymryd 30 eiliad).
 
 signedOut.title = Er eich diogelwch, gwnaethom eich allgofnodi
 signedOut.heading = Er eich diogelwch, gwnaethom eich allgofnodi
-signedOut.guidance = Ni wnaethom gadw’ch atebion.
+signedOut.guidance = Gwnaethom gadw’ch atebion.
 
 date.month.1 = Ionawr
 date.month.2 = Chwefror

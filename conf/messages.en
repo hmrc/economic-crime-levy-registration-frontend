@@ -481,7 +481,7 @@ exit.survey = {0} (takes 30 seconds) to exit survey.
 
 signedOut.title = For your security, we signed you out
 signedOut.heading = For your security, we signed you out
-signedOut.guidance = We did not save your answers.
+signedOut.guidance = We saved your answers.
 
 date.month.1 = January
 date.month.2 = February
