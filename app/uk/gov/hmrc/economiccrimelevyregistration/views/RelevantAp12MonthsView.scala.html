@@ -42,30 +42,37 @@
     }
 
     <h1 class="govuk-heading-l">@messages("relevantAp12Months.heading")</h1>
+
     <p class="govuk-body">@messages("relevantAp12Months.p1")</p>
+
     <p class="govuk-body">@messages("relevantAp12Months.p2")</p>
+
     <p class="govuk-body">@messages("relevantAp12Months.p3")</p>
 
     <h2 class="govuk-heading-m">@messages("relevantAp12Months.ex.heading")</h2>
 
     <p class="govuk-body">@messages("relevantAp12Months.ex.p1")</p>
+
     <p class="govuk-body">@messages("relevantAp12Months.ex.p2")</p>
+
     <p class="govuk-body">@messages("relevantAp12Months.ex.p3")</p>
+
     <p class="govuk-body">@messages("relevantAp12Months.ex.p4")</p>
+
     <p class="govuk-body">@messages("relevantAp12Months.ex.p5")</p>
 
-@formHelper(action = RelevantAp12MonthsController.onSubmit(mode)) {
-    @govukDetails(Details(
-        summary = HtmlContent(accPeriod),
-        content = HtmlContent(accPeriodDetails)
-    ))
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-        <h2 class="govuk-fieldset__heading">@messages("relevantAp12Months.question")</h2>
-    </legend>
+    @formHelper(action = RelevantAp12MonthsController.onSubmit(mode)) {
+        @govukDetails(Details(
+            summary = HtmlContent(accPeriod),
+            content = HtmlContent(accPeriodDetails)
+        ))
+
+        <h2 class="govuk-heading-m">@messages("relevantAp12Months.question")</h2>
+
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(Empty),
+                legend = LegendViewModel(messages("relevantAp12Months.heading")).asHidden(),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),
@@ -80,6 +87,7 @@
                 )
             )
         )
+
         @button(
             ButtonViewModel(messages("site.saveAndContinue"))
         )

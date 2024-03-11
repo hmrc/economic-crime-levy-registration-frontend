@@ -46,7 +46,7 @@
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel("").asPageHeading(LegendSize.Large),
+                legend = LegendViewModel(messages("liabilityBeforeCurrentYear.h1")).asHidden(),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),

@@ -38,13 +38,14 @@
     }
 
     <h1 class="govuk-heading-l">@messages("addAnotherContact.heading")</h1>
+
     <p class="govuk-body">@messages("addAnotherContact.legend")</p>
 
     @formHelper(action = AddAnotherContactController.onSubmit(mode)) {
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(Empty),
+                legend = LegendViewModel(messages("addAnotherContact.heading")).asHidden(),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),
@@ -65,4 +66,3 @@
         )
     }
 }
-
