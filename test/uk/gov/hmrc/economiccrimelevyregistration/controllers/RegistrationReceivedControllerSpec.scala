@@ -21,7 +21,6 @@ import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.models
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
@@ -46,7 +45,7 @@ class RegistrationReceivedControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK and the correct view when there is one contact email address, aml activity and a liability year in the session" in forAll {
       (liabilityYear: LiabilityYear, firstContactEmailAddress: String) =>
-        val amlRegulatedActivity = true
+        val registeringForCurrentYear = true
 
         when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
@@ -56,9 +55,9 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.FirstContactEmail    -> firstContactEmailAddress,
-            SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString,
-            SessionKeys.LiabilityYear        -> liabilityYear.asString
+            SessionKeys.FirstContactEmail       -> firstContactEmailAddress,
+            SessionKeys.RegisteringForCurrentFY -> registeringForCurrentYear.toString,
+            SessionKeys.LiabilityYear           -> liabilityYear.asString
           )
         )
 
@@ -68,13 +67,13 @@ class RegistrationReceivedControllerSpec extends SpecBase {
           firstContactEmailAddress,
           None,
           Some(liabilityYear),
-          amlRegulatedActivity
+          registeringForCurrentYear
         )(fakeRequest, messages).toString
     }
 
     "return OK and the correct view when there are two contact email addresses, aml activity and a liability year in the session" in forAll {
       (liabilityYear: LiabilityYear, firstContactEmailAddress: String, secondContactEmailAddress: String) =>
-        val amlRegulatedActivity = true
+        val registeringForCurrentYear = true
         when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
@@ -83,10 +82,10 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.FirstContactEmail    -> firstContactEmailAddress,
-            SessionKeys.SecondContactEmail   -> secondContactEmailAddress,
-            SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString,
-            SessionKeys.LiabilityYear        -> liabilityYear.asString
+            SessionKeys.FirstContactEmail       -> firstContactEmailAddress,
+            SessionKeys.SecondContactEmail      -> secondContactEmailAddress,
+            SessionKeys.RegisteringForCurrentFY -> registeringForCurrentYear.toString,
+            SessionKeys.LiabilityYear           -> liabilityYear.asString
           )
         )
 
@@ -96,13 +95,13 @@ class RegistrationReceivedControllerSpec extends SpecBase {
           firstContactEmailAddress,
           Some(secondContactEmailAddress),
           Some(liabilityYear),
-          amlRegulatedActivity
+          registeringForCurrentYear
         )(fakeRequest, messages).toString
     }
 
     "return an Internal Server Error when no first contact email is present in the session" in forAll {
       (liabilityYear: LiabilityYear) =>
-        val amlRegulatedActivity = true
+        val registeringForCurrentYear = true
 
         when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
@@ -112,8 +111,8 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString,
-            SessionKeys.LiabilityYear        -> liabilityYear.asString
+            SessionKeys.RegisteringForCurrentFY -> registeringForCurrentYear.toString,
+            SessionKeys.LiabilityYear           -> liabilityYear.asString
           )
         )
 
@@ -142,7 +141,7 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
     "return an Internal Server Error when no liability year is present in the session" in forAll {
       firstContactEmailAddress: String =>
-        val amlRegulatedActivity = true
+        val registeringForCurrentYear = true
 
         when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
@@ -152,8 +151,8 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.FirstContactEmail    -> firstContactEmailAddress,
-            SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString
+            SessionKeys.FirstContactEmail       -> firstContactEmailAddress,
+            SessionKeys.RegisteringForCurrentFY -> registeringForCurrentYear.toString
           )
         )
 
@@ -163,16 +162,16 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
     "return a DataRetrievalError when call to delete additional info fails" in forAll {
       (firstContactEmailAddress: String, liabilityYear: LiabilityYear) =>
-        val amlRegulatedActivity = true
+        val registeringForCurrentYear = true
 
         when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
           .thenReturn(EitherT.fromEither[Future](Left(DataRetrievalError.InternalUnexpectedError("", None))))
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.FirstContactEmail    -> firstContactEmailAddress,
-            SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString,
-            SessionKeys.LiabilityYear        -> liabilityYear.asString
+            SessionKeys.FirstContactEmail       -> firstContactEmailAddress,
+            SessionKeys.RegisteringForCurrentFY -> registeringForCurrentYear.toString,
+            SessionKeys.LiabilityYear           -> liabilityYear.asString
           )
         )
 
@@ -182,7 +181,7 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
     "return a DataRetrievalError when call to delete registration fails" in forAll {
       (firstContactEmailAddress: String, liabilityYear: LiabilityYear) =>
-        val amlRegulatedActivity = true
+        val registeringForCurrentYear = true
 
         when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
@@ -192,9 +191,9 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.FirstContactEmail    -> firstContactEmailAddress,
-            SessionKeys.AmlRegulatedActivity -> amlRegulatedActivity.toString,
-            SessionKeys.LiabilityYear        -> liabilityYear.asString
+            SessionKeys.FirstContactEmail       -> firstContactEmailAddress,
+            SessionKeys.RegisteringForCurrentFY -> registeringForCurrentYear.toString,
+            SessionKeys.LiabilityYear           -> liabilityYear.asString
           )
         )
 

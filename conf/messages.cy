@@ -408,7 +408,7 @@ submitted.provide.b1 = y cyfnodau cyfrifyddu perthnasol ar gyfer eich sefydliad
 submitted.provide.b2 = eich refeniw yn y DU ar gyfer y cyfnodau cyfrifyddu perthnasol
 submitted.provide.b3 = pa mor hir y gwnaethoch gynnal gweithgareddau a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
 submitted.provide.b4 = enw, rôl, a manylion cyswllt y person yn eich sefydliad sy’n llenwi’r datganiad
-submitted.return = Gallwch gyflwyno datganiad drwy
+submitted.return = Gallwch gyflwyno datganiad drwy {0}
 submitted.return.link = <a href="{0}" class="govuk-link">eich cyfrif ECL</a>
 submitted.first.email = Rydym wedi anfon e-bost i {0}
 submitted.second.email = Rydym hefyd wedi anfon e-bost i {0}, gan eich bod wedi’i enwi’n ail gyswllt.
