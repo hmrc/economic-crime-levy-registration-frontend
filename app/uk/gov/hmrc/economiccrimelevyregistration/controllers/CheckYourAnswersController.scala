@@ -35,7 +35,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, ErrorTemplate, OtherRegistrationPdfView}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-
 import java.time.LocalDate
 import java.util.Base64
 import javax.inject.Singleton
@@ -157,40 +156,14 @@ class CheckYourAnswersController @Inject() (
       updatedAdditionalInfo       = additionalInfo.copy(eclReference = Some(response.eclReference))
       _                          <- registrationAdditionalInfoService.upsert(updatedAdditionalInfo).asResponseError
       _                          <- sendEmail(registration, request.additionalInfo, response.eclReference).asResponseError
-      firstEmail                 <- valueOrError(request.registration.contacts.firstContactDetails.emailAddress, "First contact email")
-      address                    <- valueOrError(request.registration.contactAddress, "Contact address")
-      secondEmail                 = request.registration.contacts.secondContactDetails.emailAddress
-      amlRegulatedActivity       <-
-        valueOrError(request.registration.carriedOutAmlRegulatedActivityInCurrentFy, "Aml regulated activity")
-      liabilityYear              <- valueOrError(updatedAdditionalInfo.liabilityYear, "Liability Year")
-    } yield (response, firstEmail, address, secondEmail, amlRegulatedActivity, liabilityYear)).fold(
-      error => routeError(error),
-      data => {
-        val response      = data._1
-        val firstEmail    = data._2
-        val address       = data._3
-        val secondEmail   = data._4
-        val amlActivity   = data._5
-        val liabilityYear = data._6
 
-        val session = registration.entityType match {
-          case Some(value) if EntityType.isOther(value) =>
-            request.session ++ Seq(
-              SessionKeys.FirstContactEmail    -> firstEmail,
-              SessionKeys.AmlRegulatedActivity -> amlActivity.toString,
-              SessionKeys.LiabilityYear        -> liabilityYear.asString
-            ) ++ secondEmail.fold(Seq.empty[(String, String)])(secondEmail =>
-              Seq(SessionKeys.SecondContactEmail -> secondEmail)
-            )
-          case _                                        =>
-            request.session ++ Seq(
-              SessionKeys.EclReference      -> response.eclReference,
-              SessionKeys.FirstContactEmail -> firstEmail,
-              SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(address))
-            )
-        }
+    } yield (updatedAdditionalInfo, response)).foldF(
+      error => Future.successful(routeError(error)),
+      additionalInfoAndResponse => {
+        val info     = additionalInfoAndResponse._1
+        val response = additionalInfoAndResponse._2
 
-        Redirect(getNextPage(registration)).withSession(session)
+        getNextPage(registration, info, response)
       }
     )
   }
@@ -220,16 +193,74 @@ class CheckYourAnswersController @Inject() (
     getSubscriptionResponse
   }
 
-  private def getNextPage(registration: Registration) =
-    (registration.entityType, registration.registrationType) match {
-      case (Some(value), Some(Initial)) if EntityType.isOther(value) =>
-        routes.RegistrationReceivedController.onPageLoad()
-      case (Some(_), Some(Amendment))                                =>
-        routes.AmendmentRequestedController.onPageLoad()
-      case (None, Some(Amendment))                                   =>
-        routes.AmendmentRequestedController.onPageLoad()
-      case _                                                         =>
-        routes.RegistrationSubmittedController.onPageLoad()
+  private def routeForInitialRegistration(
+    registration: Registration,
+    additionalInfo: RegistrationAdditionalInfo,
+    response: CreateEclSubscriptionResponse
+  )(implicit request: RegistrationDataRequest[_]) =
+    (for {
+      firstEmail             <- valueOrError(registration.contacts.firstContactDetails.emailAddress, "First contact email")
+      address                <- valueOrError(registration.contactAddress, "Contact address")
+      secondEmail             = registration.contacts.secondContactDetails.emailAddress
+      registeredForCurrentFY <- valueOrError(additionalInfo.registeringForCurrentYear, "Registered for current FY")
+      liabilityYear          <- valueOrError(additionalInfo.liabilityYear, "Liability Year")
+    } yield (firstEmail, address, secondEmail, registeredForCurrentFY, liabilityYear)).fold(
+      err => routeError(err),
+      data => {
+        val firstEmail             = data._1
+        val address                = data._2
+        val secondEmail            = data._3
+        val registeredForCurrentFY = data._4
+        val liabilityYear          = data._5
+
+        registration.entityType match {
+          case Some(value) if EntityType.isOther(value) =>
+            val session = request.session ++ Seq(
+              SessionKeys.FirstContactEmail       -> firstEmail,
+              SessionKeys.RegisteringForCurrentFY -> registeredForCurrentFY.toString,
+              SessionKeys.LiabilityYear           -> liabilityYear.asString
+            ) ++ secondEmail.fold(Seq.empty[(String, String)])(secondEmail =>
+              Seq(SessionKeys.SecondContactEmail -> secondEmail)
+            )
+            Redirect(routes.RegistrationReceivedController.onPageLoad()).withSession(session)
+
+          case _ =>
+            val session = request.session ++ Seq(
+              SessionKeys.EclReference      -> response.eclReference,
+              SessionKeys.FirstContactEmail -> firstEmail,
+              SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(address))
+            )
+            Redirect(routes.RegistrationSubmittedController.onPageLoad()).withSession(session)
+        }
+      }
+    )
+
+  private def routeForAmendment(registration: Registration)(implicit request: RegistrationDataRequest[_]) =
+    (for {
+      email   <- valueOrError(registration.contacts.firstContactDetails.emailAddress, "First contact email")
+      address <- valueOrError(registration.contactAddress, "Contact address")
+    } yield (email, address)).fold(
+      err => routeError(err),
+      emailAndAddress => {
+        val email   = emailAndAddress._1
+        val address = emailAndAddress._2
+        val session = request.session ++ Seq(
+          SessionKeys.FirstContactEmail -> email,
+          SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(address))
+        )
+        Redirect(routes.AmendmentRequestedController.onPageLoad()).withSession(session)
+      }
+    )
+
+  private def getNextPage(
+    registration: Registration,
+    additionalInfo: RegistrationAdditionalInfo,
+    response: CreateEclSubscriptionResponse
+  )(implicit request: RegistrationDataRequest[_]) =
+    registration.registrationType match {
+      case Some(Initial)   => routeForInitialRegistration(registration, additionalInfo, response)
+      case Some(Amendment) => routeForAmendment(registration)
+      case _               => Future.successful(Redirect(routes.NotableErrorController.answersAreInvalid()))
     }
 
   private def sendEmail(

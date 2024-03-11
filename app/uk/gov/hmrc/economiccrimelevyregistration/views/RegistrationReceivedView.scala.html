@@ -23,7 +23,7 @@
         appConfig: AppConfig
 )
 
-@(firstContactEmailAddress: String, secondContactEmailAddress: Option[String], liabilityYear: Option[LiabilityYear], amlRegulatedActivity: Boolean)(implicit request: Request[_], messages: Messages)
+@(firstContactEmailAddress: String, secondContactEmailAddress: Option[String], liabilityYear: Option[LiabilityYear], registeringForCurrentYear: Boolean)(implicit request: Request[_], messages: Messages)
 
 @getPreviousYearContent() = {
   <p class="govuk-body">@messages("registration.received.p7.previous.p1")</p>
@@ -60,7 +60,7 @@
     <p class="govuk-body">@messages("registration.received.p6")</p>
 
     @{
-        (liabilityYear.exists(_.isNotCurrentFY), amlRegulatedActivity) match {
+        (liabilityYear.exists(_.isNotCurrentFY), registeringForCurrentYear) match {
             case (true, true) => getBothYearsContent()
             case (true, false) => getPreviousYearContent()
             case _ => getCurrentYearContent()

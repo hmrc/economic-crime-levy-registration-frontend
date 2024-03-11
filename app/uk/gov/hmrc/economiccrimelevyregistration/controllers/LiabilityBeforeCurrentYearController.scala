@@ -58,7 +58,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData andThen storeUrl) { implicit request =>
-      Ok(view(form.prepare(isLiableForPreviousFY(request.additionalInfo)), mode))
+      Ok(view(form.prepare(request.additionalInfo.flatMap(info => info.liableForPreviousYears)), mode))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
@@ -167,9 +167,4 @@ class LiabilityBeforeCurrentYearController @Inject() (
       case _                   => None
     }
 
-  private def isLiableForPreviousFY(info: Option[RegistrationAdditionalInfo]) =
-    info.get.liabilityYear match {
-      case Some(value) => Some(value.isNotCurrentFY)
-      case _           => None
-    }
 }

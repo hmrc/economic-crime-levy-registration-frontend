@@ -58,7 +58,7 @@
                     radios(
                         RadiosViewModel(
                             field = form("value"),
-                            legend = LegendViewModel(Empty),
+                            legend = LegendViewModel(messages("amlSupervisor.heading")).asHidden(),
                             items = AmlSupervisorType.options(appConfig, select, form)
                         )
                     )
@@ -67,7 +67,7 @@
                     radios(
                         RadiosViewModel(
                             field = form("value"),
-                            legend = LegendViewModel(Empty),
+                            legend = LegendViewModel(messages("amlSupervisor.heading")).asHidden(),
                             items = AmlSupervisorType.optionsAmend(appConfig, select, form)
                         )
                     )
