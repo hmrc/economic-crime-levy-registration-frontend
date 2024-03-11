@@ -41,7 +41,7 @@ trait InputFluency {
         name = field.name,
         value = field.value,
         label = label,
-        errorMessage = errorMessage(field),
+        errorMessage = errorMessage(field, Some(messages("govukErrorMessage.visuallyHiddenText"))),
         prefix = prefix,
         attributes = attributes,
         inputType = inputType
