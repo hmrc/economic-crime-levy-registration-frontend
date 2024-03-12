@@ -60,7 +60,7 @@ class RegistrationSubmittedController @Inject() (
       firstContactEmailAddress <-
         valueOrError(request.session.get(SessionKeys.FirstContactEmail), "First contact email address")
       secondContactEmailAddress = request.session.get(SessionKeys.SecondContactEmail)
-      liabilityYear            <- valueOrError(request.session.get(SessionKeys.LiabilityYear), "HOHOHO Liability Year")
+      liabilityYear            <- valueOrError(request.session.get(SessionKeys.LiabilityYear), "Liability Year")
     } yield (liabilityYear, firstContactEmailAddress, secondContactEmailAddress))
       .fold(
         _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
