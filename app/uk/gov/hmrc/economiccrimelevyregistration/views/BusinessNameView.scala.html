@@ -38,7 +38,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text("businessName.heading")).asHidden()
+                label = LabelViewModel(Text(messages("businessName.heading"))).asHidden()
             ).withWidth(Fixed20).withHint(Hint(content = Text(messages("businessName.hint"))))
         )
 

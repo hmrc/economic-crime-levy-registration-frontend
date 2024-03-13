@@ -16,6 +16,7 @@
 
 @import java.time.LocalDate
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 
 @this(
         layout: templates.Layout,
@@ -32,12 +33,12 @@
         @errorSummary(ErrorSummaryViewModel(form))
     }
 
-    <h1 class="govuk-heading-l">@messages("liability.date.h1")</h1>
-
     @formHelper(action = LiabilityDateController.onSubmit(mode)) {
         @dateInput(DateInput(
             hint = Some(Hint(content = messages("liability.date.hint"))),
-            fieldset = Some(Fieldset(legend = None))).withFormField(form("value")),
+            fieldset = Some(
+                Fieldset(legend = Some(LegendViewModel(messages("liability.date.h1")).asPageHeading(LegendSize.Large)))
+            )).withFormField(form("value")),
 
         )
 
