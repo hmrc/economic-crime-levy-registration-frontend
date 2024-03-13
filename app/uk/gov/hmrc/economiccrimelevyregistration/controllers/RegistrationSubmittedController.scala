@@ -58,18 +58,17 @@ class RegistrationSubmittedController @Inject() (
       _                        <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
       _                        <- registrationService.deleteRegistration(request.internalId).asResponseError
       firstContactEmailAddress <-
-        valueOrError(request.registration.contacts.firstContactDetails.emailAddress, "First contact email address")
-      secondContactEmailAddress = request.registration.contacts.secondContactDetails.emailAddress
-      liabilityYear             =
-        request.additionalInfo.flatMap(_.liabilityStartDate.map(_.getYear)).map(year => LiabilityYear(year))
+        valueOrError(request.session.get(SessionKeys.FirstContactEmail), "First contact email address")
+      secondContactEmailAddress = request.session.get(SessionKeys.SecondContactEmail)
+      liabilityYear            <- valueOrError(request.session.get(SessionKeys.LiabilityYear), "Liability Year")
     } yield (liabilityYear, firstContactEmailAddress, secondContactEmailAddress))
       .fold(
         _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
         data => {
-          val liabilityYear      = data._1
+          val liabilityYear      = data._1.toInt
           val firstContactEmail  = data._2
           val secondContactEmail = data._3
-          Ok(view(eclReference, firstContactEmail, secondContactEmail, liabilityYear))
+          Ok(view(eclReference, firstContactEmail, secondContactEmail, Some(LiabilityYear(liabilityYear))))
         }
       )
 
