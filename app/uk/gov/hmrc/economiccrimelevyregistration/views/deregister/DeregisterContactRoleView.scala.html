@@ -46,7 +46,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text("deregisterContactRole.heading")).asHiddenPageHeading()
+                label = LabelViewModel(Text("deregisterContactRole.heading")).asHidden()
             ).withWidth(Fixed20).withHint(Hint(content = Text(messages("deregisterContactRole.hint"))))
         )
 

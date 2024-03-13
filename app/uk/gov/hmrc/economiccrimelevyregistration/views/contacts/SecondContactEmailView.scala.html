@@ -47,7 +47,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text(messages("secondContactEmail.heading", name))).asHiddenPageHeading(),
+                label = LabelViewModel(Text(messages("secondContactEmail.heading", name))).asHidden(),
                 attributes = Map("autocomplete" -> "email")
             ).asEmail().withWidth(Fixed20)
         )
