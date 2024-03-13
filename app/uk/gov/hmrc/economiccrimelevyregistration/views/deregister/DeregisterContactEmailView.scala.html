@@ -46,7 +46,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text(messages("deregisterContactEmail.heading", name))).asHiddenPageHeading(),
+                label = LabelViewModel(Text(messages("deregisterContactEmail.heading", name))).asHidden(),
                 attributes = Map("autocomplete" -> "email")
             ).asEmail().withWidth(Fixed20)
         )
