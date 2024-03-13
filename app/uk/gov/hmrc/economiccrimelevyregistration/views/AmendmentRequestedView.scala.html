@@ -34,7 +34,6 @@
     pageTitle = title(messages("amendmentRequested.title")),
     timeout = false,
     showBackLink = false,
-    showSignOut = false,
     registrationTypeForTopBanner = Some(Amendment),
     eclReferenceForStartLink = eclReference
 ) {
@@ -67,9 +66,9 @@
 
     <p class="govuk-body">@messages("amendmentRequested.body.address.heading")</p>
 
-    <p class="govuk-body">
+    <div class="govuk-body">
         @Html(AddressViewModel.html(contactAddress))
-    </p>
+    </div>
 
     <p class="govuk-body">@Html(messages("amendmentRequested.body.p7", messages("amendmentRequested.body.p7.link", appConfig.exitSurveyUrl)))</p>
 }

@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.StoreUrlAction
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
-import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionKeys, _}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService, RegistrationAdditionalInfoService}
@@ -35,6 +35,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendRegistrationPdfView, CheckYourAnswersView, ErrorTemplate, OtherRegistrationPdfView}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+
 import java.time.LocalDate
 import java.util.Base64
 import javax.inject.Singleton
@@ -228,7 +229,8 @@ class CheckYourAnswersController @Inject() (
             val session = request.session ++ Seq(
               SessionKeys.EclReference      -> response.eclReference,
               SessionKeys.FirstContactEmail -> firstEmail,
-              SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(address))
+              SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(address)),
+              SessionKeys.LiabilityYear     -> liabilityYear.asString
             )
             Redirect(routes.RegistrationSubmittedController.onPageLoad()).withSession(session)
         }

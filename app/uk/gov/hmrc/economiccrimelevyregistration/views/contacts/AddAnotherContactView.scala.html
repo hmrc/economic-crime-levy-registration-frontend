@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Empty
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 
 @this(
         layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
@@ -37,15 +37,11 @@
         @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
     }
 
-    <h1 class="govuk-heading-l">@messages("addAnotherContact.heading")</h1>
-
-    <p class="govuk-body">@messages("addAnotherContact.legend")</p>
-
     @formHelper(action = AddAnotherContactController.onSubmit(mode)) {
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(messages("addAnotherContact.heading")).asHidden(),
+                legend = LegendViewModel(messages("addAnotherContact.heading")).asPageHeading(LegendSize.Large),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),
@@ -58,7 +54,7 @@
                         content = Text(messages("site.no"))
                     )
                 )
-            )
+            ).withHint(Hint(content = Text(messages("addAnotherContact.legend"))))
         )
 
         @button(

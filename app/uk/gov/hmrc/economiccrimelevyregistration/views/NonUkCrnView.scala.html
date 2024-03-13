@@ -40,7 +40,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text("nonUkCrn.heading")).asHiddenPageHeading()
+                label = LabelViewModel(Text(messages("nonUkCrn.heading"))).asHidden()
             ).withHint(Hint(content = Text(messages("nonUkCrn.hint"))))
         )
 

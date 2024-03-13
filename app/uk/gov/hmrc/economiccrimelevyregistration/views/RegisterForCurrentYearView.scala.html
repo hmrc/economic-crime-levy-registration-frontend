@@ -40,16 +40,10 @@
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }
 
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-fieldset__heading">
-            @messages("register.currentYear.h1", ViewUtils.formatLocalDate(currentFinancialYearStartDate), ViewUtils.formatLocalDate(currentFinancialYearEndDate))
-            </h1>
-        </legend>
-
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel("").asPageHeading(LegendSize.Large),
+                legend = LegendViewModel(messages("register.currentYear.h1", ViewUtils.formatLocalDate(currentFinancialYearStartDate), ViewUtils.formatLocalDate(currentFinancialYearEndDate))).asPageHeading(LegendSize.Large),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),

@@ -34,16 +34,12 @@
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
         }
 
-        <h1 class="govuk-heading-l">@messages("utrType.heading")</h1>
-
-        <p class="govuk-body">@messages("utrType.p1")</p>
-
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(""),
+                legend = LegendViewModel(messages("utrType.heading")).asPageHeading(LegendSize.Large),
                 items = UtrType.options(appConfig)
-            )
+            ).withHint(Hint(content = Text(messages("utrType.p1"))))
         )
 
         @button(
