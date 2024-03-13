@@ -39,12 +39,10 @@
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }
 
-        <h1 class="govuk-heading-l">@messages("otherEntityType.utr.question.h1")</h1>
-
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel("").asPageHeading(LegendSize.Large),
+                legend = LegendViewModel(messages("otherEntityType.utr.question.h1")).asPageHeading(LegendSize.Large),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),
