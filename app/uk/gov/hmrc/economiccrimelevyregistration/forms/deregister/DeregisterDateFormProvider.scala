@@ -23,11 +23,19 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class DeregisterDateFormProvider @Inject() extends Mappings {
-  def apply(): Form[LocalDate] =
+
+  def removeSpaces(value: Option[String]): Option[String] =
+    if (value.isDefined) {
+      Some(value.get.replaceAll(" ", ""))
+    } else {
+      None
+    }
+  def apply(): Form[LocalDate]                            =
     Form(
       "value" -> localDate(
         "error.date.invalid",
         "deregisterDate.error.required",
+        removeSpaces,
         Some(minDate(MinMaxValues.eclStartDate, "deregisterDate.error.past")),
         Some(maxDate(LocalDate.now(), "deregisterDate.error.future"))
       )
