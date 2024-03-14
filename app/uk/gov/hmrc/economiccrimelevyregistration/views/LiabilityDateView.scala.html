@@ -29,7 +29,7 @@
 
 @layout(pageTitle = titleWithForm(form, messages("liability.date.title"))) {
     @if(form.errors.nonEmpty) {
-        @errorSummary(ErrorSummaryViewModel(form))
+        @errorSummary(ErrorSummaryViewModel(form.copy(errors = form.errors.distinctBy(_.message))))
     }
 
     <h1 class="govuk-heading-l">@messages("liability.date.h1")</h1>
@@ -37,8 +37,7 @@
     @formHelper(action = LiabilityDateController.onSubmit(mode)) {
         @dateInput(DateInput(
             hint = Some(Hint(content = messages("liability.date.hint"))),
-            fieldset = Some(Fieldset(legend = None))).withFormField(form("value")),
-
+            fieldset = Some(Fieldset(legend = None))).withFormField(form("value"))
         )
 
         @button(

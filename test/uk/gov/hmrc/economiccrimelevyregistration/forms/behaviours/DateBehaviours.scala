@@ -47,7 +47,7 @@ class DateBehaviours extends FieldBehaviours with EclTestData {
       }
     }
 
-  def dateFieldWithMax(form: Form[_], key: String, max: LocalDate, formError: FormError): Unit =
+  def dateFieldWithMax(form: Form[_], key: String, max: LocalDate, formErrors: Seq[FormError]): Unit =
     "bind" should {
       s"fail to bind a date greater than ${max.format(DateTimeFormatter.ISO_LOCAL_DATE)}" in {
 
@@ -62,12 +62,12 @@ class DateBehaviours extends FieldBehaviours with EclTestData {
 
           val result = form.bind(data)
 
-          result.errors should contain only formError
+          result.errors shouldBe formErrors
         }
       }
     }
 
-  def dateFieldWithMin(form: Form[_], key: String, min: LocalDate, formError: FormError): Unit =
+  def dateFieldWithMin(form: Form[_], key: String, min: LocalDate, formErrors: Seq[FormError]): Unit =
     "bind" should {
       s"fail to bind a date earlier than ${min.format(DateTimeFormatter.ISO_LOCAL_DATE)}" in {
 
@@ -82,7 +82,7 @@ class DateBehaviours extends FieldBehaviours with EclTestData {
 
           val result = form.bind(data)
 
-          result.errors should contain only formError
+          result.errors shouldBe formErrors
         }
       }
     }
@@ -97,7 +97,11 @@ class DateBehaviours extends FieldBehaviours with EclTestData {
       "fail to bind an empty date" in {
         val result = form.bind(Map.empty[String, String])
 
-        result.errors should contain only FormError(key, requiredKey, errorArgs)
+        result.errors shouldBe Seq(
+          FormError(s"$key.day", requiredKey, errorArgs),
+          FormError(s"$key.month", requiredKey, errorArgs),
+          FormError(s"$key.year", requiredKey, errorArgs)
+        )
       }
     }
 }
