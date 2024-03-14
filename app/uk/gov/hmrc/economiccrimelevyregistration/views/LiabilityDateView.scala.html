@@ -14,8 +14,11 @@
  * limitations under the License.
  *@
 
-@import java.time.LocalDate
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
+
+@import java.time.LocalDate
 
 @this(
         layout: templates.Layout,
@@ -37,7 +40,10 @@
     @formHelper(action = LiabilityDateController.onSubmit(mode)) {
         @dateInput(DateInput(
             hint = Some(Hint(content = messages("liability.date.hint"))),
-            fieldset = Some(Fieldset(legend = None))).withFormField(form("value"))
+            fieldset = Some(
+                Fieldset(legend = Some(LegendViewModel(messages("liability.date.h1")).asPageHeading(LegendSize.Large)))
+            )).withFormField(form("value")),
+
         )
 
         @button(
