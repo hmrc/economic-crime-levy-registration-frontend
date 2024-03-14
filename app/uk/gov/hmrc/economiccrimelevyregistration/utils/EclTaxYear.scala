@@ -23,32 +23,22 @@ case class EclTaxYear(startYear: Int) {
 
   lazy val finishYear: Int = startYear + 1
 
-  private def starts: LocalDate = EclTaxYear.firstDayOfTaxYear(startYear)
-
-  private lazy val finishes: LocalDate = LocalDate.of(finishYear, EclTaxYear.finishMonth, EclTaxYear.finishDay)
-
   def back(years: Int): EclTaxYear = EclTaxYear(startYear - years)
 
   lazy val previous: EclTaxYear = back(1)
 
   lazy val currentYear: Int = startYear
 
-  def forwards(years: Int): EclTaxYear = EclTaxYear(startYear + years)
-
-  lazy val next: EclTaxYear = forwards(1)
-
-  def contains(date: LocalDate): Boolean = !(date.isBefore(starts) || date.isAfter(finishes))
-
   override def toString = s"$startYear to $finishYear"
 }
 
 object EclTaxYear extends EclCurrentTaxYear with (Int => EclTaxYear) {
 
-  private val dayDue   = 30
-  private val monthDue = 9
+  private val dayDue           = 30
+  private val finishDay: Int   = 31
+  private val finishMonth: Int = 3
+  private val monthDue         = 9
 
-  val finishDay: Int   = 31
-  val finishMonth: Int = 3
   val startMonth: Int  = 4
   val startDay: Int    = 1
   val initialYear: Int = 2022

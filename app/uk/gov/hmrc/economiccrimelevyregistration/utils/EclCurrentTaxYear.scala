@@ -20,9 +20,9 @@ import java.time.{LocalDate, MonthDay, ZoneId}
 
 trait EclCurrentTaxYear {
 
-  private val startDay = 1
+  private val startDay   = 1
   private val startMonth = 4
-  
+
   final val ukTime: ZoneId = ZoneId.of("Europe/London")
 
   private val startOfTaxYear = MonthDay.of(startMonth, startDay)
@@ -33,13 +33,12 @@ trait EclCurrentTaxYear {
 
   final def today: LocalDate = now()
 
-  final def taxYearFor(date: LocalDate): EclTaxYear = {
+  final def taxYearFor(date: LocalDate): EclTaxYear =
     if (date isBefore firstDayOfTaxYear(date.getYear)) {
       EclTaxYear(startYear = date.getYear - 1)
     } else {
       EclTaxYear(startYear = date.getYear)
     }
-  }
 
   final def current: EclTaxYear = taxYearFor(today)
 }
