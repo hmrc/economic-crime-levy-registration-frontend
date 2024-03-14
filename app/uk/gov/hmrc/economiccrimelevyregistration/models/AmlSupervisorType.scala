@@ -80,7 +80,11 @@ object AmlSupervisorType {
         ).withCssClass("govuk-!-font-weight-bold"),
         hint = Some(Hint(content = Text(messages("amlSupervisor.selectFromList.hint")))),
         errorMessage = if (form.errors.exists(_.key == "otherProfessionalBody")) {
-          Some(ErrorMessage(content = Text(messages("amlSupervisor.selectFromList.error"))))
+          Some(
+            ErrorMessage.errorMessageWithDefaultStringsTranslated(
+              content = Text(messages("amlSupervisor.selectFromList.error"))
+            )
+          )
         } else { None }
       ).asAccessibleAutocomplete(
         Some(AccessibleAutocomplete(defaultValue = Some(""), showAllValues = true, autoSelect = true))
@@ -130,7 +134,11 @@ object AmlSupervisorType {
         ).withCssClass("govuk-!-font-weight-bold"),
         hint = Some(Hint(content = Text(messages("amlSupervisor.selectFromList.hint")))),
         errorMessage = if (form.errors.exists(_.key == "otherProfessionalBody")) {
-          Some(ErrorMessage(content = Text(messages("amlSupervisor.selectFromList.error"))))
+          Some(
+            ErrorMessage.errorMessageWithDefaultStringsTranslated(
+              content = Text(messages("amlSupervisor.selectFromList.error"))
+            )
+          )
         } else {
           None
         }
