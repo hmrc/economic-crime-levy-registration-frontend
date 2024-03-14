@@ -38,7 +38,7 @@ class EclCalculatorService @Inject() (
     registration.relevantApRevenue match {
       case Some(revenue) =>
         registration.relevantAp12Months match {
-          case Some(true)  => calculateLiabilityAmount(EclTaxYear.YearInDays, revenue)
+          case Some(true)  => calculateLiabilityAmount(EclTaxYear.yearInDays, revenue)
           case Some(false) =>
             registration.relevantApLength match {
               case Some(relevantApLength) => calculateLiabilityAmount(relevantApLength, revenue)

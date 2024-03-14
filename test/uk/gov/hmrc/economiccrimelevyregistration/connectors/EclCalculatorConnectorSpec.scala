@@ -40,7 +40,7 @@ class EclCalculatorConnectorSpec extends SpecBase {
     "return the calculated liability when the http client returns the calculated liability" in forAll {
       (calculateLiabilityRequest: CalculateLiabilityRequest, calculatedLiability: CalculatedLiability) =>
         val newCalculatedLiabilityRequest =
-          calculateLiabilityRequest.copy(amlRegulatedActivityLength = EclTaxYear.YearInDays)
+          calculateLiabilityRequest.copy(amlRegulatedActivityLength = EclTaxYear.yearInDays)
         val bandRange                     = calculatedLiability.bands.small.copy(amount = BigDecimal(20000.00))
         val band                          = Bands(small = bandRange, medium = bandRange, large = bandRange, veryLarge = bandRange)
         val newCalculatedLiability        = calculatedLiability.copy(amountDue = EclAmount(BigDecimal(2000.00)), bands = band)

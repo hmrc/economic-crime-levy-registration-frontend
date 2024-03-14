@@ -14,21 +14,23 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukRadios
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
-@import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 @import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 @import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
+@import uk.gov.hmrc.govukfrontend.views.html.components.{GovukRadios, _}
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
+
 @import java.time.LocalDate
 
 @this(
-        layout: templates.Layout,
+        layout: Layout,
         radios: GovukRadios,
         button: GovukButton,
         formHelper: FormWithCSRF,
         errorSummary: GovukErrorSummary
 )
+
 @(form: Form[Boolean], mode: Mode, currentYear: String, currentFinancialYearStartDate: LocalDate, currentFinancialYearEndDate: LocalDate)(implicit messages: Messages, request: Request[_])
 
 @layout(

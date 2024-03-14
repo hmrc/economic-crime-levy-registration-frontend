@@ -21,5 +21,5 @@ import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import java.time.LocalDate
 
 object MinMaxValues {
-  val eclStartDate = LocalDate.of(EclTaxYear.initialYear, EclTaxYear.EclFyStartMonth, EclTaxYear.EclFyStartDay)
+  val eclStartDate: LocalDate = LocalDate.of(EclTaxYear.initialYear, EclTaxYear.startMonth, EclTaxYear.startDay)
 }

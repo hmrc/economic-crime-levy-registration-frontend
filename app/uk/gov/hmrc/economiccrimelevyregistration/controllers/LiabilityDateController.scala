@@ -25,9 +25,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityDateFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, LiabilityYear, Mode, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityDatePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityDateView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.time.TaxYear
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -63,7 +63,7 @@ class LiabilityDateController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(mode, formWithErrors))),
           liabilityDate => {
-            val year           = TaxYear.taxYearFor(liabilityDate)
+            val year           = EclTaxYear.taxYearFor(liabilityDate)
             val registration   = request.registration
             val additionalInfo = request.additionalInfo.get.copy(
               liabilityStartDate = Some(liabilityDate),

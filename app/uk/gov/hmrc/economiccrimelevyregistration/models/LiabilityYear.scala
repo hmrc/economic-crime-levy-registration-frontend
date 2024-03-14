@@ -17,14 +17,14 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.time.TaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 case class LiabilityYear(value: Int) {
-  def currentTaxYear(): TaxYear = TaxYear.current
-  val followingYear: String     = (value + 1).toString
-  val asString: String          = value.toString
-  val isCurrentFY: Boolean      = value == currentTaxYear().startYear || value == currentTaxYear().finishYear
-  val isNotCurrentFY: Boolean   = !isCurrentFY
+  def currentTaxYear(): EclTaxYear = EclTaxYear.current
+  val followingYear: String        = (value + 1).toString
+  val asString: String             = value.toString
+  val isCurrentFY: Boolean         = value == currentTaxYear().startYear || value == currentTaxYear().finishYear
+  val isNotCurrentFY: Boolean      = !isCurrentFY
 
 }
 

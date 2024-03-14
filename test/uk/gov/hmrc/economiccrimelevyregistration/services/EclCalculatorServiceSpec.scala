@@ -43,7 +43,7 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         when(
           mockEclCalculatorConnector
-            .calculateLiability(ArgumentMatchers.eq(EclTaxYear.YearInDays), ArgumentMatchers.eq(relevantApRevenue))(
+            .calculateLiability(ArgumentMatchers.eq(EclTaxYear.yearInDays), ArgumentMatchers.eq(relevantApRevenue))(
               any()
             )
         )
@@ -92,7 +92,7 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         when(
           mockEclCalculatorConnector
-            .calculateLiability(ArgumentMatchers.eq(EclTaxYear.YearInDays), ArgumentMatchers.eq(relevantApRevenue))(
+            .calculateLiability(ArgumentMatchers.eq(EclTaxYear.yearInDays), ArgumentMatchers.eq(relevantApRevenue))(
               any()
             )
         )

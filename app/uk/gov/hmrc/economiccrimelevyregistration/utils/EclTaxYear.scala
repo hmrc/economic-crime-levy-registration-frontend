@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,37 +19,56 @@ package uk.gov.hmrc.economiccrimelevyregistration.utils
 import java.time.LocalDate
 import scala.annotation.tailrec
 
-object EclTaxYear {
+case class EclTaxYear(startYear: Int) {
 
-  private def startYear     = LocalDate.now().getYear
-  private val MonthDue      = 9
-  private val DayDue        = 30
-  private val EclFyEndMonth = 3
-  val EclFyStartMonth       = 4
-  private val EclFyEndDay   = 31
-  val EclFyStartDay         = 1
-  val initialYear           = 2022
-  def dueDate: LocalDate    =
-    LocalDate.of(calculateYearDue(), MonthDue, DayDue)
+  lazy val finishYear: Int = startYear + 1
 
-  def yearDue: String              = calculateYearDue().toString
-  def currentFinancialYear: String = (yearDue.toInt - 1).toString
-  val YearInDays: Int              = 365
+  def back(years: Int): EclTaxYear = EclTaxYear(startYear - years)
+
+  lazy val previous: EclTaxYear = back(1)
+
+  lazy val currentYear: Int = startYear
+
+  override def toString = s"$startYear to $finishYear"
+}
+
+object EclTaxYear extends EclCurrentTaxYear with (Int => EclTaxYear) {
+
+  private val dayDue           = 30
+  private val finishDay: Int   = 31
+  private val finishMonth: Int = 3
+  private val monthDue         = 9
+
+  val startMonth: Int  = 4
+  val startDay: Int    = 1
+  val initialYear: Int = 2022
+  val yearInDays: Int  = 365
+
+  override def now: () => LocalDate = () => LocalDate.now(ukTime)
 
   @tailrec
-  def calculateYearDue(yearDue: Int = startYear, currentDate: LocalDate = LocalDate.now()): Int =
-    if (currentDate.isAfter(LocalDate.of(yearDue, MonthDue, DayDue))) {
+  def calculateYearDue(yearDue: Int = currentStartYear(), currentDate: LocalDate = LocalDate.now()): Int =
+    if (currentDate.isAfter(LocalDate.of(yearDue, monthDue, dayDue))) {
       calculateYearDue(yearDue + 1, currentDate)
     } else {
       yearDue
     }
 
+  def currentFinishYear(): Int = EclTaxYear.current.finishYear
+
+  def currentStartYear(): Int = EclTaxYear.current.startYear
+
+  def currentFinancialYearFinishDate: LocalDate =
+    LocalDate.of(currentFinishYear(), finishMonth, finishDay)
+
   def currentFinancialYearStartDate: LocalDate =
-    LocalDate.of(currentFinancialYear.toInt, EclFyStartMonth, EclFyStartDay)
-  def currentFinancialYearEndDate: LocalDate   =
-    LocalDate.of(currentFinancialYear.toInt + 1, EclFyEndMonth, EclFyEndDay)
+    LocalDate.of(currentStartYear(), startMonth, startDay)
 
-  def currentFyStartYear: String = currentFinancialYearStartDate.getYear.toString
-  def currentFyEndYear: String   = currentFinancialYearEndDate.getYear.toString
+  def currentFyFinishYear: Int = currentFinancialYearFinishDate.getYear
 
+  def currentFyStartYear: Int = currentFinancialYearStartDate.getYear
+
+  def dueDate: LocalDate = LocalDate.of(calculateYearDue(), monthDue, dayDue)
+
+  def yearDue: Int = calculateYearDue()
 }
