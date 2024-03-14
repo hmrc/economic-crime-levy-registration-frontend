@@ -40,7 +40,7 @@ class LiabilityDateFormProviderSpec extends DateBehaviours {
 
     behave like mandatoryDateField(
       form,
-      s"$fieldName.day",
+      fieldName,
       requiredKey
     )
 
@@ -48,9 +48,10 @@ class LiabilityDateFormProviderSpec extends DateBehaviours {
       form,
       fieldName,
       MinMaxValues.eclStartDate,
-      FormError(
-        s"$fieldName.day",
-        earlyKey
+      Seq(
+        FormError(s"$fieldName.day", earlyKey),
+        FormError(s"$fieldName.month", earlyKey),
+        FormError(s"$fieldName.year", earlyKey)
       )
     )
 
@@ -58,7 +59,11 @@ class LiabilityDateFormProviderSpec extends DateBehaviours {
       form,
       fieldName,
       LocalDate.now(),
-      FormError(s"$fieldName.day", futureKey)
+      Seq(
+        FormError(s"$fieldName.day", futureKey),
+        FormError(s"$fieldName.month", futureKey),
+        FormError(s"$fieldName.year", futureKey)
+      )
     )
   }
 }

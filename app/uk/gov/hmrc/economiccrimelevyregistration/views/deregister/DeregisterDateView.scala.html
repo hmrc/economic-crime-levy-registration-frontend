@@ -31,7 +31,7 @@
 
 @layout(pageTitle = titleWithForm(form, messages("deregisterDate.title")), registrationTypeForTopBanner = Some(registrationType)) {
     @if(form.errors.nonEmpty) {
-        @errorSummary(ErrorSummaryViewModel(form))
+        @errorSummary(ErrorSummaryViewModel(form.copy(errors = form.errors.distinctBy(_.message))))
     }
 
     <h1 class="govuk-heading-l">@messages("deregisterDate.heading")</h1>

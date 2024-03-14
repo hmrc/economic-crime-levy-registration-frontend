@@ -749,6 +749,7 @@ liability.date.label = Liability start date
 liability.date.error.future.date = The date must be in the past
 liability.date.error.early.date = The date must be after 1 April 2022
 liability.date.error.required = Enter the date you became liable for ECL
+liability.date.error.invalid = Enter a valid date
 
 deregistration.pdfHtml.title = Application to deregister
 deregistration.pdfHtml.submissionDate = Submission date: {0}

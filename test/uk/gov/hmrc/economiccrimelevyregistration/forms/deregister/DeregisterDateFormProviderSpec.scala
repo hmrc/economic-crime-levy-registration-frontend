@@ -28,6 +28,8 @@ class DeregisterDateFormProviderSpec extends DateBehaviours {
   "value" should {
     val fieldName   = "value"
     val requiredKey = "deregisterDate.error.required"
+    val pastKey     = "deregisterDate.error.past"
+    val futureKey   = "deregisterDate.error.future"
 
     behave like dateField(
       form,
@@ -37,7 +39,7 @@ class DeregisterDateFormProviderSpec extends DateBehaviours {
 
     behave like mandatoryDateField(
       form,
-      s"$fieldName.day",
+      fieldName,
       requiredKey
     )
 
@@ -45,9 +47,10 @@ class DeregisterDateFormProviderSpec extends DateBehaviours {
       form,
       fieldName,
       MinMaxValues.eclStartDate,
-      FormError(
-        s"$fieldName.day",
-        "deregisterDate.error.past"
+      Seq(
+        FormError(s"$fieldName.day", pastKey),
+        FormError(s"$fieldName.month", pastKey),
+        FormError(s"$fieldName.year", pastKey)
       )
     )
 
@@ -55,7 +58,11 @@ class DeregisterDateFormProviderSpec extends DateBehaviours {
       form,
       fieldName,
       LocalDate.now(),
-      FormError(s"$fieldName.day", "deregisterDate.error.future")
+      Seq(
+        FormError(s"$fieldName.day", futureKey),
+        FormError(s"$fieldName.month", futureKey),
+        FormError(s"$fieldName.year", futureKey)
+      )
     )
   }
 }
