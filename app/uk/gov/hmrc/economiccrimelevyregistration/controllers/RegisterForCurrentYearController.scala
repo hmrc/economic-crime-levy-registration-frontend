@@ -79,9 +79,9 @@ class RegisterForCurrentYearController @Inject() (
                 view(
                   form.prepare(value.registeringForCurrentYear),
                   mode,
-                  s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
+                  s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}",
                   EclTaxYear.currentFinancialYearStartDate,
-                  EclTaxYear.currentFinancialYearEndDate
+                  EclTaxYear.currentFinancialYearFinishDate
                 )
               )
             case None        =>
@@ -89,9 +89,9 @@ class RegisterForCurrentYearController @Inject() (
                 view(
                   form,
                   mode,
-                  s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
+                  s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}",
                   EclTaxYear.currentFinancialYearStartDate,
-                  EclTaxYear.currentFinancialYearEndDate
+                  EclTaxYear.currentFinancialYearFinishDate
                 )
               )
           }
@@ -109,16 +109,16 @@ class RegisterForCurrentYearController @Inject() (
               view(
                 formWithErrors,
                 mode,
-                s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}",
+                s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}",
                 EclTaxYear.currentFinancialYearStartDate,
-                EclTaxYear.currentFinancialYearEndDate
+                EclTaxYear.currentFinancialYearFinishDate
               )
             )
           ),
         answer =>
           (for {
             additionalInfo         <- registrationAdditionalInfoService.get(request.internalId).asResponseError
-            liabilityYear           = if (answer) Some(EclTaxYear.currentFinancialYear.toInt) else None
+            liabilityYear           = if (answer) Some(EclTaxYear.currentStartYear()) else None
             updatedAdditionalInfo   = additionalInfo.get.copy(
                                         registeringForCurrentYear = Some(answer),
                                         liabilityYear = liabilityYear.map(value => LiabilityYear(value))

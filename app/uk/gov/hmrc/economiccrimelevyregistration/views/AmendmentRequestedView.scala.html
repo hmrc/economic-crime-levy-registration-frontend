@@ -15,14 +15,16 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-@import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
-@import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 @import uk.gov.hmrc.economiccrimelevyregistration.models.EclAddress
+@import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
+@import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
+
 @import java.time.LocalDate
 
 @this(
-        layout: templates.Layout,
+        layout: Layout,
         govukPanel: GovukPanel,
         appConfig: AppConfig
 )

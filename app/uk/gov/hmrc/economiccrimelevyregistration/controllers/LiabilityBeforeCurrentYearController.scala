@@ -28,10 +28,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityBeforeCurrentYearView}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import uk.gov.hmrc.time.TaxYear
 
 import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
@@ -162,8 +162,8 @@ class LiabilityBeforeCurrentYearController @Inject() (
     liableForPreviousFY: Boolean
   ): Option[LiabilityYear] =
     (liableForCurrentFY, liableForPreviousFY) match {
-      case (Some(_), true)     => Some(LiabilityYear(TaxYear.current.previous.startYear))
-      case (Some(true), false) => Some(LiabilityYear(TaxYear.current.currentYear))
+      case (Some(_), true)     => Some(LiabilityYear(EclTaxYear.current.previous.startYear))
+      case (Some(true), false) => Some(LiabilityYear(EclTaxYear.current.currentYear))
       case _                   => None
     }
 

@@ -14,8 +14,10 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
+
 @this(
-        layout: templates.Layout,
+        layout: Layout,
         button: GovukButton
 )
 
@@ -34,7 +36,7 @@
 
     @button(
         ButtonViewModel(messages("answersAreInvalid.button"))
-                .asLink(AmlRegulatedActivityController.onPageLoad(NormalMode).url)
+        .asLink(AmlRegulatedActivityController.onPageLoad(NormalMode).url)
     )
 
 }

@@ -14,22 +14,20 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukRadios
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
-@import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 @import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 @import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
-
-
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
+@import uk.gov.hmrc.govukfrontend.views.html.components.{GovukRadios, _}
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 @this(
-        layout: templates.Layout,
+        layout: Layout,
         radios: GovukRadios,
         button: GovukButton,
         formHelper: FormWithCSRF,
         errorSummary: GovukErrorSummary
 )
+
 @(form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(
@@ -56,7 +54,7 @@
                     RadioItem(
                         id = Some("no"),
                         value = Some("false"),
-                        content = Text(messages("liabilityBeforeCurrentYear.no", s"${EclTaxYear.currentFinancialYear} to ${EclTaxYear.yearDue}"))
+                        content = Text(messages("liabilityBeforeCurrentYear.no", s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}"))
                     )
                 )
             )

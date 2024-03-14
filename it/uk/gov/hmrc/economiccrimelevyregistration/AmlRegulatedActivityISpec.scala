@@ -18,8 +18,8 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the Aml regulated HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val expectedTaxYearStart = EclTaxYear.currentFyStartYear
-      val expectedTaxYearEnd   = EclTaxYear.currentFyEndYear
+      val expectedTaxYearStart = EclTaxYear.currentFyStartYear.toString
+      val expectedTaxYearEnd   = EclTaxYear.currentFyFinishYear.toString
       val additionalInfo       = random[RegistrationAdditionalInfo]
 
       stubGetRegistrationAdditionalInfo(additionalInfo)

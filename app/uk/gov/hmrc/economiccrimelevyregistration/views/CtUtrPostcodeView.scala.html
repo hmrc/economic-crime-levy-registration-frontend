@@ -14,15 +14,13 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukButton
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukInput
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukErrorSummary
-@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
-@import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils.titleWithForm
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth.Fixed20
+@import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils.titleWithForm
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF, GovukButton, GovukErrorSummary, GovukInput}
 
 @this(
-        layout: uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout,
+        layout: Layout,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukInput: GovukInput,
