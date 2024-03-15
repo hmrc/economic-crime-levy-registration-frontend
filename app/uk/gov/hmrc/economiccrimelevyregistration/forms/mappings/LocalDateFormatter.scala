@@ -26,6 +26,7 @@ import scala.util.{Failure, Success, Try}
 private[mappings] class LocalDateFormatter(
   invalidKey: String,
   requiredKey: String,
+  sanitise: Option[String] => Option[String],
   minDateConstraint: Option[Constraint[LocalDate]] = None,
   maxDateConstraint: Option[Constraint[LocalDate]] = None,
   args: Seq[String] = Seq.empty
@@ -72,7 +73,7 @@ private[mappings] class LocalDateFormatter(
       }
 
     (day, month, year) match {
-      case (Some(d), Some(m), Some(y)) =>
+      case (Some(_), Some(_), Some(_)) =>
         (validateDay, validateMonth, validateYear) match {
           case (true, true, true)   => Nil
           case (true, false, false) =>
@@ -81,27 +82,15 @@ private[mappings] class LocalDateFormatter(
               FormError(s"$key.year", "error.monthYear.required")
             )
           case (true, true, false)  =>
-            Seq(
-              FormError(s"$key.year", "error.year.invalid")
-            )
+            Seq(FormError(s"$key.year", "error.year.invalid"))
           case (true, false, true)  =>
-            Seq(
-              FormError(s"$key.month", "error.month.invalid")
-            )
+            Seq(FormError(s"$key.month", "error.month.invalid"))
           case (false, true, true)  =>
-            Seq(
-              FormError(s"$key.day", "error.day.invalid")
-            )
+            Seq(FormError(s"$key.day", "error.day.invalid"))
           case (false, true, false) =>
-            Seq(
-              FormError(s"$key.day", "error.dayYear.required"),
-              FormError(s"$key.year", "error.dayYear.required")
-            )
+            Seq(FormError(s"$key.day", "error.dayYear.required"), FormError(s"$key.year", "error.dayYear.required"))
           case (false, false, true) =>
-            Seq(
-              FormError(s"$key.day", "error.dayMonth.required"),
-              FormError(s"$key.month", "error.dayMonth.required")
-            )
+            Seq(FormError(s"$key.day", "error.dayMonth.required"), FormError(s"$key.month", "error.dayMonth.required"))
 
           case (false, false, false) =>
             Seq(
@@ -111,18 +100,15 @@ private[mappings] class LocalDateFormatter(
             )
 
         }
-      case (Some(d), Some(m), None)    => Seq(FormError(s"$key.year", "error.year.required"))
-      case (Some(d), None, Some(y))    => Seq(FormError(s"$key.month", "error.month.required"))
-      case (Some(d), None, None)       =>
+      case (Some(_), Some(_), None)    => Seq(FormError(s"$key.year", "error.year.required"))
+      case (Some(_), None, Some(_))    => Seq(FormError(s"$key.month", "error.month.required"))
+      case (Some(_), None, None)       =>
         Seq(FormError(s"$key.month", "error.monthYear.required"), FormError(s"$key.year", "error.monthYear.required"))
-      case (None, Some(m), Some(y))    => Seq(FormError(s"$key.day", "error.day.required"))
-      case (None, Some(m), None)       =>
+      case (None, Some(_), Some(_))    => Seq(FormError(s"$key.day", "error.day.required"))
+      case (None, Some(_), None)       =>
         Seq(FormError(s"$key.day", "error.dayYear.required"), FormError(s"$key.year", "error.dayYear.required"))
-      case (None, None, Some(y))       =>
-        Seq(
-          FormError(s"$key.day", "error.dayMonth.required"),
-          FormError(s"$key.month", "error.dayMonth.required")
-        )
+      case (None, None, Some(_))       =>
+        Seq(FormError(s"$key.day", "error.dayMonth.required"), FormError(s"$key.month", "error.dayMonth.required"))
       case _                           =>
         Seq(
           FormError(s"$key.day", requiredKey),
@@ -139,9 +125,9 @@ private[mappings] class LocalDateFormatter(
     val monthKey: String = s"$key.month"
     val yearKey: String  = s"$key.year"
 
-    val day: Option[String]   = data.get(dayKey).filter(_.nonEmpty)
-    val month: Option[String] = data.get(monthKey).filter(_.nonEmpty)
-    val year: Option[String]  = data.get(yearKey).filter(_.nonEmpty)
+    val day: Option[String]   = sanitise(data.get(dayKey).filter(_.nonEmpty))
+    val month: Option[String] = sanitise(data.get(monthKey).filter(_.nonEmpty))
+    val year: Option[String]  = sanitise(data.get(yearKey).filter(_.nonEmpty))
 
     val errors = validateDayMonthYear(key, day, month, year)
     errors match {
