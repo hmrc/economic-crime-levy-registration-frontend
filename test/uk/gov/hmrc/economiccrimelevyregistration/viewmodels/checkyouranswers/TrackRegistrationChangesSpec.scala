@@ -263,7 +263,9 @@ class TrackRegistrationChangesSpec extends SpecBase {
       (response: GetSubscriptionResponse, registration: Registration) =>
         val invalidRegistration = registration.copy(contactAddress = None)
         val invalidResponse     =
-          response.copy(correspondenceAddressDetails = response.correspondenceAddressDetails.copy(addressLine2 = None))
+          response.copy(correspondenceAddressDetails =
+            response.correspondenceAddressDetails.copy(addressLine1 = alphaNumericString, addressLine2 = None)
+          )
         val sut                 = TestTrackEclReturnChanges(
           defaultEclRegistration(invalidRegistration),
           Some(invalidResponse)
