@@ -30,13 +30,11 @@
 
     @govukSummaryList(viewModel.amendReasonDetails())
 
-
     <h2>@messages("checkYourAnswers.eclDetails")</h2>
     @govukSummaryList(viewModel.eclDetails())
 
     <h2>@messages("checkYourAnswers.organisationDetails")</h2>
     @govukSummaryList(viewModel.organisationDetails())
-
 
     @if(viewModel.hasSecondContact && !viewModel.hasSecondContactDetailsPresentChanged) {
         <h2 class="govuk-heading-m">@messages("checkYourAnswers.firstContact")</h2>
@@ -49,8 +47,10 @@
         @govukSummaryList(viewModel.contactDetails())
     }
 
-    <h2 class="govuk-heading-m">@messages("checkYourAnswers.addressDetails")</h2>
-    @govukSummaryList(viewModel.addressDetails())
+    @if(!viewModel.hasAddressChanged) {
+        <h2 class="govuk-heading-m">@messages("checkYourAnswers.addressDetails")</h2>
+        @govukSummaryList(viewModel.addressDetails())
+    }
 
     <h2 class="govuk-heading-m">@messages("checkYourAnswers.amendedAnswers")</h2>
     @govukSummaryList(viewModel.amendedAnswersDetails())
