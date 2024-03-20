@@ -72,6 +72,7 @@ object AmlSupervisorType {
 
     val selectAmlProfessionalBody = govukSelect(
       Select(
+        attributes = Map("aria-label" -> messages("amlSupervisor.selectFromList.label")),
         id = "otherProfessionalBody",
         name = "otherProfessionalBody",
         items = amlProfessionalBodySupervisorOptions,
@@ -126,6 +127,7 @@ object AmlSupervisorType {
 
     val selectAmlProfessionalBody = govukSelect(
       Select(
+        attributes = Map("aria-label" -> messages("amlSupervisor.selectFromList.label")),
         id = "otherProfessionalBody",
         name = "otherProfessionalBody",
         items = amlProfessionalBodySupervisorOptions,
