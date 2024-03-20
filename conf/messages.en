@@ -634,7 +634,6 @@ cancelRegistrationAmendment.body = Your answers will be deleted.
 cancelRegistrationAmendment.error.required = Select yes if you want to cancel your request to amend your registration
 
 deregister.banner.title = Deregister from the Economic Crime Levy
-
 deregister.start.title = Request to deregister from HMRC for the Economic Crime Levy
 deregister.start.heading = Request to deregister from HMRC for the Economic Crime Levy
 deregister.start.h2 = Organisation details

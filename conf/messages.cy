@@ -140,7 +140,6 @@ relevantAp12Months.hidden3 = Os yw’ch cyfnod cyfrifyddu perthnasol yn llai na 
 relevantAp12Months.error.required = Dewiswch Iawn os oes gennych gyfnod cyfrifyddu perthnasol sy’n dod i ben yn ystod y flwyddyn ariannol
 relevantAp12Months.question = A yw’ch cyfnod cyfrifyddu perthnasol yn 12 mis?
 
-
 ukRevenue.title = Cyfanswm refeniw y DU
 ukRevenue.heading = Cyfanswm refeniw y DU
 ukRevenue.p1 = At ddiben yr Ardoll Troseddau Economaidd (ECL), diffinnir eich refeniw yn y DU fel a ganlyn:
@@ -198,7 +197,7 @@ entityType.RegisteredSociety = Cymdeithas gofrestredig
 entityType.ScottishLimitedPartnership = Partneriaeth gyfyngedig yn yr Alban
 entityType.ScottishPartnership = Partneriaeth yn yr Alban
 entityType.SoleTrader = Unig fasnachwr
-entityType.UnlimitedCompany = Unlimited company
+entityType.UnlimitedCompany = Cwmni anghyfyngedig
 entityType.Charity = Elusen
 entityType.Trust = Ymddiriedolaeth
 entityType.NonUKEstablishment = Sefydliad y tu allan i’r DU
@@ -602,7 +601,7 @@ amendmentRequested.list.b4 = enw, rôl, a manylion cyswllt y person yn eich sefy
 amendmentRequested.h2 = Yr hyn sy’n digwydd nesaf
 
 amendRegistration.pdfHtml.title = Cais i ddiwygio cofrestriad yr Ardoll Troseddau Economaidd
-amendRegistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad {0}
+amendRegistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad: {0}
 
 liabilityBeforeCurrentYear.title =A ydych yn atebol i dalu’r ardoll ar gyfer unrhyw flynyddoedd ariannol blaenorol?
 liabilityBeforeCurrentYear.h1 = A ydych yn atebol i dalu’r ardoll ar gyfer unrhyw flynyddoedd ariannol blaenorol?
@@ -633,13 +632,6 @@ cancelRegistrationAmendment.title = Ydych chi'n siŵr eich bod am ganslo'ch cais
 cancelRegistrationAmendment.heading = Ydych chi'n siŵr eich bod am ganslo'ch cais i newid eich cofrestriad?
 cancelRegistrationAmendment.body = Bydd eich atebion yn cael eu dileu.
 cancelRegistrationAmendment.error.required = Dewiswch 'Iawn' os ydych yn dymuno canslo eich cais i newid eich cofrestriad
-
-register.currentYear.h1 = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0} i {1}?
-register.currentYear.title = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0}?
-register.currentYear.label = Cofrestru ar gyfer y flwyddyn ariannol gyfredol
-register.currentYear.error = Dewiswch ‘Iawn’ os ydych yn cofrestru ar gyfer blwyddyn ariannol {0}
-register.currentYear.yes = Iawn, parhau i gofrestru ar gyfer {0}
-register.currentYear.no = Na, nodwch y dyddiad y daethoch yn atebol am ECL
 
 deregister.banner.title = Dadgofrestru o'r Ardoll Troseddau Economaidd
 deregister.start.title = Cais at CThEF i ddatgofrestru rhag yr Ardoll Troseddau Economaidd
@@ -742,6 +734,13 @@ savedResponses.true = Yn eich blaen â’ch atebion sydd wedi’u cadw
 savedResponses.false = Dileu’ch cynnydd hyd yma a dechrau eto
 savedResponses.error.required = Dewiswch yr opsiwn cyntaf os ydych am fynd yn eich blaen â’ch atebion sydd wedi’u cadw
 
+register.currentYear.h1 = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0} i {1}?
+register.currentYear.title = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0}?
+register.currentYear.label = Cofrestru ar gyfer y flwyddyn ariannol gyfredol
+register.currentYear.error = Dewiswch ‘Iawn’ os ydych yn cofrestru ar gyfer blwyddyn ariannol {0}
+register.currentYear.yes = Iawn, parhau i gofrestru ar gyfer {0}
+register.currentYear.no = Na, nodwch y dyddiad y daethoch yn atebol am ECL
+
 liability.date.title = Nodwch y dyddiad pan ddaethoch yn agored i’r Ardoll Troseddau Economaidd (ECL)
 liability.date.h1 = Nodwch y dyddiad pan ddaethoch yn agored i’r Ardoll Troseddau Economaidd (ECL)
 liability.date.hint = Dyma’r dyddiad y gwnaethoch ddechrau gweithgareddau a reoleiddir gan reoliadau AML, dechrau cael eich rheoleiddio gan CThEF neu’r dyddiad y gwnaethoch gyrraedd y trothwy refeniw ar gyfer ECL. Mae’n rhaid i’r dyddiad hwn fod ar ôl dyddiad dechrau’r ECL ar 1 Ebrill 2022.
@@ -749,5 +748,9 @@ liability.date.label = Dyddiad cychwyn atebolrwydd
 liability.date.error.future.date = Mae’n rhaid i’r dyddiad fod yn y gorffennol
 liability.date.error.early.date = Mae’n rhaid i’r dyddiad fod ar ôl 1 Ebrill 2022
 liability.date.error.required = Nodwch y dyddiad pan ddaethoch yn agored i ECL
+liability.date.error.invalid = Rhowch ddyddiad dilys
+
+deregistration.pdfHtml.title = Cais i ddadgofrestru
+deregistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad {0}
 
 govukErrorMessage.visuallyHiddenText = Gwall
