@@ -74,7 +74,9 @@ class CheckYourAnswersController @Inject() (
             case None    =>
               if (appConfig.getSubscriptionEnabled && request.registration.registrationType.contains(Amendment)) {
                 routeWithSubscription
-              } else { routeWithoutSubscription }
+              } else {
+                routeWithoutSubscription
+              }
           }
         )
     }

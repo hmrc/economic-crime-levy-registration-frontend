@@ -107,6 +107,6 @@ object BusinessSector {
       case "estateagentorlettingagent"     => EstateAgentOrLettingAgent
       case "highvaluedealer"               => HighValueDealer
       case "cryptoassetexchangeprovider"   => CryptoAssetExchangeProvider
-      case s                               => throw new IllegalStateException(s"$s is not a valid BusinessSector")
+      case s                               => throw new IllegalStateException(s"---$s is not a valid BusinessSector")
     }
 }

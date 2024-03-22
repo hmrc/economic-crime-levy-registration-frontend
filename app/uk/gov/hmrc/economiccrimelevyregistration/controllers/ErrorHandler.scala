@@ -55,6 +55,7 @@ trait ErrorHandler extends Logging {
       ResponseError.badGateway(cause, statusCode)
     case DataRetrievalError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
+    case DataRetrievalError.NotFound(id)                            => ResponseError.badRequestError(s"Unable to find record with id: $id")
   }
 
   implicit val sessionErrorConverter: Converter[SessionError] = {

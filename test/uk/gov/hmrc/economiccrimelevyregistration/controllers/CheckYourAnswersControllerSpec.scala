@@ -26,9 +26,10 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.ValidRegistrationWithRegistrationType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
@@ -51,6 +52,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val mockEclRegistrationService: EclRegistrationService                       = mock[EclRegistrationService]
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
   val mockEmailService: EmailService                                           = mock[EmailService]
+  val mockAppConfig                                                            = mock[AppConfig]
 
   class TestContext(registrationData: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None) {
     val controller = new CheckYourAnswersController(
@@ -65,7 +67,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       mockEmailService,
       pdfView,
       amendPdfView,
-      appConfig
+      mockAppConfig
     )
   }
 
@@ -100,6 +102,62 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           messages
         ).toString
       }
+    }
+
+    "return OK and the correct view when registration type is Amendment" in forAll {
+      (
+        validRegistration: ValidRegistrationWithRegistrationType,
+        subscriptionResponse: GetSubscriptionResponse,
+        additionalInfo: RegistrationAdditionalInfo,
+        additionalDetails: GetAdditionalDetails
+      ) =>
+        val updatedAdditionalInfo       = additionalInfo.copy(liabilityStartDate = Some(LocalDate.of(2023, 10, 10)))
+        val updatedRegistration         = validRegistration.registration
+          .copy(registrationType = Some(Amendment))
+        val updatedAdditionalDetails    = additionalDetails.copy(liabilityStartDate = "2023-10-10")
+        val updatedSubscriptionResponse =
+          subscriptionResponse.copy(processingDateTime = "2023-10-10", additionalDetails = updatedAdditionalDetails)
+
+        new TestContext(updatedRegistration, Some(updatedAdditionalInfo)) {
+          implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
+            RegistrationDataRequest(
+              fakeRequest,
+              updatedRegistration.internalId,
+              updatedRegistration,
+              Some(updatedAdditionalInfo),
+              Some(testEclRegistrationReference)
+            )
+          implicit val messages: Messages                                                       = messagesApi.preferred(registrationDataRequest)
+
+          when(mockEclRegistrationService.getRegistrationValidationErrors(anyString())(any()))
+            .thenReturn(
+              EitherT[Future, DataRetrievalError, Option[DataValidationError]](Future.successful(Right(None)))
+            )
+
+          when(mockEclRegistrationService.getSubscription(ArgumentMatchers.eq(testEclRegistrationReference))(any()))
+            .thenReturn(
+              EitherT[Future, DataRetrievalError, GetSubscriptionResponse](
+                Future.successful(Right(updatedSubscriptionResponse))
+              )
+            )
+
+          when(mockAppConfig.getSubscriptionEnabled).thenReturn(true)
+
+          val result: Future[Result] = controller.onPageLoad()(registrationDataRequest)
+
+          status(result)          shouldBe OK
+          contentAsString(result) shouldBe view(
+            CheckYourAnswersViewModel(
+              updatedRegistration,
+              Some(updatedSubscriptionResponse),
+              Some(testEclRegistrationReference),
+              Some(updatedAdditionalInfo)
+            )
+          )(
+            fakeRequest,
+            messages
+          ).toString
+        }
     }
 
     "return a DataRetrieval error when getRegistrationValidationErrors returns an error" in forAll {
@@ -389,6 +447,189 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           reset(mockEmailService)
         }
     }
+
+    "redirect to the amendment requested page after submitting an amendment" in forAll(
+      Arbitrary.arbitrary[GetSubscriptionResponse],
+      Arbitrary.arbitrary[CreateEclSubscriptionResponse],
+      Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[RegistrationAdditionalInfo],
+      Arbitrary.arbitrary[EntityType].retryUntil(!EntityType.isOther(_)),
+      emailAddress(EmailMaxLength)
+    ) {
+      (
+        subscriptionResponse: GetSubscriptionResponse,
+        createEclSubscriptionResponse: CreateEclSubscriptionResponse,
+        registration: Registration,
+        additionalInfo: RegistrationAdditionalInfo,
+        entityType: EntityType,
+        firstContactEmailAddress: String
+      ) =>
+        val updatedAdditionalDetails    = GetAdditionalDetails(
+          registrationDate = "2024-03-03",
+          liabilityStartDate = "2023-10-10",
+          eclReference = testEclRegistrationReference,
+          amlSupervisor = "hmrc",
+          businessSector = "auditor"
+        )
+        val updatedSubscriptionResponse =
+          subscriptionResponse.copy(processingDateTime = "2023-10-10", additionalDetails = updatedAdditionalDetails)
+
+        val updatedRegistration = registration.copy(
+          carriedOutAmlRegulatedActivityInCurrentFy = Some(true),
+          entityType = Some(entityType),
+          registrationType = Some(Amendment),
+          contactAddress = Some(EclAddress.empty),
+          contacts = Contacts(
+            firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
+            secondContact = Some(false),
+            secondContactDetails = ContactDetails.empty
+          )
+        )
+        new TestContext(updatedRegistration, Some(additionalInfo)) {
+
+          when(mockAppConfig.getSubscriptionEnabled).thenReturn(true)
+
+          when(mockEclRegistrationService.getSubscription(ArgumentMatchers.eq(testEclRegistrationReference))(any()))
+            .thenReturn(
+              EitherT[Future, DataRetrievalError, GetSubscriptionResponse](
+                Future.successful(Right(updatedSubscriptionResponse))
+              )
+            )
+
+          when(mockEclRegistrationService.upsertRegistration(any())(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          when(
+            mockEclRegistrationService
+              .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
+          )
+            .thenReturn(
+              EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse](
+                Future.successful(Right(createEclSubscriptionResponse))
+              )
+            )
+
+          when(mockEmailService.sendAmendRegistrationSubmitted(any(), any())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
+
+          status(result)           shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.AmendmentRequestedController.onPageLoad().url)
+
+          reset(mockEclRegistrationService)
+          reset(mockRegistrationAdditionalInfoService)
+          reset(mockEmailService)
+        }
+    }
+
+    "return an Internal Server Error when there is no additional info present" in forAll(
+      Arbitrary.arbitrary[CreateEclSubscriptionResponse],
+      Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[EntityType].retryUntil(!EntityType.isOther(_)),
+      emailAddress(EmailMaxLength)
+    ) {
+      (
+        createEclSubscriptionResponse: CreateEclSubscriptionResponse,
+        registration: Registration,
+        entityType: EntityType,
+        firstContactEmailAddress: String
+      ) =>
+        val updatedRegistration = registration.copy(
+          carriedOutAmlRegulatedActivityInCurrentFy = Some(true),
+          entityType = Some(entityType),
+          registrationType = Some(Initial),
+          contactAddress = Some(EclAddress.empty),
+          contacts = Contacts(
+            firstContactDetails = validContactDetails.copy(emailAddress = Some(firstContactEmailAddress)),
+            secondContact = Some(false),
+            secondContactDetails = ContactDetails.empty
+          )
+        )
+        new TestContext(updatedRegistration) {
+          when(mockEclRegistrationService.upsertRegistration(any())(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          when(
+            mockEclRegistrationService
+              .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
+          )
+            .thenReturn(
+              EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse](
+                Future.successful(Right(createEclSubscriptionResponse))
+              )
+            )
+
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
+
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+
+          reset(mockEclRegistrationService)
+          reset(mockRegistrationAdditionalInfoService)
+          reset(mockEmailService)
+        }
+    }
+
+    "return an error when there is no first contact email present" in forAll(
+      Arbitrary.arbitrary[CreateEclSubscriptionResponse],
+      Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[RegistrationAdditionalInfo],
+      Arbitrary.arbitrary[EntityType].retryUntil(!EntityType.isOther(_))
+    ) {
+      (
+        createEclSubscriptionResponse: CreateEclSubscriptionResponse,
+        registration: Registration,
+        additionalInfo: RegistrationAdditionalInfo,
+        entityType: EntityType
+      ) =>
+        val updatedRegistration = registration.copy(
+          carriedOutAmlRegulatedActivityInCurrentFy = Some(true),
+          entityType = Some(entityType),
+          registrationType = Some(Initial),
+          contactAddress = Some(EclAddress.empty),
+          contacts = Contacts(
+            firstContactDetails = ContactDetails.empty,
+            secondContact = Some(false),
+            secondContactDetails = ContactDetails.empty
+          )
+        )
+        new TestContext(updatedRegistration, Some(additionalInfo)) {
+          when(mockEclRegistrationService.upsertRegistration(any())(any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
+            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+          when(
+            mockEclRegistrationService
+              .submitRegistration(ArgumentMatchers.eq(updatedRegistration.internalId))(any(), any())
+          )
+            .thenReturn(
+              EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse](
+                Future.successful(Right(createEclSubscriptionResponse))
+              )
+            )
+
+          when(mockEmailService.sendRegistrationSubmittedEmails(any(), any(), any(), any(), any())(any(), any()))
+            .thenReturn(
+              EitherT[Future, DataRetrievalError, Unit](
+                Future.successful(Left(DataRetrievalError.InternalUnexpectedError("Invalid contact details", None)))
+              )
+            )
+
+          val result: Future[Result] = controller.onSubmit()(fakeRequest)
+
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+
+          reset(mockEclRegistrationService)
+          reset(mockRegistrationAdditionalInfoService)
+          reset(mockEmailService)
+        }
+    }
+
   }
 
   "createAndEncodeHtmlForPdf" should {

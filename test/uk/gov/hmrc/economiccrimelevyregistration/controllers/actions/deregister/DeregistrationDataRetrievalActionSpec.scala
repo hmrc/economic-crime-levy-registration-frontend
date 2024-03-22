@@ -18,10 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister
 
 import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
+import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.mvc.{AnyContentAsEmpty, Request, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.deregister.DeregistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService

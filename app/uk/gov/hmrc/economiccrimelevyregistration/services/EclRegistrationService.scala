@@ -273,7 +273,7 @@ class EclRegistrationService @Inject() (
       None,
       subscriptionAddress.postCode,
       None,
-      subscriptionAddress.countryCode.get
+      subscriptionAddress.countryCode.getOrElse("")
     )
     registration.copy(
       contacts = contacts,
