@@ -22,8 +22,7 @@ import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.StoreUrlAction
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataOrErrorAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionKeys, _}
@@ -45,7 +44,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataOrErrorAction,
   storeUrl: StoreUrlAction,
   registrationService: EclRegistrationService,
   val controllerComponents: MessagesControllerComponents,
@@ -63,6 +62,7 @@ class CheckYourAnswersController @Inject() (
 
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getRegistrationData andThen storeUrl).async { implicit request =>
+      println("IN ON PAGE LOAD!!!!")
       registrationService
         .getRegistrationValidationErrors(request.internalId)
         .asResponseError
@@ -74,7 +74,9 @@ class CheckYourAnswersController @Inject() (
             case None    =>
               if (appConfig.getSubscriptionEnabled && request.registration.registrationType.contains(Amendment)) {
                 routeWithSubscription
-              } else { routeWithoutSubscription }
+              } else {
+                routeWithoutSubscription
+              }
           }
         )
     }
