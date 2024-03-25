@@ -51,15 +51,12 @@ class RegistrationDataOrErrorAction @Inject() (
                               .getOrCreate(request.internalId, request.eclRegistrationReference)
                               .asResponseError
     } yield (registration, info)).foldF(
-      error => {
-        println("ERROR!")
+      error =>
         error.code match {
           case ErrorCode.NotFound =>
-            println("ERROR! ==== NOT FOUND")
-            Future.successful(Left(Redirect(routes.NotableErrorController.assistantCannotRegister())))
+            Future.successful(Left(Redirect(routes.NotableErrorController.youHaveAlreadyRegistered())))
           case _                  => Future.failed(new Exception(error.message))
-        }
-      },
+        },
       data =>
         Future.successful(
           Right(

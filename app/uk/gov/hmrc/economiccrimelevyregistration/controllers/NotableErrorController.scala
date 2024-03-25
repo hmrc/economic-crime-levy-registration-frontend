@@ -43,7 +43,8 @@ class NotableErrorController @Inject() (
   organisationAlreadyRegisteredView: OrganisationAlreadyRegisteredView,
   registrationFailedView: RegistrationFailedView,
   partyTypeMismatchView: PartyTypeMismatchView,
-  verificationFailedView: VerfificationFailedView
+  verificationFailedView: VerfificationFailedView,
+  youHaveAlreadyRegisteredView: YouHaveAlreadyRegisteredView
 ) extends FrontendBaseController
     with I18nSupport
     with ErrorHandler {
@@ -105,6 +106,10 @@ class NotableErrorController @Inject() (
         _ => Ok(answersAreInvalidView()),
         _ => Ok(verificationFailedView())
       )
+  }
+
+  def youHaveAlreadyRegistered: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
+    Ok(youHaveAlreadyRegisteredView())
   }
 
 }

@@ -50,7 +50,7 @@ lazy val root = (project in file("."))
             "javascripts/prevent-resubmit-warning.js",
             "javascripts/print-dialogue.js",
             "javascripts/accessible-autocomplete-fixes.js",
-            "javascripts/onload.js"
+            "javascripts/onpageshow.js"
           )
         )
     ),

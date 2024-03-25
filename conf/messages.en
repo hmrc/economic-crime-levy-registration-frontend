@@ -754,3 +754,8 @@ deregistration.pdfHtml.title = Application to deregister
 deregistration.pdfHtml.submissionDate = Submission date: {0}
 
 govukErrorMessage.visuallyHiddenText = Error
+
+youHaveAlreadyRegistered.title = You have already registered for the Economic Crime Levy - Register for the Economic Crime Levy - GOV.UK
+youHaveAlreadyRegistered.heading = You have already registered for the Economic Crime Levy
+youHaveAlreadyRegistered.body.p1 = Your information has been sent to HMRC.
+youHaveAlreadyRegistered.body.link = <a href="{0}" class="govuk-link">Return to your Economic Crime Levy account</a>
