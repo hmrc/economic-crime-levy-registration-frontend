@@ -37,6 +37,39 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
+  s"GET ${contacts.routes.AddAnotherContactController.onPageLoad(CheckMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.AddAnotherContactController.onPageLoad(CheckMode)
+    )
+
+    "respond with 200 status and the Add another contact HTML view in check mode" in {
+      stubAuthorisedWithNoGroupEnrolment()
+      val secondContactPresent = random[Boolean]
+      val additionalInfo       = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
+
+      val registration   = random[Registration]
+      val contactDetails = registration.contacts.copy(secondContact = Some(secondContactPresent))
+
+      val updatedRegistration = registration
+        .copy(
+          contacts = contactDetails,
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
+
+      stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
+      stubSessionForStoreUrl()
+
+      val result = callRoute(FakeRequest(contacts.routes.AddAnotherContactController.onPageLoad(CheckMode)))
+
+      status(result) shouldBe OK
+
+      html(result) should include(s"Would you like to add another contact?")
+    }
+  }
+
   s"POST ${contacts.routes.AddAnotherContactController.onSubmit(NormalMode).url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(
       contacts.routes.AddAnotherContactController.onSubmit(NormalMode)
@@ -157,5 +190,67 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
 
       redirectLocation(result) shouldBe Some(routes.ConfirmContactAddressController.onPageLoad(NormalMode).url)
     }
+  }
+
+  s"POST ${contacts.routes.AddAnotherContactController.onSubmit(CheckMode).url}"   should {
+    behave like authorisedActionWithEnrolmentCheckRoute(
+      contacts.routes.AddAnotherContactController.onSubmit(CheckMode)
+    )
+
+    "save the selected answer then redirect to the Check Your Answers page when the No option is selected and there is an existing second contact" in {
+      stubAuthorisedWithNoGroupEnrolment()
+      val contactName                                          = random[String]
+      val contactRole                                          = random[String]
+      val contactEmail                                         = random[String]
+      val contactTelephone                                     = random[String]
+      val registration                                         = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue())
+        )
+      val incorporatedEntityJourneyDataWithValidCompanyProfile =
+        random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
+
+      val regWithSecondContact = registration
+        .copy(contacts =
+          registration.contacts.copy(
+            secondContact = Some(true),
+            secondContactDetails =
+              ContactDetails(Some(contactName), Some(contactRole), Some(contactEmail), Some(contactTelephone))
+          )
+        )
+        .copy(
+          incorporatedEntityJourneyData =
+            Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
+          partnershipEntityJourneyData = None,
+          soleTraderEntityJourneyData = None
+        )
+
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
+
+      val updatedRegistration = regWithSecondContact.copy(
+        contacts =
+          regWithSecondContact.contacts.copy(secondContact = Some(false), secondContactDetails = ContactDetails.empty),
+        incorporatedEntityJourneyData =
+          Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
+        partnershipEntityJourneyData = None,
+        soleTraderEntityJourneyData = None
+      )
+
+      stubGetRegistrationWithEmptyAdditionalInfo(regWithSecondContact)
+      stubUpsertRegistration(updatedRegistration)
+
+      val result = callRoute(
+        FakeRequest(contacts.routes.AddAnotherContactController.onSubmit(CheckMode))
+          .withFormUrlEncodedBody(("value", "false"))
+      )
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+    }
+
   }
 }

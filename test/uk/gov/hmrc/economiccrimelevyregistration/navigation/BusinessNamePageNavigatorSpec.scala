@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
-import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Arbitrary
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityRegistrationNumberMaxLength, OrganisationNameMaxLength}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityRegistrationNumberMaxLength, CompanyRegistrationNumberMaxLength, OrganisationNameMaxLength, UtrLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -37,11 +37,10 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
   )
 
   "nextPage" should {
-    "(Normal Mode) return a call to the charity page if charity selected" in forAll(
+    "(Normal Mode) return a call to the charity registration number page if charity selected" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength),
-      Gen.oneOf[EntityType](Charity, Trust, NonUKEstablishment, UnincorporatedAssociation)
-    ) { (registration: Registration, businessName: String, entityType: EntityType) =>
+      stringsWithMaxLength(OrganisationNameMaxLength)
+    ) { (registration: Registration, businessName: String) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
@@ -50,35 +49,294 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
       val updatedRegistration: Registration =
         registration.copy(
-          entityType = Some(entityType),
-          optOtherEntityJourneyData = Some(otherEntityJourneyData)
-        )
-
-      pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
-        nextPage(entityType)
-    }
-
-    "(Check Mode) return a call to the check your answers page if charity selected" in forAll(
-      Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength),
-      stringsWithMaxLength(CharityRegistrationNumberMaxLength)
-    ) { (registration: Registration, businessName: String, number: String) =>
-      val otherEntityJourneyData = OtherEntityJourneyData
-        .empty()
-        .copy(
-          businessName = Some(businessName),
-          charityRegistrationNumber = Some(number)
-        )
-
-      val updatedRegistration: Registration =
-        registration.copy(
           entityType = Some(Charity),
           optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
-      pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-        routes.CheckYourAnswersController.onPageLoad()
+      pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
+        nextPage(Charity)
     }
+
+    "(Normal Mode) return a call to the Company registration number page if UnincorporatedAssociation is selected" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength)
+    ) { (registration: Registration, businessName: String) =>
+      val otherEntityJourneyData = OtherEntityJourneyData
+        .empty()
+        .copy(
+          businessName = Some(businessName)
+        )
+
+      val updatedRegistration: Registration =
+        registration.copy(
+          entityType = Some(UnincorporatedAssociation),
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
+
+      pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
+        nextPage(UnincorporatedAssociation)
+    }
+
+    "(Normal Mode) return a call to the Company registration number page if NonUkEstablishment is selected" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength)
+    ) { (registration: Registration, businessName: String) =>
+      val otherEntityJourneyData = OtherEntityJourneyData
+        .empty()
+        .copy(
+          businessName = Some(businessName)
+        )
+
+      val updatedRegistration: Registration =
+        registration.copy(
+          entityType = Some(NonUKEstablishment),
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
+
+      pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
+        nextPage(NonUKEstablishment)
+    }
+
+    "(Normal Mode) return a call to the CtUtr page if Trust is selected" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength)
+    ) { (registration: Registration, businessName: String) =>
+      val otherEntityJourneyData = OtherEntityJourneyData
+        .empty()
+        .copy(
+          businessName = Some(businessName)
+        )
+
+      val updatedRegistration: Registration =
+        registration.copy(
+          entityType = Some(Trust),
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
+
+      pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
+        nextPage(Trust)
+    }
+
+    "(Normal mode) return a call to the answers are invalid page if entity type is not present" in forAll(
+      Arbitrary.arbitrary[Registration]
+    ) { (registration: Registration) =>
+      val updatedRegistration: Registration =
+        registration.copy(
+          entityType = None
+        )
+
+      pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
+        routes.NotableErrorController.answersAreInvalid()
+    }
+
+    "(Check mode) return a call to the CheckYourAnswers page if entity type is Charity and charity registration number is present" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength),
+      stringsWithMaxLength(CharityRegistrationNumberMaxLength)
+    ) {
+      (
+        registration: Registration,
+        businessName: String,
+        charityRegNo: String
+      ) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            businessName = Some(businessName),
+            charityRegistrationNumber = Some(charityRegNo)
+          )
+
+        val updatedRegistration: Registration =
+          registration.copy(
+            entityType = Some(Charity),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
+
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
+    }
+
+    "(Check Mode) return a call to the charity registration number page if entity type is Charity and charity registration number is not present" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength)
+    ) {
+      (
+        registration: Registration,
+        businessName: String
+      ) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            businessName = Some(businessName),
+            charityRegistrationNumber = None
+          )
+
+        val updatedRegistration: Registration =
+          registration.copy(
+            entityType = Some(Charity),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
+
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.CharityRegistrationNumberController.onPageLoad(CheckMode)
+    }
+
+    "(Check Mode) return a call to the CheckYourAnswers page if entity type is UnincorporatedAssociation and company registration number is present" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength),
+      stringsWithMaxLength(CompanyRegistrationNumberMaxLength)
+    ) {
+      (
+        registration: Registration,
+        businessName: String,
+        companyRegNo: String
+      ) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            businessName = Some(businessName),
+            companyRegistrationNumber = Some(companyRegNo)
+          )
+
+        val updatedRegistration: Registration =
+          registration.copy(
+            entityType = Some(UnincorporatedAssociation),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
+
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
+    }
+
+    "(Check mode)return a call to the do you have crn page if entity type is UnincorporatedAssociation and company registration number is not present" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength)
+    ) {
+      (
+        registration: Registration,
+        businessName: String
+      ) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            businessName = Some(businessName),
+            companyRegistrationNumber = None
+          )
+
+        val updatedRegistration: Registration =
+          registration.copy(
+            entityType = Some(UnincorporatedAssociation),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
+
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.DoYouHaveCrnController.onPageLoad(CheckMode)
+    }
+
+    "(Check Mode) return a call to the CheckYourAnswers page if entity type is NonUkEstablishment and company registration number is present" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength),
+      stringsWithMaxLength(CompanyRegistrationNumberMaxLength)
+    ) {
+      (
+        registration: Registration,
+        businessName: String,
+        companyRegNo: String
+      ) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            businessName = Some(businessName),
+            companyRegistrationNumber = Some(companyRegNo)
+          )
+
+        val updatedRegistration: Registration =
+          registration.copy(
+            entityType = Some(NonUKEstablishment),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
+
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
+    }
+
+    "(Check mode) return a call to the do you have crn page if entity type is NonUkEstablishment and company registration number is not present" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength)
+    ) {
+      (
+        registration: Registration,
+        businessName: String
+      ) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            businessName = Some(businessName),
+            companyRegistrationNumber = None
+          )
+
+        val updatedRegistration: Registration =
+          registration.copy(
+            entityType = Some(NonUKEstablishment),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
+
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.DoYouHaveCrnController.onPageLoad(CheckMode)
+    }
+
+    "(Check Mode) return a call to the CheckYourAnswers page if entity type is Trust is selected and ctUtr is present" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength),
+      stringsWithMaxLength(UtrLength)
+    ) {
+      (
+        registration: Registration,
+        businessName: String,
+        ctUtr: String
+      ) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            businessName = Some(businessName),
+            ctUtr = Some(ctUtr)
+          )
+
+        val updatedRegistration: Registration =
+          registration.copy(
+            entityType = Some(Trust),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
+
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
+    }
+
+    "(Check mode) return a call to the charity registration number page if entity type is Trust and company registration number is not present" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsWithMaxLength(OrganisationNameMaxLength)
+    ) {
+      (
+        registration: Registration,
+        businessName: String
+      ) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            businessName = Some(businessName),
+            ctUtr = None
+          )
+
+        val updatedRegistration: Registration =
+          registration.copy(
+            entityType = Some(Trust),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
+
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.CtUtrController.onPageLoad(CheckMode)
+    }
+
   }
 
 }

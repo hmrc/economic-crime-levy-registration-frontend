@@ -5,31 +5,31 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CompanyRegistrationNumberMaxLength, CtUtrPostcodeLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour {
+class CtUtrPostcodeISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.CompanyRegistrationNumberController.onPageLoad(NormalMode).url}" should {
+  s"GET ${routes.CtUtrPostcodeController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(
-      routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
+      routes.CtUtrPostcodeController.onPageLoad(NormalMode)
     )
 
-    "respond with 200 status and the company registration number HTML view" in {
+    "respond with 200 status and the CtUtrPostcode HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val companyNumber: String = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
+      val postcode: String = stringsWithMaxLength(CtUtrPostcodeLength).sample.get
 
       val otherEntityJourneyData: OtherEntityJourneyData = OtherEntityJourneyData
         .empty()
-        .copy(companyRegistrationNumber = Some(companyNumber))
+        .copy(postcode = Some(postcode))
 
       val registration: Registration = random[Registration]
         .copy(
-          entityType = Some(random[EntityType]),
-          optOtherEntityJourneyData = Some(otherEntityJourneyData),
-          relevantApRevenue = Some(randomApRevenue())
+          entityType = Some(UnincorporatedAssociation),
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
 
       val additionalInfo: RegistrationAdditionalInfo = random[RegistrationAdditionalInfo]
@@ -38,30 +38,30 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubSessionForStoreUrl()
 
-      val result = callRoute(FakeRequest(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)))
+      val result = callRoute(FakeRequest(routes.CtUtrPostcodeController.onPageLoad(NormalMode)))
 
       status(result) shouldBe OK
 
-      html(result) should include("What is your company registration number?")
+      html(result) should include("What is the postcode you used to register your association?")
     }
   }
 
-  s"POST ${routes.CompanyRegistrationNumberController.onSubmit(NormalMode).url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.CompanyRegistrationNumberController.onSubmit(NormalMode))
+  s"POST ${routes.CtUtrPostcodeController.onSubmit(NormalMode).url}"  should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.CtUtrPostcodeController.onSubmit(NormalMode))
 
-    "save the company registration number then redirect to the Business Sector Controller page" in {
+    "save the postcode then redirect to the business sector controller page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = random[Registration]
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(UnincorporatedAssociation),
           relevantApRevenue = Some(randomApRevenue())
         )
       val additionalInfo = random[RegistrationAdditionalInfo]
 
-      val companyNumber = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
+      val postcode = stringsWithMaxLength(CtUtrPostcodeLength).sample.get
 
-      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))
+      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(postcode))
       val updatedRegistration    = registration.copy(
         optOtherEntityJourneyData = Some(otherEntityJourneyData)
       )
@@ -72,8 +72,8 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
       stubUpsertRegistration(updatedRegistration)
 
       val result = callRoute(
-        FakeRequest(routes.CompanyRegistrationNumberController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", companyNumber))
+        FakeRequest(routes.CtUtrPostcodeController.onSubmit(NormalMode))
+          .withFormUrlEncodedBody(("value", postcode))
       )
 
       status(result) shouldBe SEE_OTHER

@@ -39,11 +39,11 @@ import scala.concurrent.Future
 
 class CompanyRegistrationNumberControllerSpec extends SpecBase {
 
-  val view: CompanyRegistrationNumberView                   = app.injector.instanceOf[CompanyRegistrationNumberView]
-  val formProvider: CompanyRegistrationNumberFormProvider   = new CompanyRegistrationNumberFormProvider()
-  val form: Form[String]                                    = formProvider()
-  val mockEclRegistrationService: EclRegistrationService    = mock[EclRegistrationService]
-  override val appConfig: AppConfig                         = mock[AppConfig]
+  val view: CompanyRegistrationNumberView                 = app.injector.instanceOf[CompanyRegistrationNumberView]
+  val formProvider: CompanyRegistrationNumberFormProvider = new CompanyRegistrationNumberFormProvider()
+  val form: Form[String]                                  = formProvider()
+  val mockEclRegistrationService: EclRegistrationService  = mock[EclRegistrationService]
+
   val pageNavigator: CompanyRegistrationNumberPageNavigator = new CompanyRegistrationNumberPageNavigator(
   ) {
     override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute

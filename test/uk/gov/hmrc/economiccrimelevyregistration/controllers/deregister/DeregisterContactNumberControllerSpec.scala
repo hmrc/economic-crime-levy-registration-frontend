@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister
 import cats.data.EitherT
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.scalacheck.Arbitrary
+import play.api.data.Form
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
@@ -27,7 +28,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.DeregisterCont
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.TelephoneNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.{arbDeregistration, arbMode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
-import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Mode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterContactNumberView
 
@@ -37,6 +39,7 @@ class DeregisterContactNumberControllerSpec extends SpecBase {
 
   val view: DeregisterContactNumberView                 = app.injector.instanceOf[DeregisterContactNumberView]
   val formProvider: DeregisterContactNumberFormProvider = new DeregisterContactNumberFormProvider()
+  val form: Form[String]                                = formProvider()
 
   val mockDeregistrationService: DeregistrationService = mock[DeregistrationService]
 
@@ -80,6 +83,27 @@ class DeregisterContactNumberControllerSpec extends SpecBase {
         )(fakeRequest, messages).toString
       }
     }
+
+    "return an Internal Server error when there is no contact name present" in forAll {
+      (deregistration: Deregistration, mode: Mode) =>
+        val updatedDeregistration: Deregistration =
+          deregistration.copy(contactDetails = ContactDetails.empty)
+        new TestContext(updatedDeregistration.internalId) {
+
+          when(mockDeregistrationService.getOrCreate(anyString())(any()))
+            .thenReturn(
+              EitherT.fromEither[Future](
+                Right(updatedDeregistration)
+              )
+            )
+
+          val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
+
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+
+        }
+    }
+
   }
 
   "onSubmit" should {
@@ -110,5 +134,52 @@ class DeregisterContactNumberControllerSpec extends SpecBase {
         reset(mockDeregistrationService)
       }
     }
+
+    "return an error when the upsert fails" in forAll(
+      Arbitrary.arbitrary[Deregistration],
+      telephoneNumber(TelephoneNumberMaxLength)
+    ) { (deregistration: Deregistration, number: String) =>
+      new TestContext(deregistration.internalId) {
+        when(mockDeregistrationService.getOrCreate(anyString())(any()))
+          .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
+        when(mockDeregistrationService.upsert(any())(any()))
+          .thenReturn(
+            EitherT.fromEither[Future](Left(DataRetrievalError.InternalUnexpectedError("Unable to upsert", None)))
+          )
+
+        val result: Future[Result] =
+          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> number))
+
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
+
   }
+
+  "return a BadRequest form with errors when there is a contact name present but an answer has not been provided" in forAll {
+    (deregistration: Deregistration, mode: Mode, name: String) =>
+      val updatedDeregistration: Deregistration =
+        deregistration.copy(contactDetails = deregistration.contactDetails.copy(name = Some(name)))
+
+      new TestContext(updatedDeregistration.internalId) {
+
+        when(mockDeregistrationService.getOrCreate(anyString())(any()))
+          .thenReturn(EitherT.fromEither[Future](Right(updatedDeregistration)))
+
+        val result: Future[Result]       =
+          controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody("value" -> ""))
+
+        val formWithErrors: Form[String] = form.bind(Map("value" -> ""))
+
+        status(result)          shouldBe BAD_REQUEST
+        contentAsString(result) shouldBe view(
+          formWithErrors,
+          updatedDeregistration.contactDetails.name.get,
+          mode,
+          updatedDeregistration.registrationType
+        )(fakeRequest, messages).toString
+      }
+      reset(mockDeregistrationService)
+  }
+
 }

@@ -21,8 +21,8 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, GetSubscriptionResponse, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType, GetSubscriptionResponse, NormalMode, Registration, RegistrationAdditionalInfo}
 
 class AmendRegistrationStartISpec extends ISpecBase {
 
