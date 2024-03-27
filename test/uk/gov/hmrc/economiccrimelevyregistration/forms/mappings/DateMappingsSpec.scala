@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
 
 import org.scalacheck.Gen
+import org.scalacheck.Gen.choose
 import org.scalatest.OptionValues
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -37,7 +38,8 @@ class DateMappingsSpec
   val form: Form[LocalDate] = Form(
     "value" -> localDate(
       requiredKey = "error.date.required",
-      invalidKey = "error.date.invalid"
+      invalidKey = "error.date.invalid",
+      sanitise = removeSpaces
     )
   )
 
@@ -50,14 +52,31 @@ class DateMappingsSpec
 
   val missingField: Gen[Option[String]] = Gen.option(Gen.const(""))
 
+  def removeSpaces(value: Option[String]): Option[String] =
+    if (value.isDefined) {
+      Some(value.get.replaceAll(" ", ""))
+    } else {
+      None
+    }
+
+  def withSpaces(value: String): String = {
+    val n = choose(0, 4).sample.get
+    if (n == 0) {
+      value
+    } else {
+      val spaces = " ".repeat(n)
+      spaces + value.replaceAll("\\B|\\b", spaces)
+    }
+  }
+
   "bind" should {
     "bind valid data" in {
 
       forAll(validData -> "valid date") { date =>
         val data = Map(
-          "value.day"   -> date.getDayOfMonth.toString,
-          "value.month" -> date.getMonthValue.toString,
-          "value.year"  -> date.getYear.toString
+          "value.day"   -> withSpaces(date.getDayOfMonth.toString),
+          "value.month" -> withSpaces(date.getMonthValue.toString),
+          "value.year"  -> withSpaces(date.getYear.toString)
         )
 
         val result = form.bind(data)
@@ -70,7 +89,11 @@ class DateMappingsSpec
 
       val result = form.bind(Map.empty[String, String])
 
-      result.errors should contain only FormError("value.day", "error.date.required")
+      result.errors shouldBe Seq(
+        FormError("value.day", "error.date.required"),
+        FormError("value.month", "error.date.required"),
+        FormError("value.year", "error.date.required")
+      )
     }
 
     "fail to bind a date with a missing day" in {
@@ -168,7 +191,7 @@ class DateMappingsSpec
 
         val result = form.bind(data)
 
-        result.errors should contain only FormError("value.year", "error.year.invalid", List.empty)
+        result.errors should contain only FormError("value.year", "error.year.invalid")
       }
     }
 
@@ -190,7 +213,10 @@ class DateMappingsSpec
 
           val result = form.bind(data)
 
-          result.errors should contain only FormError("value.day", "error.dayMonth.required")
+          result.errors shouldBe Seq(
+            FormError("value.day", "error.dayMonth.required"),
+            FormError("value.month", "error.dayMonth.required")
+          )
       }
     }
 
@@ -212,7 +238,10 @@ class DateMappingsSpec
 
           val result = form.bind(data)
 
-          result.errors should contain only FormError("value.day", "error.dayYear.required")
+          result.errors shouldBe Seq(
+            FormError("value.day", "error.dayYear.required"),
+            FormError("value.year", "error.dayYear.required")
+          )
       }
     }
 
@@ -234,7 +263,11 @@ class DateMappingsSpec
 
           val result = form.bind(data)
 
-          result.errors should contain only FormError("value.month", "error.monthYear.required")
+          result.errors shouldBe
+            Seq(
+              FormError("value.month", "error.monthYear.required"),
+              FormError("value.year", "error.monthYear.required")
+            )
       }
     }
 
@@ -250,7 +283,11 @@ class DateMappingsSpec
 
           val result = form.bind(data)
 
-          result.errors should contain only FormError("value.day", "error.date.invalid")
+          result.errors shouldBe
+            Seq(
+              FormError("value.day", "error.dayMonth.required"),
+              FormError("value.month", "error.dayMonth.required")
+            )
       }
     }
 
@@ -266,7 +303,11 @@ class DateMappingsSpec
 
           val result = form.bind(data)
 
-          result.errors should contain only FormError("value.day", "error.date.invalid")
+          result.errors shouldBe
+            Seq(
+              FormError("value.day", "error.dayYear.required"),
+              FormError("value.year", "error.dayYear.required")
+            )
       }
     }
 
@@ -282,7 +323,11 @@ class DateMappingsSpec
 
           val result = form.bind(data)
 
-          result.errors should contain only FormError("value.day", "error.date.invalid")
+          result.errors shouldBe
+            Seq(
+              FormError("value.month", "error.monthYear.required"),
+              FormError("value.year", "error.monthYear.required")
+            )
       }
     }
 
@@ -298,7 +343,12 @@ class DateMappingsSpec
 
           val result = form.bind(data)
 
-          result.errors should contain only FormError("value.day", "error.date.invalid")
+          result.errors shouldBe
+            Seq(
+              FormError("value.day", "error.date.invalid"),
+              FormError("value.month", "error.date.invalid"),
+              FormError("value.year", "error.date.invalid")
+            )
       }
     }
 
@@ -312,7 +362,11 @@ class DateMappingsSpec
 
       val result = form.bind(data)
 
-      result.errors should contain only FormError("value.day", "error.date.invalid", List.empty)
+      result.errors shouldBe Seq(
+        FormError("value.day", "error.date.invalid"),
+        FormError("value.month", "error.date.invalid"),
+        FormError("value.year", "error.date.invalid")
+      )
     }
 
     "unbind a date" in {

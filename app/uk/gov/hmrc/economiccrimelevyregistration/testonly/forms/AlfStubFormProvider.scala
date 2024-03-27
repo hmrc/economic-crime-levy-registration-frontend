@@ -26,7 +26,7 @@ class AlfStubFormProvider extends Mappings {
   def apply(): Form[AlfStubFormData] =
     Form(
       mapping(
-        "addressJson" -> text()
+        "addressJson" -> text(removeAllWhitespace = false)
       )(AlfStubFormData.apply)(AlfStubFormData.unapply)
     )
 }

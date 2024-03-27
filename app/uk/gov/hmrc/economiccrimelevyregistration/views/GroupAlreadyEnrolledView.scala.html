@@ -14,9 +14,9 @@
  * limitations under the License.
  *@
 
-@this(
-        layout: templates.Layout
-)
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
+
+@this(layout: Layout)
 
 @(eclReferenceNumber: String, taxAndSchemeManagementUrl: String)(implicit request: Request[_], messages: Messages)
 

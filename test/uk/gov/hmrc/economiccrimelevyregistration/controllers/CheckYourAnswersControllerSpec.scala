@@ -33,10 +33,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services._
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.economiccrimelevyregistration.views.html._
-import uk.gov.hmrc.time.TaxYear
 
 import java.time.LocalDate
 import java.util.Base64
@@ -394,7 +394,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   "createAndEncodeHtmlForPdf" should {
     "show liability start date" in forAll(
       Arbitrary.arbitrary[ValidRegistrationWithRegistrationType],
-      choose[Int](2022, TaxYear.current.startYear),
+      choose[Int](2022, EclTaxYear.current.startYear),
       Arbitrary.arbitrary[LocalDate],
       Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther)
     ) {

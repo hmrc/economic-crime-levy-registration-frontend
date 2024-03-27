@@ -18,8 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import org.scalatest.matchers.should.Matchers
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.LiabilityDateController
-import uk.gov.hmrc.time.TaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
 
@@ -27,9 +26,9 @@ class LiabilityYearSpec extends SpecBase with Matchers {
 
   class setUp(taxYear: Int) {
     def givenALiabilityStartDateOf(when: LocalDate): LiabilityYear = {
-      val year              = TaxYear.taxYearFor(when)
+      val year              = EclTaxYear.taxYearFor(when)
       val mockLiabilityYear = new LiabilityYear(year.startYear) {
-        override def currentTaxYear(): TaxYear = TaxYear(taxYear)
+        override def currentTaxYear(): EclTaxYear = EclTaxYear(taxYear)
       }
       mockLiabilityYear
     }
@@ -54,8 +53,8 @@ class LiabilityYearSpec extends SpecBase with Matchers {
       liabilityYear.asString    shouldBe "2023"
     }
 
-    "return false if liability start date is set to 5th Apr 2024 and the current tax year is 2024" in new setUp(2024) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 4, 5))
+    "return false if liability start date is set to 31st Mar 2024 and the current tax year is 2024" in new setUp(2024) {
+      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 3, 31))
       liabilityYear.isCurrentFY shouldBe false
       liabilityYear.asString    shouldBe "2023"
     }
@@ -104,8 +103,8 @@ class LiabilityYearSpec extends SpecBase with Matchers {
       liabilityYear.asString       shouldBe "2024"
     }
 
-    "return true if liability start date is set to 5th Apr 2024 and the current tax year is 2024" in new setUp(2024) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 4, 5))
+    "return true if liability start date is set to 31st Mar 2024 and the current tax year is 2024" in new setUp(2024) {
+      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 3, 31))
       liabilityYear.isNotCurrentFY shouldBe true
       liabilityYear.asString       shouldBe "2023"
     }

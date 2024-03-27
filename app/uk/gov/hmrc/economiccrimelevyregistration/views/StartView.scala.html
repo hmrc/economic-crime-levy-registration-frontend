@@ -16,10 +16,11 @@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 @import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 
 @this(
         formHelper: FormWithCSRF,
-        layout: templates.Layout,
+        layout: Layout,
         button: GovukButton,
         appConfig: AppConfig
 )
@@ -44,8 +45,8 @@
 
     <p class="govuk-body">@Html(messages("start.p2", messages("start.p2.link")))</p>
 
-    <p class="govuk-body">@messages("start.p3", EclTaxYear.yearDue)</p>
-    <p class="govuk-body">@messages("start.p4", EclTaxYear.yearDue)</p>
+    <p class="govuk-body">@messages("start.p3", EclTaxYear.yearDue.toString)</p>
+    <p class="govuk-body">@messages("start.p4", EclTaxYear.yearDue.toString)</p>
 
     <h2 class="govuk-heading-m">@messages("start.beforeYouStart")</h2>
 

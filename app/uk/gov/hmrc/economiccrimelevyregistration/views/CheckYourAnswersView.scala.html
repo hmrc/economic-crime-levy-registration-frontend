@@ -14,11 +14,12 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 @import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 
 @this(
-        layout: templates.Layout,
+        layout: Layout,
         formHelper: FormWithCSRF,
         govukSummaryList: GovukSummaryList,
         govukButton: GovukButton
@@ -36,17 +37,12 @@
         <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
         @if(viewModel.amendReasonDetails.rows.nonEmpty) {
-
             <h2 class="govuk-heading-m">@messages("checkYourAnswers.amendReason.title")</h2>
-
             @govukSummaryList(viewModel.amendReasonDetails)
-
         }
 
         @if(viewModel.isAmendRegistration) {
-
             <h2 class="govuk-heading-m">@messages("checkYourAnswers.eclDetails")</h2>
-
             @govukSummaryList(viewModel.eclDetails)
         }
 
@@ -67,10 +63,10 @@
             @govukSummaryList(viewModel.contactDetails())
         }
 
-
-        <h2 class="govuk-heading-m">@messages("checkYourAnswers.addressDetails")</h2>
-        @govukSummaryList(viewModel.addressDetails())
-
+        @if(!viewModel.hasAddressChanged) {
+            <h2 class="govuk-heading-m">@messages("checkYourAnswers.addressDetails")</h2>
+            @govukSummaryList(viewModel.addressDetails())
+        }
 
         @if(viewModel.otherEntityDetails().rows.nonEmpty) {
 

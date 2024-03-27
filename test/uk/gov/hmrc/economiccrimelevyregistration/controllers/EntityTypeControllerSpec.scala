@@ -20,7 +20,6 @@ import cats.data.EitherT
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.scalacheck.Arbitrary
 import play.api.data.Form
 import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
@@ -30,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AuditError, DataRetrievalError}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.EntityTypeView
 

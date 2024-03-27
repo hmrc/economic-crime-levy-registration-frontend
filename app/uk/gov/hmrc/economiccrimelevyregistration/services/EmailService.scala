@@ -26,7 +26,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EclAddress, E
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import uk.gov.hmrc.time.TaxYear
 
 import java.time.{LocalDate, ZoneOffset}
 import javax.inject.Inject
@@ -54,7 +53,7 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
     val previousFY       =
       additionalInfo.flatMap(_.liabilityYear.flatMap(year => if (year.isNotCurrentFY) Some(year.asString) else None))
     val currentFY        =
-      liableForCurrentFY.map(_ => TaxYear.current.currentYear.toString)
+      liableForCurrentFY.map(_ => EclTaxYear.current.currentYear.toString)
 
     def sendEmail(
       name: String,

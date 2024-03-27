@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkyouranswers
 
+import uk.gov.hmrc.economiccrimelevyregistration.ValidGetSubscriptionResponse
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, ContactDetails, EclAddress, GetSecondaryContactDetails, GetSubscriptionResponse, Registration, RegistrationAdditionalInfo}
@@ -171,15 +172,15 @@ class TrackRegistrationChangesSpec extends SpecBase {
       sut.hasAddressChanged      shouldBe false
     }
     "return false if contactAddress is not present" in forAll {
-      (response: GetSubscriptionResponse, registration: Registration) =>
+      (validResponse: ValidGetSubscriptionResponse, registration: Registration) =>
         val invalidRegistration = registration.copy(contactAddress = None)
         val sut                 = TestTrackEclReturnChanges(
           defaultEclRegistration(invalidRegistration),
-          Some(response)
+          Some(validResponse.response)
         )
 
         sut.hasAddressLine1Changed shouldBe false
-        sut.hasAddressChanged      shouldBe false
+        sut.hasAddressChanged      shouldBe true
     }
 
     "return false if getSubscriptionResponse is present but values are the same" in forAll {
@@ -212,8 +213,9 @@ class TrackRegistrationChangesSpec extends SpecBase {
         )
 
         sut.hasAddressLine1Changed shouldBe false
-        sut.hasAddressChanged      shouldBe false
+        sut.hasAddressChanged      shouldBe true
     }
+
     "return true if getSubscriptionResponse is present but values are not the same" in forAll {
       (registration: Registration, response: GetSubscriptionResponse) =>
         val address           = "Address line"
@@ -259,17 +261,19 @@ class TrackRegistrationChangesSpec extends SpecBase {
       sut.hasAddressChanged      shouldBe false
     }
     "return false if contactAddress is not present" in forAll {
-      (response: GetSubscriptionResponse, registration: Registration) =>
+      (validResponse: ValidGetSubscriptionResponse, registration: Registration) =>
         val invalidRegistration = registration.copy(contactAddress = None)
         val invalidResponse     =
-          response.copy(correspondenceAddressDetails = response.correspondenceAddressDetails.copy(addressLine2 = None))
+          validResponse.response.copy(correspondenceAddressDetails =
+            validResponse.response.correspondenceAddressDetails.copy(addressLine2 = None)
+          )
         val sut                 = TestTrackEclReturnChanges(
           defaultEclRegistration(invalidRegistration),
           Some(invalidResponse)
         )
 
         sut.hasAddressLine2Changed shouldBe false
-        sut.hasAddressChanged      shouldBe false
+        sut.hasAddressChanged      shouldBe true
     }
 
     "return false if getSubscriptionResponse is present but values are the same" in forAll {
@@ -302,7 +306,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
         )
 
         sut.hasAddressLine2Changed shouldBe false
-        sut.hasAddressChanged      shouldBe false
+        sut.hasAddressChanged      shouldBe true
     }
     "return true if getSubscriptionResponse is present but values are not the same" in forAll {
       (registration: Registration, response: GetSubscriptionResponse) =>
@@ -349,17 +353,19 @@ class TrackRegistrationChangesSpec extends SpecBase {
       sut.hasAddressChanged      shouldBe false
     }
     "return false if contactAddress is not present" in forAll {
-      (response: GetSubscriptionResponse, registration: Registration) =>
+      (validResponse: ValidGetSubscriptionResponse, registration: Registration) =>
         val invalidRegistration = registration.copy(contactAddress = None)
         val invalidResponse     =
-          response.copy(correspondenceAddressDetails = response.correspondenceAddressDetails.copy(addressLine3 = None))
+          validResponse.response.copy(correspondenceAddressDetails =
+            validResponse.response.correspondenceAddressDetails.copy(addressLine3 = None)
+          )
         val sut                 = TestTrackEclReturnChanges(
           defaultEclRegistration(invalidRegistration),
           Some(invalidResponse)
         )
 
         sut.hasAddressLine3Changed shouldBe false
-        sut.hasAddressChanged      shouldBe false
+        sut.hasAddressChanged      shouldBe true
     }
 
     "return false if getSubscriptionResponse is present but values are the same" in forAll {
@@ -392,7 +398,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
         )
 
         sut.hasAddressLine3Changed shouldBe false
-        sut.hasAddressChanged      shouldBe false
+        sut.hasAddressChanged      shouldBe true
     }
     "return true if getSubscriptionResponse is present but values are not the same" in forAll {
       (registration: Registration, response: GetSubscriptionResponse) =>
@@ -439,17 +445,19 @@ class TrackRegistrationChangesSpec extends SpecBase {
       sut.hasAddressChanged      shouldBe false
     }
     "return false if contactAddress is not present" in forAll {
-      (response: GetSubscriptionResponse, registration: Registration) =>
+      (validResponse: ValidGetSubscriptionResponse, registration: Registration) =>
         val invalidRegistration = registration.copy(contactAddress = None)
         val invalidResponse     =
-          response.copy(correspondenceAddressDetails = response.correspondenceAddressDetails.copy(addressLine4 = None))
+          validResponse.response.copy(correspondenceAddressDetails =
+            validResponse.response.correspondenceAddressDetails.copy(addressLine4 = None)
+          )
         val sut                 = TestTrackEclReturnChanges(
           defaultEclRegistration(invalidRegistration),
           Some(invalidResponse)
         )
 
         sut.hasAddressLine4Changed shouldBe false
-        sut.hasAddressChanged      shouldBe false
+        sut.hasAddressChanged      shouldBe true
     }
 
     "return false if getSubscriptionResponse is present but values are the same" in forAll {
@@ -482,7 +490,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
         )
 
         sut.hasAddressLine4Changed shouldBe false
-        sut.hasAddressChanged      shouldBe false
+        sut.hasAddressChanged      shouldBe true
     }
     "return true if getSubscriptionResponse is present but values are not the same" in forAll {
       (registration: Registration, response: GetSubscriptionResponse) =>
@@ -1017,6 +1025,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
         )
         sut.hasSecondContactPhoneChanged shouldBe false
     }
+
     "return true if getSubscriptionResponse is set and values are not the same" in forAll {
       (registration: Registration, response: GetSubscriptionResponse) =>
         val phone             = "Test phone"

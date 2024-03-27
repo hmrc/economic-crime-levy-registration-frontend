@@ -67,6 +67,7 @@ trait Mappings extends Formatters with Constraints {
   protected def localDate(
     invalidKey: String,
     requiredKey: String,
+    sanitise: Option[String] => Option[String],
     minDateConstraint: Option[Constraint[LocalDate]] = None,
     maxDateConstraint: Option[Constraint[LocalDate]] = None,
     args: Seq[String] = Seq.empty
@@ -75,6 +76,7 @@ trait Mappings extends Formatters with Constraints {
       new LocalDateFormatter(
         invalidKey,
         requiredKey,
+        sanitise,
         minDateConstraint,
         maxDateConstraint,
         args

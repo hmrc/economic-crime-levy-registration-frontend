@@ -14,11 +14,11 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcCurrencyInput
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 
 @this(
-        layout: templates.Layout,
+        layout: Layout,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukInput: GovukInput,
@@ -55,7 +55,7 @@
         <li>@messages("ukRevenue.b3")</li>
     </ul>
     <p class="govuk-body">@messages("ukRevenue.p2")</p>
-    <h3 class="govuk-heading-s">@messages("ukRevenue.h1")</h3>
+    <h2 class="govuk-heading-s">@messages("ukRevenue.h1")</h2>
     <p class="govuk-body">@messages("ukRevenue.p3")</p>
 
     @govukDetails(Details(

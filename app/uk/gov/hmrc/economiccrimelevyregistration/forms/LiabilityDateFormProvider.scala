@@ -23,11 +23,19 @@ import java.time.LocalDate
 
 class LiabilityDateFormProvider extends Mappings {
 
+  def removeSpaces(value: Option[String]): Option[String] =
+    if (value.isDefined) {
+      Some(value.get.replaceAll(" ", ""))
+    } else {
+      None
+    }
+
   def apply(): Form[LocalDate] =
     Form(
       "value" -> localDate(
-        invalidKey = "invalidKey",
+        invalidKey = "liability.date.error.invalid",
         requiredKey = "liability.date.error.required",
+        removeSpaces,
         minDateConstraint = Some(minDate(MinMaxValues.eclStartDate, "liability.date.error.early.date")),
         maxDateConstraint = Some(maxDate(LocalDate.now(), "liability.date.error.future.date"))
       )

@@ -14,8 +14,10 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
+
 @this(
-        layout: templates.Layout,
+        layout: Layout,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukTextarea: GovukTextarea,
@@ -25,7 +27,7 @@
 
     @errorMessage = @{
         if(form.errors.nonEmpty) {
-            Some(ErrorMessage(
+            Some(ErrorMessage.errorMessageWithDefaultStringsTranslated(
                 id = Some("amendReason.error.required"),
                 content = Text(messages("amendReason.error.required"))
             ))

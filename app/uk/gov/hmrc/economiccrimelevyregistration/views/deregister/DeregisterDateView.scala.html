@@ -17,7 +17,7 @@
 @import java.time.LocalDate
 @import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichDateInput
 @import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
-@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates._
+@import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 
 @this(
         layout: Layout,
@@ -31,7 +31,7 @@
 
 @layout(pageTitle = titleWithForm(form, messages("deregisterDate.title")), registrationTypeForTopBanner = Some(registrationType)) {
     @if(form.errors.nonEmpty) {
-        @errorSummary(ErrorSummaryViewModel(form))
+        @errorSummary(ErrorSummaryViewModel(form.copy(errors = form.errors.distinctBy(_.message))))
     }
 
     <h1 class="govuk-heading-l">@messages("deregisterDate.heading")</h1>
