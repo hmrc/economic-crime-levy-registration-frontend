@@ -54,7 +54,8 @@ class RegistrationDataOrErrorAction @Inject() (
       error =>
         error.code match {
           case ErrorCode.NotFound =>
-            Future.successful(Left(Redirect(routes.NotableErrorController.youHaveAlreadyRegistered())))
+            val redirectLocation = getRedirectUrl(request)
+            Future.successful(Left(Redirect(redirectLocation)))
           case _                  => Future.failed(new Exception(error.message))
         },
       data =>
@@ -70,6 +71,15 @@ class RegistrationDataOrErrorAction @Inject() (
           )
         )
     )
+  }
+
+  private def getRedirectUrl(request: AuthorisedRequest[_]) = {
+    println("URI!!!: " + request.uri)
+    if (request.uri.contains("Initial")) {
+      routes.NotableErrorController.youHaveAlreadyRegistered()
+    } else {
+      routes.NotableErrorController.youAlreadyRequestedToAmend()
+    }
   }
 
   private def extractRegistration(registrationOption: Option[Registration]) =

@@ -754,3 +754,13 @@ deregistration.pdfHtml.title = Cais i ddadgofrestru
 deregistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad {0}
 
 govukErrorMessage.visuallyHiddenText = Gwall
+
+youHaveAlreadyRegistered.title = Rydych eisoes wedi cofrestru ar gyfer yr Ardoll Troseddau Economaidd – Cofrestru ar gyfer yr Ardoll Troseddau Economaidd – GOV.UK
+youHaveAlreadyRegistered.heading = You have already registered for the Economic Crime Levy
+youHaveAlreadyRegistered.body.p1 = Your information has been sent to HMRC.
+youHaveAlreadyRegistered.body.link = <a href="{0}" class="govuk-link">Return to your Economic Crime Levy account</a>
+
+youAlreadyRequestedToAmend.title = You have already requested to amend your Economic Crime Levy registration - Amend ECL registration - GOV.UK
+youAlreadyRequestedToAmend.heading = You have already requested to amend your Economic Crime Levy registration
+youAlreadyRequestedToAmend.body.p1 = Your information has been sent to HMRC.
+youAlreadyRequestedToAmend.body.link = <a href="{0}" class="govuk-link">Return to your Economic Crime Levy account</a>

@@ -759,3 +759,8 @@ youHaveAlreadyRegistered.title = You have already registered for the Economic Cr
 youHaveAlreadyRegistered.heading = You have already registered for the Economic Crime Levy
 youHaveAlreadyRegistered.body.p1 = Your information has been sent to HMRC.
 youHaveAlreadyRegistered.body.link = <a href="{0}" class="govuk-link">Return to your Economic Crime Levy account</a>
+
+youAlreadyRequestedToAmend.title = You have already requested to amend your Economic Crime Levy registration - Amend ECL registration - GOV.UK
+youAlreadyRequestedToAmend.heading = You have already requested to amend your Economic Crime Levy registration
+youAlreadyRequestedToAmend.body.p1 = Your information has been sent to HMRC.
+youAlreadyRequestedToAmend.body.link = <a href="{0}" class="govuk-link">Return to your Economic Crime Levy account</a>

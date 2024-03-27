@@ -60,9 +60,8 @@ class CheckYourAnswersController @Inject() (
     with BaseController
     with ErrorHandler {
 
-  def onPageLoad(): Action[AnyContent] =
+  def onPageLoad(registrationType: RegistrationType): Action[AnyContent] =
     (authorise andThen getRegistrationData andThen storeUrl).async { implicit request =>
-      println("IN ON PAGE LOAD!!!!")
       registrationService
         .getRegistrationValidationErrors(request.internalId)
         .asResponseError
