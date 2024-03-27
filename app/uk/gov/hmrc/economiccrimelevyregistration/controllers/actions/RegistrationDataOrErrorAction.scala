@@ -21,6 +21,7 @@ import play.api.mvc.Results.Redirect
 import play.api.mvc.Result
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{ErrorHandler, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{ErrorCode, ResponseError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
@@ -43,7 +44,6 @@ class RegistrationDataOrErrorAction @Inject() (
     request: AuthorisedRequest[A]
   ): Future[Either[Result, RegistrationDataRequest[A]]] = {
     implicit val hcFromRequest: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-
     (for {
       registrationOption <- eclRegistrationService.get(request.internalId).asResponseError
       registration       <- extractRegistration(registrationOption)
@@ -73,14 +73,12 @@ class RegistrationDataOrErrorAction @Inject() (
     )
   }
 
-  private def getRedirectUrl(request: AuthorisedRequest[_]) = {
-    println("URI!!!: " + request.uri)
-    if (request.uri.contains("Initial")) {
-      routes.NotableErrorController.youHaveAlreadyRegistered()
-    } else {
-      routes.NotableErrorController.youAlreadyRequestedToAmend()
+  private def getRedirectUrl(request: AuthorisedRequest[_]) =
+    request.uri match {
+      case amendUrl if amendUrl == routes.CheckYourAnswersController.onPageLoad(Amendment).url =>
+        routes.NotableErrorController.youAlreadyRequestedToAmend()
+      case _                                                                                   => routes.NotableErrorController.youHaveAlreadyRegistered()
     }
-  }
 
   private def extractRegistration(registrationOption: Option[Registration]) =
     EitherT {

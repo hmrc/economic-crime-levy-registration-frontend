@@ -67,8 +67,10 @@ class EclRegistrationService @Inject() (
         .map(registration => Right(Some(registration)))
         .recover {
           case _: NotFoundException                         =>
+            println("NOT FOUND")
             Right(None)
           case _ @UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+            println("NOT FOUND")
             Right(None)
           case error @ UpstreamErrorResponse(message, code, _, _)
               if UpstreamErrorResponse.Upstream5xxResponse
@@ -111,12 +113,13 @@ class EclRegistrationService @Inject() (
           case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
         }
     }
+
   def submitRegistration(
     internalId: String
   )(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext
-  ): EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse]                          =
+  ): EitherT[Future, DataRetrievalError, CreateEclSubscriptionResponse] =
     EitherT {
       eclRegistrationConnector
         .submitRegistration(internalId)
