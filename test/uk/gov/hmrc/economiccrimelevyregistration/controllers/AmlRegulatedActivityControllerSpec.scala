@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
 
 import scala.concurrent.Future
@@ -40,7 +40,8 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
   val formProvider: AmlRegulatedActivityFormProvider = new AmlRegulatedActivityFormProvider()
   val form: Form[Boolean]                            = formProvider()
 
-  val mockEclRegistrationService: EclRegistrationService = mock[EclRegistrationService]
+  val mockEclRegistrationService: EclRegistrationService           = mock[EclRegistrationService]
+  val mockAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
 
   val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator() {
     override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
@@ -57,6 +58,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
       fakeDataRetrievalAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
+      mockAdditionalInfoService,
       formProvider,
       pageNavigator,
       view
@@ -95,13 +97,17 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
       "and store the result in the session service when user has carried out aml activity" in forAll {
         (registration: Registration) =>
           val carriedOutAmlRegulatedActivity = true
-          new TestContext(registration) {
+          new TestContext(registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = None)) {
             val updatedRegistration: Registration =
               registration.copy(
-                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity)
+                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity),
+                amlSupervisor = None
               )
 
             when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+              .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+            when(mockAdditionalInfoService.upsert(any())(any(), any()))
               .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
             val result: Future[Result] =
@@ -118,14 +124,18 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
       "without storing the result in the session service when user has carried out aml activity" in forAll {
         (registration: Registration) =>
           val carriedOutAmlRegulatedActivity = false
-          new TestContext(registration) {
+          new TestContext(registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = None)) {
             val updatedRegistration: Registration =
               registration.copy(
-                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity)
+                carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivity),
+                amlSupervisor = None
               )
 
             when(mockEclRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
               .thenReturn(EitherT.fromEither[Future](Right(())))
+
+            when(mockAdditionalInfoService.upsert(any())(any(), any()))
+              .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
             val result: Future[Result] =
               controller.onSubmit(NormalMode)(
