@@ -20,14 +20,14 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       val expectedTaxYearStart = EclTaxYear.currentFyStartYear.toString
       val expectedTaxYearEnd   = EclTaxYear.currentFyFinishYear.toString
-      val additionalInfo       = random[RegistrationAdditionalInfo]
-
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      val registration = random[Registration]
+      val registration         = random[Registration]
         .copy(
           entityType = Some(random[EntityType]),
           relevantApRevenue = Some(randomApRevenue())
         )
+      val additionalInfo       = RegistrationAdditionalInfo(registration.internalId)
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
 
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubSessionForStoreUrl()
@@ -54,14 +54,19 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
           registrationType = Some(Initial),
           relevantApRevenue = Some(randomApRevenue())
         )
-      stubGetRegistrationWithEmptyAdditionalInfo(registration)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = None))
 
-      val updatedRegistration = registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(true))
+      val updatedRegistration = registration.copy(
+        carriedOutAmlRegulatedActivityInCurrentFy = Some(true),
+        amlSupervisor = None
+      )
 
       stubUpsertRegistration(updatedRegistration)
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = RegistrationAdditionalInfo(testInternalId)
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
+      stubUpsertRegistrationAdditionalInfo(additionalInfo.copy(liableForPreviousYears = None))
+
       val result = callRoute(
         FakeRequest(routes.AmlRegulatedActivityController.onSubmit(NormalMode))
           .withFormUrlEncodedBody(("value", "true"))
@@ -82,16 +87,17 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
           relevantApRevenue = Some(randomApRevenue())
         )
 
-      stubGetRegistrationWithEmptyAdditionalInfo(registration)
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      stubGetRegistrationWithEmptyAdditionalInfo(registration.copy(carriedOutAmlRegulatedActivityInCurrentFy = None))
+      val additionalInfo = RegistrationAdditionalInfo(testInternalId)
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      val updatedRegistration =
-        Registration
-          .empty(testInternalId)
-          .copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(false))
+      val updatedRegistration = registration.copy(
+        carriedOutAmlRegulatedActivityInCurrentFy = Some(false),
+        amlSupervisor = None
+      )
 
       stubUpsertRegistration(updatedRegistration)
+      stubUpsertRegistrationAdditionalInfo(additionalInfo.copy(liableForPreviousYears = None))
 
       val result = callRoute(
         FakeRequest(routes.AmlRegulatedActivityController.onSubmit(NormalMode))

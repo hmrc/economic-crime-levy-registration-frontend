@@ -31,4 +31,13 @@ case class RegistrationAdditionalInfo(
 
 object RegistrationAdditionalInfo {
   implicit val format: OFormat[RegistrationAdditionalInfo] = Json.format[RegistrationAdditionalInfo]
+
+  def apply(internalId: String) = new RegistrationAdditionalInfo(
+    internalId = internalId,
+    liabilityYear = None,
+    liabilityStartDate = None,
+    registeringForCurrentYear = None,
+    liableForPreviousYears = None,
+    eclReference = None
+  )
 }
