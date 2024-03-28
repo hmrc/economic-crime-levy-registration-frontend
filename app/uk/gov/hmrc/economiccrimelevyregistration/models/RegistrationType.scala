@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.libs.json._
-import play.api.mvc.JavascriptLiteral
+import play.api.mvc.{JavascriptLiteral, QueryStringBindable}
 
 sealed abstract class RegistrationType(value: String)
 
@@ -28,6 +28,26 @@ object RegistrationType {
   case object DeRegistration extends RegistrationType("DeRegistration")
 
   lazy val values: Set[RegistrationType] = Set(Initial, Amendment, DeRegistration)
+
+  implicit def queryStringBindable(implicit
+    stringBinder: QueryStringBindable[String]
+  ): QueryStringBindable[RegistrationType] = new QueryStringBindable[RegistrationType] {
+    override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, RegistrationType]] =
+      stringBinder.bind("registrationType", params).map {
+        case Right(mode) =>
+          mode match {
+            case "Initial"        => Right(Initial)
+            case "Amendment"      => Right(Amendment)
+            case "DeRegistration" => Right(DeRegistration)
+            case _                => Left("Unable to bind to a registration type")
+          }
+        case _           =>
+          Left("Unable to bind to a registration type")
+      }
+
+    override def unbind(key: String, registrationType: RegistrationType): String =
+      stringBinder.unbind("registrationType", registrationType.toString)
+  }
 
   implicit val format: Format[RegistrationType] = new Format[RegistrationType] {
     override def reads(json: JsValue): JsResult[RegistrationType] = json.validate[String] match {

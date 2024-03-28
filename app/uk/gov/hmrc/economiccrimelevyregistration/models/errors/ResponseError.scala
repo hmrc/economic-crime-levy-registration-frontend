@@ -49,6 +49,9 @@ object ResponseError {
   def badRequestError(message: String): ResponseError =
     StandardError(message, ErrorCode.BadRequest)
 
+  def notFoundError(message: String): ResponseError =
+    StandardError(message, ErrorCode.NotFound)
+
   def internalServiceError(
     message: String = "Internal server error",
     code: ErrorCode = ErrorCode.InternalServerError,

@@ -62,7 +62,9 @@ class AmlSupervisorPageNavigator @Inject() extends PageNavigator {
           case t @ (GamblingCommission | FinancialConductAuthority) =>
             registerWithGcOrFca(t)
           case Hmrc | Other                                         =>
-            routes.CheckYourAnswersController.onPageLoad()
+            routes.CheckYourAnswersController.onPageLoad(
+              eclRegistrationModel.registration.registrationType.getOrElse(Initial)
+            )
         }
       case _                   => routes.NotableErrorController.answersAreInvalid()
     }

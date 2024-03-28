@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, EclRegistrationModel, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
@@ -43,10 +44,16 @@ class AddAnotherContactPageNavigator extends PageNavigator {
     registration.contacts.secondContact match {
       case Some(true)  =>
         registration.contacts.secondContactDetails match {
-          case ContactDetails(Some(_), Some(_), Some(_), Some(_)) => routes.CheckYourAnswersController.onPageLoad()
+          case ContactDetails(Some(_), Some(_), Some(_), Some(_)) =>
+            routes.CheckYourAnswersController.onPageLoad(
+              eclRegistrationModel.registration.registrationType.getOrElse(Initial)
+            )
           case _                                                  => contacts.routes.SecondContactNameController.onPageLoad(CheckMode)
         }
-      case Some(false) => routes.CheckYourAnswersController.onPageLoad()
+      case Some(false) =>
+        routes.CheckYourAnswersController.onPageLoad(
+          eclRegistrationModel.registration.registrationType.getOrElse(Initial)
+        )
       case _           => routes.NotableErrorController.answersAreInvalid()
     }
   }

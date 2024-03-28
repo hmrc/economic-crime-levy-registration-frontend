@@ -20,8 +20,8 @@ import java.time.{LocalDate, ZoneOffset}
 
 class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.CheckYourAnswersController.onPageLoad().url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onPageLoad())
+  s"GET ${routes.CheckYourAnswersController.onPageLoad(Initial).url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onPageLoad(Initial))
 
     "respond with 200 status and the Check your answers HTML view when the registration data is valid" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -40,7 +40,9 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistrationValidationErrors(valid = true, errors)
       stubSessionForStoreUrl()
 
-      val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
+      val result = callRoute(
+        FakeRequest(routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)))
+      )
 
       status(result) shouldBe OK
 
@@ -63,7 +65,9 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       stubGetRegistrationValidationErrors(valid = false, errors)
       stubSessionForStoreUrl()
 
-      val result = callRoute(FakeRequest(routes.CheckYourAnswersController.onPageLoad()))
+      val result = callRoute(
+        FakeRequest(routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)))
+      )
 
       status(result) shouldBe SEE_OTHER
 
@@ -71,7 +75,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.CheckYourAnswersController.onSubmit().url}"  should {
+  s"POST ${routes.CheckYourAnswersController.onSubmit().url}"         should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onSubmit())
 
     "redirect to the registration submitted page after submitting the registration successfully" in {

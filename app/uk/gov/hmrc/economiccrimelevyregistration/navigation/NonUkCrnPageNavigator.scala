@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration}
 
 class NonUkCrnPageNavigator extends PageNavigator {
@@ -41,7 +42,9 @@ class NonUkCrnPageNavigator extends PageNavigator {
     ) {
       navigateInMode(registration, CheckMode)
     } else {
-      routes.CheckYourAnswersController.onPageLoad()
+      routes.CheckYourAnswersController.onPageLoad(
+        eclRegistrationModel.registration.registrationType.getOrElse(Initial)
+      )
     }
   }
 }

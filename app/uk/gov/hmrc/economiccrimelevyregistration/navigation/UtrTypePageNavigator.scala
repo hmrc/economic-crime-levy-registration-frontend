@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.UtrType.{CtUtr, SaUtr}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode}
 
@@ -37,7 +38,10 @@ class UtrTypePageNavigator extends PageNavigator {
     otherEntityJourneyData.utrType match {
       case Some(CtUtr) if otherEntityJourneyData.ctUtr.isEmpty => routes.CtUtrController.onPageLoad(CheckMode)
       case Some(SaUtr) if otherEntityJourneyData.saUtr.isEmpty => routes.SaUtrController.onPageLoad(CheckMode)
-      case _                                                   => routes.CheckYourAnswersController.onPageLoad()
+      case _                                                   =>
+        routes.CheckYourAnswersController.onPageLoad(
+          eclRegistrationModel.registration.registrationType.getOrElse(Initial)
+        )
     }
   }
 }
