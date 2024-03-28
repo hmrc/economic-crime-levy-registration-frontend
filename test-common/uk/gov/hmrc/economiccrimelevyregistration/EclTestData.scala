@@ -70,6 +70,10 @@ final case class IncorporatedEntityJourneyDataWithValidCompanyProfile(
   incorporatedEntityJourneyData: IncorporatedEntityJourneyData
 )
 
+final case class ValidGetSubscriptionResponse(
+  response: GetSubscriptionResponse
+)
+
 trait EclTestData {
 
   implicit val arbInstant: Arbitrary[Instant] = Arbitrary {
@@ -372,5 +376,32 @@ trait EclTestData {
         id     <- Gen.uuid
         values <- Arbitrary.arbitrary[Map[String, String]]
       } yield SessionData(id.toString, values, None)
+    }
+
+  implicit val arbValidGetSubscriptionResponse: Arbitrary[ValidGetSubscriptionResponse] =
+    Arbitrary {
+      for {
+        legalEntityDetails           <- Arbitrary.arbitrary[GetLegalEntityDetails]
+        correspondenceAddressDetails <- Arbitrary.arbitrary[GetCorrespondenceAddressDetails]
+        primaryContactDetails        <- Arbitrary.arbitrary[GetPrimaryContactDetails]
+        secondaryContactDetails      <- Arbitrary.arbitrary[Option[GetSecondaryContactDetails]]
+        additionalDetails            <- Arbitrary.arbitrary[GetAdditionalDetails]
+      } yield ValidGetSubscriptionResponse(
+        GetSubscriptionResponse(
+          processingDateTime = alphaNumericString,
+          legalEntityDetails = legalEntityDetails,
+          correspondenceAddressDetails = GetCorrespondenceAddressDetails(
+            addressLine1 = alphaNumericString,
+            addressLine2 = Some(alphaNumericString),
+            addressLine3 = Some(alphaNumericString),
+            addressLine4 = Some(alphaNumericString),
+            postCode = Some(alphaNumericString),
+            countryCode = Some(alphaNumericString)
+          ),
+          primaryContactDetails = primaryContactDetails,
+          secondaryContactDetails = secondaryContactDetails,
+          additionalDetails = additionalDetails
+        )
+      )
     }
 }
