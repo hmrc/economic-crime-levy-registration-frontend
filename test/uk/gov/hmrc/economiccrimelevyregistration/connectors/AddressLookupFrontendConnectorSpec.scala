@@ -62,8 +62,7 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
         labels = alfLabels
       )
 
-    "return the url for the address lookup journey in the Location header when the http client returns a 202 response" in forAll {
-      (journeyUrl: String) =>
+    "return the url for the address lookup journey in the Location header when the http client returns a 202 response" in {
         beforeEach()
         val headers  = Map(LOCATION -> Seq("journeyUrl"))
         val response = HttpResponse(ACCEPTED, "", headers)

@@ -35,10 +35,8 @@ class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
         html(result) should include("What is your business sector?")
       }
     }
-  }
 
-  Seq(NormalMode, CheckMode).foreach { mode =>
-    s"POST ${routes.BusinessSectorController.onSubmit(mode).url}" should {
+    s"POST ${routes.BusinessSectorController.onSubmit(mode).url}"  should {
       behave like authorisedActionWithEnrolmentCheckRoute(routes.BusinessSectorController.onSubmit(mode))
 
       s"($mode) save the selected business sector option then redirect to the correct page" in {

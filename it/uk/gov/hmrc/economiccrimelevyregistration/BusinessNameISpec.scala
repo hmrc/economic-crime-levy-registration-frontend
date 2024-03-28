@@ -41,129 +41,68 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
         html(result) should include("What is the name of your business?")
       }
     }
-  }
 
-  s"POST ${routes.BusinessNameController.onSubmit(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.BusinessNameController.onSubmit(NormalMode))
+    s"POST ${routes.BusinessNameController.onSubmit(mode).url}"  should {
+      behave like authorisedActionWithEnrolmentCheckRoute(routes.BusinessNameController.onSubmit(mode))
 
-    def nextPage(entityType: EntityType) = entityType match {
-      case Charity                   => routes.CharityRegistrationNumberController.onPageLoad(NormalMode)
-      case UnincorporatedAssociation => routes.DoYouHaveCrnController.onPageLoad(NormalMode)
-      case Trust                     => routes.CtUtrController.onPageLoad(NormalMode)
-      case NonUKEstablishment        => routes.DoYouHaveCrnController.onPageLoad(NormalMode)
-      case _                         => routes.NotableErrorController.answersAreInvalid()
-    }
-
-    "save the business name then redirect to the charity registration number page" in {
-      stubAuthorisedWithNoGroupEnrolment()
-      val businessName: String = alphaNumericString
-
-      val otherEntityJourneyData: OtherEntityJourneyData = OtherEntityJourneyData
-        .empty()
-        .copy(
-          businessName = Some(businessName),
-          charityRegistrationNumber = Some(alphaNumericString),
-          isUkCrnPresent = Some(true),
-          ctUtr = Some(alphaNumericString)
-        )
-
-      val registration = random[Registration]
-        .copy(
-          entityType = Some(UnlimitedCompany),
-          optOtherEntityJourneyData = Some(otherEntityJourneyData),
-          relevantApRevenue = Some(randomApRevenue())
-        )
-
-      val additionalInfo = random[RegistrationAdditionalInfo]
-
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistrationWithEmptyAdditionalInfo(registration)
-      stubUpsertSession()
-
-      stubUpsertRegistration(registration)
-
-      val result = callRoute(
-        FakeRequest(routes.BusinessNameController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", businessName))
-      )
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(
-        nextPage(registration.entityType.get).url
-      )
-    }
-  }
-
-  s"POST ${routes.BusinessNameController.onSubmit(CheckMode).url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.BusinessNameController.onSubmit(CheckMode))
-
-    def nextPage(entityType: EntityType) = entityType match {
-      case Charity                   => routes.CharityRegistrationNumberController.onPageLoad(CheckMode)
-      case UnincorporatedAssociation => routes.DoYouHaveCrnController.onPageLoad(CheckMode)
-      case Trust                     => routes.CtUtrController.onPageLoad(CheckMode)
-      case NonUKEstablishment        => routes.DoYouHaveCrnController.onPageLoad(CheckMode)
-      case _                         => routes.NotableErrorController.answersAreInvalid()
-    }
-
-    "save the business name then redirect to the correct page" in {
-      stubAuthorisedWithNoGroupEnrolment()
-      val businessName: String = alphaNumericString
-
-//      val otherEntityJourneyData: OtherEntityJourneyData = OtherEntityJourneyData
-//        .empty()
-//        .copy(
-//          businessName = Some(businessName),
-//          charityRegistrationNumber = Some(alphaNumericString),
-//          isUkCrnPresent = Some(true),
-//          ctUtr = Some(alphaNumericString)
-//        )
-
-      val registration                                   = random[Registration]
-      val otherEntityJourneyData: OtherEntityJourneyData = registration.otherEntityJourneyData
-        .copy(businessName = Some(businessName))
-
-      val updatedRegistration = registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
-
-//        .copy(
-//          entityType = Some(UnlimitedCompany),
-//          optOtherEntityJourneyData =
-//          relevantApRevenue = Some(randomApRevenue())
-//        )
-
-      val additionalInfo = random[RegistrationAdditionalInfo]
-
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
-      stubUpsertSession()
-
-      stubUpsertRegistration(updatedRegistration)
-
-      val result = callRoute(
-        FakeRequest(routes.BusinessNameController.onSubmit(CheckMode))
-          .withFormUrlEncodedBody(("value", businessName))
-      )
-
-      status(result) shouldBe SEE_OTHER
-
-      val isNextFieldEmpty = updatedRegistration.entityType match {
-        case Some(value) =>
-          value match {
-            case Charity                   => otherEntityJourneyData.charityRegistrationNumber.isEmpty
-            case UnincorporatedAssociation => otherEntityJourneyData.companyRegistrationNumber.isEmpty
-            case Trust                     => otherEntityJourneyData.ctUtr.isEmpty
-            case NonUKEstablishment        => otherEntityJourneyData.companyRegistrationNumber.isEmpty
-            case _                         => false
-          }
-        case _           => false
+      def nextPage(entityType: EntityType) = entityType match {
+        case Charity                   => routes.CharityRegistrationNumberController.onPageLoad(mode)
+        case UnincorporatedAssociation => routes.DoYouHaveCrnController.onPageLoad(mode)
+        case Trust                     => routes.CtUtrController.onPageLoad(mode)
+        case NonUKEstablishment        => routes.DoYouHaveCrnController.onPageLoad(mode)
+        case _                         => routes.NotableErrorController.answersAreInvalid()
       }
 
-      if (isNextFieldEmpty) {
-        redirectLocation(result) shouldBe Some(nextPage(registration.entityType.get).url)
-      } else {
-        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+      "save the business name then redirect to the correct page" in {
+        stubAuthorisedWithNoGroupEnrolment()
+        val businessName: String = alphaNumericString
+
+        val registration = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
+
+        val otherEntityJourneyData = registration.otherEntityJourneyData.copy(businessName = Some(businessName))
+        val updatedRegistration    = registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+
+        val additionalInfo = random[RegistrationAdditionalInfo]
+
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+        stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
+        stubUpsertSession()
+
+        stubUpsertRegistration(updatedRegistration)
+
+        val result = callRoute(
+          FakeRequest(routes.BusinessNameController.onSubmit(mode))
+            .withFormUrlEncodedBody(("value", businessName))
+        )
+
+        status(result) shouldBe SEE_OTHER
+
+        val isNextFieldEmpty = updatedRegistration.entityType match {
+          case Some(value) =>
+            value match {
+              case Charity                   => otherEntityJourneyData.charityRegistrationNumber.isEmpty
+              case UnincorporatedAssociation => otherEntityJourneyData.companyRegistrationNumber.isEmpty
+              case Trust                     => otherEntityJourneyData.ctUtr.isEmpty
+              case NonUKEstablishment        => otherEntityJourneyData.companyRegistrationNumber.isEmpty
+              case _                         => false
+            }
+          case _           => false
+        }
+
+        mode match {
+          case NormalMode => redirectLocation(result) shouldBe Some(nextPage(updatedRegistration.entityType.get).url)
+          case CheckMode  =>
+            if (isNextFieldEmpty) {
+              redirectLocation(result) shouldBe Some(nextPage(updatedRegistration.entityType.get).url)
+            } else {
+              redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+            }
+        }
       }
     }
   }
-
 }

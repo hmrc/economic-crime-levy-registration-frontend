@@ -11,78 +11,85 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class UtrISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.UtrController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.UtrController.onPageLoad(NormalMode))
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"GET ${routes.UtrController.onPageLoad(mode).url}" should {
+      behave like authorisedActionWithEnrolmentCheckRoute(routes.UtrController.onPageLoad(mode))
 
-    "respond with 200 status and the company registration number HTML view" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      "respond with 200 status and the company registration number HTML view" in {
+        stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
+        val registration   = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
+        val additionalInfo = random[RegistrationAdditionalInfo]
+
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+        stubGetRegistrationWithEmptyAdditionalInfo(registration)
+        stubGetRegistrationAdditionalInfo(
+          RegistrationAdditionalInfo.apply(
+            registration.internalId,
+            None,
+            None,
+            None,
+            None,
+            None
+          )
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+        stubSessionForStoreUrl()
 
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistrationWithEmptyAdditionalInfo(registration)
-      stubGetRegistrationAdditionalInfo(
-        RegistrationAdditionalInfo.apply(
-          registration.internalId,
-          None,
-          None,
-          None,
-          None,
-          None
-        )
-      )
-      stubSessionForStoreUrl()
+        val result = callRoute(FakeRequest(routes.UtrController.onPageLoad(mode)))
 
-      val result = callRoute(FakeRequest(routes.UtrController.onPageLoad(NormalMode)))
+        status(result) shouldBe OK
 
-      status(result) shouldBe OK
-
-      html(result) should include("What is your unique taxpayer reference?")
+        html(result) should include("What is your unique taxpayer reference?")
+      }
     }
-  }
 
-  s"POST ${routes.UtrController.onSubmit(NormalMode).url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.UtrController.onSubmit(NormalMode))
+    s"POST ${routes.UtrController.onSubmit(mode).url}"  should {
+      behave like authorisedActionWithEnrolmentCheckRoute(routes.UtrController.onSubmit(mode))
 
-    "save the UTR then redirect to the company registration number page page" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      "save the UTR then redirect to the company registration number page page" in {
+        stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
+        val registration   = random[Registration]
+          .copy(entityType = Some(random[EntityType]), relevantApRevenue = Some(randomApRevenue()))
+        val additionalInfo = random[RegistrationAdditionalInfo]
+        val Utr            = numStringsWithConcreteLength(UtrLength).sample.get
+
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+        stubGetRegistrationWithEmptyAdditionalInfo(registration)
+
+        val otherEntityJourneyData = registration.otherEntityJourneyData.copy(ctUtr = Some(Utr), saUtr = None)
+        val updatedRegistration    = registration.copy(
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      val Utr = numStringsWithConcreteLength(UtrLength).sample.get
+        stubUpsertRegistration(updatedRegistration)
 
-      stubGetRegistrationWithEmptyAdditionalInfo(registration)
-
-      val otherEntityJourneyData = OtherEntityJourneyData
-        .empty()
-        .copy(
-          ctUtr = Some(Utr)
+        val result = callRoute(
+          FakeRequest(routes.UtrController.onSubmit(mode))
+            .withFormUrlEncodedBody(("value", Utr))
         )
-      val updatedRegistration    = registration.copy(
-        optOtherEntityJourneyData = Some(otherEntityJourneyData)
-      )
 
-      stubUpsertRegistration(updatedRegistration)
+        status(result) shouldBe SEE_OTHER
 
-      val result = callRoute(
-        FakeRequest(routes.UtrController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", Utr))
-      )
+        mode match {
+          case NormalMode =>
+            redirectLocation(result) shouldBe Some(
+              routes.CompanyRegistrationNumberController.onPageLoad(mode).url
+            )
+          case CheckMode  =>
+            if (updatedRegistration.otherEntityJourneyData.companyRegistrationNumber.isEmpty) {
+              redirectLocation(result) shouldBe Some(
+                routes.CompanyRegistrationNumberController.onPageLoad(mode).url
+              )
+            } else { redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url) }
 
-      status(result) shouldBe SEE_OTHER
+        }
+      }
 
-      redirectLocation(result) shouldBe Some(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode).url)
     }
   }
 

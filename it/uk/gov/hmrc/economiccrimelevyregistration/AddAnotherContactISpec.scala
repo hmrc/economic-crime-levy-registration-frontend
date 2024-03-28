@@ -10,67 +10,36 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${contacts.routes.AddAnotherContactController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(
-      contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)
-    )
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"GET ${contacts.routes.AddAnotherContactController.onPageLoad(mode).url}" should {
+      behave like authorisedActionWithEnrolmentCheckRoute(
+        contacts.routes.AddAnotherContactController.onPageLoad(mode)
+      )
 
-    "respond with 200 status and the Add another contact HTML view" in {
-      stubAuthorisedWithNoGroupEnrolment()
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      "respond with 200 status and the Add another contact HTML view" in {
+        stubAuthorisedWithNoGroupEnrolment()
+        val additionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      val registration = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
-        )
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+        val registration = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
 
-      stubGetRegistrationWithEmptyAdditionalInfo(registration)
-      stubSessionForStoreUrl()
+        stubGetRegistrationWithEmptyAdditionalInfo(registration)
+        stubSessionForStoreUrl()
 
-      val result = callRoute(FakeRequest(contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)))
+        val result = callRoute(FakeRequest(contacts.routes.AddAnotherContactController.onPageLoad(mode)))
 
-      status(result) shouldBe OK
+        status(result) shouldBe OK
 
-      html(result) should include(s"Would you like to add another contact?")
+        html(result) should include(s"Would you like to add another contact?")
+      }
     }
   }
 
-  s"GET ${contacts.routes.AddAnotherContactController.onPageLoad(CheckMode).url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(
-      contacts.routes.AddAnotherContactController.onPageLoad(CheckMode)
-    )
-
-    "respond with 200 status and the Add another contact HTML view in check mode" in {
-      stubAuthorisedWithNoGroupEnrolment()
-      val secondContactPresent = random[Boolean]
-      val additionalInfo       = random[RegistrationAdditionalInfo]
-
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-
-      val registration   = random[Registration]
-      val contactDetails = registration.contacts.copy(secondContact = Some(secondContactPresent))
-
-      val updatedRegistration = registration
-        .copy(
-          contacts = contactDetails,
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
-        )
-
-      stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
-      stubSessionForStoreUrl()
-
-      val result = callRoute(FakeRequest(contacts.routes.AddAnotherContactController.onPageLoad(CheckMode)))
-
-      status(result) shouldBe OK
-
-      html(result) should include(s"Would you like to add another contact?")
-    }
-  }
-
-  s"POST ${contacts.routes.AddAnotherContactController.onSubmit(NormalMode).url}"  should {
+  s"POST ${contacts.routes.AddAnotherContactController.onSubmit(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(
       contacts.routes.AddAnotherContactController.onSubmit(NormalMode)
     )
@@ -192,7 +161,7 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${contacts.routes.AddAnotherContactController.onSubmit(CheckMode).url}"   should {
+  s"POST ${contacts.routes.AddAnotherContactController.onSubmit(CheckMode).url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(
       contacts.routes.AddAnotherContactController.onSubmit(CheckMode)
     )

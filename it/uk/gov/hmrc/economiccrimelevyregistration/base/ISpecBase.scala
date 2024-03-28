@@ -8,6 +8,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.Materializer
 import org.jsoup.Jsoup
+import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -21,7 +22,10 @@ import play.api.test._
 import play.api.{Application, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.base.WireMockHelper._
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.arbEntityType
 import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
+import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.isOther
 
 import scala.concurrent.ExecutionContext.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -125,5 +129,10 @@ abstract class ISpecBase
 
   val apRevenueMin: Double          = 10_200_000
   val apRevenueMax: Double          = 999_999_999.99
+  val ApLengthMin                   = 0
+  val ApLengthMax                   = 364
   def randomApRevenue(): BigDecimal = bigDecimalInRange(apRevenueMin.doubleValue, apRevenueMax.doubleValue).sample.value
+
+  def generateOtherEntityType: Gen[EntityType] =
+    Arbitrary.arbitrary[EntityType].retryUntil(entityType => isOther(entityType))
 }

@@ -20,68 +20,72 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityRegistrationNumberMaxLength, EmailMaxLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 
 class DeregisterContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${DeregisterContactEmailController.onPageLoad(NormalMode).url}"  should {
-    behave like authorisedActionWithoutEnrolmentCheckRoute(
-      DeregisterContactEmailController
-        .onPageLoad(NormalMode)
-    )
-
-    "respond with 200 status and the deregister name HTML view" in {
-      stubAuthorisedWithEclEnrolment()
-      val name = random[String]
-      stubGetDeregistration(random[Deregistration].copy(contactDetails = ContactDetails(Some(name), None, None, None)))
-
-      val result = callRoute(
-        FakeRequest(
-          DeregisterContactEmailController
-            .onPageLoad(NormalMode)
-        )
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"GET ${DeregisterContactEmailController.onPageLoad(mode).url}" should {
+      behave like authorisedActionWithoutEnrolmentCheckRoute(
+        DeregisterContactEmailController
+          .onPageLoad(mode)
       )
 
-      status(result) shouldBe OK
-      html(result)     should include(s"What is $name's email address?")
+      "respond with 200 status and the deregister name HTML view" in {
+        stubAuthorisedWithEclEnrolment()
+        val name = random[String]
+        stubGetDeregistration(
+          random[Deregistration].copy(contactDetails = ContactDetails(Some(name), None, None, None))
+        )
+
+        val result = callRoute(
+          FakeRequest(
+            DeregisterContactEmailController
+              .onPageLoad(mode)
+          )
+        )
+
+        status(result) shouldBe OK
+        html(result)     should include(s"What is $name's email address?")
+      }
+    }
+
+    s"POST ${DeregisterContactEmailController.onSubmit(mode).url}"  should {
+      behave like authorisedActionWithoutEnrolmentCheckRoute(
+        DeregisterContactEmailController
+          .onSubmit(mode)
+      )
+
+      "save the selected answer then redirect the correct page" in {
+        stubAuthorisedWithEclEnrolment()
+        val deregistration = random[Deregistration].copy(internalId = testInternalId)
+        val email          = emailAddress(EmailMaxLength).sample.get
+        stubGetDeregistration(deregistration)
+        stubUpsertDeregistration(
+          deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email)))
+        )
+
+        val result = callRoute(
+          FakeRequest(
+            DeregisterContactEmailController
+              .onSubmit(mode)
+          )
+            .withFormUrlEncodedBody(("value", email))
+        )
+
+        status(result) shouldBe SEE_OTHER
+
+        mode match {
+          case NormalMode =>
+            redirectLocation(result) shouldBe Some(DeregisterContactNumberController.onPageLoad(mode).url)
+          case CheckMode  =>
+            redirectLocation(result) shouldBe Some(DeregisterCheckYourAnswersController.onPageLoad().url)
+        }
+      }
     }
   }
-
-  s"POST ${DeregisterContactEmailController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithoutEnrolmentCheckRoute(
-      DeregisterContactEmailController
-        .onSubmit(NormalMode)
-    )
-
-    "save the selected answer then redirect the deregister number page" in {
-      stubAuthorisedWithEclEnrolment()
-      val deregistration = random[Deregistration].copy(internalId = testInternalId)
-      val email          = emailAddress(EmailMaxLength).sample.get
-      stubGetDeregistration(deregistration)
-      stubUpsertDeregistration(
-        deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email)))
-      )
-
-      val result = callRoute(
-        FakeRequest(
-          DeregisterContactEmailController
-            .onSubmit(NormalMode)
-        )
-          .withFormUrlEncodedBody(("value", email))
-      )
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(
-        DeregisterContactNumberController
-          .onPageLoad(NormalMode)
-          .url
-      )
-    }
-  }
-
 }
