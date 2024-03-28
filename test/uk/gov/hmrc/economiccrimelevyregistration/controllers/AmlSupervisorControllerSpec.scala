@@ -83,7 +83,13 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode, Some(RegistrationType.Initial), None)(
+        contentAsString(result) shouldBe view(
+          form,
+          NormalMode,
+          Some(RegistrationType.Initial),
+          registration.carriedOutAmlRegulatedActivityInCurrentFy,
+          None
+        )(
           fakeRequest,
           messages
         ).toString
@@ -101,6 +107,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
             form.fill(amlSupervisor),
             NormalMode,
             Some(RegistrationType.Initial),
+            registration.carriedOutAmlRegulatedActivityInCurrentFy,
             None
           )(
             fakeRequest,
@@ -148,7 +155,13 @@ class AmlSupervisorControllerSpec extends SpecBase {
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, NormalMode, Some(RegistrationType.Initial), None)(
+        contentAsString(result) shouldBe view(
+          formWithErrors,
+          NormalMode,
+          Some(RegistrationType.Initial),
+          registration.carriedOutAmlRegulatedActivityInCurrentFy,
+          None
+        )(
           fakeRequest,
           messages
         ).toString
