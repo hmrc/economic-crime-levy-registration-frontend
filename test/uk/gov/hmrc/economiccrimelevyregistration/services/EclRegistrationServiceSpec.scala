@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConn
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, RegisteredSociety, ScottishLimitedPartnership, ScottishPartnership, SoleTrader, UkLimitedCompany, UnlimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, DataValidationError}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, BusinessSector, ContactDetails, Contacts, CreateEclSubscriptionResponse, EclAddress, EclSubscriptionStatus, GetAdditionalDetails, GetCorrespondenceAddressDetails, GetSubscriptionResponse, Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, BusinessSector, ContactDetails, Contacts, CreateEclSubscriptionResponse, EclAddress, EclSubscriptionStatus, GetAdditionalDetails, GetSubscriptionResponse, Mode, Registration}
 import uk.gov.hmrc.http.{StringContextOps, UpstreamErrorResponse}
 
 import scala.concurrent.Future
