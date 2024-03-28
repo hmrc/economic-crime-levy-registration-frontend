@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConn
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, RegisteredSociety, ScottishLimitedPartnership, ScottishPartnership, SoleTrader, UkLimitedCompany, UnlimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, DataValidationError}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, BusinessSector, ContactDetails, Contacts, CreateEclSubscriptionResponse, EclAddress, EclSubscriptionStatus, GetAdditionalDetails, GetSubscriptionResponse, Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, BusinessSector, ContactDetails, Contacts, CreateEclSubscriptionResponse, EclAddress, EclSubscriptionStatus, GetAdditionalDetails, GetCorrespondenceAddressDetails, GetSubscriptionResponse, Mode, Registration}
 import uk.gov.hmrc.http.{StringContextOps, UpstreamErrorResponse}
 
 import scala.concurrent.Future
@@ -240,7 +240,11 @@ class EclRegistrationServiceSpec extends SpecBase {
           amlSupervisor = amlSupervisor,
           businessSector = businessSectorAsString
         )
-        val updatedSubscriptionResponse = getSubscriptionResponse.copy(additionalDetails = additionalDetails)
+        val updatedSubscriptionResponse = getSubscriptionResponse.copy(
+          additionalDetails = additionalDetails,
+          correspondenceAddressDetails =
+            getSubscriptionResponse.correspondenceAddressDetails.copy(countryCode = Some(alphaNumericString))
+        )
         val primaryContact              = updatedSubscriptionResponse.primaryContactDetails
         val secondaryContact            = updatedSubscriptionResponse.secondaryContactDetails
         val subscriptionAddress         = updatedSubscriptionResponse.correspondenceAddressDetails
@@ -265,12 +269,9 @@ class EclRegistrationServiceSpec extends SpecBase {
           case _           => ContactDetails.empty
         }
 
-        val contacts    = Contacts(firstContactDetails, secondContactPresent, secondContactDetails)
-        val countryCode = subscriptionAddress.countryCode match {
-          case Some(value) => value
-          case _           => ""
-        }
-        val address     = EclAddress(
+        val contacts = Contacts(firstContactDetails, secondContactPresent, secondContactDetails)
+
+        val address = EclAddress(
           None,
           Some(subscriptionAddress.addressLine1),
           subscriptionAddress.addressLine2,
@@ -279,7 +280,7 @@ class EclRegistrationServiceSpec extends SpecBase {
           None,
           subscriptionAddress.postCode,
           None,
-          countryCode
+          subscriptionAddress.countryCode.get
         )
 
         val registrationFromSubscriptionResponse = registration.copy(

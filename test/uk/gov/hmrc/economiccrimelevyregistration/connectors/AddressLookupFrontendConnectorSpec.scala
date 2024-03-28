@@ -39,7 +39,7 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
   val connector                          = new AddressLookupFrontendConnectorImpl(appConfig, mockHttpClient, config, actorSystem)
   val baseUrl: String                    = appConfig.addressLookupFrontendBaseUrl
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     reset(mockHttpClient)
     reset(mockRequestBuilder)
   }

@@ -11,10 +11,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{FinancialConductAuthority, GamblingCommission, Hmrc, Other}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import org.scalatest.prop.TableDrivenPropertyChecks._
+import org.scalatest.prop.TableFor2
 
 class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
-  val combinations = Table(
+  val combinations: TableFor2[Mode, RegistrationType] = Table(
     ("Mode", "RegistrationType"),
     (NormalMode, Initial),
     (NormalMode, Amendment),

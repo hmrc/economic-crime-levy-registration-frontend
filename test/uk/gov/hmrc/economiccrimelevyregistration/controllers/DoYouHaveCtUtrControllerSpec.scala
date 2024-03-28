@@ -116,11 +116,12 @@ class DoYouHaveCtUtrControllerSpec extends SpecBase {
               EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo](Future.successful(Right(additionalInfo)))
             )
 
-          val answerChanged                     = hasUtr match {
-            case false => (None, None)
-            case true  => (registration.otherEntityJourneyData.postcode, registration.otherEntityJourneyData.ctUtr)
+          val answerChanged: (Option[String], Option[String]) = if (hasUtr) {
+            (registration.otherEntityJourneyData.postcode, registration.otherEntityJourneyData.ctUtr)
+          } else {
+            (None, None)
           }
-          val updatedRegistration: Registration = registration.copy(optOtherEntityJourneyData =
+          val updatedRegistration: Registration               = registration.copy(optOtherEntityJourneyData =
             Some(
               registration.otherEntityJourneyData
                 .copy(isCtUtrPresent = Some(hasUtr), postcode = answerChanged._1, ctUtr = answerChanged._2)
@@ -155,11 +156,12 @@ class DoYouHaveCtUtrControllerSpec extends SpecBase {
               EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo](Future.successful(Right(additionalInfo)))
             )
 
-          val answerChanged                     = hasUtr match {
-            case false => (None, None)
-            case true  => (registration.otherEntityJourneyData.postcode, registration.otherEntityJourneyData.ctUtr)
+          val answerChanged: (Option[String], Option[String]) = if (hasUtr) {
+            (registration.otherEntityJourneyData.postcode, registration.otherEntityJourneyData.ctUtr)
+          } else {
+            (None, None)
           }
-          val updatedRegistration: Registration = registration.copy(optOtherEntityJourneyData =
+          val updatedRegistration: Registration               = registration.copy(optOtherEntityJourneyData =
             Some(
               registration.otherEntityJourneyData
                 .copy(isCtUtrPresent = Some(hasUtr), postcode = answerChanged._1, ctUtr = answerChanged._2)
@@ -193,11 +195,12 @@ class DoYouHaveCtUtrControllerSpec extends SpecBase {
               EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo](Future.successful(Right(additionalInfo)))
             )
 
-          val answerChanged                     = hasUtr match {
-            case false => (None, None)
-            case true  => (registration.otherEntityJourneyData.postcode, registration.otherEntityJourneyData.ctUtr)
+          val answerChanged: (Option[String], Option[String]) = if (hasUtr) {
+            (registration.otherEntityJourneyData.postcode, registration.otherEntityJourneyData.ctUtr)
+          } else {
+            (None, None)
           }
-          val updatedRegistration: Registration = registration.copy(optOtherEntityJourneyData =
+          val updatedRegistration: Registration               = registration.copy(optOtherEntityJourneyData =
             Some(
               registration.otherEntityJourneyData
                 .copy(isCtUtrPresent = Some(hasUtr), postcode = answerChanged._1, ctUtr = answerChanged._2)

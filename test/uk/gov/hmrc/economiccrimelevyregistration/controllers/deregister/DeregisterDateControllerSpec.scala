@@ -61,7 +61,7 @@ class DeregisterDateControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
-        val form = deregistration.date match {
+        val form: Form[LocalDate] = deregistration.date match {
           case Some(date) => formProvider().fill(date)
           case None       => formProvider()
         }

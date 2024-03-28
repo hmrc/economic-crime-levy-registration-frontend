@@ -68,7 +68,7 @@ class DeregisterContactRoleControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
-        val form = updatedDeregistration.contactDetails.role match {
+        val form: Form[String] = updatedDeregistration.contactDetails.role match {
           case Some(role) => formProvider().fill(role)
           case None       => formProvider()
         }

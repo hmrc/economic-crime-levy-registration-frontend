@@ -68,7 +68,7 @@ class DeregisterContactNumberControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
-        val form = updatedDeregistration.contactDetails.telephoneNumber match {
+        val form: Form[String] = updatedDeregistration.contactDetails.telephoneNumber match {
           case Some(number) => formProvider().fill(number)
           case None         => formProvider()
         }

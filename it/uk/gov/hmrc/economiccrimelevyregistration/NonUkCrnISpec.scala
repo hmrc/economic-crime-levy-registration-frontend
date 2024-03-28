@@ -73,9 +73,10 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
             .withFormUrlEncodedBody(("value", companyNumber))
         )
 
-        val navigateToNextPage = registration.entityType.contains(UnincorporatedAssociation) match {
-          case true  => Some(routes.DoYouHaveUtrController.onPageLoad(mode).url)
-          case false => Some(routes.UtrTypeController.onPageLoad(mode).url)
+        val navigateToNextPage = if (registration.entityType.contains(UnincorporatedAssociation)) {
+          Some(routes.DoYouHaveUtrController.onPageLoad(mode).url)
+        } else {
+          Some(routes.UtrTypeController.onPageLoad(mode).url)
         }
 
         status(result) shouldBe SEE_OTHER
@@ -83,10 +84,10 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
           case NormalMode => redirectLocation(result) shouldBe navigateToNextPage
           case CheckMode  =>
             if (
-              (registration.isUnincorporatedAssociation && registration.otherEntityJourneyData.isCtUtrPresent.isEmpty) || (!registration.isUnincorporatedAssociation && registration.otherEntityJourneyData.utrType.isEmpty)
-            ) {
-              redirectLocation(result) shouldBe navigateToNextPage
-            } else redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+              (registration.isUnincorporatedAssociation && registration.otherEntityJourneyData.isCtUtrPresent.isEmpty)
+              || (!registration.isUnincorporatedAssociation && registration.otherEntityJourneyData.utrType.isEmpty)
+            ) { redirectLocation(result) shouldBe navigateToNextPage }
+            else { redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url) }
         }
       }
     }

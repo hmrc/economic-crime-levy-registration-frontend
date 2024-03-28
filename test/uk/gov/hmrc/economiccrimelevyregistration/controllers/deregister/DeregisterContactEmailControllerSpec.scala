@@ -68,13 +68,13 @@ class DeregisterContactEmailControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
-        val form = updatedDeregistration.contactDetails.emailAddress match {
+        val form: Form[String] = updatedDeregistration.contactDetails.emailAddress match {
           case Some(email) => formProvider().fill(email)
           case None        => formProvider()
         }
 
         status(result) shouldBe OK
-        val resultAsString = contentAsString(result)
+        val resultAsString: String = contentAsString(result)
         resultAsString should include("type=\"email\"")
         resultAsString should include("spellcheck=\"false\"")
 

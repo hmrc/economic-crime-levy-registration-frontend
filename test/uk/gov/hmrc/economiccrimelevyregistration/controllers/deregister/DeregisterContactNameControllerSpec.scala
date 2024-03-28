@@ -62,7 +62,7 @@ class DeregisterContactNameControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
-        val form = deregistration.contactDetails.name match {
+        val form: Form[String] = deregistration.contactDetails.name match {
           case Some(name) => formProvider().fill(name)
           case None       => formProvider()
         }

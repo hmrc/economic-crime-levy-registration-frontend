@@ -59,7 +59,7 @@ class DeregisterReasonControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
-        val form = deregistration.reason match {
+        val form: Form[DeregisterReason] = deregistration.reason match {
           case Some(reason) => formProvider().fill(reason)
           case None         => formProvider()
         }

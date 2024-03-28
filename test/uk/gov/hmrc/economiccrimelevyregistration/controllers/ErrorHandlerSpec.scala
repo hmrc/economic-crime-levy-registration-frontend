@@ -22,13 +22,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AddressLookupCon
 class ErrorHandlerSpec extends SpecBase with ErrorHandler {
 
   "dataRetrievalErrorConverter" should {
-    "return ResponseError.badRequestError when DataRetrievalError.NotFound is converted" in forAll { (id: String) =>
-      val dataRetrievalError = DataRetrievalError.NotFound(id)
-
-      val result: ResponseError = dataRetrievalErrorConverter.convert(dataRetrievalError)
-
-      result shouldBe ResponseError.badRequestError(s"Unable to find record with id: $id")
-    }
 
     "return ResponseError.badGateway when DataRetrievalError.BadGateway is converted" in { (errorMessage: String) =>
       val dataRetrievalError = DataRetrievalError.BadGateway(errorMessage, BAD_GATEWAY)

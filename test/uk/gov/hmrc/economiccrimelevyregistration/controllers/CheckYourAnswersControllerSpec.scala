@@ -52,7 +52,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val mockEclRegistrationService: EclRegistrationService                       = mock[EclRegistrationService]
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
   val mockEmailService: EmailService                                           = mock[EmailService]
-  val mockAppConfig                                                            = mock[AppConfig]
+  val mockAppConfig: AppConfig                                                 = mock[AppConfig]
 
   class TestContext(registrationData: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None) {
     val controller = new CheckYourAnswersController(
