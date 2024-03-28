@@ -25,7 +25,6 @@ import play.api.http.Status.OK
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CompanyRegistrationNumberFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
@@ -39,11 +38,11 @@ import scala.concurrent.Future
 
 class CompanyRegistrationNumberControllerSpec extends SpecBase {
 
-  val view: CompanyRegistrationNumberView                   = app.injector.instanceOf[CompanyRegistrationNumberView]
-  val formProvider: CompanyRegistrationNumberFormProvider   = new CompanyRegistrationNumberFormProvider()
-  val form: Form[String]                                    = formProvider()
-  val mockEclRegistrationService: EclRegistrationService    = mock[EclRegistrationService]
-  override val appConfig: AppConfig                         = mock[AppConfig]
+  val view: CompanyRegistrationNumberView                 = app.injector.instanceOf[CompanyRegistrationNumberView]
+  val formProvider: CompanyRegistrationNumberFormProvider = new CompanyRegistrationNumberFormProvider()
+  val form: Form[String]                                  = formProvider()
+  val mockEclRegistrationService: EclRegistrationService  = mock[EclRegistrationService]
+
   val pageNavigator: CompanyRegistrationNumberPageNavigator = new CompanyRegistrationNumberPageNavigator(
   ) {
     override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call = onwardRoute

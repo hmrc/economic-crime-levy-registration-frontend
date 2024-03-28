@@ -22,11 +22,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, EclRegistrationModel, NormalMode, Registration}
 
-class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
+class AddAnotherContactPageNavigatorSpec extends SpecBase {
 
   val pageNavigator = new AddAnotherContactPageNavigator
 
-  "nextPage" should {
+  "navigateInNormalMode" should {
     "return a Call to the second contact name page in NormalMode when the 'Yes' option is selected" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(true)))
@@ -68,7 +68,17 @@ class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
           .onPageLoad(NormalMode)
     }
 
-    "return a Call to the second contact name page in CheckMode when the 'Yes' option is selected and there are no second contact details already present" in forAll {
+    "return a call to the answers are invalid page when the secondContact is set to None" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = None))
+
+        pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.NotableErrorController.answersAreInvalid()
+    }
+  }
+
+  "navigateInCheckMode" should {
+    "return a Call to the second contact name page when the 'Yes' option is selected and there are no second contact details already present" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(contacts =
           registration.contacts.copy(secondContact = Some(true), secondContactDetails = ContactDetails.empty)
@@ -81,7 +91,7 @@ class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
           .onPageLoad(CheckMode)
     }
 
-    "return a Call to the check your answers page in CheckMode when the 'Yes' option is selected and there is a second contact name already present" in forAll {
+    "return a Call to the check your answers page when the 'Yes' option is selected and there is a second contact name already present" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(contacts =
           registration.contacts.copy(
@@ -96,7 +106,7 @@ class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
         ) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
 
-    "return a Call to the check your answers page when the 'No' option is selected in CheckMode" in forAll {
+    "return a Call to the check your answers page when the 'No' option is selected" in forAll {
       registration: Registration =>
         val updatedRegistration = registration.copy(contacts =
           registration.contacts.copy(secondContact = Some(false), secondContactDetails = ContactDetails.empty)
@@ -106,6 +116,14 @@ class AddAnotherContactPageDeregisterNavigatorSpec extends SpecBase {
           CheckMode,
           EclRegistrationModel(updatedRegistration)
         ) shouldBe routes.CheckYourAnswersController.onPageLoad()
+    }
+
+    "return a call to the answers are invalid page when the secondContact is set to None" in forAll {
+      registration: Registration =>
+        val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = None))
+
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.NotableErrorController.answersAreInvalid()
     }
   }
 

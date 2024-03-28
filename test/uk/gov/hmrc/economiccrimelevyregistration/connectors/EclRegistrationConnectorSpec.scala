@@ -110,7 +110,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
       when(mockRequestBuilder.withBody(Json.toJson(registration))).thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(response))
 
-      val result = await(connector.upsertRegistration(registration))
+      val result: Unit = await(connector.upsertRegistration(registration))
       result shouldBe ()
 
     }
@@ -155,7 +155,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
         when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
         when(mockRequestBuilder.execute[HttpResponse](any(), any()))
-          .thenReturn(Future.successful(HttpResponse.apply(OK, (Json.toJson(dataValidationError).toString()))))
+          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(dataValidationError).toString())))
 
         val result = await(connector.getRegistrationValidationErrors(internalId).value)
 

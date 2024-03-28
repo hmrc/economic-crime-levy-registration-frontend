@@ -109,7 +109,7 @@ class EntityTypeControllerSpec extends SpecBase {
           when(mockEclRegistrationService.registerEntityType(any(), any())(any()))
             .thenReturn(EitherT[Future, DataRetrievalError, String](Future.successful(Right(url))))
 
-          val nextPage = if (registration.entityType.contains(entityType)) {
+          val nextPage: Call = if (registration.entityType.contains(entityType)) {
             routes.CheckYourAnswersController.onPageLoad()
           } else if (EntityType.isOther(entityType)) {
             routes.BusinessNameController.onPageLoad(mode)

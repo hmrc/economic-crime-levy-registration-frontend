@@ -22,65 +22,64 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.NameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 
 class DeregisterContactNameISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${DeregisterContactNameController.onPageLoad(NormalMode).url}"  should {
-    behave like authorisedActionWithoutEnrolmentCheckRoute(
-      DeregisterContactNameController
-        .onPageLoad(NormalMode)
-    )
-
-    "respond with 200 status and the deregister name HTML view" in {
-      stubAuthorisedWithEclEnrolment()
-      stubGetDeregistration(random[Deregistration])
-
-      val result = callRoute(
-        FakeRequest(
-          DeregisterContactNameController
-            .onPageLoad(NormalMode)
-        )
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"GET ${DeregisterContactNameController.onPageLoad(mode).url}" should {
+      behave like authorisedActionWithoutEnrolmentCheckRoute(
+        DeregisterContactNameController
+          .onPageLoad(mode)
       )
 
-      status(result) shouldBe OK
-      html(result)     should include("Provide a contact name")
+      "respond with 200 status and the deregister name HTML view" in {
+        stubAuthorisedWithEclEnrolment()
+        stubGetDeregistration(random[Deregistration])
+
+        val result = callRoute(
+          FakeRequest(
+            DeregisterContactNameController
+              .onPageLoad(mode)
+          )
+        )
+
+        status(result) shouldBe OK
+        html(result)     should include("Provide a contact name")
+      }
+    }
+
+    s"POST ${DeregisterContactNameController.onSubmit(mode).url}"  should {
+      behave like authorisedActionWithoutEnrolmentCheckRoute(
+        DeregisterContactNameController
+          .onSubmit(mode)
+      )
+
+      "save the selected answer then redirect the deregister role page" in {
+        stubAuthorisedWithEclEnrolment()
+        val deregistration = random[Deregistration].copy(internalId = testInternalId)
+        val name           = stringsWithMaxLength(NameMaxLength).sample.get
+        stubGetDeregistration(deregistration)
+        stubUpsertDeregistration(
+          deregistration.copy(contactDetails = deregistration.contactDetails.copy(name = Some(name)))
+        )
+
+        val result = callRoute(
+          FakeRequest(DeregisterContactNameController.onSubmit(mode))
+            .withFormUrlEncodedBody(("value", name))
+        )
+
+        status(result) shouldBe SEE_OTHER
+
+        mode match {
+          case NormalMode =>
+            redirectLocation(result) shouldBe Some(DeregisterContactRoleController.onPageLoad(mode).url)
+          case CheckMode  =>
+            redirectLocation(result) shouldBe Some(DeregisterCheckYourAnswersController.onPageLoad().url)
+        }
+      }
     }
   }
-
-  s"POST ${DeregisterContactNameController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithoutEnrolmentCheckRoute(
-      DeregisterContactNameController
-        .onSubmit(NormalMode)
-    )
-
-    "save the selected answer then redirect the deregister role page" in {
-      stubAuthorisedWithEclEnrolment()
-      val deregistration = random[Deregistration].copy(internalId = testInternalId)
-      val name           = stringsWithMaxLength(NameMaxLength).sample.get
-      stubGetDeregistration(deregistration)
-      stubUpsertDeregistration(
-        deregistration.copy(contactDetails = deregistration.contactDetails.copy(name = Some(name)))
-      )
-
-      val result = callRoute(
-        FakeRequest(
-          DeregisterContactNameController
-            .onSubmit(NormalMode)
-        )
-          .withFormUrlEncodedBody(("value", name))
-      )
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(
-        DeregisterContactRoleController
-          .onPageLoad(NormalMode)
-          .url
-      )
-    }
-  }
-
 }

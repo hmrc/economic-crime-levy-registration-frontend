@@ -34,12 +34,12 @@ import scala.concurrent.Future
 
 class EmailConnectorSpec extends SpecBase {
 
-  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
-  val mockRequestBuilder           = mock[RequestBuilder]
-  val connector                    = new EmailConnector(appConfig, mockHttpClient, config, actorSystem)
-  val sendEmailUrl                 = url"${appConfig.emailBaseUrl}/hmrc/email"
+  val mockHttpClient: HttpClientV2       = mock[HttpClientV2]
+  val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
+  val connector                          = new EmailConnector(appConfig, mockHttpClient, config, actorSystem)
+  val sendEmailUrl                       = url"${appConfig.emailBaseUrl}/hmrc/email"
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     reset(mockHttpClient)
     reset(mockRequestBuilder)
   }
@@ -60,7 +60,8 @@ class EmailConnectorSpec extends SpecBase {
         when(mockRequestBuilder.execute[HttpResponse](any(), any()))
           .thenReturn(Future.successful(response))
 
-        val result = await(connector.sendRegistrationSubmittedEmail(to, registrationSubmittedEmailParameters, None))
+        val result: Unit =
+          await(connector.sendRegistrationSubmittedEmail(to, registrationSubmittedEmailParameters, None))
 
         result shouldBe ()
     }

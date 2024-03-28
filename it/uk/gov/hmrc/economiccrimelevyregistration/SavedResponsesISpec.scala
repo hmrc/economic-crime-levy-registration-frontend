@@ -21,7 +21,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionData, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionData, SessionKeys}
 
 class SavedResponsesISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -55,5 +55,23 @@ class SavedResponsesISpec extends ISpecBase with AuthorisedBehaviour {
 
       redirectLocation(result) shouldBe Some(url)
     }
+
+    "delete the users answers and redirect to the Register For Current Year Controller if the user answers no" in {
+      stubAuthorisedWithNoGroupEnrolment()
+
+      stubDeleteRegistration()
+      stubDeleteRegistrationAdditionalInfo()
+      stubDeleteSession()
+
+      val result = callRoute(
+        FakeRequest(routes.SavedResponsesController.onSubmit)
+          .withFormUrlEncodedBody("value" -> "false")
+      )
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.RegisterForCurrentYearController.onPageLoad(NormalMode).url)
+    }
+
   }
 }

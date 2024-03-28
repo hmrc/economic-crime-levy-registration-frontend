@@ -39,7 +39,7 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
   val connector                          = new AddressLookupFrontendConnectorImpl(appConfig, mockHttpClient, config, actorSystem)
   val baseUrl: String                    = appConfig.addressLookupFrontendBaseUrl
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     reset(mockHttpClient)
     reset(mockRequestBuilder)
   }
@@ -62,21 +62,20 @@ class AddressLookupFrontendConnectorSpec extends SpecBase {
         labels = alfLabels
       )
 
-    "return the url for the address lookup journey in the Location header when the http client returns a 202 response" in forAll {
-      (journeyUrl: String) =>
-        beforeEach()
-        val headers  = Map(LOCATION -> Seq("journeyUrl"))
-        val response = HttpResponse(ACCEPTED, "", headers)
+    "return the url for the address lookup journey in the Location header when the http client returns a 202 response" in {
+      beforeEach()
+      val headers  = Map(LOCATION -> Seq("journeyUrl"))
+      val response = HttpResponse(ACCEPTED, "", headers)
 
-        when(mockHttpClient.post(ArgumentMatchers.eq(url"$expectedUrl"))(any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(expectedJourneyConfig)))(any(), any(), any()))
-          .thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.execute[HttpResponse](any(), any()))
-          .thenReturn(Future.successful(response))
+      when(mockHttpClient.post(ArgumentMatchers.eq(url"$expectedUrl"))(any())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.withBody(ArgumentMatchers.eq(Json.toJson(expectedJourneyConfig)))(any(), any(), any()))
+        .thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.execute[HttpResponse](any(), any()))
+        .thenReturn(Future.successful(response))
 
-        val result = await(connector.initJourney(ukMode, NormalMode))
+      val result = await(connector.initJourney(ukMode, NormalMode))
 
-        result shouldBe "journeyUrl"
+      result shouldBe "journeyUrl"
 
     }
 

@@ -47,11 +47,12 @@ class CtUtrPostcodeController @Inject() (
     with ErrorHandler
     with BaseController {
 
-  val form: Form[String]                         = formProvider()
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
-    implicit request =>
+  val form: Form[String] = formProvider()
+
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    (authorise andThen getRegistrationData andThen storeUrl) { implicit request =>
       Ok(view(form.prepare(request.registration.otherEntityJourneyData.postcode), mode))
-  }
+    }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     form

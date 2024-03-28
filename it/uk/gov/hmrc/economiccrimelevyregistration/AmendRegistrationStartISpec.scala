@@ -50,5 +50,4 @@ class AmendRegistrationStartISpec extends ISpecBase {
       status(result) shouldBe OK
     }
   }
-
 }

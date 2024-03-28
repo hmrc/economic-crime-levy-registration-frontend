@@ -21,7 +21,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 
@@ -29,61 +29,68 @@ import java.time.LocalDate
 
 class DeregisterDateISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${DeregisterDateController.onPageLoad(NormalMode).url}"  should {
-    behave like authorisedActionWithoutEnrolmentCheckRoute(
-      DeregisterDateController
-        .onPageLoad(NormalMode)
-    )
-
-    "respond with 200 status and the deregister date HTML view" in {
-      stubAuthorisedWithEclEnrolment()
-      stubGetDeregistration(random[Deregistration])
-
-      val result = callRoute(
-        FakeRequest(
-          DeregisterDateController
-            .onPageLoad(NormalMode)
-        )
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"GET ${DeregisterDateController.onPageLoad(mode).url}" should {
+      behave like authorisedActionWithoutEnrolmentCheckRoute(
+        DeregisterDateController
+          .onPageLoad(mode)
       )
 
-      status(result) shouldBe OK
-      html(result)     should include("Enter the date you were no longer liable")
-    }
-  }
+      "respond with 200 status and the deregister date HTML view" in {
+        stubAuthorisedWithEclEnrolment()
+        stubGetDeregistration(random[Deregistration])
 
-  s"POST ${DeregisterDateController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithoutEnrolmentCheckRoute(
-      DeregisterDateController
-        .onSubmit(NormalMode)
-    )
-
-    "save the selected answer then redirect the deregister name page" in {
-      stubAuthorisedWithEclEnrolment()
-      val deregistration = random[Deregistration].copy(internalId = testInternalId)
-      val date           = LocalDate.now().minusDays(1)
-      stubGetDeregistration(deregistration)
-      stubUpsertDeregistration(deregistration.copy(date = Some(date)))
-
-      val result = callRoute(
-        FakeRequest(
-          DeregisterDateController
-            .onSubmit(NormalMode)
-        )
-          .withFormUrlEncodedBody(
-            ("value.day", date.getDayOfMonth.toString),
-            ("value.month", date.getMonthValue.toString),
-            ("value.year", date.getYear.toString)
+        val result = callRoute(
+          FakeRequest(
+            DeregisterDateController
+              .onPageLoad(mode)
           )
+        )
+
+        status(result) shouldBe OK
+        html(result)     should include("Enter the date you were no longer liable")
+      }
+    }
+
+    s"POST ${DeregisterDateController.onSubmit(mode).url}"  should {
+      behave like authorisedActionWithoutEnrolmentCheckRoute(
+        DeregisterDateController
+          .onSubmit(mode)
       )
 
-      status(result) shouldBe SEE_OTHER
+      "save the selected answer then redirect the correct page" in {
+        stubAuthorisedWithEclEnrolment()
+        val deregistration = random[Deregistration].copy(internalId = testInternalId)
+        val date           = LocalDate.now().minusDays(1)
+        stubGetDeregistration(deregistration)
+        stubUpsertDeregistration(deregistration.copy(date = Some(date)))
 
-      redirectLocation(result) shouldBe Some(
-        DeregisterContactNameController
-          .onPageLoad(NormalMode)
-          .url
-      )
+        val result = callRoute(
+          FakeRequest(
+            DeregisterDateController
+              .onSubmit(mode)
+          )
+            .withFormUrlEncodedBody(
+              ("value.day", date.getDayOfMonth.toString),
+              ("value.month", date.getMonthValue.toString),
+              ("value.year", date.getYear.toString)
+            )
+        )
+
+        status(result) shouldBe SEE_OTHER
+
+        mode match {
+          case NormalMode =>
+            redirectLocation(result) shouldBe Some(
+              DeregisterContactNameController
+                .onPageLoad(NormalMode)
+                .url
+            )
+          case CheckMode  =>
+            redirectLocation(result) shouldBe Some(DeregisterCheckYourAnswersController.onPageLoad().url)
+        }
+
+      }
     }
   }
-
 }

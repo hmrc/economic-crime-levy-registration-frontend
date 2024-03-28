@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.services.deregister
 
 import org.mockito.ArgumentMatchers.any
-import play.api.http.Status.NOT_FOUND
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.deregister.DeregistrationConnector
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
@@ -74,6 +74,22 @@ class DeregistrationServiceSpec extends SpecBase {
       result shouldBe Right(())
     }
 
+    "return an error if connector returns an Upstream5xxResponse" in forAll { deregistration: Deregistration =>
+      when(mockDeregistrationConnector.upsertDeregistration(any())(any()))
+        .thenReturn(Future.failed(UpstreamErrorResponse("Error", INTERNAL_SERVER_ERROR)))
+
+      val result = await(service.upsert(deregistration).value)
+      result shouldBe Left(DataRetrievalError.BadGateway("Error", INTERNAL_SERVER_ERROR))
+    }
+
+    "return an error if connector returns an Upstream4xxResponse" in forAll { deregistration: Deregistration =>
+      when(mockDeregistrationConnector.upsertDeregistration(any())(any()))
+        .thenReturn(Future.failed(UpstreamErrorResponse("Error", NOT_FOUND)))
+
+      val result = await(service.upsert(deregistration).value)
+      result shouldBe Left(DataRetrievalError.BadGateway("Error", NOT_FOUND))
+    }
+
     "return an error if failed" in forAll { deregistration: Deregistration =>
       when(mockDeregistrationConnector.upsertDeregistration(any())(any()))
         .thenReturn(Future.failed(e))
@@ -99,5 +115,40 @@ class DeregistrationServiceSpec extends SpecBase {
       val result = await(service.delete(internalId).value)
       result shouldBe Left(DataRetrievalError.InternalUnexpectedError(e.getMessage, Some(e)))
     }
+  }
+
+  "submit" should {
+    "return a unit when the submission is successful" in {
+      when(mockDeregistrationConnector.submitDeregistration(any())(any()))
+        .thenReturn(Future.successful(Right(())))
+
+      val result = await(service.submit(testInternalId).value)
+      result shouldBe Right(())
+    }
+
+    "return an error if connector returns an Upstream5xxResponse" in {
+      when(mockDeregistrationConnector.submitDeregistration(any())(any()))
+        .thenReturn(Future.failed(UpstreamErrorResponse("Error", INTERNAL_SERVER_ERROR)))
+
+      val result = await(service.submit(testInternalId).value)
+      result shouldBe Left(DataRetrievalError.BadGateway("Error", INTERNAL_SERVER_ERROR))
+    }
+
+    "return an error if connector returns an Upstream4xxResponse" in {
+      when(mockDeregistrationConnector.submitDeregistration(any())(any()))
+        .thenReturn(Future.failed(UpstreamErrorResponse("Error", NOT_FOUND)))
+
+      val result = await(service.submit(testInternalId).value)
+      result shouldBe Left(DataRetrievalError.BadGateway("Error", NOT_FOUND))
+    }
+
+    "return an error if an exception is thrown" in forAll { internalId: String =>
+      when(mockDeregistrationConnector.submitDeregistration(any())(any()))
+        .thenReturn(Future.failed(e))
+
+      val result = await(service.submit(internalId).value)
+      result shouldBe Left(DataRetrievalError.InternalUnexpectedError(e.getMessage, Some(e)))
+    }
+
   }
 }

@@ -20,7 +20,7 @@ import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
 import play.api.http.Status.OK
-import play.api.mvc.Result
+import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
@@ -93,9 +93,10 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
           when(mockAdditionalInfoService.upsert(any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
-          val nextPage = liableBeforeCurrentYear match {
-            case false => routes.EntityTypeController.onPageLoad(NormalMode)
-            case true  => routes.LiabilityDateController.onPageLoad(NormalMode)
+          val nextPage: Call = if (liableBeforeCurrentYear) {
+            routes.LiabilityDateController.onPageLoad(NormalMode)
+          } else {
+            routes.EntityTypeController.onPageLoad(NormalMode)
           }
 
           val result: Future[Result] =

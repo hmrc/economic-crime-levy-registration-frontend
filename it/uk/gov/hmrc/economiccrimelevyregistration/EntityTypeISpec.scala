@@ -19,28 +19,30 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
         relevantApRevenue = Some(randomApRevenue())
       )
 
-  s"GET ${routes.EntityTypeController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.EntityTypeController.onPageLoad(NormalMode))
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"GET ${routes.EntityTypeController.onPageLoad(mode).url}" should {
+      behave like authorisedActionWithEnrolmentCheckRoute(routes.EntityTypeController.onPageLoad(mode))
 
-    "respond with 200 status and the select entity type HTML view" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      "respond with 200 status and the select entity type HTML view" in {
+        stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = randomRegistration()
-      val additionalInfo = random[RegistrationAdditionalInfo]
+        val registration   = randomRegistration()
+        val additionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistrationWithEmptyAdditionalInfo(registration)
-      stubSessionForStoreUrl()
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+        stubGetRegistrationWithEmptyAdditionalInfo(registration)
+        stubSessionForStoreUrl()
 
-      val result = callRoute(FakeRequest(routes.EntityTypeController.onPageLoad(NormalMode)))
+        val result = callRoute(FakeRequest(routes.EntityTypeController.onPageLoad(mode)))
 
-      status(result) shouldBe OK
+        status(result) shouldBe OK
 
-      html(result) should include("What is your entity type?")
+        html(result) should include("What is your entity type?")
+      }
     }
   }
 
-  s"POST ${routes.EntityTypeController.onSubmit(NormalMode).url}"  should {
+  s"POST ${routes.EntityTypeController.onSubmit(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.EntityTypeController.onSubmit(NormalMode))
 
     "save the selected entity type then redirect to the GRS Incorporated Entity journey when one of the Incorporated Entity type options is selected" in {

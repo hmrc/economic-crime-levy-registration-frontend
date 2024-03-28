@@ -117,7 +117,7 @@ class CtUtrControllerSpec extends SpecBase {
       new TestContext(registration) {
 
         val result: Future[Result]       =
-          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value" -> "")))
+          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> ""))
         val formWithErrors: Form[String] = form.bind(Map("value" -> ""))
 
         status(result) shouldBe BAD_REQUEST

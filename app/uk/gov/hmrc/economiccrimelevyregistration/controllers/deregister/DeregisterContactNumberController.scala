@@ -88,7 +88,6 @@ class DeregisterContactNumberController @Inject() (
               )
           ),
         number => {
-
           val updatedDeregistration = request.deregistration.copy(
             contactDetails = request.deregistration.contactDetails.copy(
               telephoneNumber = Some(number)
@@ -96,6 +95,7 @@ class DeregisterContactNumberController @Inject() (
           )
 
           (for {
+
             _ <- deregistrationService.upsert(updatedDeregistration).asResponseError
           } yield ()).fold(
             err => routeError(err),
