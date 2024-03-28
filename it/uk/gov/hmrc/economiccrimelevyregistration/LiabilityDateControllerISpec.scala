@@ -7,7 +7,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType, NormalMode, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType, LiabilityYear, NormalMode, Registration, RegistrationAdditionalInfo, RegistrationType}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
 
@@ -50,11 +51,12 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
         stubAuthorisedWithNoGroupEnrolment()
 
         val date = LocalDate.now()
+        val year = EclTaxYear.taxYearFor(date)
 
         val registration = random[Registration]
           .copy(
             entityType = Some(random[EntityType]),
-            registrationType = Some(Initial),
+            registrationType = Some(random[RegistrationType]),
             relevantApRevenue = Some(randomApRevenue())
           )
 
@@ -64,7 +66,7 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
         val info = RegistrationAdditionalInfo(
           testInternalId,
-          None,
+          Some(LiabilityYear(year.startYear)),
           Some(date),
           None,
           None,
@@ -86,8 +88,17 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
         status(result) shouldBe SEE_OTHER
         mode match {
           case NormalMode =>
-            redirectLocation(result) shouldBe Some(routes.EntityTypeController.onPageLoad(NormalMode).url)
-          case CheckMode  => redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+            registration.amlSupervisor match {
+              case None =>
+                redirectLocation(result) shouldBe Some(
+                  routes.AmlSupervisorController
+                    .onPageLoad(NormalMode, registration.registrationType.getOrElse(Initial))
+                    .url
+                )
+              case _    => redirectLocation(result) shouldBe Some(routes.EntityTypeController.onPageLoad(NormalMode).url)
+            }
+
+          case CheckMode => redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
         }
 
       }
