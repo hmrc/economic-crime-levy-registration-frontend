@@ -38,8 +38,8 @@ class AmlSupervisorPageNavigator @Inject() extends PageNavigator {
             registerWithGcOrFca(t)
           case Hmrc | Other                                         =>
             registration.carriedOutAmlRegulatedActivityInCurrentFy match {
-              case Some(true)  => routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
-              case Some(false) => routes.EntityTypeController.onPageLoad(NormalMode)
+              case Some(true) => routes.RelevantAp12MonthsController.onPageLoad(NormalMode)
+              case _          => routes.EntityTypeController.onPageLoad(NormalMode)
             }
         }
       case (Some(amlSupervisor), Some(Amendment)) =>

@@ -18,26 +18,29 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration}
 
 import javax.inject.Inject
 
 class AmlRegulatedActivityPageNavigator @Inject() () extends PageNavigator {
 
   override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
-    navigateInBothModes(eclRegistrationModel.registration)
+    navigateInBothModes(eclRegistrationModel.registration, NormalMode)
 
   override protected def navigateInCheckMode(
     eclRegistrationModel: EclRegistrationModel
-  ): Call =
-    navigateInBothModes(eclRegistrationModel.registration)
+  ): Call = if (eclRegistrationModel.hasRegistrationChanged) {
+    navigateInBothModes(eclRegistrationModel.registration, CheckMode)
+  } else {
+    routes.CheckYourAnswersController.onPageLoad()
+  }
 
-  private def navigateInBothModes(registration: Registration): Call =
+  private def navigateInBothModes(registration: Registration, mode: Mode): Call =
     registration.carriedOutAmlRegulatedActivityInCurrentFy match {
       case Some(true)  =>
-        routes.AmlSupervisorController.onPageLoad(NormalMode, registration.registrationType.get)
+        routes.AmlSupervisorController.onPageLoad(mode, registration.registrationType.get)
       case Some(false) =>
-        routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode)
+        routes.LiabilityBeforeCurrentYearController.onPageLoad(mode)
       case _           =>
         routes.NotableErrorController.answersAreInvalid()
     }

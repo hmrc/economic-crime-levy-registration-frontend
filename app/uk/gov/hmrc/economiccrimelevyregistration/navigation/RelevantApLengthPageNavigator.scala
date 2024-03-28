@@ -26,7 +26,11 @@ class RelevantApLengthPageNavigator extends PageNavigator {
     navigate(eclRegistrationModel.registration, NormalMode)
 
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
-    navigate(eclRegistrationModel.registration, CheckMode)
+    if (eclRegistrationModel.hasRegistrationChanged) {
+      navigate(eclRegistrationModel.registration, CheckMode)
+    } else {
+      routes.CheckYourAnswersController.onPageLoad()
+    }
 
   private def navigate(registration: Registration, mode: Mode): Call =
     registration.relevantApLength match {
