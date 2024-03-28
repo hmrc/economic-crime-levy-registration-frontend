@@ -73,6 +73,7 @@ class AmlSupervisorController @Inject() (
               form.prepare(request.registration.amlSupervisor),
               mode,
               Some(registrationType),
+              request.registration.carriedOutAmlRegulatedActivityInCurrentFy,
               request.eclRegistrationReference
             )
           )
@@ -82,6 +83,7 @@ class AmlSupervisorController @Inject() (
               amendForm.prepare(request.registration.amlSupervisor),
               mode,
               Some(registrationType),
+              request.registration.carriedOutAmlRegulatedActivityInCurrentFy,
               request.eclRegistrationReference
             )
           )
@@ -103,6 +105,7 @@ class AmlSupervisorController @Inject() (
                   formWithErrors,
                   mode,
                   Some(registrationType),
+                  request.registration.carriedOutAmlRegulatedActivityInCurrentFy,
                   request.eclRegistrationReference
                 )
               )
