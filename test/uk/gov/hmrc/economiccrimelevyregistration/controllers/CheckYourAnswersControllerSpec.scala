@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.ValidRegistrationWithRegistrati
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors._
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
@@ -52,11 +52,20 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
   val mockEmailService: EmailService                                           = mock[EmailService]
 
-  class TestContext(registrationData: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None) {
+  class TestContext(
+    registrationData: Registration,
+    additionalInfo: Option[RegistrationAdditionalInfo] = None,
+    dataRetrievalFailure: Boolean = false
+  ) {
     val controller = new CheckYourAnswersController(
       messagesApi,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData, additionalInfo),
+      fakeRegistrationDataOrErrorAction(
+        registrationData,
+        additionalInfo,
+        Some(testEclRegistrationReference),
+        dataRetrievalFailure
+      ),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       mcc,
@@ -85,7 +94,9 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         when(mockEclRegistrationService.getRegistrationValidationErrors(anyString())(any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Option[DataValidationError]](Future.successful(Right(None))))
 
-        val result: Future[Result] = controller.onPageLoad()(registrationDataRequest)
+        val result: Future[Result] = controller.onPageLoad(
+          validRegistration.registration.registrationType.getOrElse(Initial)
+        )(registrationDataRequest)
 
         status(result)          shouldBe OK
         contentAsString(result) shouldBe view(
@@ -118,11 +129,31 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           when(mockEclRegistrationService.getRegistrationValidationErrors(anyString())(any()))
             .thenReturn(EitherT.fromEither[Future](Left(DataRetrievalError.InternalUnexpectedError("", None))))
 
-          val result: Future[Result] = controller.onPageLoad()(registrationDataRequest)
+          val result: Future[Result] = controller.onPageLoad(
+            validRegistration.registration.registrationType.getOrElse(Initial)
+          )(registrationDataRequest)
 
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
     }
+
+    "redirect to error page if registration data cannot be found" in forAll(
+      Arbitrary.arbitrary[Registration],
+      Arbitrary.arbitrary[RegistrationAdditionalInfo]
+    ) {
+      (
+        registration: Registration,
+        additionalInfo: RegistrationAdditionalInfo
+      ) =>
+        new TestContext(registration, Some(additionalInfo), true) {
+
+          val result: Future[Result] = controller.onPageLoad(Initial)(fakeRequest)
+
+          status(result)           shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.NotableErrorController.youHaveAlreadyRegistered().url)
+        }
+    }
+
   }
 
   "onSubmit" should {

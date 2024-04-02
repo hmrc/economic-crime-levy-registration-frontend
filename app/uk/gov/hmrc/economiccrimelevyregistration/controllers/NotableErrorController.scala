@@ -21,6 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.AlreadyDeregisteredView
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{YouHaveAlreadyRegisteredView, _}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -33,7 +34,7 @@ class NotableErrorController @Inject() (
   authoriseWithEnrolmentCheck: AuthorisedActionWithEnrolmentCheck,
   authoriseAgentsAllowed: AuthorisedActionAgentsAllowed,
   authoriseAssistantsAllowed: AuthorisedActionAssistantsAllowed,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataAction,
   appConfig: AppConfig,
   userAlreadyEnrolledView: UserAlreadyEnrolledView,
   groupAlreadyEnrolledView: GroupAlreadyEnrolledView,
@@ -45,7 +46,8 @@ class NotableErrorController @Inject() (
   partyTypeMismatchView: PartyTypeMismatchView,
   verificationFailedView: VerfificationFailedView,
   youHaveAlreadyRegisteredView: YouHaveAlreadyRegisteredView,
-  youAlreadyRequestedToAmendView: YouAlreadyRequestedToAmendView
+  youAlreadyRequestedToAmendView: YouAlreadyRequestedToAmendView,
+  alreadyDeregisteredView: AlreadyDeregisteredView
 ) extends FrontendBaseController
     with I18nSupport
     with ErrorHandler {
@@ -115,5 +117,9 @@ class NotableErrorController @Inject() (
 
   def youAlreadyRequestedToAmend: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
     Ok(youAlreadyRequestedToAmendView())
+  }
+
+  def alreadyDeregistered: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
+    Ok(alreadyDeregisteredView())
   }
 }

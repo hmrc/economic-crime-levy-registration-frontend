@@ -45,7 +45,7 @@ class DeregistrationService @Inject() (
         upsert(deregistration).map(_ => deregistration)
     }
 
-  private def get(
+  def get(
     internalId: String
   )(implicit
     hc: HeaderCarrier,

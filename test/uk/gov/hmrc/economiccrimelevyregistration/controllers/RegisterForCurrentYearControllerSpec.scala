@@ -28,6 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.{LiabilityDateAdditionalInfoCleanup, LiabilityDateRegistrationCleanup}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
@@ -54,7 +55,9 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
 
     override protected def navigateInCheckMode(
       eclRegistrationModel: EclRegistrationModel
-    ): Call = routes.CheckYourAnswersController.onPageLoad()
+    ): Call = routes.CheckYourAnswersController.onPageLoad(
+      eclRegistrationModel.registration.registrationType.getOrElse(Initial)
+    )
   }
 
   val registrationDataCleanup: LiabilityDateRegistrationCleanup = new LiabilityDateRegistrationCleanup() {
@@ -69,7 +72,7 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
     val controller = new RegisterForCurrentYearController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData, Some(registrationAdditionalInfo)),
+      fakeRegistrationDataAction(registrationData, Some(registrationAdditionalInfo)),
       mockSessionService,
       formProvider,
       mockRegistrationAdditionalInfoService,
@@ -204,7 +207,9 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+          redirectLocation(result) shouldBe Some(
+            routes.CheckYourAnswersController.onPageLoad(Initial).url
+          )
         }
     }
   }

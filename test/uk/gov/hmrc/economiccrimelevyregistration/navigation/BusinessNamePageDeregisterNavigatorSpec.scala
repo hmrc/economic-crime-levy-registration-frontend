@@ -23,6 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityRegistrationNumberMaxLength, OrganisationNameMaxLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class BusinessNamePageDeregisterNavigatorSpec extends SpecBase {
@@ -77,7 +78,7 @@ class BusinessNamePageDeregisterNavigatorSpec extends SpecBase {
         )
 
       pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-        routes.CheckYourAnswersController.onPageLoad()
+        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
   }
 

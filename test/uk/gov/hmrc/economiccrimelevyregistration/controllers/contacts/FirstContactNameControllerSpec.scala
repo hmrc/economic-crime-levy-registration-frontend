@@ -53,7 +53,7 @@ class FirstContactNameControllerSpec extends SpecBase {
     val controller = new FirstContactNameController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,

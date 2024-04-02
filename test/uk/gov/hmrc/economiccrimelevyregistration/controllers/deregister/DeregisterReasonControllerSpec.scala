@@ -21,7 +21,7 @@ import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.DeregisterReasonFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.{arbDeregisterReason, arbDeregistration, arbMode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.{DeregisterReason, Deregistration}
@@ -38,11 +38,11 @@ class DeregisterReasonControllerSpec extends SpecBase {
 
   val mockDeregistrationService: DeregistrationService = mock[DeregistrationService]
 
-  class TestContext(internalId: String) {
+  class TestContext(deregistration: Deregistration) {
     val controller = new DeregisterReasonController(
       mcc,
-      fakeAuthorisedActionWithEnrolmentCheck(internalId),
-      new DeregistrationDataRetrievalAction(mockDeregistrationService),
+      fakeAuthorisedActionWithEnrolmentCheck(deregistration.internalId),
+      fakeDeregistrationDataAction(deregistration),
       mockDeregistrationService,
       formProvider,
       view
@@ -51,7 +51,7 @@ class DeregisterReasonControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK and the correct view" in forAll { (deregistration: Deregistration, mode: Mode) =>
-      new TestContext(deregistration.internalId) {
+      new TestContext(deregistration) {
         when(mockDeregistrationService.getOrCreate(anyString())(any()))
           .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 
@@ -75,7 +75,7 @@ class DeregisterReasonControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "go to deregistration date view" in forAll { (deregistration: Deregistration, reason: DeregisterReason) =>
-      new TestContext(deregistration.internalId) {
+      new TestContext(deregistration) {
         when(mockDeregistrationService.getOrCreate(anyString())(any()))
           .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 

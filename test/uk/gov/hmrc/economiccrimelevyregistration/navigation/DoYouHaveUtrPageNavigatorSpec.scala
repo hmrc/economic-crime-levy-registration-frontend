@@ -20,6 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, UnincorporatedAssociation}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
@@ -93,7 +94,7 @@ class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
   }
 

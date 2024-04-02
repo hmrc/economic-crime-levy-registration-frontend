@@ -264,8 +264,7 @@ abstract class BaseAuthorisedAction @Inject() (
     }
   }
 
-  private def extractRegistration(registrationOption: Option[Registration]) = {
-    println("EXTRACT: " + registrationOption)
+  private def extractRegistration(registrationOption: Option[Registration]) =
     EitherT {
       Future.successful(
         registrationOption match {
@@ -274,14 +273,13 @@ abstract class BaseAuthorisedAction @Inject() (
         }
       )
     }
-  }
   private def processAssistant[A](
     request: Request[A],
     internalId: String,
     block: AuthorisedRequest[A] => Future[Result],
     groupId: String,
     eclRegistrationReference: Option[String]
-  ): Future[Result]                             =
+  ): Future[Result]                                                         =
     if (assistantsAllowed) {
       block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
     } else {

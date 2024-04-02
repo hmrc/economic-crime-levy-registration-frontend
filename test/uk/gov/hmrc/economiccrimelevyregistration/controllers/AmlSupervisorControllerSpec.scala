@@ -64,7 +64,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
     val controller = new AmlSupervisorController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,

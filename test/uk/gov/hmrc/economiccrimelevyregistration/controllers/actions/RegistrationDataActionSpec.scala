@@ -29,13 +29,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationServic
 
 import scala.concurrent.Future
 
-class DataRetrievalActionSpec extends SpecBase {
+class RegistrationDataActionSpec extends SpecBase {
 
   val mockEclRegistrationService: EclRegistrationService                       = mock[EclRegistrationService]
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
 
-  class TestDataRetrievalAction
-      extends RegistrationDataRetrievalAction(
+  class TestRegistrationDataAction
+      extends RegistrationDataActionImpl(
         mockEclRegistrationService,
         mockRegistrationAdditionalInfoService
       ) {
@@ -43,8 +43,8 @@ class DataRetrievalActionSpec extends SpecBase {
       super.refine(request)
   }
 
-  val dataRetrievalAction =
-    new TestDataRetrievalAction
+  val RegistrationDataAction =
+    new TestRegistrationDataAction
 
   val testAction: Request[_] => Future[Result] = { _ =>
     Future(Ok("Test"))
@@ -66,7 +66,9 @@ class DataRetrievalActionSpec extends SpecBase {
 
         val result = intercept[Exception] {
           await(
-            dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
+            RegistrationDataAction.refine(
+              AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345"))
+            )
           )
         }
 
@@ -90,7 +92,7 @@ class DataRetrievalActionSpec extends SpecBase {
           .thenReturn(EitherT[Future, DataRetrievalError, RegistrationAdditionalInfo](Future.successful(Right(info))))
 
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
-          dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
+          RegistrationDataAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
 
         await(result) shouldBe Right(
           RegistrationDataRequest(fakeRequest, internalId, registration, Some(info), Some("ECLRefNumber12345"))

@@ -20,7 +20,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{BaseController, ErrorHandler}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataOrErrorAction
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionKeys
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
@@ -35,7 +35,7 @@ import scala.concurrent.ExecutionContext
 class DeregisterCheckYourAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getDeregistrationData: DeregistrationDataRetrievalAction,
+  getDeregistrationData: DeregistrationDataOrErrorAction,
   eclRegistrationService: EclRegistrationService,
   deregistrationService: DeregistrationService,
   emailService: EmailService,

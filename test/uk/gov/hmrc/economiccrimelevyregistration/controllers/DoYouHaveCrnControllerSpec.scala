@@ -54,7 +54,7 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
     val controller = new DoYouHaveCrnController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       formProvider,
       mockEclRegistrationService,

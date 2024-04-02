@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.stubs
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.data.GrsStubData
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.forms.GrsStubFormProvider
@@ -34,7 +34,7 @@ import javax.inject.{Inject, Singleton}
 class StubGrsJourneyDataController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataAction,
   grsStubFormProvider: GrsStubFormProvider,
   view: StubGrsJourneyDataView
 ) extends FrontendBaseController

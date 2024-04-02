@@ -17,11 +17,12 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
 import cats.data.EitherT
+import com.google.inject.ImplementedBy
 import play.api.mvc.Results.Redirect
-import play.api.mvc.Result
+import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{ErrorHandler, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{ErrorCode, ResponseError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
@@ -32,11 +33,11 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RegistrationDataOrErrorAction @Inject() (
+class RegistrationDataOrErrorActionImpl @Inject() (
   eclRegistrationService: EclRegistrationService,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService
 )(implicit val executionContext: ExecutionContext)
-    extends DataRetrievalAction
+    extends RegistrationDataOrErrorAction
     with FrontendHeaderCarrierProvider
     with ErrorHandler {
 
@@ -89,5 +90,7 @@ class RegistrationDataOrErrorAction @Inject() (
         }
       )
     }
-
 }
+
+@ImplementedBy(classOf[RegistrationDataOrErrorActionImpl])
+trait RegistrationDataOrErrorAction extends ActionRefiner[AuthorisedRequest, RegistrationDataRequest]

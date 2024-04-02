@@ -24,6 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.views.html._
+import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.AlreadyDeregisteredView
 import uk.gov.hmrc.economiccrimelevyregistration.{IncorporatedEntityType, SelfAssessmentEntityType}
 
 import scala.concurrent.Future
@@ -41,6 +42,13 @@ class NotableErrorControllerSpec extends SpecBase {
   val partyTypeMismatchView: PartyTypeMismatchView                         = app.injector.instanceOf[PartyTypeMismatchView]
   val verfificationFailedView: VerfificationFailedView                     = app.injector.instanceOf[VerfificationFailedView]
 
+  val youHaveAlreadyRegisteredView: YouHaveAlreadyRegisteredView = app.injector.instanceOf[YouHaveAlreadyRegisteredView]
+
+  val youAlreadyRequestedToAmendView: YouAlreadyRequestedToAmendView =
+    app.injector.instanceOf[YouAlreadyRequestedToAmendView]
+
+  val alreadyDeregisteredView: AlreadyDeregisteredView = app.injector.instanceOf[AlreadyDeregisteredView]
+
   class TestContext(registrationData: Registration, eclRegistrationReference: Option[String] = None) {
     val controller = new NotableErrorController(
       mcc,
@@ -48,7 +56,7 @@ class NotableErrorControllerSpec extends SpecBase {
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
       fakeAuthorisedActionAgentsAllowed,
       fakeAuthorisedActionAssistantsAllowed,
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       appConfig,
       userAlreadyEnrolledView,
       groupAlreadyEnrolledView,
@@ -58,7 +66,10 @@ class NotableErrorControllerSpec extends SpecBase {
       organisationAlreadyRegisteredView,
       registrationFailedView,
       partyTypeMismatchView,
-      verfificationFailedView
+      verfificationFailedView,
+      youHaveAlreadyRegisteredView,
+      youAlreadyRequestedToAmendView,
+      alreadyDeregisteredView
     )
   }
 
@@ -197,6 +208,42 @@ class NotableErrorControllerSpec extends SpecBase {
             messages
           ).toString
         }
+    }
+  }
+
+  "youHaveAlreadyRegistered" should {
+    "return OK and the correct view" in forAll { (registration: Registration, eclRegistrationReference: String) =>
+      new TestContext(registration, Some(eclRegistrationReference)) {
+        val result: Future[Result] = controller.youHaveAlreadyRegistered()(fakeRequest)
+
+        status(result) shouldBe OK
+
+        contentAsString(result) shouldBe youHaveAlreadyRegisteredView()(fakeRequest, messages).toString
+      }
+    }
+  }
+
+  "youAlreadyRequestedToAmend" should {
+    "return OK and the correct view" in forAll { (registration: Registration, eclRegistrationReference: String) =>
+      new TestContext(registration, Some(eclRegistrationReference)) {
+        val result: Future[Result] = controller.youAlreadyRequestedToAmend()(fakeRequest)
+
+        status(result) shouldBe OK
+
+        contentAsString(result) shouldBe youAlreadyRequestedToAmendView()(fakeRequest, messages).toString
+      }
+    }
+  }
+
+  "alreadyDeregistered" should {
+    "return OK and the correct view" in forAll { (registration: Registration, eclRegistrationReference: String) =>
+      new TestContext(registration, Some(eclRegistrationReference)) {
+        val result: Future[Result] = controller.alreadyDeregistered()(fakeRequest)
+
+        status(result) shouldBe OK
+
+        contentAsString(result) shouldBe alreadyDeregisteredView()(fakeRequest, messages).toString
+      }
     }
   }
 

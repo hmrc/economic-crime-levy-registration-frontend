@@ -764,3 +764,13 @@ youAlreadyRequestedToAmend.title = You have already requested to amend your Econ
 youAlreadyRequestedToAmend.heading = You have already requested to amend your Economic Crime Levy registration
 youAlreadyRequestedToAmend.body.p1 = Your information has been sent to HMRC.
 youAlreadyRequestedToAmend.body.link = <a href="{0}" class="govuk-link">Return to your Economic Crime Levy account</a>
+
+alreadyDeregistered.title = You have already deregistered your Economic Crime Levy account - Deregister from ECL - GOV.UK
+alreadyDeregistered.heading = You have already deregistered your Economic Crime Levy account
+alreadyDeregistered.body.p1 = Your information has been sent to HMRC.
+alreadyDeregistered.body.link = <a href="{0}" class="govuk-link">Return to your Economic Crime Levy account</a>
+
+alreadyDeregistered.title = You have already deregistered your Economic Crime Levy account - Deregister from ECL - GOV.UK
+alreadyDeregistered.heading = You have already deregistered your Economic Crime Levy account
+alreadyDeregistered.body.p1 = Your information has been sent to HMRC.
+alreadyDeregistered.body.link = <a href="{0}" class="govuk-link">Return to your Economic Crime Levy account</a>

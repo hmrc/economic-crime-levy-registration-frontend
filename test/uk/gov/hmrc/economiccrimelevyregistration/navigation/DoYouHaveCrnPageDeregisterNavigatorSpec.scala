@@ -21,6 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class DoYouHaveCrnPageDeregisterNavigatorSpec extends SpecBase {
@@ -66,7 +67,7 @@ class DoYouHaveCrnPageDeregisterNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
 
     "return a Call to the Non UK CRN page in CheckMode" in forAll { registration: Registration =>

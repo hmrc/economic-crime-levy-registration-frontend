@@ -55,7 +55,7 @@ class AddAnotherContactControllerSpec extends SpecBase {
     val controller = new AddAnotherContactController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,
