@@ -70,14 +70,15 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
           .withSession(SessionKeys.LiabilityYear -> liabilityYear.asString)
       )
 
-      status(result) shouldBe SEE_OTHER
+      status(result)           shouldBe SEE_OTHER
+      redirectLocation(result) shouldBe Some(routes.NotableErrorController.answersAreInvalid().url)
     }
 
     "respond with 303 status and answers are invalid view when the liability year is missing from the session data" in {
       val registration = random[Registration]
       val email        = alphaNumericString
 
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = random[RegistrationAdditionalInfo].copy(eclReference = Some(testEclRegistrationReference))
 
       stubAuthorisedWithEclEnrolment()
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -91,7 +92,8 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
           .withSession(SessionKeys.FirstContactEmail -> email)
       )
 
-      status(result) shouldBe SEE_OTHER
+      status(result)           shouldBe SEE_OTHER
+      redirectLocation(result) shouldBe Some(routes.NotableErrorController.answersAreInvalid().url)
     }
   }
 

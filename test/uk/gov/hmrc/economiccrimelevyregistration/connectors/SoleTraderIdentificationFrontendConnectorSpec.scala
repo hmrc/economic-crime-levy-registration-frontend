@@ -31,10 +31,10 @@ import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import scala.concurrent.Future
 
 class SoleTraderIdentificationFrontendConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
-  val mockRequestBuilder           = mock[RequestBuilder]
-  val connector                    = new SoleTraderIdentificationFrontendConnectorImpl(appConfig, mockHttpClient, config, actorSystem)
-  val apiUrl                       = s"${appConfig.soleTraderEntityIdentificationFrontendBaseUrl}/sole-trader-identification/api"
+  val mockHttpClient: HttpClientV2       = mock[HttpClientV2]
+  val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
+  val connector                          = new SoleTraderIdentificationFrontendConnectorImpl(appConfig, mockHttpClient, config, actorSystem)
+  val apiUrl                             = s"${appConfig.soleTraderEntityIdentificationFrontendBaseUrl}/sole-trader-identification/api"
 
   "createSoleTraderJourney" should {
     "return a GRS create journey response for the given request when the http client returns a GRS create journey response for the given request" in forAll {
