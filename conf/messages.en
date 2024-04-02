@@ -53,7 +53,7 @@ start.p1 = Use this service to register for the Economic Crime Levy (ECL) if you
 start.b1 = regulated by HMRC for anti-money laundering (AML) supervision
 start.b2 = regulated by one of the Professional Body Supervisors (PBS) for AML supervision
 start.p2 = Check if you {0}.
-start.p2.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">need to pay the levy</a>
+start.p2.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">need to pay the levy (opens in a new tab)</a>
 start.p3 = If you are part of a business group, you must register for each entity in your group that meets the requirements.
 start.p4 = You will be able to submit a return and pay the levy after you have registered. You must pay the levy by 30 September {0}. You will be charged interest if you make a late payment.
 start.beforeYouStart = Before you start
@@ -61,7 +61,7 @@ start.provide = You will need to tell us:
 start.provide.b1 = about any accounting periods for your organisation ending in the relevant financial year
 start.provide.b2 = about your organisation''s UK revenue in any relevant accounting periods
 start.provide.b3 = if your organisation carried out AML-regulated activity at any point during the financial year
-start.provide.b4 = details we can use to confirm the identity of your business, <a href="https://www.gov.uk/guidance/register-for-the-economic-crime-levy" class="govuk-link">see list of details needed</a>
+start.provide.b4 = details we can use to confirm the identity of your business, <a href="https://www.gov.uk/guidance/register-for-the-economic-crime-levy" class="govuk-link">see list of details needed (opens in a new tab)</a>
 start.provide.b5 = the business sector your organisation operates in
 start.provide.b6 = the details of someone in your organisation who can act as a point of contact for any activities related to the ECL
 start.doNotUse = Do not use this service if:
