@@ -72,5 +72,7 @@
         @Html(AddressViewModel.html(contactAddress))
     </div>
 
-    <p class="govuk-body">@Html(messages("amendmentRequested.body.p7", messages("amendmentRequested.body.p7.link", appConfig.exitSurveyUrl)))</p>
+    <h2 class="govuk-heading-m">@messages("exit.h2")</h2>
+    <p class="govuk-body">@messages("exit.p1")</p>
+    <p class="govuk-body">@Html(messages("exit.survey", messages("exit.survey.link", appConfig.exitSurveyUrl)))</p>
 }

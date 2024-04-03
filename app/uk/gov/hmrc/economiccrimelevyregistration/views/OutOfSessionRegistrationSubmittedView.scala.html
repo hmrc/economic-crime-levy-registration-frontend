@@ -30,7 +30,7 @@
     showBackLink = false
 ) {
 
-    <p class="govuk-label--m">@messages("submitted.reference", eclReference)</p>
+    <p class="govuk-heading-m">@messages("submitted.reference", eclReference)</p>
 
     <h2 class="govuk-heading-m">@messages("submitted.subHeading")</h2>
 
@@ -60,6 +60,8 @@
 
     <p class="govuk-body">@Html(messages("submitted.return", messages("submitted.return.link", appConfig.yourEclAccountUrl)))</p>
 
+    <h2 class="govuk-heading-m">@messages("exit.h2")</h2>
+    <p class="govuk-body">@messages("exit.p1")</p>
     <p class="govuk-body">@Html(messages("exit.survey", messages("exit.survey.link", appConfig.exitSurveyUrl)))</p>
 
 }

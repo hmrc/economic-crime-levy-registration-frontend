@@ -471,13 +471,10 @@ verificationFailed.subHeading.p1 = Rhowch gynnig arall ar nodi eich Cyfeirnod Un
 verificationFailed.subHeading.p2 = Rhowch gynnig arall ar nodi eich Rhif Cofrestru’r Cwmni (CRN)
 verificationFailed.subHeading.p3 = Rhowch gynnig arall ar nodi eich cod post
 
-feedback.heading = Rhowch eich barn
-feedback.p1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw’ch barn amdano.
-feedback.link = <a href="{0}" class="govuk-link">Anfonwch eich adborth atom</a>
-feedback.p2 = {0}. Bydd eich meddyliau a’ch syniadau’n ein helpu i wneud gwelliannau.
-
-exit.survey.link = <a href="{0}" class="govuk-link">Beth oedd eich barn am y gwasanaeth hwn?</a>
-exit.survey = {0} Mae’r arolwg ymadael yn (cymryd 30 eiliad).
+exit.h2 = Cyn i chi fynd
+exit.p1 = Mae’ch adborth yn ein helpu i wella ein gwasanaeth.
+exit.survey.link = <a href="{0}" class="govuk-link">Llenwch ein harolwg</a>
+exit.survey = {0} i rannu’ch adborth ar y gwasanaeth.
 
 signedOut.title = Er eich diogelwch, gwnaethom eich allgofnodi
 signedOut.heading = Er eich diogelwch, gwnaethom eich allgofnodi
@@ -592,8 +589,6 @@ amendmentRequested.body.p4 = Pan fyddwch yn llenwi’ch datganiad blynyddol, byd
 amendmentRequested.body.p5 = Byddwn yn adolygu’ch atebion. Os oes angen rhagor o wybodaeth arnom mae’n bosibl byddwn yn cysylltu â chi drwy ddefnyddio’r manylion yr ydych wedi eu rhoi. Bydd y broses hon yn cymryd 15 diwrnod gwaith.
 amendmentRequested.body.p6 = Byddwn yn anfon llythyr atoch ar ôl i ni ddiwygio’ch datganiad.
 amendmentRequested.body.address.heading = Byddwn yn anfon llythyr at:
-amendmentRequested.body.p7 = {0} (mae’n cymryd 30 eiliad)
-amendmentRequested.body.p7.link = <a href="{0}" class="govuk-link">Beth oedd eich barn am y gwasanaeth hwn?</a>
 amendmentRequested.list.b1 = y cyfnod cyfrifyddu perthnasol ar gyfer eich sefydliad
 amendmentRequested.list.b2 = eich refeniw yn y DU ar gyfer y cyfnod cyfrifyddu perthnasol
 amendmentRequested.list.b3 = pa mor hir y gwnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
