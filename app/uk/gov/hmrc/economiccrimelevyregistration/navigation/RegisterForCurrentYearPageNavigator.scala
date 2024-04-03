@@ -37,21 +37,25 @@ class RegisterForCurrentYearPageNavigator extends PageNavigator {
     }
 
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
-    eclRegistrationModel.registrationAdditionalInfo match {
-      case Some(additionalInfo) =>
-        additionalInfo.registeringForCurrentYear match {
-          case Some(value) =>
-            if (value) {
-              routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
-            } else {
-              if (additionalInfo.liabilityStartDate.isDefined) {
-                routes.CheckYourAnswersController.onPageLoad()
+    if (eclRegistrationModel.additionalInfoChanged) {
+      eclRegistrationModel.registrationAdditionalInfo match {
+        case Some(additionalInfo) =>
+          additionalInfo.registeringForCurrentYear match {
+            case Some(value) =>
+              if (value) {
+                routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
               } else {
-                routes.LiabilityDateController.onPageLoad(CheckMode)
+                if (additionalInfo.liabilityStartDate.isDefined) {
+                  routes.CheckYourAnswersController.onPageLoad()
+                } else {
+                  routes.LiabilityDateController.onPageLoad(CheckMode)
+                }
               }
-            }
-          case None        => routes.NotableErrorController.answersAreInvalid()
-        }
-      case None                 => routes.NotableErrorController.answersAreInvalid()
+            case None        => routes.NotableErrorController.answersAreInvalid()
+          }
+        case None                 => routes.NotableErrorController.answersAreInvalid()
+      }
+    } else {
+      routes.CheckYourAnswersController.onPageLoad()
     }
 }

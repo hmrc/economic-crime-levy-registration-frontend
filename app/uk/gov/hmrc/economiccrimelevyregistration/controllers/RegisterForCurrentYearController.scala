@@ -119,6 +119,7 @@ class RegisterForCurrentYearController @Inject() (
           (for {
             additionalInfo         <- registrationAdditionalInfoService.get(request.internalId).asResponseError
             liabilityYear           = if (answer) Some(EclTaxYear.currentStartYear()) else None
+            currentAnswer           = additionalInfo.get.liabilityYear.isDefined
             updatedAdditionalInfo   = additionalInfo.get.copy(
                                         registeringForCurrentYear = Some(answer),
                                         liabilityYear = liabilityYear.map(value => LiabilityYear(value))
@@ -128,8 +129,11 @@ class RegisterForCurrentYearController @Inject() (
             updatedRegistration     = request.registration.copy(registrationType = Some(Initial))
             cleanedUpRegistration   = registrationCleanup(updatedRegistration, cleanedUpAdditionalInfo)
             _                      <- registrationService.upsertRegistration(cleanedUpRegistration).asResponseError
-          } yield EclRegistrationModel(cleanedUpRegistration, Some(cleanedUpAdditionalInfo)))
-            .convertToResult(mode = mode, pageNavigator = pageNavigator)
+          } yield EclRegistrationModel(
+            registration = cleanedUpRegistration,
+            registrationAdditionalInfo = Some(cleanedUpAdditionalInfo),
+            additionalInfoChanged = (answer != currentAnswer)
+          )).convertToResult(mode = mode, pageNavigator = pageNavigator)
       )
   }
 

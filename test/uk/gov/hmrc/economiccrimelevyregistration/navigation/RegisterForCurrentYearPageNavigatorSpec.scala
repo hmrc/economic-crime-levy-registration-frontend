@@ -58,7 +58,8 @@ class RegisterForCurrentYearPageNavigatorSpec extends SpecBase {
           routes.NotableErrorController.answersAreInvalid()
     }
   }
-  "navigateInCheckMode"  should {
+
+  "navigateInCheckMode" should {
     "return a call to the Aml Regulated Activity page in Normal Mode when user is registering for current year" in forAll {
       (eclRegistrationModel: EclRegistrationModel, additionalInfo: RegistrationAdditionalInfo) =>
         val updatedAdditionalInfo    = additionalInfo.copy(registeringForCurrentYear = Some(true))
@@ -74,7 +75,10 @@ class RegisterForCurrentYearPageNavigatorSpec extends SpecBase {
         val updatedAdditionalInfo    =
           additionalInfo.copy(liabilityStartDate = Some(date), registeringForCurrentYear = Some(false))
         val updatedRegistrationModel =
-          eclRegistrationModel.copy(registrationAdditionalInfo = Some(updatedAdditionalInfo))
+          eclRegistrationModel.copy(
+            registrationAdditionalInfo = Some(updatedAdditionalInfo),
+            additionalInfoChanged = true
+          )
 
         pageNavigator.nextPage(CheckMode, updatedRegistrationModel) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
@@ -85,12 +89,28 @@ class RegisterForCurrentYearPageNavigatorSpec extends SpecBase {
         val updatedAdditionalInfo    =
           additionalInfo.copy(liabilityStartDate = None, registeringForCurrentYear = Some(false))
         val updatedRegistrationModel =
-          eclRegistrationModel.copy(registrationAdditionalInfo = Some(updatedAdditionalInfo))
+          eclRegistrationModel.copy(
+            registrationAdditionalInfo = Some(updatedAdditionalInfo),
+            additionalInfoChanged = true
+          )
 
         pageNavigator.nextPage(CheckMode, updatedRegistrationModel) shouldBe
           routes.LiabilityDateController.onPageLoad(CheckMode)
     }
 
+    "return a call to check your answers page if data has not changed" in forAll {
+      (eclRegistrationModel: EclRegistrationModel, additionalInfo: RegistrationAdditionalInfo) =>
+        val updatedAdditionalInfo    =
+          additionalInfo.copy(liabilityStartDate = None, registeringForCurrentYear = Some(false))
+        val updatedRegistrationModel =
+          eclRegistrationModel.copy(
+            registrationAdditionalInfo = Some(updatedAdditionalInfo),
+            additionalInfoChanged = false
+          )
+
+        pageNavigator.nextPage(CheckMode, updatedRegistrationModel) shouldBe
+          routes.CheckYourAnswersController.onPageLoad()
+    }
   }
 
 }
