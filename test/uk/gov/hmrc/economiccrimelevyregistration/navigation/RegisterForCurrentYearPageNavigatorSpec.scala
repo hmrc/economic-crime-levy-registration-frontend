@@ -77,7 +77,7 @@ class RegisterForCurrentYearPageNavigatorSpec extends SpecBase {
         val updatedRegistrationModel =
           eclRegistrationModel.copy(
             registrationAdditionalInfo = Some(updatedAdditionalInfo),
-            additionalInfoChanged = true
+            hasAdditionalInfoChanged = true
           )
 
         pageNavigator.nextPage(CheckMode, updatedRegistrationModel) shouldBe
@@ -91,7 +91,7 @@ class RegisterForCurrentYearPageNavigatorSpec extends SpecBase {
         val updatedRegistrationModel =
           eclRegistrationModel.copy(
             registrationAdditionalInfo = Some(updatedAdditionalInfo),
-            additionalInfoChanged = true
+            hasAdditionalInfoChanged = true
           )
 
         pageNavigator.nextPage(CheckMode, updatedRegistrationModel) shouldBe
@@ -105,7 +105,7 @@ class RegisterForCurrentYearPageNavigatorSpec extends SpecBase {
         val updatedRegistrationModel =
           eclRegistrationModel.copy(
             registrationAdditionalInfo = Some(updatedAdditionalInfo),
-            additionalInfoChanged = false
+            hasAdditionalInfoChanged = false
           )
 
         pageNavigator.nextPage(CheckMode, updatedRegistrationModel) shouldBe

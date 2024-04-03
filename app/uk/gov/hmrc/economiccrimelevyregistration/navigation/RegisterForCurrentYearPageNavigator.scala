@@ -37,7 +37,7 @@ class RegisterForCurrentYearPageNavigator extends PageNavigator {
     }
 
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
-    if (eclRegistrationModel.additionalInfoChanged) {
+    if (eclRegistrationModel.hasAdditionalInfoChanged) {
       eclRegistrationModel.registrationAdditionalInfo match {
         case Some(additionalInfo) =>
           additionalInfo.registeringForCurrentYear match {

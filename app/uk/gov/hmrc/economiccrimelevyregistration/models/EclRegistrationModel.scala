@@ -20,5 +20,5 @@ case class EclRegistrationModel(
   registration: Registration,
   registrationAdditionalInfo: Option[RegistrationAdditionalInfo] = None,
   hasRegistrationChanged: Boolean = false,
-  additionalInfoChanged: Boolean = false
+  hasAdditionalInfoChanged: Boolean = false
 )

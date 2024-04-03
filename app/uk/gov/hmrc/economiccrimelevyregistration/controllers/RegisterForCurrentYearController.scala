@@ -132,7 +132,7 @@ class RegisterForCurrentYearController @Inject() (
           } yield EclRegistrationModel(
             registration = cleanedUpRegistration,
             registrationAdditionalInfo = Some(cleanedUpAdditionalInfo),
-            additionalInfoChanged = (answer != currentAnswer)
+            hasAdditionalInfoChanged = (answer != currentAnswer)
           )).convertToResult(mode = mode, pageNavigator = pageNavigator)
       )
   }
