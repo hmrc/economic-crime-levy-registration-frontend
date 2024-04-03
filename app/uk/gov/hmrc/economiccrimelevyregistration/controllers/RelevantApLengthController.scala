@@ -20,7 +20,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.RelevantApLengthDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RelevantApLengthFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class RelevantApLengthController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataAction,
   storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: RelevantApLengthFormProvider,

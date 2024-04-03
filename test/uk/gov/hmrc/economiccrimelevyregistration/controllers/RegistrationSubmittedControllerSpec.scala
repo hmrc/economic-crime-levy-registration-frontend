@@ -41,7 +41,7 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
     val controller = new RegistrationSubmittedController(
       mcc,
       fakeAuthorisedActionWithoutEnrolmentCheck(testInternalId),
-      fakeDataRetrievalAction(registrationData, additionalInfo),
+      fakeRegistrationDataAction(registrationData, additionalInfo),
       view,
       outOfSessionRegistrationSubmittedView,
       mockRegistrationAdditionalInfoService,

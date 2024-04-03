@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 
 class PartnershipNamePageNavigatorSpec extends SpecBase {
@@ -41,7 +42,7 @@ class PartnershipNamePageNavigatorSpec extends SpecBase {
           registration.copy(partnershipName = Some(partnershipName))
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+          routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial))
     }
 
     Seq(NormalMode, CheckMode).foreach { mode =>

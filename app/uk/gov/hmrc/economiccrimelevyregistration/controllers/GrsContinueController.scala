@@ -18,9 +18,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.ResponseError
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
@@ -38,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class GrsContinueController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataAction,
   storeUrl: StoreUrlAction,
   incorporatedEntityIdentificationFrontendConnector: IncorporatedEntityIdentificationFrontendConnector,
   soleTraderIdentificationFrontendConnector: SoleTraderIdentificationFrontendConnector,
@@ -147,10 +148,12 @@ class GrsContinueController @Inject() (
                     if (request.registration.partnershipName.isEmpty) {
                       routes.PartnershipNameController.onPageLoad(mode)
                     } else {
-                      routes.CheckYourAnswersController.onPageLoad()
+                      routes.CheckYourAnswersController
+                        .onPageLoad(request.registration.registrationType.getOrElse(Initial))
                     }
                   case _                                        =>
-                    routes.CheckYourAnswersController.onPageLoad()
+                    routes.CheckYourAnswersController
+                      .onPageLoad(request.registration.registrationType.getOrElse(Initial))
                 })
             }
           case EclSubscriptionStatus(Subscribed(eclRegistrationReference))   =>

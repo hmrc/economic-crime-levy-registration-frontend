@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityDateFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, LiabilityYear, Mode, SessionKeys}
@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class LiabilityDateController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataAction,
   storeUrl: StoreUrlAction,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   formProvider: LiabilityDateFormProvider,

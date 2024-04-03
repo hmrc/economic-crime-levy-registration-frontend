@@ -7,6 +7,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CharityRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour {
@@ -145,7 +146,9 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(
+        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+      )
     }
 
   }

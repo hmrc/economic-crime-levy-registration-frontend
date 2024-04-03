@@ -49,7 +49,8 @@ lazy val root = (project in file("."))
           Seq(
             "javascripts/prevent-resubmit-warning.js",
             "javascripts/print-dialogue.js",
-            "javascripts/accessible-autocomplete-fixes.js"
+            "javascripts/accessible-autocomplete-fixes.js",
+            "javascripts/onpageshow.js"
           )
         )
     ),

@@ -22,8 +22,7 @@ import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.StoreUrlAction
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction, RegistrationDataOrErrorAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionKeys, _}
@@ -45,7 +44,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataOrErrorAction,
   storeUrl: StoreUrlAction,
   registrationService: EclRegistrationService,
   val controllerComponents: MessagesControllerComponents,
@@ -61,7 +60,7 @@ class CheckYourAnswersController @Inject() (
     with BaseController
     with ErrorHandler {
 
-  def onPageLoad(): Action[AnyContent] =
+  def onPageLoad(registrationType: RegistrationType): Action[AnyContent] =
     (authorise andThen getRegistrationData andThen storeUrl).async { implicit request =>
       registrationService
         .getRegistrationValidationErrors(request.internalId)
@@ -319,7 +318,7 @@ class CheckYourAnswersController @Inject() (
   private def base64EncodeHtmlView(html: String): String = Base64.getEncoder
     .encodeToString(html.getBytes)
 
-  def encodeAmendmentHtmlForPdf(
+  private def encodeAmendmentHtmlForPdf(
     pdfViewModel: PdfViewModel
   )(implicit request: RegistrationDataRequest[_]): String = {
     val date = LocalDate.now

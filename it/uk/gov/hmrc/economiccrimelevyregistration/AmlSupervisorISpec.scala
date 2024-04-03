@@ -112,7 +112,10 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
                   redirectLocation(result) shouldBe Some(routes.EntityTypeController.onPageLoad(NormalMode).url)
               }
             }
-          case _          => redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+          case _          =>
+            redirectLocation(result) shouldBe Some(
+              routes.CheckYourAnswersController.onPageLoad(registrationType).url
+            )
         }
       }
 

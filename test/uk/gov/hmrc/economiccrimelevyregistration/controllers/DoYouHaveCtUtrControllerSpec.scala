@@ -55,7 +55,7 @@ class DoYouHaveCtUtrControllerSpec extends SpecBase {
     val controller = new DoYouHaveCtUtrController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       formProvider,
       mockEclRegistrationService,

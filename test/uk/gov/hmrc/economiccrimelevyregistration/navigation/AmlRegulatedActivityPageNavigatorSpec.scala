@@ -69,7 +69,7 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
           CheckMode,
           EclRegistrationModel(registration = registration, hasRegistrationChanged = false)
         ) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
   }
 

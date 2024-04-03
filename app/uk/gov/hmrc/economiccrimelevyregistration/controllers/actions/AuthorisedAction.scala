@@ -16,18 +16,21 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
+import cats.data.EitherT
 import com.google.inject.{ImplementedBy, Inject}
 import play.api.Logging
 import play.api.mvc.Results._
-import play.api.mvc._
+import play.api.mvc.{request, _}
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{ErrorHandler, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{ErrorCode, ResponseError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -202,20 +205,7 @@ abstract class BaseAuthorisedAction @Inject() (
             )
           )
         } else {
-          (for {
-            registration <- eclRegistrationService.getOrCreate(internalId).asResponseError
-          } yield registration).foldF(
-            _ => Future.successful(Redirect(routes.NotableErrorController.registrationFailed())),
-            registration =>
-              registration.registrationType match {
-                case None                             =>
-                  Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
-                case Some(Amendment | DeRegistration) =>
-                  block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
-                case Some(Initial)                    =>
-                  Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
-              }
-          )
+          retrieveRegistrationAndRedirect(request, internalId, block, groupId, eclRegistrationReference)
         }
       case None    =>
         (for {
@@ -227,13 +217,69 @@ abstract class BaseAuthorisedAction @Inject() (
         )
     }
 
+  private def retrieveRegistrationAndRedirect[A](
+    request: Request[A],
+    internalId: String,
+    block: AuthorisedRequest[A] => Future[Result],
+    groupId: String,
+    eclRegistrationReference: Option[String]
+  )(implicit hc: HeaderCarrier): Future[Result] = {
+    val redirectRegType = (registration: Registration) =>
+      registration.registrationType match {
+        case None                             =>
+          Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
+        case Some(Amendment | DeRegistration) =>
+          block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
+        case Some(Initial)                    =>
+          Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
+      }
+
+    val initialUrl = routes.CheckYourAnswersController.onPageLoad(Initial).url
+    val amendUrl   = routes.CheckYourAnswersController.onPageLoad(Amendment).url
+    request.uri match {
+      case uri if uri == initialUrl || uri == amendUrl =>
+        (for {
+          registrationOption <- eclRegistrationService.get(internalId).asResponseError
+          registration       <- extractRegistration(registrationOption)
+        } yield registration).foldF(
+          error =>
+            error.code match {
+              case ErrorCode.NotFound =>
+                if (uri == initialUrl) {
+                  Future.successful(Redirect(routes.NotableErrorController.youHaveAlreadyRegistered().url))
+                } else {
+                  Future.successful(Redirect(routes.NotableErrorController.youAlreadyRequestedToAmend().url))
+                }
+              case _                  => Future.failed(new Exception(error.message))
+            },
+          registration => redirectRegType(registration)
+        )
+      case _                                           =>
+        (for {
+          registration <- eclRegistrationService.getOrCreate(internalId).asResponseError
+        } yield registration).foldF(
+          _ => Future.successful(Redirect(routes.NotableErrorController.registrationFailed())),
+          registration => redirectRegType(registration)
+        )
+    }
+  }
+
+  private def extractRegistration(registrationOption: Option[Registration]) =
+    EitherT {
+      Future.successful(
+        registrationOption match {
+          case Some(registration) => Right(registration)
+          case None               => Left(ResponseError.notFoundError("Failed to find registration"))
+        }
+      )
+    }
   private def processAssistant[A](
     request: Request[A],
     internalId: String,
     block: AuthorisedRequest[A] => Future[Result],
     groupId: String,
     eclRegistrationReference: Option[String]
-  ): Future[Result] =
+  ): Future[Result]                                                         =
     if (assistantsAllowed) {
       block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
     } else {

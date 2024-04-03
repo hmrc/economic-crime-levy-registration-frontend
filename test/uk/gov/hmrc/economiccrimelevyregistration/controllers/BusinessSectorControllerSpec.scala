@@ -54,7 +54,7 @@ class BusinessSectorControllerSpec extends SpecBase {
     val controller = new BusinessSectorController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,

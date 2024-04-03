@@ -55,7 +55,7 @@ class RelevantAp12MonthsControllerSpec extends SpecBase {
     val controller = new RelevantAp12MonthsController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,
