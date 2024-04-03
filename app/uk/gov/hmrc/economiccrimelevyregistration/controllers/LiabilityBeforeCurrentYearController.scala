@@ -111,7 +111,9 @@ class LiabilityBeforeCurrentYearController @Inject() (
     mode match {
       case NormalMode => navigateInNormalMode(liableBeforeCurrentYear, registration, mode)
       case CheckMode  =>
-        if (!liableBeforeCurrentYear || info.liabilityStartDate.isDefined) {
+        if (!liableBeforeCurrentYear && registration.isVoid) {
+          routes.NotLiableController.youDoNotNeedToRegister()
+        } else if (!liableBeforeCurrentYear || info.liabilityStartDate.isDefined) {
           routes.CheckYourAnswersController.onPageLoad()
         } else {
           routes.LiabilityDateController.onPageLoad(CheckMode)

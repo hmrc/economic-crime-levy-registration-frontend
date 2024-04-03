@@ -103,6 +103,11 @@ final case class Registration(
 
   def otherEntityJourneyData: OtherEntityJourneyData =
     optOtherEntityJourneyData.getOrElse(OtherEntityJourneyData.empty())
+
+  def isVoid = Seq(
+    carriedOutAmlRegulatedActivityInCurrentFy,
+    revenueMeetsThreshold
+  ).exists(_.contains(false))
 }
 
 object Registration {
