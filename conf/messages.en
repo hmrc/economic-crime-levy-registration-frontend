@@ -53,7 +53,7 @@ start.p1 = Use this service to register for the Economic Crime Levy (ECL) if you
 start.b1 = regulated by HMRC for anti-money laundering (AML) supervision
 start.b2 = regulated by one of the Professional Body Supervisors (PBS) for AML supervision
 start.p2 = Check if you {0}.
-start.p2.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">need to pay the levy</a>
+start.p2.link = <a target="_blank" href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">need to pay the levy (opens in a new tab)</a>
 start.p3 = If you are part of a business group, you must register for each entity in your group that meets the requirements.
 start.p4 = You will be able to submit a return and pay the levy after you have registered. You must pay the levy by 30 September {0}. You will be charged interest if you make a late payment.
 start.beforeYouStart = Before you start
@@ -61,7 +61,7 @@ start.provide = You will need to tell us:
 start.provide.b1 = about any accounting periods for your organisation ending in the relevant financial year
 start.provide.b2 = about your organisation''s UK revenue in any relevant accounting periods
 start.provide.b3 = if your organisation carried out AML-regulated activity at any point during the financial year
-start.provide.b4 = details we can use to confirm the identity of your business, <a href="https://www.gov.uk/guidance/register-for-the-economic-crime-levy" class="govuk-link">see list of details needed</a>
+start.provide.b4 = details we can use to confirm the identity of your business, <a target="_blank" href="https://www.gov.uk/guidance/register-for-the-economic-crime-levy" class="govuk-link">see list of details needed (opens in a new tab)</a>
 start.provide.b5 = the business sector your organisation operates in
 start.provide.b6 = the details of someone in your organisation who can act as a point of contact for any activities related to the ECL
 start.doNotUse = Do not use this service if:
@@ -160,19 +160,19 @@ ukRevenue.hidden.b1 = trade discounts
 ukRevenue.hidden.b2 = value added tax (VAT)
 ukRevenue.hidden.b3 = any other taxes based on your turnover
 
-relevantApLength.title = How long is your relevant accounting period?
-relevantApLength.heading = How long is your relevant accounting period?
+relevantApLength.title = Your relevant accounting period
+relevantApLength.heading = Your relevant accounting period
 relevantApLength.p1 = Your relevant accounting period is any accounting period that ends in the financial year. It is based on the accounting period you use for your Company Tax Return.
 relevantApLength.p2 = You may have more than one relevant accounting period ending in the financial year.
 relevantApLength.p3 = For the purposes of the ECL, the financial year starts on 1 April and ends on 31 March of the following year.
-relevantApLength.hint = Enter the length of your accounting period in days
+relevantApLength.hint = This is the number of days you carried out AML-regulated activity
 relevantApLength.ex.heading = Example
 relevantApLength.ex.p1 = Your relevant accounting period is 9 months. It starts on 1 January and ends on 30 September of the same year.
 relevantApLength.ex.p2 = This accounting period ends during the financial year for the ECL. This year starts on 1 April and ends on 31 March of the following year.
 relevantApLength.ex.p3 = Your business is regulated for anti-money laundering (AML) purposes throughout your entire relevant accounting period. This period is 9 months long.
 relevantApLength.ex.p4 = Your revenue for this accounting period is £20 million.
 relevantApLength.ex.p5 = Based on this example, your business would be liable to register for the ECL.
-relevantApLength.error.required = Enter the length
+relevantApLength.error.required = Enter the length of your accounting period in days
 relevantApLength.error.wholeNumber = Length must be a whole number
 relevantApLength.error.nonNumeric = Length must be a whole number
 relevantApLength.error.outOfRange = Length must be between {0} and {1} days
@@ -471,13 +471,10 @@ verificationFailed.subHeading.p1 = Try entering your Unique Tax Reference (UTR) 
 verificationFailed.subHeading.p2 = Try entering your Company Registration Number (CRN) again
 verificationFailed.subHeading.p3 = Try entering your postcode again
 
-feedback.heading = Tell us what you think
-feedback.p1 = This is a new service and we want to know what you think of it.
-feedback.link = <a href="{0}" class="govuk-link">Send us your feedback</a>
-feedback.p2 = {0}. Your thoughts and ideas will help us to make improvements.
-
-exit.survey.link = <a href="{0}" class="govuk-link">What did you think of this service?</a>
-exit.survey = {0} (takes 30 seconds) to exit survey.
+exit.h2 = Before you go
+exit.p1 = Your feedback helps us make our service better.
+exit.survey.link = <a href="{0}" class="govuk-link">Take a short survey</a>
+exit.survey = {0} to share your feedback on this service.
 
 signedOut.title = For your security, we signed you out
 signedOut.heading = For your security, we signed you out
@@ -592,8 +589,6 @@ amendmentRequested.body.p4 = When you complete your yearly return, you will need
 amendmentRequested.body.p5 = We will review your answers. We may contact you using the details you provided if we need any more information. This process will take up to 15 working days.
 amendmentRequested.body.p6 = We will send you a letter once we''ve amended your registration.
 amendmentRequested.body.address.heading = We will send the letter to:
-amendmentRequested.body.p7 = {0} (takes 30 seconds)
-amendmentRequested.body.p7.link = <a href="{0}" class="govuk-link">What did you think of this service?</a>
 amendmentRequested.list.b1 = the relevant accounting period for your organisation
 amendmentRequested.list.b2 = your UK revenue for the relevant accounting period
 amendmentRequested.list.b3 = how long you carried out AML-regulated activities for during the financial year

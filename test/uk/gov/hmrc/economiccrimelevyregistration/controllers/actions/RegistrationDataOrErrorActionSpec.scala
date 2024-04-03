@@ -29,6 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalErro
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+
 import uk.gov.hmrc.http.HttpVerbs.GET
 
 import scala.concurrent.Future
