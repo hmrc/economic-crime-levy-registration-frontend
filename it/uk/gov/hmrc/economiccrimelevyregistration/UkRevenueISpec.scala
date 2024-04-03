@@ -17,72 +17,78 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
   val revenueGen: Gen[Long] = Gen.chooseNum[Long](minRevenue, maxRevenue)
 
-  s"GET ${routes.UkRevenueController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.UkRevenueController.onPageLoad(NormalMode))
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"GET ${routes.UkRevenueController.onPageLoad(mode).url}" should {
+      behave like authorisedActionWithEnrolmentCheckRoute(routes.UkRevenueController.onPageLoad(mode))
 
-    "respond with 200 status and the UK revenue view" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      "respond with 200 status and the UK revenue view" in {
+        stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
-        )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+        val registration   = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
+        val additionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistrationWithEmptyAdditionalInfo(registration)
-      stubSessionForStoreUrl()
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+        stubGetRegistrationWithEmptyAdditionalInfo(registration)
+        stubSessionForStoreUrl()
 
-      val result = callRoute(FakeRequest(routes.UkRevenueController.onPageLoad(NormalMode)))
+        val result = callRoute(FakeRequest(routes.UkRevenueController.onPageLoad(mode)))
 
-      status(result) shouldBe OK
+        status(result) shouldBe OK
 
-      html(result) should include("Total UK revenue")
-    }
-  }
-
-  s"POST ${routes.UkRevenueController.onSubmit(NormalMode).url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.UkRevenueController.onSubmit(NormalMode))
-
-    "save the UK revenue then redirect to the liability before current year page if the amount due is more than 0" in {
-      stubAuthorisedWithNoGroupEnrolment()
-
-      val registration   = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
-        )
-      val ukRevenue      = revenueGen.sample.get
-      val additionalInfo = random[RegistrationAdditionalInfo]
-
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistrationWithEmptyAdditionalInfo(registration.copy(relevantAp12Months = Some(true)))
-
-      val updatedRegistration = registration.copy(
-        relevantAp12Months = Some(true),
-        relevantApRevenue = Some(ukRevenue),
-        revenueMeetsThreshold = Some(true)
-      )
-      stubUpsertRegistration(updatedRegistration)
-      stubCalculateLiability(
-        CalculateLiabilityRequest(EclTaxYear.yearInDays, EclTaxYear.yearInDays, ukRevenue),
-        liable = true
-      )
-
-      val result = callRoute(
-        FakeRequest(routes.UkRevenueController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", ukRevenue.toString))
-      )
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(
-        routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode).url
-      )
+        html(result) should include("Total UK revenue")
+      }
     }
 
-    "save the UK revenue then redirect to the liable for previous year page if the amount due is 0" in {
+    s"POST ${routes.UkRevenueController.onSubmit(mode).url}"  should {
+      behave like authorisedActionWithEnrolmentCheckRoute(routes.UkRevenueController.onSubmit(mode))
+
+      s"save the UK revenue then redirect to the liability before current year page if the amount due is more than 0 in $mode" in {
+        stubAuthorisedWithNoGroupEnrolment()
+
+        val registration   = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
+        val ukRevenue      = revenueGen.sample.get
+        val additionalInfo = random[RegistrationAdditionalInfo]
+
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+        stubGetRegistrationWithEmptyAdditionalInfo(registration.copy(relevantAp12Months = Some(true)))
+
+        val updatedRegistration = registration.copy(
+          relevantAp12Months = Some(true),
+          relevantApRevenue = Some(ukRevenue),
+          revenueMeetsThreshold = Some(true)
+        )
+        stubUpsertRegistration(updatedRegistration)
+        stubCalculateLiability(
+          CalculateLiabilityRequest(EclTaxYear.yearInDays, EclTaxYear.yearInDays, ukRevenue),
+          liable = true
+        )
+
+        val result = callRoute(
+          FakeRequest(routes.UkRevenueController.onSubmit(mode))
+            .withFormUrlEncodedBody(("value", ukRevenue.toString))
+        )
+
+        status(result) shouldBe SEE_OTHER
+
+        mode match {
+          case NormalMode =>
+            redirectLocation(result) shouldBe Some(
+              routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode).url
+            )
+          case CheckMode  => redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+        }
+      }
+    }
+
+    s"save the UK revenue then redirect to the liable for previous year page if the amount due is 0 in $mode" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration = random[Registration]
@@ -111,14 +117,14 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       )
 
       val result = callRoute(
-        FakeRequest(routes.UkRevenueController.onSubmit(NormalMode))
+        FakeRequest(routes.UkRevenueController.onSubmit(mode))
           .withFormUrlEncodedBody(("value", ukRevenue.toString))
       )
 
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(
-        routes.LiabilityBeforeCurrentYearController.onPageLoad(NormalMode).url
+        routes.LiabilityBeforeCurrentYearController.onPageLoad(mode).url
       )
     }
   }

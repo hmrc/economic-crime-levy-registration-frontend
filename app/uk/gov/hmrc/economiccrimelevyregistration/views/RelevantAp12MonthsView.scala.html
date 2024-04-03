@@ -67,12 +67,10 @@
             content = HtmlContent(accPeriodDetails)
         ))
 
-        <h2 class="govuk-heading-m">@messages("relevantAp12Months.question")</h2>
-
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(messages("relevantAp12Months.heading")).asHidden(),
+                legend = LegendViewModel(messages("relevantAp12Months.question")).withSize(),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),

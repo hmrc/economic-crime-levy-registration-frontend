@@ -16,32 +16,32 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.utils
 
+import org.scalatest.prop.TableFor3
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 
 import java.time.LocalDate
 
 class EclTaxYearSpec extends SpecBase {
 
+  val testParameters: TableFor3[LocalDate, Int, Int] = Table(
+    ("currentDate", "startOfEclTaxYear", "expectedYearDue"),
+    (LocalDate.of(2023, 9, 29), 2022, 2023),
+    (LocalDate.of(2024, 9, 29), 2023, 2024),
+    (LocalDate.of(2025, 9, 29), 2024, 2025),
+    (LocalDate.of(2026, 9, 29), 2025, 2026),
+    (LocalDate.of(2027, 9, 29), 2026, 2027),
+    (LocalDate.of(2024, 10, 1), 2024, 2025),
+    (LocalDate.of(2025, 10, 1), 2025, 2026),
+    (LocalDate.of(2026, 10, 1), 2026, 2027),
+    (LocalDate.of(2027, 10, 1), 2027, 2028),
+    (LocalDate.of(2028, 10, 1), 2028, 2029)
+  )
+
   "calculateYearDue" should {
-    "return 2023 if the current date is before 30th September 2023" in {
-      EclTaxYear.calculateYearDue(currentDate = LocalDate.of(2023, 9, 29))
-    }
-
-    "return 2024 if the current date is before 30th September 2024 but after 30th September 2023" in {
-      EclTaxYear.calculateYearDue(currentDate = LocalDate.of(2024, 9, 29))
-    }
-
-    "return 2025 if the current date is before 30th September 2025 but after 30th September 2024" in {
-      EclTaxYear.calculateYearDue(currentDate = LocalDate.of(2025, 9, 29))
-    }
-
-    "return 2026 if the current date is before 30th September 2025 but after 30th September 2025" in {
-      EclTaxYear.calculateYearDue(currentDate = LocalDate.of(2026, 9, 29))
-    }
-
-    "return 2027 if the current date is before 30th September 2025 but after 30th September 2026" in {
-      EclTaxYear.calculateYearDue(currentDate = LocalDate.of(2027, 9, 29))
+    "return expected year due" in forAll(testParameters) {
+      (currentDate: LocalDate, startOfEclTaxYear, expectedYearDue: Int) =>
+        val yearDue: Int = EclTaxYear.calculateYearDue(yearDue = startOfEclTaxYear, currentDate = currentDate)
+        expectedYearDue shouldBe yearDue
     }
   }
-
 }

@@ -21,36 +21,52 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 
-class FirstContactRolePageDeregisterNavigatorSpec extends SpecBase {
+class FirstContactNumberPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new FirstContactRolePageNavigator()
+  val pageNavigator = new FirstContactNumberPageNavigator()
 
   "nextPage" should {
-    "return a Call to the first contact email page in NormalMode" in forAll {
-      (registration: Registration, role: String) =>
+    "return a Call to the add another contact page in NormalMode" in forAll {
+      (registration: Registration, number: String) =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
             registration.contacts.copy(firstContactDetails =
-              registration.contacts.firstContactDetails.copy(role = Some(role))
+              registration.contacts.firstContactDetails.copy(telephoneNumber = Some(number))
             )
           )
 
         pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          contacts.routes.FirstContactEmailController.onPageLoad(NormalMode)
+          contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)
     }
 
     "return a Call to the check your answers page in CheckMode" in forAll {
-      (registration: Registration, role: String) =>
+      (registration: Registration, number: String) =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
             registration.contacts.copy(firstContactDetails =
-              registration.contacts.firstContactDetails.copy(role = Some(role))
+              registration.contacts.firstContactDetails.copy(telephoneNumber = Some(number))
             )
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad()
     }
+
+    Seq(NormalMode, CheckMode).foreach { mode =>
+      s"return a call to the answers are invalid page when there is no first contact telephone number present in $mode " in forAll {
+        registration: Registration =>
+          val updatedRegistration: Registration =
+            registration.copy(contacts =
+              registration.contacts.copy(firstContactDetails =
+                registration.contacts.firstContactDetails.copy(telephoneNumber = None)
+              )
+            )
+
+          pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)) shouldBe
+            routes.NotableErrorController.answersAreInvalid()
+      }
+    }
+
   }
 
 }

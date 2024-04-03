@@ -11,77 +11,82 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup._
 
 class IsUkAddressISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.IsUkAddressController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.IsUkAddressController.onPageLoad(NormalMode))
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"GET ${routes.IsUkAddressController.onPageLoad(mode).url}" should {
+      behave like authorisedActionWithEnrolmentCheckRoute(routes.IsUkAddressController.onPageLoad(mode))
 
-    "respond with 200 status and the is UK address HTML view" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      "respond with 200 status and the is UK address HTML view" in {
+        stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
-        )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+        val registration   = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
+        val additionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistrationWithEmptyAdditionalInfo(registration)
-      stubSessionForStoreUrl()
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+        stubGetRegistrationWithEmptyAdditionalInfo(registration)
+        stubSessionForStoreUrl()
 
-      val result = callRoute(FakeRequest(routes.IsUkAddressController.onPageLoad(NormalMode)))
+        val result = callRoute(FakeRequest(routes.IsUkAddressController.onPageLoad(mode)))
 
-      status(result) shouldBe OK
+        status(result) shouldBe OK
 
-      html(result) should include("Is your contact address based in the UK?")
+        html(result) should include("Is your contact address based in the UK?")
+      }
     }
   }
 
-  s"POST ${routes.IsUkAddressController.onSubmit(NormalMode).url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.IsUkAddressController.onSubmit(NormalMode))
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"POST ${routes.IsUkAddressController.onSubmit(mode).url}" should {
+      behave like authorisedActionWithEnrolmentCheckRoute(routes.IsUkAddressController.onSubmit(mode))
 
-    "save the selected address option then redirect to the address lookup frontend journey" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      "save the selected address option then redirect to the address lookup frontend journey" in {
+        stubAuthorisedWithNoGroupEnrolment()
 
-      val contactAddressIsUk = random[Boolean]
-      val registration       = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
+        val contactAddressIsUk = random[Boolean]
+        val registration       = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
+        val additionalInfo     = random[RegistrationAdditionalInfo]
+
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+
+        val alfLabels = AlfEnCyLabels(appConfig)
+
+        val expectedJourneyConfig: AlfJourneyConfig =
+          AlfJourneyConfig(
+            options = AlfOptions(
+              continueUrl =
+                s"http://localhost:14000/register-for-economic-crime-levy/address-lookup-continue/${mode.toString.toLowerCase}",
+              homeNavHref = "/register-for-economic-crime-levy",
+              signOutHref = "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
+              accessibilityFooterUrl = "/accessibility-statement/economic-crime-levy",
+              deskProServiceName = "economic-crime-levy-registration-frontend",
+              ukMode = contactAddressIsUk
+            ),
+            labels = alfLabels
+          )
+
+        stubGetRegistrationWithEmptyAdditionalInfo(registration)
+        stubInitAlfJourney(expectedJourneyConfig)
+
+        val updatedRegistration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
+
+        stubUpsertRegistration(updatedRegistration)
+
+        val result = callRoute(
+          FakeRequest(routes.IsUkAddressController.onSubmit(mode))
+            .withFormUrlEncodedBody(("value", contactAddressIsUk.toString))
         )
-      val additionalInfo     = random[RegistrationAdditionalInfo]
 
-      stubGetRegistrationAdditionalInfo(additionalInfo)
+        status(result) shouldBe SEE_OTHER
 
-      val alfLabels = AlfEnCyLabels(appConfig)
-
-      val expectedJourneyConfig: AlfJourneyConfig =
-        AlfJourneyConfig(
-          options = AlfOptions(
-            continueUrl = "http://localhost:14000/register-for-economic-crime-levy/address-lookup-continue/normalmode",
-            homeNavHref = "/register-for-economic-crime-levy",
-            signOutHref = "http://localhost:14000/register-for-economic-crime-levy/account/sign-out-survey",
-            accessibilityFooterUrl = "/accessibility-statement/economic-crime-levy",
-            deskProServiceName = "economic-crime-levy-registration-frontend",
-            ukMode = contactAddressIsUk
-          ),
-          labels = alfLabels
-        )
-
-      stubGetRegistrationWithEmptyAdditionalInfo(registration)
-      stubInitAlfJourney(expectedJourneyConfig)
-
-      val updatedRegistration = registration.copy(contactAddressIsUk = Some(contactAddressIsUk))
-
-      stubUpsertRegistration(updatedRegistration)
-
-      val result = callRoute(
-        FakeRequest(routes.IsUkAddressController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", contactAddressIsUk.toString))
-      )
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some("test-url")
+        redirectLocation(result) shouldBe Some("test-url")
+      }
     }
   }
 }

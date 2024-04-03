@@ -41,7 +41,7 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
   s"POST ${routes.CharityRegistrationNumberController.onSubmit(NormalMode).url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.CharityRegistrationNumberController.onSubmit(NormalMode))
 
-    "save the charity registration number then redirect to the business sector page" in {
+    "save the charity registration number then redirect to the Do you have a Utr page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
       val charityNumber = stringsWithMaxLength(CharityRegistrationNumberMaxLength).sample.get
@@ -74,6 +74,80 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
         routes.DoYouHaveUtrController.onPageLoad(mode = NormalMode).url
       )
     }
+  }
+
+  s"POST ${routes.CharityRegistrationNumberController.onSubmit(CheckMode).url}"   should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.CharityRegistrationNumberController.onSubmit(CheckMode))
+
+    "save the charity registration number then redirect to the Do you have a Utr page if isCtUtrPresent value is empty" in {
+      stubAuthorisedWithNoGroupEnrolment()
+
+      val charityNumber = stringsWithMaxLength(CharityRegistrationNumberMaxLength).sample.get
+      val data          = OtherEntityJourneyData.empty().copy(isCtUtrPresent = None)
+
+      val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue()),
+          optOtherEntityJourneyData = Some(data)
+        )
+
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
+
+      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(charityRegistrationNumber = Some(charityNumber))
+      val updatedRegistration    = registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+
+      stubUpsertRegistration(updatedRegistration)
+
+      val result = callRoute(
+        FakeRequest(routes.CharityRegistrationNumberController.onSubmit(CheckMode))
+          .withFormUrlEncodedBody(("value", charityNumber))
+      )
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(
+        routes.DoYouHaveUtrController.onPageLoad(mode = CheckMode).url
+      )
+    }
+
+    "save the charity registration number then redirect to the Check Your Answers page if isCtUtrPresent value is present" in {
+      stubAuthorisedWithNoGroupEnrolment()
+
+      val charityNumber  = stringsWithMaxLength(CharityRegistrationNumberMaxLength).sample.get
+      val isCtUtrPresent = random[Boolean]
+      val data           = OtherEntityJourneyData.empty().copy(isCtUtrPresent = Some(isCtUtrPresent))
+
+      val registration = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          relevantApRevenue = Some(randomApRevenue()),
+          optOtherEntityJourneyData = Some(data)
+        )
+
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationAdditionalInfo(additionalInfo)
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
+
+      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(charityRegistrationNumber = Some(charityNumber))
+      val updatedRegistration    = registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
+
+      stubUpsertRegistration(updatedRegistration)
+
+      val result = callRoute(
+        FakeRequest(routes.CharityRegistrationNumberController.onSubmit(CheckMode))
+          .withFormUrlEncodedBody(("value", charityNumber))
+      )
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+    }
+
   }
 
 }

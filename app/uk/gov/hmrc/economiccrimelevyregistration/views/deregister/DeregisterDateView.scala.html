@@ -43,7 +43,7 @@
     @formHelper(action = DeregisterDateController.onSubmit(mode)) {
         @dateInput(DateInput(
             fieldset = Some(Fieldset(
-                legend = Some(LegendViewModel(messages("deregisterDate.heading")).asHidden()),
+                legend = Some(LegendViewModel(messages("deregisterDate.heading")).withSize()),
             ))).withFormField(form("value"))
         )
 

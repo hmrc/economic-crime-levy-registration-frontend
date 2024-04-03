@@ -21,63 +21,69 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.{DeregisterReason, Deregistration}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 
 class DeregisterReasonISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${DeregisterReasonController.onPageLoad(NormalMode).url}"  should {
-    behave like authorisedActionWithoutEnrolmentCheckRoute(
-      DeregisterReasonController
-        .onPageLoad(NormalMode)
-    )
-
-    "respond with 200 status and the deregister reason HTML view" in {
-      stubAuthorisedWithEclEnrolment()
-      stubGetDeregistration(random[Deregistration])
-
-      val result = callRoute(
-        FakeRequest(
-          DeregisterReasonController
-            .onPageLoad(NormalMode)
-        )
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"GET ${DeregisterReasonController.onPageLoad(mode).url}" should {
+      behave like authorisedActionWithoutEnrolmentCheckRoute(
+        DeregisterReasonController
+          .onPageLoad(mode)
       )
 
-      status(result) shouldBe OK
-      html(result)     should include("Select the reason for deregistering")
+      "respond with 200 status and the deregister reason HTML view" in {
+        stubAuthorisedWithEclEnrolment()
+        stubGetDeregistration(random[Deregistration])
+
+        val result = callRoute(
+          FakeRequest(
+            DeregisterReasonController
+              .onPageLoad(mode)
+          )
+        )
+
+        status(result) shouldBe OK
+        html(result)     should include("Select the reason for deregistering")
+      }
+    }
+
+    s"POST ${DeregisterReasonController.onSubmit(mode).url}"  should {
+      behave like authorisedActionWithoutEnrolmentCheckRoute(
+        DeregisterReasonController
+          .onSubmit(mode)
+      )
+
+      "save the selected answer then redirect the deregister date page" in {
+        stubAuthorisedWithEclEnrolment()
+        val deregistration = random[Deregistration].copy(internalId = testInternalId)
+        val reason         = random[DeregisterReason]
+        stubGetDeregistration(deregistration)
+        stubUpsertDeregistration(deregistration.copy(reason = Some(reason)))
+
+        val result = callRoute(
+          FakeRequest(
+            DeregisterReasonController
+              .onSubmit(mode)
+          )
+            .withFormUrlEncodedBody(("value", reason.toString))
+        )
+
+        status(result) shouldBe SEE_OTHER
+
+        mode match {
+          case NormalMode =>
+            redirectLocation(result) shouldBe Some(
+              DeregisterDateController
+                .onPageLoad(NormalMode)
+                .url
+            )
+          case CheckMode  =>
+            redirectLocation(result) shouldBe Some(DeregisterCheckYourAnswersController.onPageLoad().url)
+        }
+      }
     }
   }
-
-  s"POST ${DeregisterReasonController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithoutEnrolmentCheckRoute(
-      DeregisterReasonController
-        .onSubmit(NormalMode)
-    )
-
-    "save the selected answer then redirect the deregister date page" in {
-      stubAuthorisedWithEclEnrolment()
-      val deregistration = random[Deregistration].copy(internalId = testInternalId)
-      val reason         = random[DeregisterReason]
-      stubGetDeregistration(deregistration)
-      stubUpsertDeregistration(deregistration.copy(reason = Some(reason)))
-
-      val result = callRoute(
-        FakeRequest(
-          DeregisterReasonController
-            .onSubmit(NormalMode)
-        )
-          .withFormUrlEncodedBody(("value", reason.toString))
-      )
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(
-        DeregisterDateController
-          .onPageLoad(NormalMode)
-          .url
-      )
-    }
-  }
-
 }
