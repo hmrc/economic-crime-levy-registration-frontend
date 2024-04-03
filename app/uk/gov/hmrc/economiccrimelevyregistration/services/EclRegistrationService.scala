@@ -67,10 +67,8 @@ class EclRegistrationService @Inject() (
         .map(registration => Right(Some(registration)))
         .recover {
           case _: NotFoundException                         =>
-            println("NOT FOUND")
             Right(None)
           case _ @UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
-            println("NOT FOUND")
             Right(None)
           case error @ UpstreamErrorResponse(message, code, _, _)
               if UpstreamErrorResponse.Upstream5xxResponse
