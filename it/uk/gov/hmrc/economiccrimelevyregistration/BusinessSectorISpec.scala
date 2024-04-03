@@ -6,6 +6,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
@@ -69,7 +70,10 @@ class BusinessSectorISpec extends ISpecBase with AuthorisedBehaviour {
             redirectLocation(result) shouldBe Some(
               contacts.routes.FirstContactNameController.onPageLoad(NormalMode).url
             )
-          case CheckMode  => redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+          case CheckMode  =>
+            redirectLocation(result) shouldBe Some(
+              routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+            )
         }
       }
     }

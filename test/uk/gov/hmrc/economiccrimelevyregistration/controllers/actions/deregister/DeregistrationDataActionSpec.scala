@@ -28,20 +28,20 @@ import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.Deregistrat
 
 import scala.concurrent.Future
 
-class DeregistrationDataRetrievalActionSpec extends SpecBase {
+class DeregistrationDataActionSpec extends SpecBase {
 
   val mockDeregistrationService: DeregistrationService = mock[DeregistrationService]
 
-  class TestDataRetrievalAction
-      extends DeregistrationDataRetrievalAction(
+  class TestDataActionAction
+      extends DeregistrationDataActionImpl(
         mockDeregistrationService
       ) {
     override def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, DeregistrationDataRequest[A]]] =
       super.refine(request)
   }
 
-  val dataRetrievalAction =
-    new TestDataRetrievalAction
+  val RegistrationDataAction =
+    new TestDataActionAction
 
   val testAction: Request[_] => Future[Result] = { _ =>
     Future(Ok("Test"))
@@ -54,7 +54,7 @@ class DeregistrationDataRetrievalActionSpec extends SpecBase {
           .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 
         val result: Future[Either[Result, DeregistrationDataRequest[AnyContentAsEmpty.type]]] =
-          dataRetrievalAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
+          RegistrationDataAction.refine(AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345")))
 
         await(result) shouldBe Right(
           DeregistrationDataRequest(fakeRequest, internalId, deregistration, Some("ECLRefNumber12345"))

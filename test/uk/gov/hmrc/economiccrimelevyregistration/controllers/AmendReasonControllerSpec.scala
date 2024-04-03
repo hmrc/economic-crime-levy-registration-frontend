@@ -50,7 +50,7 @@ class AmendReasonControllerSpec extends SpecBase {
     val controller = new AmendReasonController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registration.internalId),
-      fakeDataRetrievalAction(registration),
+      fakeRegistrationDataAction(registration),
       view,
       formProvider,
       mockRegistrationService,

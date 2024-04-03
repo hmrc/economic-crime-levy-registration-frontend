@@ -754,3 +754,23 @@ deregistration.pdfHtml.title = Application to deregister
 deregistration.pdfHtml.submissionDate = Submission date: {0}
 
 govukErrorMessage.visuallyHiddenText = Error
+
+youHaveAlreadyRegistered.title = You have already registered for the Economic Crime Levy - Register for the Economic Crime Levy - GOV.UK
+youHaveAlreadyRegistered.heading = You have already registered for the Economic Crime Levy
+youHaveAlreadyRegistered.body.p1 = Your information has been sent to HMRC.
+youHaveAlreadyRegistered.body.link = <a href="{0}" class="govuk-link">Return to your Economic Crime Levy account</a>
+
+youAlreadyRequestedToAmend.title = You have already requested to amend your Economic Crime Levy registration - Amend ECL registration - GOV.UK
+youAlreadyRequestedToAmend.heading = You have already requested to amend your Economic Crime Levy registration
+youAlreadyRequestedToAmend.body.p1 = Your information has been sent to HMRC.
+youAlreadyRequestedToAmend.body.link = <a href="{0}" class="govuk-link">Return to your Economic Crime Levy account</a>
+
+alreadyDeregistered.title = You have already deregistered your Economic Crime Levy account - Deregister from ECL - GOV.UK
+alreadyDeregistered.heading = You have already deregistered your Economic Crime Levy account
+alreadyDeregistered.body.p1 = Your information has been sent to HMRC.
+alreadyDeregistered.body.link = <a href="{0}" class="govuk-link">Return to your Economic Crime Levy account</a>
+
+alreadyDeregistered.title = You have already deregistered your Economic Crime Levy account - Deregister from ECL - GOV.UK
+alreadyDeregistered.heading = You have already deregistered your Economic Crime Levy account
+alreadyDeregistered.body.p1 = Your information has been sent to HMRC.
+alreadyDeregistered.body.link = <a href="{0}" class="govuk-link">Return to your Economic Crime Levy account</a>

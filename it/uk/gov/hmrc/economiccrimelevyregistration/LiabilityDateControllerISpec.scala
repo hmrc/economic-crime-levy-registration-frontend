@@ -98,9 +98,11 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
               case _    => redirectLocation(result) shouldBe Some(routes.EntityTypeController.onPageLoad(NormalMode).url)
             }
 
-          case CheckMode => redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+          case CheckMode =>
+            redirectLocation(result) shouldBe Some(
+              routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+            )
         }
-
       }
     }
   }

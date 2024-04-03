@@ -54,7 +54,7 @@ class UtrControllerSpec extends SpecBase {
     val controller = new UtrController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registration.internalId),
-      fakeDataRetrievalAction(registration),
+      fakeRegistrationDataAction(registration),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,

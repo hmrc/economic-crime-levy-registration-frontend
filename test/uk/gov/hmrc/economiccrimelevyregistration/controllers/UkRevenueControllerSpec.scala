@@ -57,7 +57,7 @@ class UkRevenueControllerSpec extends SpecBase {
     val controller = new UkRevenueController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       mockEclCalculatorService,

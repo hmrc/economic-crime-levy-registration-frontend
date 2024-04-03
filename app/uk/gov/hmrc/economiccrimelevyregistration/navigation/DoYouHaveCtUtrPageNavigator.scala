@@ -18,7 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration}
 
 import javax.inject.Inject
 
@@ -28,7 +29,7 @@ class DoYouHaveCtUtrPageNavigator @Inject() extends PageNavigator {
 
     registration.otherEntityJourneyData.isCtUtrPresent match {
       case Some(isCtUtrPresent) =>
-        navigateInEitherMode(registration.otherEntityJourneyData.postcode, isCtUtrPresent, NormalMode)
+        navigateInEitherMode(registration, registration.otherEntityJourneyData.postcode, isCtUtrPresent, NormalMode)
       case None                 => routes.NotableErrorController.answersAreInvalid()
     }
   }
@@ -38,22 +39,28 @@ class DoYouHaveCtUtrPageNavigator @Inject() extends PageNavigator {
 
     registration.otherEntityJourneyData.isCtUtrPresent match {
       case Some(isCtUtrPresent) =>
-        navigateInEitherMode(registration.otherEntityJourneyData.postcode, isCtUtrPresent, CheckMode)
+        navigateInEitherMode(registration, registration.otherEntityJourneyData.postcode, isCtUtrPresent, CheckMode)
       case None                 => routes.NotableErrorController.answersAreInvalid()
     }
   }
 
-  private def navigateInEitherMode(postcode: Option[String], isCtUtrPresent: Boolean, mode: Mode): Call =
+  private def navigateInEitherMode(
+    registration: Registration,
+    postcode: Option[String],
+    isCtUtrPresent: Boolean,
+    mode: Mode
+  ): Call =
     if (isCtUtrPresent) {
       (mode, postcode) match {
-        case (CheckMode, Some(_)) => routes.CheckYourAnswersController.onPageLoad()
+        case (CheckMode, Some(_)) =>
+          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
         case (CheckMode, None)    => routes.CtUtrController.onPageLoad(mode)
         case (NormalMode, _)      => routes.CtUtrController.onPageLoad(mode)
       }
     } else {
       mode match {
         case NormalMode => routes.BusinessSectorController.onPageLoad(NormalMode)
-        case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
+        case CheckMode  => routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
       }
     }
 }

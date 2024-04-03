@@ -54,7 +54,7 @@ class CompanyRegistrationNumberControllerSpec extends SpecBase {
     val controller = new CompanyRegistrationNumberController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,

@@ -754,3 +754,18 @@ deregistration.pdfHtml.title = Cais i ddadgofrestru
 deregistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad {0}
 
 govukErrorMessage.visuallyHiddenText = Gwall
+
+youHaveAlreadyRegistered.title = Rydych eisoes wedi cofrestru ar gyfer yr Ardoll Troseddau Economaidd – Cofrestru ar gyfer yr Ardoll Troseddau Economaidd – GOV.UK
+youHaveAlreadyRegistered.heading = Rydych eisoes wedi cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+youHaveAlreadyRegistered.body.p1 = Mae’ch gwybodaeth wedi cael ei hanfon i CThEF.
+youHaveAlreadyRegistered.body.link = <a href="{0}" class="govuk-link">Yn ôl i’ch cyfrif Ardoll Troseddau Economaidd</a>
+
+youAlreadyRequestedToAmend.title = Rydych eisoes wedi gwneud cais i ddiwygio’ch cofrestriad Ardoll Troseddau Economaidd – Diwygio cofrestriad ECL – GOV.UK
+youAlreadyRequestedToAmend.heading = Rydych eisoes wedi gwneud cais i ddiwygio’ch cofrestriad Ardoll Troseddau Economaidd
+youAlreadyRequestedToAmend.body.p1 = Mae’ch gwybodaeth wedi cael ei hanfon i CThEF.
+youAlreadyRequestedToAmend.body.link = <a href="{0}" class="govuk-link">Yn ôl i’ch cyfrif Ardoll Troseddau Economaidd</a>
+
+alreadyDeregistered.title = Rydych eisoes wedi datgofrestru’ch cyfrif Ardoll Troseddau Economaidd – Datgofrestru rhag ECL – GOV.UK
+alreadyDeregistered.heading = Rydych eisoes wedi datgofrestru’ch cyfrif Ardoll Troseddau Economaidd
+alreadyDeregistered.body.p1 = Mae’ch gwybodaeth wedi cael ei hanfon i CThEF.
+alreadyDeregistered.body.link = <a href="{0}" class="govuk-link">Yn ôl i’ch cyfrif Ardoll Troseddau Economaidd</a>

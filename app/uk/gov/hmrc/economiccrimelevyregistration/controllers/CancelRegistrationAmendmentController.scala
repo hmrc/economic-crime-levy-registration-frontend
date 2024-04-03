@@ -21,9 +21,10 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.connectors._
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CancelRegistrationAmendmentFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CancelRegistrationAmendmentView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -34,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CancelRegistrationAmendmentController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataAction,
   eclRegistrationConnector: EclRegistrationConnector,
   formProvider: CancelRegistrationAmendmentFormProvider,
   appConfig: AppConfig,
@@ -60,7 +61,11 @@ class CancelRegistrationAmendmentController @Inject() (
               .deleteRegistration(request.internalId)
               .map(_ => Redirect(appConfig.yourEclAccountUrl))
           } else {
-            Future.successful(Redirect(routes.CheckYourAnswersController.onPageLoad()))
+            Future.successful(
+              Redirect(
+                routes.CheckYourAnswersController.onPageLoad(request.registration.registrationType.getOrElse(Initial))
+              )
+            )
           }
       )
   }

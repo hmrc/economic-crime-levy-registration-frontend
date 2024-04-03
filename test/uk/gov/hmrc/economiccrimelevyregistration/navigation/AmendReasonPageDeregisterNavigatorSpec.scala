@@ -44,12 +44,13 @@ class AmendReasonPageDeregisterNavigatorSpec extends SpecBase {
       Arbitrary.arbitrary[Registration],
       nonEmptyString
     ) { (registration: Registration, reason: String) =>
-      val updatedRegistration: Registration = registration.copy(amendReason = Some(reason))
+      val updatedRegistration: Registration =
+        registration.copy(amendReason = Some(reason), registrationType = Some(Amendment))
 
       pageNavigator.nextPage(
         CheckMode,
         EclRegistrationModel(updatedRegistration)
-      ) shouldBe routes.CheckYourAnswersController.onPageLoad()
+      ) shouldBe routes.CheckYourAnswersController.onPageLoad(Amendment)
     }
   }
 }
