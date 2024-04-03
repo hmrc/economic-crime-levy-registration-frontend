@@ -20,14 +20,17 @@ import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.mvc.{AnyContentAsEmpty, Request, Result}
+import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+
+import uk.gov.hmrc.http.HttpVerbs.GET
 
 import scala.concurrent.Future
 
@@ -51,13 +54,6 @@ class RegistrationDataOrErrorActionSpec extends SpecBase {
   val testAction: Request[_] => Future[Result] = { _ =>
     Future(Ok("Test"))
   }
-
-  private def getRedirectUrl(request: AuthorisedRequest[_]) =
-    request.uri match {
-      case amendUrl if amendUrl == routes.CheckYourAnswersController.onPageLoad(Amendment).url =>
-        routes.NotableErrorController.youAlreadyRequestedToAmend()
-      case _                                                                                   => routes.NotableErrorController.youHaveAlreadyRegistered()
-    }
 
   "refine" should {
     "return internal server error if additional info cannot be retrieved" in forAll {
@@ -112,15 +108,30 @@ class RegistrationDataOrErrorActionSpec extends SpecBase {
         )
     }
 
-    "redirect to error page when data retrieval fails" in forAll { (internalId: String, groupId: String) =>
-      when(mockEclRegistrationService.get(any())(any(), any()))
-        .thenReturn(EitherT[Future, DataRetrievalError, Option[Registration]](Future.successful(Right(None))))
+    "redirect to 'youHaveAlreadyRegistered' error page when data retrieval fails" in forAll {
+      (internalId: String, groupId: String) =>
+        when(mockEclRegistrationService.get(any())(any(), any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Option[Registration]](Future.successful(Right(None))))
 
-      val request                                                                         = AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345"))
-      val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
-        RegistrationDataAction.refine(request)
+        val request                                                                         = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(Initial).url)
+        val authorisedRequest                                                               = AuthorisedRequest(request, internalId, groupId, Some("ECLRefNumber12345"))
+        val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
+          RegistrationDataAction.refine(authorisedRequest)
 
-      await(result) shouldBe Left(Redirect(getRedirectUrl(request)))
+        await(result) shouldBe Left(Redirect(routes.NotableErrorController.youHaveAlreadyRegistered()))
+    }
+
+    "redirect to 'youAlreadyRequestedToAmend' error page when data retrieval fails" in forAll {
+      (internalId: String, groupId: String) =>
+        when(mockEclRegistrationService.get(any())(any(), any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Option[Registration]](Future.successful(Right(None))))
+
+        val request                                                                         = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(Amendment).url)
+        val authorisedRequest                                                               = AuthorisedRequest(request, internalId, groupId, Some("ECLRefNumber12345"))
+        val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
+          RegistrationDataAction.refine(authorisedRequest)
+
+        await(result) shouldBe Left(Redirect(routes.NotableErrorController.youAlreadyRequestedToAmend()))
     }
   }
 
