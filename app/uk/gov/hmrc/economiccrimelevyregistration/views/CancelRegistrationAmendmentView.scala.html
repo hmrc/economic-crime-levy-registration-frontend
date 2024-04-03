@@ -16,6 +16,8 @@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
+
 
 @this(
         layout: Layout,
@@ -39,13 +41,12 @@
 
     <h1 class="govuk-heading-l">@messages("cancelRegistrationAmendment.heading")</h1>
 
-    <p class="govuk-body">@messages("cancelRegistrationAmendment.body")</p>
 
     @formHelper(action = CancelRegistrationAmendmentController.onSubmit()) {
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(messages("cancelRegistrationAmendment.heading")).asHidden(),
+                legend = LegendViewModel(messages("cancelRegistrationAmendment.body")).withCssClass("govuk-body"),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),

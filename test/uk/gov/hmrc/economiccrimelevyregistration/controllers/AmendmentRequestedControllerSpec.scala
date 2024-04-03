@@ -58,8 +58,8 @@ class AmendmentRequestedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            (SessionKeys.FirstContactEmail -> firstContactEmailAddress),
-            (SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(eclAddress)))
+            SessionKeys.FirstContactEmail -> firstContactEmailAddress,
+            SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(eclAddress))
           )
         )
 
@@ -91,7 +91,7 @@ class AmendmentRequestedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            (SessionKeys.FirstContactEmail -> firstContactEmailAddress)
+            SessionKeys.FirstContactEmail -> firstContactEmailAddress
           )
         )
 
@@ -118,7 +118,7 @@ class AmendmentRequestedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            (SessionKeys.ContactAddress -> Json.stringify(Json.toJson(eclAddress)))
+            SessionKeys.ContactAddress -> Json.stringify(Json.toJson(eclAddress))
           )
         )
 

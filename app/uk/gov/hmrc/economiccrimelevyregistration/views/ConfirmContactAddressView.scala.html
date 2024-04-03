@@ -40,7 +40,7 @@
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(messages("confirmContactAddress.heading")).asHidden(),
+                legend = LegendViewModel(messages("confirmContactAddress.heading")).withSize(),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),

@@ -35,7 +35,7 @@ class DeregistrationConnectorSpec extends SpecBase {
   val connector                          = new DeregistrationConnector(appConfig, mockHttpClient)
   val deregistrationUrl                  = "http://localhost:14001/economic-crime-levy-registration"
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     reset(mockHttpClient)
     reset(mockRequestBuilder)
   }
@@ -103,7 +103,7 @@ class DeregistrationConnectorSpec extends SpecBase {
       when(mockRequestBuilder.withBody(Json.toJson(deregistration))).thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(response))
 
-      val result = await(connector.upsertDeregistration(deregistration))
+      val result: Unit = await(connector.upsertDeregistration(deregistration))
       result shouldBe ()
     }
   }
@@ -120,7 +120,7 @@ class DeregistrationConnectorSpec extends SpecBase {
       when(mockRequestBuilder.execute[HttpResponse](any(), any()))
         .thenReturn(Future.successful(response))
 
-      val result = await(connector.submitDeregistration(internalId)(hc))
+      val result: Unit = await(connector.submitDeregistration(internalId)(hc))
 
       result shouldBe ()
     }

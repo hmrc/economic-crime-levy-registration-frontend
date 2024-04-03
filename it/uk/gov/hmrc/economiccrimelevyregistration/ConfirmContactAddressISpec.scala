@@ -44,72 +44,74 @@ class ConfirmContactAddressISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.ConfirmContactAddressController.onSubmit(NormalMode).url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.ConfirmContactAddressController.onSubmit(NormalMode))
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"POST ${routes.ConfirmContactAddressController.onSubmit(mode).url}" should {
+      behave like authorisedActionWithEnrolmentCheckRoute(routes.ConfirmContactAddressController.onSubmit(mode))
 
-    "save the selected answer then redirect to check your answers page when the Yes option is selected" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      s"save the selected answer then redirect to check your answers page when the Yes option is selected in $mode" in {
+        stubAuthorisedWithNoGroupEnrolment()
 
-      val registration                                         = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
+        val registration                                         = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
+        val incorporatedEntityJourneyDataWithValidCompanyProfile =
+          random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
+
+        val updatedRegistration = registration.copy(
+          useRegisteredOfficeAddressAsContactAddress = Some(true),
+          incorporatedEntityJourneyData =
+            Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
+          partnershipEntityJourneyData = None,
+          soleTraderEntityJourneyData = None
         )
-      val incorporatedEntityJourneyDataWithValidCompanyProfile =
-        random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
+        val additionalInfo      = random[RegistrationAdditionalInfo]
 
-      val updatedRegistration = registration.copy(
-        useRegisteredOfficeAddressAsContactAddress = Some(true),
-        incorporatedEntityJourneyData =
-          Some(incorporatedEntityJourneyDataWithValidCompanyProfile.incorporatedEntityJourneyData),
-        partnershipEntityJourneyData = None,
-        soleTraderEntityJourneyData = None
-      )
-      val additionalInfo      = random[RegistrationAdditionalInfo]
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+        stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
 
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
+        stubUpsertRegistration(updatedRegistration)
+        stubUpsertRegistration(updatedRegistration.copy(contactAddress = updatedRegistration.grsAddressToEclAddress))
 
-      stubUpsertRegistration(updatedRegistration)
-      stubUpsertRegistration(updatedRegistration.copy(contactAddress = updatedRegistration.grsAddressToEclAddress))
-
-      val result = callRoute(
-        FakeRequest(routes.ConfirmContactAddressController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", "true"))
-      )
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
-    }
-
-    "save the selected answer then redirect to is address in UK page when the No option is selected" in {
-      stubAuthorisedWithNoGroupEnrolment()
-
-      val registration = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
+        val result = callRoute(
+          FakeRequest(routes.ConfirmContactAddressController.onSubmit(mode))
+            .withFormUrlEncodedBody(("value", "true"))
         )
 
-      stubGetRegistrationWithEmptyAdditionalInfo(registration)
-      val additionalInfo = random[RegistrationAdditionalInfo]
+        status(result) shouldBe SEE_OTHER
 
-      stubGetRegistrationAdditionalInfo(additionalInfo)
+        redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+      }
 
-      val updatedRegistration =
-        registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(false), contactAddress = None)
+      s"save the selected answer then redirect to is address in UK page when the No option is selected in $mode" in {
+        stubAuthorisedWithNoGroupEnrolment()
 
-      stubUpsertRegistration(updatedRegistration)
+        val registration = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
 
-      val result = callRoute(
-        FakeRequest(routes.ConfirmContactAddressController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", "false"))
-      )
+        stubGetRegistrationWithEmptyAdditionalInfo(registration)
+        val additionalInfo = random[RegistrationAdditionalInfo]
 
-      status(result) shouldBe SEE_OTHER
+        stubGetRegistrationAdditionalInfo(additionalInfo)
 
-      redirectLocation(result) shouldBe Some(routes.IsUkAddressController.onPageLoad(NormalMode).url)
+        val updatedRegistration =
+          registration.copy(useRegisteredOfficeAddressAsContactAddress = Some(false), contactAddress = None)
+
+        stubUpsertRegistration(updatedRegistration)
+
+        val result = callRoute(
+          FakeRequest(routes.ConfirmContactAddressController.onSubmit(mode))
+            .withFormUrlEncodedBody(("value", "false"))
+        )
+
+        status(result) shouldBe SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(routes.IsUkAddressController.onPageLoad(mode).url)
+      }
     }
   }
 }

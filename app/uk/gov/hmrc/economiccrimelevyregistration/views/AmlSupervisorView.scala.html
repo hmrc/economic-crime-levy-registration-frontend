@@ -51,7 +51,6 @@
     <p class="govuk-body">@messages("amlSupervisor.p2")</p>
     <p class="govuk-body">@messages("amlSupervisor.p3")</p>
 
-    <h2 class="govuk-heading-m">@messages("amlSupervisor.h2")</h2>
 
     @formHelper(action = AmlSupervisorController.onSubmit(mode, registrationType.getOrElse(Initial))) {
         @{
@@ -60,7 +59,7 @@
                     radios(
                         RadiosViewModel(
                             field = form("value"),
-                            legend = LegendViewModel(messages("amlSupervisor.heading")).asHidden(),
+                            legend = LegendViewModel(messages("amlSupervisor.h2")).withSize(),
                             items = AmlSupervisorType.options(appConfig, select, form)
                         )
                     )
@@ -69,7 +68,7 @@
                     radios(
                         RadiosViewModel(
                             field = form("value"),
-                            legend = LegendViewModel(messages("amlSupervisor.heading")).asHidden(),
+                            legend = LegendViewModel(messages("amlSupervisor.h2")).withSize(),
                             items = AmlSupervisorType.optionsAmend(appConfig, select, form)
                         )
                     )

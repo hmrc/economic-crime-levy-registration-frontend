@@ -67,5 +67,29 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
 
       redirectLocation(result) shouldBe Some(appConfig.yourEclAccountUrl)
     }
+
+    "return to the Check Your Answers Page when the No option is selected" in {
+      stubAuthorisedWithEclEnrolment()
+
+      val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          registrationType = Some(Amendment),
+          relevantApRevenue = Some(randomApRevenue())
+        )
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
+      stubGetRegistrationAdditionalInfo(additionalInfo)
+
+      val result = callRoute(
+        FakeRequest(routes.CancelRegistrationAmendmentController.onSubmit())
+          .withFormUrlEncodedBody(("value", "false"))
+      )
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+    }
   }
 }

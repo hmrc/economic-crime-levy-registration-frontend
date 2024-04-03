@@ -17,6 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
+import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
 import uk.gov.hmrc.auth.core.{AffinityGroup, EnrolmentIdentifier, Enrolments, Enrolment => AuthEnrolment}
@@ -140,6 +141,9 @@ trait EclTestData {
                                   )
     } yield SelfAssessmentEntityType(selfAssessmentEntityType)
   }
+
+  def entityTypeThatIsNot(entityTypes: Seq[EntityType]): Gen[EntityType] =
+    arbitrary[EntityType] suchThat (x => !entityTypes.contains(x))
 
   implicit val arbEnrolmentsWithEcl: Arbitrary[EnrolmentsWithEcl] = Arbitrary {
     for {

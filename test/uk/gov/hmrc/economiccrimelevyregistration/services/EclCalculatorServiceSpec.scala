@@ -18,11 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, NOT_FOUND}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclCalculatorConnector
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculatedLiability, EclAmount, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import scala.concurrent.Future
 
@@ -37,7 +40,6 @@ class EclCalculatorServiceSpec extends SpecBase {
         relevantApRevenue: BigDecimal,
         calculatedLiability: CalculatedLiability
       ) =>
-//        val relevantApRevenue: BigDecimal = 12.55
         val updatedRegistration =
           registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(relevantApRevenue))
 
@@ -129,5 +131,106 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         result shouldBe Right(Some(false))
     }
+
+    "return None if the relevantApRevenue is set to None " in forAll { registration: Registration =>
+      val updatedRegistration =
+        registration.copy(
+          relevantApRevenue = None
+        )
+
+      val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
+
+      result shouldBe Right(None)
+    }
+
+    "return None if the relevantAp12Months is set to None when the relevantApRevenue contains a value " in forAll {
+      (registration: Registration, relevantApRevenue: BigDecimal) =>
+        val updatedRegistration =
+          registration.copy(
+            relevantAp12Months = None,
+            relevantApRevenue = Some(relevantApRevenue)
+          )
+
+        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
+
+        result shouldBe Right(None)
+    }
+
+    "return None if the relevantApLength is set to None when relevantApRevenue contains a value and relevantAp12Months is set to false" in forAll {
+      (
+        registration: Registration,
+        relevantApRevenue: BigDecimal
+      ) =>
+        val updatedRegistration =
+          registration.copy(
+            relevantAp12Months = Some(false),
+            relevantApLength = None,
+            relevantApRevenue = Some(relevantApRevenue)
+          )
+
+        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
+
+        result shouldBe Right(None)
+    }
+
+    "return an error when the call to the calculator connector returns an Upstream5xxResponse" in forAll {
+      (
+        registration: Registration,
+        relevantApRevenue: BigDecimal,
+        calculatedLiability: CalculatedLiability
+      ) =>
+        val updatedRegistration =
+          registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(relevantApRevenue))
+
+        when(
+          mockEclCalculatorConnector
+            .calculateLiability(ArgumentMatchers.eq(EclTaxYear.yearInDays), ArgumentMatchers.eq(relevantApRevenue))(
+              any()
+            )
+        )
+          .thenReturn(Future.failed(UpstreamErrorResponse("Error", INTERNAL_SERVER_ERROR)))
+
+        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
+
+        result shouldBe Left(DataRetrievalError.BadGateway("Error", INTERNAL_SERVER_ERROR))
+    }
+
+    "return an error when the call to the calculator connector returns an Upstream4xxResponse" in forAll {
+      (registration: Registration, relevantApRevenue: BigDecimal) =>
+        val updatedRegistration =
+          registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(relevantApRevenue))
+
+        when(
+          mockEclCalculatorConnector
+            .calculateLiability(ArgumentMatchers.eq(EclTaxYear.yearInDays), ArgumentMatchers.eq(relevantApRevenue))(
+              any()
+            )
+        )
+          .thenReturn(Future.failed(UpstreamErrorResponse("Error", NOT_FOUND)))
+
+        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
+
+        result shouldBe Left(DataRetrievalError.BadGateway("Error", NOT_FOUND))
+    }
+
+    "return an error if an exception is thrown" in forAll {
+      (registration: Registration, relevantApRevenue: BigDecimal) =>
+        val exception           = new Exception("error")
+        val updatedRegistration =
+          registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(relevantApRevenue))
+
+        when(
+          mockEclCalculatorConnector
+            .calculateLiability(ArgumentMatchers.eq(EclTaxYear.yearInDays), ArgumentMatchers.eq(relevantApRevenue))(
+              any()
+            )
+        )
+          .thenReturn(Future.failed(exception))
+
+        val result = await(service.checkIfRevenueMeetsThreshold(updatedRegistration).value)
+
+        result shouldBe Left(DataRetrievalError.InternalUnexpectedError(exception.getMessage, Some(exception)))
+    }
+
   }
 }

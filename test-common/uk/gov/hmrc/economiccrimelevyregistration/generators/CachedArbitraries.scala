@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.generators
 import org.scalacheck.Arbitrary
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
 import org.scalacheck.derive.MkArbitrary
+import play.api.mvc.Session
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
@@ -29,6 +30,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.email.{DeregistrationReq
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationError
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.Authorization
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
+import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
 object CachedArbitraries extends EclTestData {
 
@@ -69,5 +72,8 @@ object CachedArbitraries extends EclTestData {
   implicit lazy val arbEclRegistrationModel: Arbitrary[EclRegistrationModel]                                     = mkArb
   implicit lazy val arbDeregistrationRequestedEmailRequest: Arbitrary[DeregistrationRequestedEmailRequest]       = mkArb
   implicit lazy val arbDeregistrationRequestedEmailParameters: Arbitrary[DeregistrationRequestedEmailParameters] = mkArb
+  implicit lazy val arbSession: Arbitrary[Session]                                                               = mkArb
+  implicit lazy val arbExtendedDataEvent: Arbitrary[ExtendedDataEvent]                                           = mkArb
+  implicit lazy val arbAuditResult: Arbitrary[AuditResult]                                                       = mkArb
 
 }

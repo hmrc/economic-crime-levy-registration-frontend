@@ -22,8 +22,9 @@ import org.mockito.ArgumentMatchers.{any, anyString}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, GetSubscriptionResponse, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
@@ -36,6 +37,7 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
   val view: AmendRegistrationStartView                                         = app.injector.instanceOf[AmendRegistrationStartView]
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
   val mockRegistrationService: EclRegistrationService                          = mock[EclRegistrationService]
+  val mockAppConfig: AppConfig                                                 = mock[AppConfig]
 
   val controller = new AmendRegistrationStartController(
     mcc,
@@ -43,7 +45,7 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
     fakeAuthorisedActionWithEnrolmentCheck(testInternalId),
     view,
     mockRegistrationService,
-    appConfig
+    mockAppConfig
   )
 
   "onPageLoad" should {
@@ -69,6 +71,35 @@ class AmendRegistrationStartControllerSpec extends SpecBase {
         val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
 
         status(result) shouldBe OK
+
+        reset(mockRegistrationService)
+    }
+
+    "route to AmendReasonController when getSubscriptionEnabled is true" in forAll {
+      (registration: Registration, getSubscriptionResponse: GetSubscriptionResponse) =>
+        val updatedRegistration = registration.copy(registrationType = Some(Amendment))
+
+        when(mockAppConfig.getSubscriptionEnabled).thenReturn(true)
+
+        when(mockRegistrationService.getOrCreate(anyString())(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Registration](Future.successful(Right(registration))))
+        when(mockRegistrationService.upsertRegistration(ArgumentMatchers.eq(updatedRegistration))(any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+        when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+        when(mockRegistrationService.getSubscription(any())(any()))
+          .thenReturn(
+            EitherT[Future, DataRetrievalError, GetSubscriptionResponse](
+              Future.successful(Right(getSubscriptionResponse))
+            )
+          )
+        when(mockRegistrationService.transformToRegistration(any(), any())).thenReturn(updatedRegistration)
+
+        val result: Future[Result] = controller.onPageLoad("eclReferenceValue")(fakeRequest)
+
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.AmendReasonController.onPageLoad(CheckMode).url)
 
         reset(mockRegistrationService)
     }
