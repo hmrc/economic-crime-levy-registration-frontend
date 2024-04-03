@@ -21,7 +21,7 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.data.Form
-import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.mvc.{Call, Result}
 import play.api.test.Helpers.{contentAsString, redirectLocation, status}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
@@ -158,6 +158,45 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
           redirectLocation(result) shouldBe Some(routes.SavedResponsesController.onPageLoad.url)
         }
     }
+
+    "return OK with correct view in CheckMode when additional info is present in the registration" in forAll {
+      (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
+        val updatedAdditionalInfo = additionalInfo.copy(registeringForCurrentYear = Some(false))
+
+        new TestContext(registration, updatedAdditionalInfo) {
+          val result: Future[Result] = controller.onPageLoad(CheckMode)(fakeRequest)
+
+          status(result) shouldBe OK
+
+          contentAsString(result) shouldBe view(
+            form.fill(updatedAdditionalInfo.registeringForCurrentYear.get),
+            CheckMode,
+            s"${EclTaxYear.currentStartYear()} to ${EclTaxYear.currentFinishYear()}",
+            EclTaxYear.currentFinancialYearStartDate,
+            EclTaxYear.currentFinancialYearFinishDate
+          )(messages, fakeRequest).toString()
+        }
+    }
+
+    "return OK with correct view in CheckMode when additional info is present in the registration and registering for current year value is set to None" in forAll {
+      (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
+        val updatedAdditionalInfo = additionalInfo.copy(registeringForCurrentYear = None)
+        new TestContext(registration, updatedAdditionalInfo) {
+
+          val result: Future[Result] = controller.onPageLoad(CheckMode)(fakeRequest)
+
+          status(result) shouldBe OK
+
+          contentAsString(result) shouldBe view(
+            form,
+            CheckMode,
+            s"${EclTaxYear.currentStartYear()} to ${EclTaxYear.currentFinishYear()}",
+            EclTaxYear.currentFinancialYearStartDate,
+            EclTaxYear.currentFinancialYearFinishDate
+          )(messages, fakeRequest).toString()
+        }
+    }
+
   }
 
   "onSubmit" should {
@@ -186,31 +225,51 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
         }
     }
 
-    "save the answer and redirect to the correct page in CheckMode" in forAll {
-      (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
-        new TestContext(registration, additionalInfo) {
+    "onSubmit" should {
+      "should return a BadRequest and display an error when the user has not selected an answer" in forAll {
+        (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
+          new TestContext(registration, additionalInfo) {
 
-          when(mockRegistrationAdditionalInfoService.get(any())(any(), any()))
-            .thenReturn(
-              EitherT[Future, DataRetrievalError, Option[RegistrationAdditionalInfo]](
-                Future.successful(Right(Some(additionalInfo)))
-              )
+            val result: Future[Result] =
+              controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
+
+            status(result) shouldBe BAD_REQUEST
+
+            contentAsString(result) should include("There is a problem")
+            contentAsString(result) should include(
+              s"Select yes if you are registering for {0}"
             )
-          when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
-            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
-          when(mockEclRegistrationService.upsertRegistration(any())(any()))
-            .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+          }
 
-          val result: Future[Result] =
-            controller.onSubmit(CheckMode)(fakeRequest.withFormUrlEncodedBody(("value", "true")))
+      }
 
-          status(result) shouldBe SEE_OTHER
+      "save the answer and redirect to the correct page in CheckMode" in forAll {
+        (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
+          new TestContext(registration, additionalInfo) {
 
-          redirectLocation(result) shouldBe Some(
-            routes.CheckYourAnswersController.onPageLoad(Initial).url
-          )
-        }
+            when(mockRegistrationAdditionalInfoService.get(any())(any(), any()))
+              .thenReturn(
+                EitherT[Future, DataRetrievalError, Option[RegistrationAdditionalInfo]](
+                  Future.successful(Right(Some(additionalInfo)))
+                )
+              )
+            when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
+              .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+            when(mockEclRegistrationService.upsertRegistration(any())(any()))
+              .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
+
+            val result: Future[Result] =
+              controller.onSubmit(CheckMode)(fakeRequest.withFormUrlEncodedBody(("value", "true")))
+
+            status(result) shouldBe SEE_OTHER
+
+            redirectLocation(result) shouldBe Some(
+              routes.CheckYourAnswersController.onPageLoad(Initial).url
+            )
+          }
+      }
     }
   }
 }

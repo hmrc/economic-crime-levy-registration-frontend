@@ -22,7 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class UkRevenuePageDeregisterNavigatorSpec extends SpecBase {
+class UkRevenuePageNavigatorSpec extends SpecBase {
 
   val pageNavigator = new UkRevenuePageNavigator()
 
@@ -56,6 +56,29 @@ class UkRevenuePageDeregisterNavigatorSpec extends SpecBase {
         ) shouldBe routes.LiabilityBeforeCurrentYearController
           .onPageLoad(mode)
     }
+
+    Seq(NormalMode, CheckMode).foreach { mode =>
+      s"return a call to answers are invalid page in $mode when the revenue is None" in forAll {
+        (registration: Registration) =>
+          val updatedRegistration: Registration =
+            registration.copy(relevantApRevenue = None, revenueMeetsThreshold = Some(true))
+
+          pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)) shouldBe
+            routes.NotableErrorController.answersAreInvalid()
+      }
+    }
+
+    Seq(NormalMode, CheckMode).foreach { mode =>
+      s"return a call to answers are invalid page in $mode when a revenue amount is present but revenueMeetsThreshold is None" in forAll {
+        (registration: Registration, ukRevenue: Long) =>
+          val updatedRegistration: Registration =
+            registration.copy(relevantApRevenue = Some(ukRevenue), revenueMeetsThreshold = None)
+
+          pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)) shouldBe
+            routes.NotableErrorController.answersAreInvalid()
+      }
+    }
+
   }
 
 }

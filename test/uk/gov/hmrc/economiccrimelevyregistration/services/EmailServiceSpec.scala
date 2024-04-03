@@ -19,13 +19,16 @@ package uk.gov.hmrc.economiccrimelevyregistration.services
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, RegistrationSubmittedEmailParameters}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, EclAddress, EntityType}
+import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, DeregistrationRequestedEmailParameters, RegistrationSubmittedEmailParameters}
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
+import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, EclAddress, EntityType, GetCorrespondenceAddressDetails}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
+import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import java.time.{LocalDate, ZoneOffset}
 import scala.concurrent.Future
@@ -167,6 +170,186 @@ class EmailServiceSpec extends SpecBase {
 
         reset(mockEmailConnector)
     }
+
+    "return an error when the email connector returns an Upstream4xxResponse" in forAll {
+      (contacts: Contacts, firstContactName: String, firstContactEmail: String, eclRegistrationReference: String) =>
+        val updatedContacts = contacts.copy(
+          firstContactDetails =
+            contacts.firstContactDetails.copy(name = Some(firstContactName), emailAddress = Some(firstContactEmail)),
+          secondContactDetails = ContactDetails.empty
+        )
+
+        val expectedFirstContactParams = RegistrationSubmittedEmailParameters(
+          firstContactName,
+          eclRegistrationReference,
+          ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
+          ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages),
+          "true",
+          None,
+          None,
+          None
+        )
+
+        when(
+          mockEmailConnector
+            .sendRegistrationSubmittedEmail(
+              ArgumentMatchers.eq(firstContactEmail),
+              ArgumentMatchers.eq(expectedFirstContactParams),
+              ArgumentMatchers.eq(entityType)
+            )(any())
+        )
+          .thenReturn(Future.failed(UpstreamErrorResponse("Unable to send email", BAD_REQUEST)))
+
+        val result =
+          await(
+            service
+              .sendRegistrationSubmittedEmails(
+                updatedContacts,
+                eclRegistrationReference,
+                entityType,
+                None,
+                None
+              )(hc, messages)
+              .value
+          )
+
+        result shouldBe Left(DataRetrievalError.BadGateway("Unable to send email", BAD_REQUEST))
+
+        verify(mockEmailConnector, times(1))
+          .sendRegistrationSubmittedEmail(any(), any(), any())(any())
+
+        reset(mockEmailConnector)
+    }
+
+    "return an error when the email connector returns an Upstream5xxResponse" in forAll {
+      (contacts: Contacts, firstContactName: String, firstContactEmail: String, eclRegistrationReference: String) =>
+        val updatedContacts = contacts.copy(
+          firstContactDetails =
+            contacts.firstContactDetails.copy(name = Some(firstContactName), emailAddress = Some(firstContactEmail)),
+          secondContactDetails = ContactDetails.empty
+        )
+
+        val expectedFirstContactParams = RegistrationSubmittedEmailParameters(
+          firstContactName,
+          eclRegistrationReference,
+          ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
+          ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages),
+          "true",
+          None,
+          None,
+          None
+        )
+
+        when(
+          mockEmailConnector
+            .sendRegistrationSubmittedEmail(
+              ArgumentMatchers.eq(firstContactEmail),
+              ArgumentMatchers.eq(expectedFirstContactParams),
+              ArgumentMatchers.eq(entityType)
+            )(any())
+        )
+          .thenReturn(Future.failed(UpstreamErrorResponse("Unable to send email", INTERNAL_SERVER_ERROR)))
+
+        val result =
+          await(
+            service
+              .sendRegistrationSubmittedEmails(
+                updatedContacts,
+                eclRegistrationReference,
+                entityType,
+                None,
+                None
+              )(hc, messages)
+              .value
+          )
+
+        result shouldBe Left(DataRetrievalError.BadGateway("Unable to send email", INTERNAL_SERVER_ERROR))
+
+        verify(mockEmailConnector, times(1))
+          .sendRegistrationSubmittedEmail(any(), any(), any())(any())
+
+        reset(mockEmailConnector)
+    }
+
+    "return an InternalUnexpectedError when the email connector returns an exception" in forAll {
+      (contacts: Contacts, firstContactName: String, firstContactEmail: String, eclRegistrationReference: String) =>
+        val exception       = new NullPointerException("Null pointer exception")
+        val updatedContacts = contacts.copy(
+          firstContactDetails =
+            contacts.firstContactDetails.copy(name = Some(firstContactName), emailAddress = Some(firstContactEmail)),
+          secondContactDetails = ContactDetails.empty
+        )
+
+        val expectedFirstContactParams = RegistrationSubmittedEmailParameters(
+          firstContactName,
+          eclRegistrationReference,
+          ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
+          ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages),
+          "true",
+          None,
+          None,
+          None
+        )
+
+        when(
+          mockEmailConnector
+            .sendRegistrationSubmittedEmail(
+              ArgumentMatchers.eq(firstContactEmail),
+              ArgumentMatchers.eq(expectedFirstContactParams),
+              ArgumentMatchers.eq(entityType)
+            )(any())
+        )
+          .thenReturn(Future.failed(exception))
+
+        val result =
+          await(
+            service
+              .sendRegistrationSubmittedEmails(
+                updatedContacts,
+                eclRegistrationReference,
+                entityType,
+                None,
+                None
+              )(hc, messages)
+              .value
+          )
+
+        result shouldBe Left(DataRetrievalError.InternalUnexpectedError(exception.getMessage, Some(exception)))
+
+        verify(mockEmailConnector, times(1))
+          .sendRegistrationSubmittedEmail(any(), any(), any())(any())
+
+        reset(mockEmailConnector)
+    }
+
+    "return an InternalUnexpectedError when there are no valid contact details" in forAll {
+      (contacts: Contacts, eclRegistrationReference: String) =>
+        val updatedContacts = contacts.copy(
+          firstContactDetails = ContactDetails.empty,
+          secondContactDetails = ContactDetails.empty
+        )
+
+        val result =
+          await(
+            service
+              .sendRegistrationSubmittedEmails(
+                updatedContacts,
+                eclRegistrationReference,
+                entityType,
+                None,
+                None
+              )(hc, messages)
+              .value
+          )
+
+        result shouldBe Left(DataRetrievalError.InternalUnexpectedError("Invalid contact details", None))
+
+        verify(mockEmailConnector, times(0))
+          .sendRegistrationSubmittedEmail(any(), any(), any())(any())
+
+        reset(mockEmailConnector)
+    }
+
   }
 
   "sendAmendRegistrationSubmittedEmail" should {
@@ -205,6 +388,7 @@ class EmailServiceSpec extends SpecBase {
 
         reset(mockEmailConnector)
     }
+
     "send an email when an address is NOT present and return unit" in forAll {
       (contacts: Contacts, firstContactName: String, firstContactEmail: String) =>
         val updatedContacts = contacts.copy(
@@ -241,4 +425,181 @@ class EmailServiceSpec extends SpecBase {
     }
   }
 
+  "sendDeregistrationSubmittedEmails" should {
+    "send an email and return unit" in forAll {
+      (
+        firstContactName: String,
+        firstContactEmail: String,
+        address: GetCorrespondenceAddressDetails
+      ) =>
+        val dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now())(messages)
+
+        val expectedParameters = DeregistrationRequestedEmailParameters(
+          firstContactName,
+          dateSubmitted,
+          testEclRegistrationReference,
+          Some(address.addressLine1),
+          address.addressLine2,
+          address.addressLine3,
+          address.addressLine4
+        )
+
+        when(
+          mockEmailConnector
+            .sendDeregistrationRequestedEmail(
+              ArgumentMatchers.eq(firstContactEmail),
+              ArgumentMatchers.eq(expectedParameters)
+            )(any())
+        )
+          .thenReturn(Future.successful(()))
+
+        val result: Unit =
+          await(
+            service
+              .sendDeregistrationEmail(
+                firstContactEmail,
+                firstContactName,
+                testEclRegistrationReference,
+                address
+              )(hc, messages)
+              .value
+          )
+
+        result shouldBe ()
+
+        verify(mockEmailConnector, times(1))
+          .sendDeregistrationRequestedEmail(any(), any())(any())
+
+        reset(mockEmailConnector)
+    }
+
+    "return an error when the email connector returns an Upstream5xxResponse" in forAll {
+      (
+        firstContactName: String,
+        firstContactEmail: String,
+        address: GetCorrespondenceAddressDetails
+      ) =>
+        val dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now())(messages)
+
+        val expectedParameters = DeregistrationRequestedEmailParameters(
+          firstContactName,
+          dateSubmitted,
+          testEclRegistrationReference,
+          Some(address.addressLine1),
+          address.addressLine2,
+          address.addressLine3,
+          address.addressLine4
+        )
+
+        when(
+          mockEmailConnector
+            .sendDeregistrationRequestedEmail(
+              ArgumentMatchers.eq(firstContactEmail),
+              ArgumentMatchers.eq(expectedParameters)
+            )(any())
+        )
+          .thenReturn(Future.failed(UpstreamErrorResponse("Unable to send email", INTERNAL_SERVER_ERROR)))
+
+        val result = await(
+          service
+            .sendDeregistrationEmail(
+              firstContactEmail,
+              firstContactName,
+              testEclRegistrationReference,
+              address
+            )(hc, messages)
+            .value
+        )
+
+        result shouldBe Left(DataRetrievalError.BadGateway("Unable to send email", INTERNAL_SERVER_ERROR))
+
+        reset(mockEmailConnector)
+    }
+
+    "return an error when the email connector returns an Upstream4xxResponse" in forAll {
+      (
+        firstContactName: String,
+        firstContactEmail: String,
+        address: GetCorrespondenceAddressDetails
+      ) =>
+        val dateSubmitted = ViewUtils.formatLocalDate(LocalDate.now())(messages)
+
+        val expectedParameters = DeregistrationRequestedEmailParameters(
+          firstContactName,
+          dateSubmitted,
+          testEclRegistrationReference,
+          Some(address.addressLine1),
+          address.addressLine2,
+          address.addressLine3,
+          address.addressLine4
+        )
+
+        when(
+          mockEmailConnector
+            .sendDeregistrationRequestedEmail(
+              ArgumentMatchers.eq(firstContactEmail),
+              ArgumentMatchers.eq(expectedParameters)
+            )(any())
+        )
+          .thenReturn(Future.failed(UpstreamErrorResponse("Unable to send email", BAD_REQUEST)))
+
+        val result = await(
+          service
+            .sendDeregistrationEmail(
+              firstContactEmail,
+              firstContactName,
+              testEclRegistrationReference,
+              address
+            )(hc, messages)
+            .value
+        )
+
+        result shouldBe Left(DataRetrievalError.BadGateway("Unable to send email", BAD_REQUEST))
+
+        reset(mockEmailConnector)
+    }
+
+    "return an InternalUnexpectedError when the email connector throws a non fatal exception" in forAll {
+      (
+        firstContactName: String,
+        firstContactEmail: String,
+        address: GetCorrespondenceAddressDetails
+      ) =>
+        val exception          = new NullPointerException("Null pointer exception")
+        val dateSubmitted      = ViewUtils.formatLocalDate(LocalDate.now())(messages)
+        val expectedParameters = DeregistrationRequestedEmailParameters(
+          firstContactName,
+          dateSubmitted,
+          testEclRegistrationReference,
+          Some(address.addressLine1),
+          address.addressLine2,
+          address.addressLine3,
+          address.addressLine4
+        )
+
+        when(
+          mockEmailConnector
+            .sendDeregistrationRequestedEmail(
+              ArgumentMatchers.eq(firstContactEmail),
+              ArgumentMatchers.eq(expectedParameters)
+            )(any())
+        )
+          .thenReturn(Future.failed(exception))
+
+        val result = await(
+          service
+            .sendDeregistrationEmail(
+              firstContactEmail,
+              firstContactName,
+              testEclRegistrationReference,
+              address
+            )(hc, messages)
+            .value
+        )
+
+        result shouldBe Left(DataRetrievalError.InternalUnexpectedError(exception.getMessage, Some(exception)))
+
+        reset(mockEmailConnector)
+    }
+  }
 }

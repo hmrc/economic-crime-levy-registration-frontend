@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 
-class SecondContactNumberPageDeregisterNavigatorSpec extends SpecBase {
+class SecondContactNumberPageNavigatorSpec extends SpecBase {
 
   val pageNavigator = new SecondContactNumberPageNavigator()
 
@@ -77,6 +77,22 @@ class SecondContactNumberPageDeregisterNavigatorSpec extends SpecBase {
       pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
         routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
+
+    Seq(NormalMode, CheckMode).foreach { mode =>
+      s"return a call to the answers are invalid page when there is no second contact number present in $mode " in forAll {
+        registration: Registration =>
+          val updatedRegistration: Registration =
+            registration.copy(contacts =
+              registration.contacts.copy(secondContactDetails =
+                registration.contacts.secondContactDetails.copy(telephoneNumber = None)
+              )
+            )
+
+          pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)) shouldBe
+            routes.NotableErrorController.answersAreInvalid()
+      }
+    }
+
   }
 
 }

@@ -4,82 +4,103 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.contacts
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class SecondContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${contacts.routes.SecondContactRoleController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(
-      contacts.routes.SecondContactRoleController.onPageLoad(NormalMode)
-    )
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"GET ${contacts.routes.SecondContactRoleController.onPageLoad(mode).url}" should {
+      behave like authorisedActionWithEnrolmentCheckRoute(
+        contacts.routes.SecondContactRoleController.onPageLoad(mode)
+      )
 
-    "respond with 200 status and the second contact role HTML view" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      "respond with 200 status and the second contact role HTML view" in {
+        stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
-        )
-      val name           = random[String]
-      val additionalInfo = random[RegistrationAdditionalInfo]
+        val registration   = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
+        val name           = random[String]
+        val additionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubGetRegistrationWithEmptyAdditionalInfo(
-        registration.copy(contacts =
-          registration.contacts.copy(secondContactDetails =
-            registration.contacts.secondContactDetails.copy(name = Some(name))
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+        stubGetRegistrationWithEmptyAdditionalInfo(
+          registration.copy(contacts =
+            registration.contacts.copy(secondContactDetails =
+              registration.contacts.secondContactDetails.copy(name = Some(name))
+            )
           )
         )
-      )
-      stubSessionForStoreUrl()
+        stubSessionForStoreUrl()
 
-      val result = callRoute(FakeRequest(contacts.routes.SecondContactRoleController.onPageLoad(NormalMode)))
+        val result = callRoute(FakeRequest(contacts.routes.SecondContactRoleController.onPageLoad(mode)))
 
-      status(result) shouldBe OK
+        status(result) shouldBe OK
 
-      html(result) should include(s"What is $name's role?")
+        html(result) should include(s"What is $name's role?")
+      }
     }
   }
 
-  s"POST ${contacts.routes.SecondContactRoleController.onSubmit(NormalMode).url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(
-      contacts.routes.SecondContactRoleController.onSubmit(NormalMode)
-    )
-
-    "save the provided role then redirect to the second contact email page" in {
-      stubAuthorisedWithNoGroupEnrolment()
-      val additionalInfo = random[RegistrationAdditionalInfo]
-
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      val registration = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
-        )
-      val name         = random[String]
-      val role         = stringsWithMaxLength(RoleMaxLength).sample.get
-
-      val updatedRegistration = registration.copy(contacts =
-        registration.contacts.copy(secondContactDetails =
-          registration.contacts.secondContactDetails.copy(name = Some(name), role = Some(role))
-        )
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"POST ${contacts.routes.SecondContactRoleController.onSubmit(mode).url}" should {
+      behave like authorisedActionWithEnrolmentCheckRoute(
+        contacts.routes.SecondContactRoleController.onSubmit(mode)
       )
 
-      stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
-      stubUpsertRegistration(updatedRegistration)
+      "save the provided role then redirect to the correct page" in {
+        stubAuthorisedWithNoGroupEnrolment()
+        val additionalInfo = random[RegistrationAdditionalInfo]
 
-      val result = callRoute(
-        FakeRequest(contacts.routes.SecondContactRoleController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", role))
-      )
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+        val registration = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
+        val name         = random[String]
+        val role         = stringsWithMaxLength(RoleMaxLength).sample.get
 
-      status(result) shouldBe SEE_OTHER
+        val updatedRegistration = registration.copy(contacts =
+          registration.contacts.copy(secondContactDetails =
+            registration.contacts.secondContactDetails.copy(name = Some(name), role = Some(role))
+          )
+        )
 
-      redirectLocation(result) shouldBe Some(contacts.routes.SecondContactEmailController.onPageLoad(NormalMode).url)
+        stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
+        stubUpsertRegistration(updatedRegistration)
+
+        val result = callRoute(
+          FakeRequest(contacts.routes.SecondContactRoleController.onSubmit(mode))
+            .withFormUrlEncodedBody(("value", role))
+        )
+
+        status(result) shouldBe SEE_OTHER
+        mode match {
+          case NormalMode =>
+            redirectLocation(result) shouldBe Some(
+              contacts.routes.SecondContactEmailController.onPageLoad(NormalMode).url
+            )
+          case CheckMode  =>
+            updatedRegistration.contacts.secondContactDetails match {
+              case ContactDetails(Some(_), Some(_), Some(_), Some(_)) =>
+                redirectLocation(result) shouldBe Some(
+                  routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+                )
+              case _                                                  =>
+                redirectLocation(result) shouldBe Some(
+                  contacts.routes.SecondContactEmailController.onPageLoad(CheckMode).url
+                )
+            }
+
+        }
+      }
     }
   }
 }

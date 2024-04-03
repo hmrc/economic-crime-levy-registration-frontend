@@ -49,6 +49,27 @@ class UtrPageNavigatorSpec extends SpecBase {
         routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
     }
 
+    "(CheckMode) return a call to the company registration number page if there is no company registration number present in the otherEntityJourneyData" in forAll(
+      Arbitrary.arbitrary[Registration],
+      stringsLongerThan(1)
+    ) { (registration: Registration, utr: String) =>
+      val otherEntityJourneyData = OtherEntityJourneyData
+        .empty()
+        .copy(
+          ctUtr = Some(utr),
+          companyRegistrationNumber = None
+        )
+
+      val updatedRegistration: Registration =
+        registration.copy(
+          entityType = Some(Charity),
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
+        )
+
+      pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
+        routes.CompanyRegistrationNumberController.onPageLoad(CheckMode)
+    }
+
     "(Check Mode) return a call to the check your answers page" in forAll {
       (registration: Registration, utr: String, number: String) =>
         val otherEntityJourneyData = OtherEntityJourneyData
@@ -67,6 +88,29 @@ class UtrPageNavigatorSpec extends SpecBase {
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
+
+    Seq(NormalMode, CheckMode).foreach { mode =>
+      s"return a call to the answersAreInvalid page when there is no ctUtr present in $mode" in forAll(
+        Arbitrary.arbitrary[Registration],
+        stringsLongerThan(1)
+      ) { (registration: Registration, utr: String) =>
+        val otherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(
+            ctUtr = None
+          )
+
+        val updatedRegistration: Registration =
+          registration.copy(
+            entityType = Some(Charity),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData)
+          )
+
+        pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)) shouldBe
+          routes.NotableErrorController.answersAreInvalid()
+      }
+    }
+
   }
 
 }

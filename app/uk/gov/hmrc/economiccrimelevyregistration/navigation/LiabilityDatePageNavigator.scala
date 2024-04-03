@@ -23,7 +23,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 class LiabilityDatePageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
-    routes.EntityTypeController.onPageLoad(NormalMode)
+    eclRegistrationModel.registration.amlSupervisor match {
+      case None =>
+        routes.AmlSupervisorController
+          .onPageLoad(NormalMode, eclRegistrationModel.registration.registrationType.getOrElse(Initial))
+      case _    => routes.EntityTypeController.onPageLoad(NormalMode)
+    }
 
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
     routes.CheckYourAnswersController.onPageLoad(eclRegistrationModel.registration.registrationType.getOrElse(Initial))

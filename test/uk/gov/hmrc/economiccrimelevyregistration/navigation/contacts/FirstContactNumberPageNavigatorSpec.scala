@@ -22,43 +22,52 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 
-class SecondContactNamePageDeregisterNavigatorSpec extends SpecBase {
+class FirstContactNumberPageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new SecondContactNamePageNavigator()
+  val pageNavigator = new FirstContactNumberPageNavigator()
 
   "nextPage" should {
-    "return a Call to the second contact role page in NormalMode" in forAll {
-      (registration: Registration, name: String) =>
+    "return a Call to the add another contact page in NormalMode" in forAll {
+      (registration: Registration, number: String) =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
-            registration.contacts.copy(secondContactDetails =
-              registration.contacts.secondContactDetails.copy(name = Some(name))
+            registration.contacts.copy(firstContactDetails =
+              registration.contacts.firstContactDetails.copy(telephoneNumber = Some(number))
             )
           )
 
         pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          contacts.routes.SecondContactRoleController.onPageLoad(NormalMode)
+          contacts.routes.AddAnotherContactController.onPageLoad(NormalMode)
     }
 
-    "return a Call to the second contact role page in CheckMode when a second contact role does not already exist" in forAll {
-      registration: Registration =>
+    "return a Call to the check your answers page in CheckMode" in forAll {
+      (registration: Registration, number: String) =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
-            registration.contacts.copy(secondContactDetails = validContactDetails.copy(role = None))
+            registration.contacts.copy(firstContactDetails =
+              registration.contacts.firstContactDetails.copy(telephoneNumber = Some(number))
+            )
           )
-
-        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          contacts.routes.SecondContactRoleController.onPageLoad(CheckMode)
-    }
-
-    "return a Call to the check your answers page in CheckMode when a second contact role already exists" in forAll {
-      registration: Registration =>
-        val updatedRegistration: Registration =
-          registration.copy(contacts = registration.contacts.copy(secondContactDetails = validContactDetails))
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
+
+    Seq(NormalMode, CheckMode).foreach { mode =>
+      s"return a call to the answers are invalid page when there is no first contact telephone number present in $mode " in forAll {
+        registration: Registration =>
+          val updatedRegistration: Registration =
+            registration.copy(contacts =
+              registration.contacts.copy(firstContactDetails =
+                registration.contacts.firstContactDetails.copy(telephoneNumber = None)
+              )
+            )
+
+          pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)) shouldBe
+            routes.NotableErrorController.answersAreInvalid()
+      }
+    }
+
   }
 
 }

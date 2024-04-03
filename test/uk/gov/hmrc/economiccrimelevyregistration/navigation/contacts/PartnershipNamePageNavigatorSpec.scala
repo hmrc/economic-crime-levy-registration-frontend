@@ -17,41 +17,45 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 
-class FirstContactEmailPageDeregisterNavigatorSpec extends SpecBase {
+class PartnershipNamePageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new FirstContactEmailPageNavigator()
+  val pageNavigator = new PartnershipNamePageNavigator()
 
   "nextPage" should {
-    "return a Call to the first contact telephone number page in NormalMode" in forAll {
-      (registration: Registration, email: String) =>
+    "return a Call to the business sector page in NormalMode" in forAll {
+      (registration: Registration, partnershipName: String) =>
         val updatedRegistration: Registration =
-          registration.copy(contacts =
-            registration.contacts.copy(firstContactDetails =
-              registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
-            )
-          )
+          registration.copy(partnershipName = Some(partnershipName))
 
         pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          contacts.routes.FirstContactNumberController.onPageLoad(NormalMode)
+          routes.BusinessSectorController.onPageLoad(NormalMode)
     }
 
     "return a Call to the check your answers page in CheckMode" in forAll {
-      (registration: Registration, email: String) =>
+      (registration: Registration, partnershipName: String) =>
         val updatedRegistration: Registration =
-          registration.copy(contacts =
-            registration.contacts.copy(firstContactDetails =
-              registration.contacts.firstContactDetails.copy(emailAddress = Some(email))
-            )
-          )
+          registration.copy(partnershipName = Some(partnershipName))
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+          routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial))
     }
+
+    Seq(NormalMode, CheckMode).foreach { mode =>
+      s"return a call to the answers are invalid page when there is no partnership name present in $mode " in forAll {
+        (registration: Registration, partnershipName: String) =>
+          val updatedRegistration: Registration =
+            registration.copy(partnershipName = None)
+
+          pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)) shouldBe
+            routes.NotableErrorController.answersAreInvalid()
+      }
+    }
+
   }
 
 }

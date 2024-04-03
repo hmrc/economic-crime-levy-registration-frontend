@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
@@ -159,8 +159,8 @@ class NotableErrorControllerSpec extends SpecBase {
   "registrationFailed" should {
     "return OK and the correct view" in forAll { registration: Registration =>
       new TestContext(registration) {
-        val request                = FakeRequest(GET, "/registration-failed")
-        val result: Future[Result] = controller.registrationFailed(request)
+        val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(GET, "/registration-failed")
+        val result: Future[Result]                       = controller.registrationFailed(request)
 
         status(result) shouldBe OK
 

@@ -31,6 +31,7 @@
 @(form: Form[AmlSupervisor],
         mode: Mode,
         registrationType: Option[RegistrationType],
+        carriedOutAmlActivity: Option[Boolean],
         eclReference: Option[String]
 )(implicit request: Request[_], messages: Messages)
 
@@ -50,16 +51,15 @@
     <p class="govuk-body">@messages("amlSupervisor.p2")</p>
     <p class="govuk-body">@messages("amlSupervisor.p3")</p>
 
-    <h2 class="govuk-heading-m">@messages("amlSupervisor.h2")</h2>
 
     @formHelper(action = AmlSupervisorController.onSubmit(mode, registrationType.getOrElse(Initial))) {
         @{
             registrationType match {
-                case Some(Initial) => {
+                case Some(Initial) if carriedOutAmlActivity.isDefined => {
                     radios(
                         RadiosViewModel(
                             field = form("value"),
-                            legend = LegendViewModel(messages("amlSupervisor.heading")).asHidden(),
+                            legend = LegendViewModel(messages("amlSupervisor.h2")).withSize(),
                             items = AmlSupervisorType.options(appConfig, select, form)
                         )
                     )
@@ -68,7 +68,7 @@
                     radios(
                         RadiosViewModel(
                             field = form("value"),
-                            legend = LegendViewModel(messages("amlSupervisor.heading")).asHidden(),
+                            legend = LegendViewModel(messages("amlSupervisor.h2")).withSize(),
                             items = AmlSupervisorType.optionsAmend(appConfig, select, form)
                         )
                     )

@@ -7,79 +7,93 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.CompanyRegistrationNumberController.onPageLoad(NormalMode).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(
-      routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)
-    )
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"GET ${routes.CompanyRegistrationNumberController.onPageLoad(mode).url}" should {
+      behave like authorisedActionWithEnrolmentCheckRoute(
+        routes.CompanyRegistrationNumberController.onPageLoad(mode)
+      )
 
-    "respond with 200 status and the company registration number HTML view" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      "respond with 200 status and the company registration number HTML view" in {
+        stubAuthorisedWithNoGroupEnrolment()
 
-      val companyNumber: String = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
+        val companyNumber: String = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
 
-      val otherEntityJourneyData: OtherEntityJourneyData = OtherEntityJourneyData
-        .empty()
-        .copy(companyRegistrationNumber = Some(companyNumber))
+        val otherEntityJourneyData: OtherEntityJourneyData = OtherEntityJourneyData
+          .empty()
+          .copy(companyRegistrationNumber = Some(companyNumber))
 
-      val registration: Registration = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          optOtherEntityJourneyData = Some(otherEntityJourneyData),
-          relevantApRevenue = Some(randomApRevenue())
-        )
+        val registration: Registration = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            optOtherEntityJourneyData = Some(otherEntityJourneyData),
+            relevantApRevenue = Some(randomApRevenue())
+          )
 
-      val additionalInfo: RegistrationAdditionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo: RegistrationAdditionalInfo = random[RegistrationAdditionalInfo]
 
-      stubGetRegistrationWithEmptyAdditionalInfo(registration)
-      stubGetRegistrationAdditionalInfo(additionalInfo)
-      stubSessionForStoreUrl()
+        stubGetRegistrationWithEmptyAdditionalInfo(registration)
+        stubGetRegistrationAdditionalInfo(additionalInfo)
+        stubSessionForStoreUrl()
 
-      val result = callRoute(FakeRequest(routes.CompanyRegistrationNumberController.onPageLoad(NormalMode)))
+        val result = callRoute(FakeRequest(routes.CompanyRegistrationNumberController.onPageLoad(mode)))
 
-      status(result) shouldBe OK
+        status(result) shouldBe OK
 
-      html(result) should include("What is your company registration number?")
+        html(result) should include("What is your company registration number?")
+      }
     }
   }
 
-  s"POST ${routes.CompanyRegistrationNumberController.onSubmit(NormalMode).url}"  should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.CompanyRegistrationNumberController.onSubmit(NormalMode))
+  Seq(NormalMode, CheckMode).foreach { mode =>
+    s"POST ${routes.CompanyRegistrationNumberController.onSubmit(mode).url}" should {
+      behave like authorisedActionWithEnrolmentCheckRoute(
+        routes.CompanyRegistrationNumberController.onSubmit(NormalMode)
+      )
 
-    "save the company registration number then redirect to the check your answers page" in {
-      stubAuthorisedWithNoGroupEnrolment()
+      "save the company registration number then redirect to the Business Sector Controller page" in {
+        stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
-        .copy(
-          entityType = Some(random[EntityType]),
-          relevantApRevenue = Some(randomApRevenue())
+        val registration   = random[Registration]
+          .copy(
+            entityType = Some(random[EntityType]),
+            relevantApRevenue = Some(randomApRevenue())
+          )
+        val additionalInfo = random[RegistrationAdditionalInfo]
+
+        val companyNumber = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
+
+        val otherEntityJourneyData =
+          OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))
+        val updatedRegistration    = registration.copy(
+          optOtherEntityJourneyData = Some(otherEntityJourneyData)
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
 
-      val companyNumber = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
+        stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
+        stubGetRegistrationAdditionalInfo(additionalInfo)
 
-      val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))
-      val updatedRegistration    = registration.copy(
-        optOtherEntityJourneyData = Some(otherEntityJourneyData)
-      )
+        stubUpsertRegistration(updatedRegistration)
 
-      stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)
-      stubGetRegistrationAdditionalInfo(additionalInfo)
+        val result = callRoute(
+          FakeRequest(routes.CompanyRegistrationNumberController.onSubmit(mode))
+            .withFormUrlEncodedBody(("value", companyNumber))
+        )
 
-      stubUpsertRegistration(updatedRegistration)
+        status(result) shouldBe SEE_OTHER
 
-      val result = callRoute(
-        FakeRequest(routes.CompanyRegistrationNumberController.onSubmit(NormalMode))
-          .withFormUrlEncodedBody(("value", companyNumber))
-      )
-
-      status(result) shouldBe SEE_OTHER
-
-      redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
+        mode match {
+          case NormalMode =>
+            redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
+          case CheckMode  =>
+            redirectLocation(result) shouldBe Some(
+              routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+            )
+        }
+      }
     }
   }
-
 }

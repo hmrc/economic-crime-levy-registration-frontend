@@ -22,9 +22,9 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlRegulatedActivityView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -38,6 +38,7 @@ class AmlRegulatedActivityController @Inject() (
   getRegistrationData: RegistrationDataAction,
   storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
+  additionalInfoService: RegistrationAdditionalInfoService,
   formProvider: AmlRegulatedActivityFormProvider,
   pageNavigator: AmlRegulatedActivityPageNavigator,
   view: AmlRegulatedActivityView
@@ -60,15 +61,31 @@ class AmlRegulatedActivityController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         amlRegulatedActivity => {
+          val answerChanged =
+            !request.registration.carriedOutAmlRegulatedActivityInCurrentFy.contains(amlRegulatedActivity)
+
           val updatedRegistration = request.registration.copy(
-            carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity)
+            carriedOutAmlRegulatedActivityInCurrentFy = Some(amlRegulatedActivity),
+            amlSupervisor = clearValueIfChange(answerChanged, request.registration.amlSupervisor)
+          )
+
+          val info        = request.additionalInfo.getOrElse(RegistrationAdditionalInfo(request.registration.internalId))
+          val updatedInfo = info.copy(
+            liableForPreviousYears = clearValueIfChange(answerChanged, info.liableForPreviousYears)
           )
 
           (for {
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield EclRegistrationModel(updatedRegistration))
+            _ <- additionalInfoService.upsert(updatedInfo).asResponseError
+          } yield EclRegistrationModel(registration = updatedRegistration, hasRegistrationChanged = answerChanged))
             .convertToResult(mode, pageNavigator)
         }
       )
   }
+
+  def clearValueIfChange[T](answerChanged: Boolean, existingValue: Option[T]) =
+    answerChanged match {
+      case true  => None
+      case false => existingValue
+    }
 }

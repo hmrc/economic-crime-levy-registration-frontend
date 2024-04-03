@@ -18,13 +18,14 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister
 
 import cats.data.EitherT
 import org.mockito.ArgumentMatchers.{any, anyString}
+import play.api.data.Form
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataAction
 import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.DeregisterDateFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.{arbDeregistration, arbMode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterDateView
@@ -36,6 +37,7 @@ class DeregisterDateControllerSpec extends SpecBase {
 
   val view: DeregisterDateView                 = app.injector.instanceOf[DeregisterDateView]
   val formProvider: DeregisterDateFormProvider = new DeregisterDateFormProvider()
+  val form: Form[LocalDate]                    = formProvider()
 
   val mockDeregistrationService: DeregistrationService = mock[DeregistrationService]
 
@@ -58,7 +60,7 @@ class DeregisterDateControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
-        val form = deregistration.date match {
+        val form: Form[LocalDate] = deregistration.date match {
           case Some(date) => formProvider().fill(date)
           case None       => formProvider()
         }
@@ -100,5 +102,51 @@ class DeregisterDateControllerSpec extends SpecBase {
         reset(mockDeregistrationService)
       }
     }
+
+    "return BAD_REQUEST and view with errors when no date has been passed in" in forAll {
+      (deregistration: Deregistration, mode: Mode) =>
+        new TestContext(deregistration) {
+
+          when(mockDeregistrationService.getOrCreate(anyString())(any()))
+            .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
+
+          val result: Future[Result] = controller.onSubmit(mode)(fakeRequest)
+
+          val formWithErrors: Form[LocalDate] = form.bind(Map("value" -> ""))
+
+          status(result)          shouldBe BAD_REQUEST
+          contentAsString(result) shouldBe view(
+            formWithErrors,
+            mode,
+            deregistration.registrationType
+          )(fakeRequest, messages).toString
+        }
+    }
+
+    "return an internal server error when the upsert fails" in forAll { (deregistration: Deregistration) =>
+      val date = LocalDate.now().minusDays(1)
+      new TestContext(deregistration) {
+        when(mockDeregistrationService.getOrCreate(anyString())(any()))
+          .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
+
+        when(mockDeregistrationService.upsert(any())(any()))
+          .thenReturn(
+            EitherT.fromEither[Future](Left(DataRetrievalError.InternalUnexpectedError("Upsert failed", None)))
+          )
+
+        val result: Future[Result] =
+          controller.onSubmit(NormalMode)(
+            fakeRequest.withFormUrlEncodedBody(
+              ("value.day", date.getDayOfMonth.toString),
+              ("value.month", date.getMonthValue.toString),
+              ("value.year", date.getYear.toString)
+            )
+          )
+
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+
+      }
+    }
+
   }
 }

@@ -6,7 +6,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviour {
@@ -66,6 +66,32 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(appConfig.yourEclAccountUrl)
+    }
+
+    "return to the Check Your Answers Page when the No option is selected" in {
+      stubAuthorisedWithEclEnrolment()
+
+      val registration   = random[Registration]
+        .copy(
+          entityType = Some(random[EntityType]),
+          registrationType = Some(Amendment),
+          relevantApRevenue = Some(randomApRevenue())
+        )
+      val additionalInfo = random[RegistrationAdditionalInfo]
+
+      stubGetRegistrationWithEmptyAdditionalInfo(registration)
+      stubGetRegistrationAdditionalInfo(additionalInfo)
+
+      val result = callRoute(
+        FakeRequest(routes.CancelRegistrationAmendmentController.onSubmit())
+          .withFormUrlEncodedBody(("value", "false"))
+      )
+
+      status(result) shouldBe SEE_OTHER
+
+      redirectLocation(result) shouldBe Some(
+        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+      )
     }
   }
 }

@@ -29,12 +29,12 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
 class SessionDataConnectorSpec extends SpecBase {
-  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
-  val mockRequestBuilder           = mock[RequestBuilder]
-  val connector                    = new SessionDataConnector(appConfig, mockHttpClient)
-  val eclSessionDataUrl            = url"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
+  val mockHttpClient: HttpClientV2       = mock[HttpClientV2]
+  val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
+  val connector                          = new SessionDataConnector(appConfig, mockHttpClient)
+  val eclSessionDataUrl                  = url"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration"
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     reset(mockHttpClient)
     reset(mockRequestBuilder)
   }
@@ -112,7 +112,7 @@ class SessionDataConnectorSpec extends SpecBase {
       when(mockRequestBuilder.execute[HttpResponse](any(), any()))
         .thenReturn(Future.successful(HttpResponse.apply(NO_CONTENT, "")))
 
-      val result = await(connector.upsert(sessionData))
+      val result: Unit = await(connector.upsert(sessionData))
       result shouldBe ()
     }
 

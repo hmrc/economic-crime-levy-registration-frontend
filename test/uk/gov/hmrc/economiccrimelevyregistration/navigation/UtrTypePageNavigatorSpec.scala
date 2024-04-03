@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.UtrType.{CtUtr, SaUtr}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
-class UtrTypeDeregisterNavigatorSpec extends SpecBase {
+class UtrTypePageNavigatorSpec extends SpecBase {
 
   val pageNavigator = new UtrTypePageNavigator()
 
@@ -41,16 +41,36 @@ class UtrTypeDeregisterNavigatorSpec extends SpecBase {
           call
     }
 
-    "return a call to the other entity check your answers page in Check mode" in forAll {
+    "return a call to the answers are invalid page if the utrType is None" in forAll { (registration: Registration) =>
+      val otherData           = OtherEntityJourneyData.empty().copy(utrType = None)
+      val updatedRegistration = registration.copy(optOtherEntityJourneyData = Some(otherData))
+
+      pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
+        routes.NotableErrorController.answersAreInvalid()
+
+    }
+
+    "return a call to the check your answers page in Check mode if utrType is None" in forAll {
       (registration: Registration) =>
-        val otherEntityJourneyData = registration.otherEntityJourneyData
-        val call                   = otherEntityJourneyData.utrType match {
-          case Some(CtUtr) if otherEntityJourneyData.ctUtr.isEmpty => routes.CtUtrController.onPageLoad(CheckMode)
-          case Some(SaUtr) if otherEntityJourneyData.saUtr.isEmpty => routes.SaUtrController.onPageLoad(CheckMode)
-          case _                                                   => routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+        val otherData           = OtherEntityJourneyData.empty().copy(utrType = None)
+        val updatedRegistration = registration.copy(optOtherEntityJourneyData = Some(otherData))
+
+        pageNavigator.nextPage(
+          CheckMode,
+          EclRegistrationModel(updatedRegistration)
+        ) shouldBe routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+    }
+
+    "return a call to the correct UTR entry page in Check mode" in forAll {
+      (registration: Registration, utrType: UtrType) =>
+        val otherData           = OtherEntityJourneyData.empty().copy(utrType = Some(utrType), ctUtr = None, saUtr = None)
+        val updatedRegistration = registration.copy(optOtherEntityJourneyData = Some(otherData))
+        val call                = utrType match {
+          case SaUtr => routes.SaUtrController.onPageLoad(CheckMode)
+          case CtUtr => routes.CtUtrController.onPageLoad(CheckMode)
         }
 
-        pageNavigator.nextPage(CheckMode, EclRegistrationModel(registration)) shouldBe
+        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           call
     }
   }

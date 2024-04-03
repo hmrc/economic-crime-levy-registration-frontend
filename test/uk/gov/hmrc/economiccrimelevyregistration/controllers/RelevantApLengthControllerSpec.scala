@@ -104,7 +104,7 @@ class RelevantApLengthControllerSpec extends SpecBase {
       Arbitrary.arbitrary[Registration],
       Gen.chooseNum[Int](minDays, maxDays)
     ) { (registration: Registration, relevantApLength: Int) =>
-      new TestContext(registration) {
+      new TestContext(registration.copy(relevantApLength = None)) {
         val updatedRegistration: Registration =
           registration.copy(relevantApLength = Some(relevantApLength))
 
@@ -124,7 +124,7 @@ class RelevantApLengthControllerSpec extends SpecBase {
       Arbitrary.arbitrary[Registration],
       Gen.alphaStr
     ) { (registration: Registration, invalidLength: String) =>
-      new TestContext(registration) {
+      new TestContext(registration.copy(relevantApLength = None)) {
         val result: Future[Result]    =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", invalidLength)))
         val formWithErrors: Form[Int] = form.bind(Map("value" -> invalidLength))

@@ -22,50 +22,59 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 
-class SecondContactEmailPageDeregisterNavigatorSpec extends SpecBase {
+class SecondContactRolePageNavigatorSpec extends SpecBase {
 
-  val pageNavigator = new SecondContactEmailPageNavigator()
+  val pageNavigator = new SecondContactRolePageNavigator()
 
   "nextPage" should {
-    "return a Call to the second contact telephone number page in NormalMode" in forAll {
-      (registration: Registration, email: String) =>
+    "return a Call to the second contact email page in NormalMode" in forAll {
+      (registration: Registration, role: String) =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
             registration.contacts.copy(secondContactDetails =
-              registration.contacts.secondContactDetails.copy(emailAddress = Some(email))
+              registration.contacts.secondContactDetails.copy(role = Some(role))
             )
           )
 
         pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          contacts.routes.SecondContactNumberController.onPageLoad(NormalMode)
+          contacts.routes.SecondContactEmailController.onPageLoad(NormalMode)
     }
 
-    "return a Call to the second contact telephone number page in CheckMode when a second contact telephone number does not already exist" in forAll {
-      (registration: Registration, email: String) =>
+    "return a Call to the second contact email page in CheckMode when a second contact email is not already present" in forAll {
+      registration: Registration =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
-            registration.contacts.copy(secondContactDetails =
-              registration.contacts.secondContactDetails.copy(emailAddress = Some(email), telephoneNumber = None)
-            )
+            registration.contacts.copy(secondContactDetails = validContactDetails.copy(emailAddress = None))
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          contacts.routes.SecondContactNumberController.onPageLoad(CheckMode)
+          contacts.routes.SecondContactEmailController.onPageLoad(CheckMode)
     }
 
-    "return a Call to the check your answers page in CheckMode when a second contact telephone number already exists" in forAll {
-      (registration: Registration, email: String, telephoneNumber: String) =>
+    "return a Call to the check your answers page in CheckMode when second contact details are already present" in forAll {
+      registration: Registration =>
         val updatedRegistration: Registration =
-          registration.copy(contacts =
-            registration.contacts.copy(secondContactDetails =
-              registration.contacts.secondContactDetails
-                .copy(emailAddress = Some(email), telephoneNumber = Some(telephoneNumber))
-            )
-          )
+          registration.copy(contacts = registration.contacts.copy(secondContactDetails = validContactDetails))
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
           routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
+
+    Seq(NormalMode, CheckMode).foreach { mode =>
+      s"return a call to the answers are invalid page when there is no second contact role present in $mode " in forAll {
+        registration: Registration =>
+          val updatedRegistration: Registration =
+            registration.copy(contacts =
+              registration.contacts.copy(secondContactDetails =
+                registration.contacts.secondContactDetails.copy(role = None)
+              )
+            )
+
+          pageNavigator.nextPage(mode, EclRegistrationModel(updatedRegistration)) shouldBe
+            routes.NotableErrorController.answersAreInvalid()
+      }
+    }
+
   }
 
 }

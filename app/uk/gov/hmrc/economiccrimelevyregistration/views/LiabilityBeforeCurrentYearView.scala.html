@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 @import uk.gov.hmrc.govukfrontend.views.html.components.{GovukRadios, _}
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 
 @this(
         layout: Layout,
@@ -39,12 +40,11 @@
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
         }
 
-        <h1 class="govuk-heading-l">@messages("liabilityBeforeCurrentYear.h1")</h1>
 
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(messages("liabilityBeforeCurrentYear.h1")).asHidden(),
+                legend = LegendViewModel(messages("liabilityBeforeCurrentYear.h1")).asPageHeading(LegendSize.Large),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),

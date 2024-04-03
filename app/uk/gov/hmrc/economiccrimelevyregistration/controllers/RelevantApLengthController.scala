@@ -62,13 +62,20 @@ class RelevantApLengthController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         relevantApLength => {
-          val updatedRegistration = dataCleanup.cleanup(
-            request.registration
-              .copy(relevantApLength = Some(relevantApLength))
-          )
+          val answerChanged = !request.registration.relevantApLength.contains(relevantApLength)
+
+          val updatedRegistration = answerChanged match {
+            case false => request.registration
+            case true  =>
+              dataCleanup.cleanup(
+                request.registration.copy(relevantApLength = Some(relevantApLength))
+              )
+          }
+
           (for {
             _ <- eclRegistrationService.upsertRegistration(updatedRegistration).asResponseError
-          } yield EclRegistrationModel(updatedRegistration)).convertToResult(mode, pageNavigator)
+          } yield EclRegistrationModel(registration = updatedRegistration, hasRegistrationChanged = answerChanged))
+            .convertToResult(mode, pageNavigator)
         }
       )
   }
