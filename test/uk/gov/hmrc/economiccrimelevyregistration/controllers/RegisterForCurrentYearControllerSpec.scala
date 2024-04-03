@@ -95,9 +95,9 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             form,
             NormalMode,
-            s"${EclTaxYear.currentStartYear()} to ${EclTaxYear.currentFinishYear()}",
-            EclTaxYear.currentFinancialYearStartDate,
-            EclTaxYear.currentFinancialYearFinishDate
+            s"${EclTaxYear.currentDueDateAdjustedStartYear()} to ${EclTaxYear.currentDueDateAdjustedFinishYear()}",
+            EclTaxYear.currentDueDateAdjustedFinancialYearStartDate,
+            EclTaxYear.currentDueDateAdjustedFinancialYearFinishDate
           )(messages, fakeRequest).toString()
         }
     }
@@ -115,9 +115,9 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             form.fill(true),
             NormalMode,
-            s"${EclTaxYear.currentStartYear()} to ${EclTaxYear.currentFinishYear()}",
-            EclTaxYear.currentFinancialYearStartDate,
-            EclTaxYear.currentFinancialYearFinishDate
+            s"${EclTaxYear.currentDueDateAdjustedStartYear()} to ${EclTaxYear.currentDueDateAdjustedFinishYear()}",
+            EclTaxYear.currentDueDateAdjustedFinancialYearStartDate,
+            EclTaxYear.currentDueDateAdjustedFinancialYearFinishDate
           )(messages, fakeRequest).toString()
         }
     }
@@ -135,9 +135,9 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             form.fill(false),
             NormalMode,
-            s"${EclTaxYear.currentStartYear()} to ${EclTaxYear.currentFinishYear()}",
-            EclTaxYear.currentFinancialYearStartDate,
-            EclTaxYear.currentFinancialYearFinishDate
+            s"${EclTaxYear.currentDueDateAdjustedStartYear()} to ${EclTaxYear.currentDueDateAdjustedFinishYear()}",
+            EclTaxYear.currentDueDateAdjustedFinancialYearStartDate,
+            EclTaxYear.currentDueDateAdjustedFinancialYearFinishDate
           )(messages, fakeRequest).toString()
         }
     }
@@ -168,9 +168,9 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             form.fill(updatedAdditionalInfo.registeringForCurrentYear.get),
             CheckMode,
-            s"${EclTaxYear.currentStartYear()} to ${EclTaxYear.currentFinishYear()}",
-            EclTaxYear.currentFinancialYearStartDate,
-            EclTaxYear.currentFinancialYearFinishDate
+            s"${EclTaxYear.currentDueDateAdjustedStartYear()} to ${EclTaxYear.currentDueDateAdjustedFinishYear()}",
+            EclTaxYear.currentDueDateAdjustedFinancialYearStartDate,
+            EclTaxYear.currentDueDateAdjustedFinancialYearFinishDate
           )(messages, fakeRequest).toString()
         }
     }
@@ -187,9 +187,9 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             form,
             CheckMode,
-            s"${EclTaxYear.currentStartYear()} to ${EclTaxYear.currentFinishYear()}",
-            EclTaxYear.currentFinancialYearStartDate,
-            EclTaxYear.currentFinancialYearFinishDate
+            s"${EclTaxYear.currentDueDateAdjustedStartYear()} to ${EclTaxYear.currentDueDateAdjustedFinishYear()}",
+            EclTaxYear.currentDueDateAdjustedFinancialYearStartDate,
+            EclTaxYear.currentDueDateAdjustedFinancialYearFinishDate
           )(messages, fakeRequest).toString()
         }
     }

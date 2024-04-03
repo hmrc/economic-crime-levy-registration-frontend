@@ -33,6 +33,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegisterForCurrentYearView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -79,9 +80,9 @@ class RegisterForCurrentYearController @Inject() (
                 view(
                   form.prepare(value.registeringForCurrentYear),
                   mode,
-                  s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}",
-                  EclTaxYear.currentFinancialYearStartDate,
-                  EclTaxYear.currentFinancialYearFinishDate
+                  s"${EclTaxYear.currentDueDateAdjustedStartYear().toString} to ${EclTaxYear.currentDueDateAdjustedFinishYear().toString}",
+                  EclTaxYear.currentDueDateAdjustedFinancialYearStartDate,
+                  EclTaxYear.currentDueDateAdjustedFinancialYearFinishDate
                 )
               )
             case None        =>
@@ -89,9 +90,9 @@ class RegisterForCurrentYearController @Inject() (
                 view(
                   form,
                   mode,
-                  s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}",
-                  EclTaxYear.currentFinancialYearStartDate,
-                  EclTaxYear.currentFinancialYearFinishDate
+                  s"${EclTaxYear.currentDueDateAdjustedStartYear().toString} to ${EclTaxYear.currentDueDateAdjustedFinishYear().toString}",
+                  EclTaxYear.currentDueDateAdjustedFinancialYearStartDate,
+                  EclTaxYear.currentDueDateAdjustedFinancialYearFinishDate
                 )
               )
           }
@@ -109,16 +110,16 @@ class RegisterForCurrentYearController @Inject() (
               view(
                 formWithErrors,
                 mode,
-                s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}",
-                EclTaxYear.currentFinancialYearStartDate,
-                EclTaxYear.currentFinancialYearFinishDate
+                s"${EclTaxYear.currentDueDateAdjustedStartYear().toString} to ${EclTaxYear.currentDueDateAdjustedFinishYear().toString}",
+                EclTaxYear.currentDueDateAdjustedFinancialYearStartDate,
+                EclTaxYear.currentDueDateAdjustedFinancialYearFinishDate
               )
             )
           ),
         answer =>
           (for {
             additionalInfo         <- registrationAdditionalInfoService.get(request.internalId).asResponseError
-            liabilityYear           = if (answer) Some(EclTaxYear.currentStartYear()) else None
+            liabilityYear           = if (answer) Some(EclTaxYear.currentDueDateAdjustedStartYear()) else None
             updatedAdditionalInfo   = additionalInfo.get.copy(
                                         registeringForCurrentYear = Some(answer),
                                         liabilityYear = liabilityYear.map(value => LiabilityYear(value))

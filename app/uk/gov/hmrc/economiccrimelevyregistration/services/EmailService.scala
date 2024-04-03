@@ -51,9 +51,13 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
     val eclDueDate       = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)
     val registrationDate = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)
     val previousFY       =
-      additionalInfo.flatMap(_.liabilityYear.flatMap(year => if (year.isNotCurrentFY) Some(year.asString) else None))
+      additionalInfo.flatMap(
+        _.liabilityYear.flatMap(year =>
+          if (EclTaxYear.currentDueDateAdjustedStartYear() != year.value) Some(year.asString) else None
+        )
+      )
     val currentFY        =
-      liableForCurrentFY.map(_ => EclTaxYear.current.currentYear.toString)
+      liableForCurrentFY.map(_ => EclTaxYear.currentDueDateAdjustedStartYear().toString)
 
     def sendEmail(
       name: String,
