@@ -8,6 +8,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.UtrLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{NonUKEstablishment, Trust, UnincorporatedAssociation}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CtUtrISpec extends ISpecBase with AuthorisedBehaviour {
@@ -83,15 +84,21 @@ class CtUtrISpec extends ISpecBase with AuthorisedBehaviour {
             updatedRegistration.entityType match {
               case None                     => redirectLocation(result) shouldBe Some(routes.NotableErrorController.answersAreInvalid().url)
               case Some(Trust)              =>
-                redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+                redirectLocation(result) shouldBe Some(
+                  routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+                )
               case Some(NonUKEstablishment) =>
-                redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+                redirectLocation(result) shouldBe Some(
+                  routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+                )
               case Some(_)                  =>
                 updatedRegistration.otherEntityJourneyData.postcode match {
                   case None    =>
                     redirectLocation(result) shouldBe Some(routes.CtUtrPostcodeController.onPageLoad(CheckMode).url)
                   case Some(_) =>
-                    redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+                    redirectLocation(result) shouldBe Some(
+                      routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+                    )
                 }
             }
         }

@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 import java.time.LocalDate
@@ -81,7 +82,9 @@ class RegisterForCurrentYearPageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, updatedRegistrationModel) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+          routes.CheckYourAnswersController.onPageLoad(
+            updatedRegistrationModel.registration.registrationType.getOrElse(Initial)
+          )
     }
 
     "return a call to the liability date page if user is not registering for current year and liability start date is not defined" in forAll {
@@ -109,7 +112,9 @@ class RegisterForCurrentYearPageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, updatedRegistrationModel) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+          routes.CheckYourAnswersController.onPageLoad(
+            updatedRegistrationModel.registration.registrationType.getOrElse(Initial)
+          )
     }
   }
 

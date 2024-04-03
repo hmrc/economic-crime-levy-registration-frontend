@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode}
 
 class AmendReasonPageNavigator extends PageNavigator {
@@ -25,5 +26,5 @@ class AmendReasonPageNavigator extends PageNavigator {
     routes.AmlSupervisorController.onPageLoad(NormalMode, eclRegistrationModel.registration.registrationType.get)
 
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
-    routes.CheckYourAnswersController.onPageLoad()
+    routes.CheckYourAnswersController.onPageLoad(eclRegistrationModel.registration.registrationType.getOrElse(Initial))
 }

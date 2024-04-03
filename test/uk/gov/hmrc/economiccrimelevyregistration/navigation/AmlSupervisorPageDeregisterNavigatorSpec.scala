@@ -102,7 +102,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
           registration.copy(amlSupervisor = Some(amlSupervisor), registrationType = Some(Initial))
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+          routes.CheckYourAnswersController.onPageLoad(Initial)
     }
   }
 

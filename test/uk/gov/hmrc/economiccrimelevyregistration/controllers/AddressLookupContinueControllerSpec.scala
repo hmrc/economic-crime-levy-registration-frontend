@@ -49,7 +49,7 @@ class AddressLookupContinueControllerSpec extends SpecBase {
     val controller = new AddressLookupContinueController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockAddressLookupFrontendService,
       mockEclRegistrationService,

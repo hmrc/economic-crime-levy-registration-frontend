@@ -7,6 +7,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour {
@@ -87,7 +88,10 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
         mode match {
           case NormalMode =>
             redirectLocation(result) shouldBe Some(routes.BusinessSectorController.onPageLoad(NormalMode).url)
-          case CheckMode  => redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+          case CheckMode  =>
+            redirectLocation(result) shouldBe Some(
+              routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+            )
         }
       }
     }

@@ -61,7 +61,7 @@ class NonUkCrnControllerSpec extends SpecBase {
     val controller = new NonUkCrnController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,

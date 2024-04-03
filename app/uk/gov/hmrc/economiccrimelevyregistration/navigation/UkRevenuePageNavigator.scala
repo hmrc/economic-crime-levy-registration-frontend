@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration}
 
 import javax.inject.Inject
@@ -37,7 +38,8 @@ class UkRevenuePageNavigator @Inject() extends PageNavigator {
           case Some(true)  =>
             mode match {
               case NormalMode => routes.LiabilityBeforeCurrentYearController.onPageLoad(mode)
-              case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
+              case CheckMode  =>
+                routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
             }
           case Some(false) =>
             routes.LiabilityBeforeCurrentYearController.onPageLoad(mode)

@@ -6,6 +6,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.UtrType.{CtUtr, SaUtr}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
@@ -80,7 +81,10 @@ class UtrTypeISpec extends ISpecBase with AuthorisedBehaviour {
             utrType match {
               case CtUtr if otherEntityJourneyData.ctUtr.isEmpty => redirectLocation(result) shouldBe Some(call)
               case SaUtr if otherEntityJourneyData.saUtr.isEmpty => redirectLocation(result) shouldBe Some(call)
-              case _                                             => redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+              case _                                             =>
+                redirectLocation(result) shouldBe Some(
+                  routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+                )
             }
 
         }

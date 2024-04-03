@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
+package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister
 
 import play.api.mvc.Result
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.DeregistrationDataRetrievalAction
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
-import uk.gov.hmrc.economiccrimelevyregistration.models.requests.deregister.DeregistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
-import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
+import uk.gov.hmrc.economiccrimelevyregistration.models.requests.deregister.DeregistrationDataRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDeregistrationRetrievalAction(
-  deregistrationService: DeregistrationService,
+class FakeDeregistrationDataAction(
   deregistration: Deregistration
-)(implicit ec: ExecutionContext)
-    extends DeregistrationDataRetrievalAction(deregistrationService)(ec) {
+) extends DeregistrationDataAction {
+
+  override protected implicit val executionContext: ExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
+
   override protected def refine[A](
     request: AuthorisedRequest[A]
   ): Future[Either[Result, DeregistrationDataRequest[A]]] =
