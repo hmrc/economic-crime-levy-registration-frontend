@@ -27,9 +27,6 @@ import java.time.{Clock, ZoneOffset}
 class Module(environment: Environment, configuration: Configuration) extends AbstractModule {
 
   override def configure(): Unit = {
-    bind(classOf[DataRetrievalAction])
-      .to(classOf[RegistrationDataRetrievalAction])
-      .asEagerSingleton()
 
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
 

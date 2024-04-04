@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.{IncorporatedEntityType, LimitedPartnershipType, PartnershipType, ScottishOrGeneralPartnershipType}
@@ -48,7 +49,7 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
     val controller = new GrsContinueController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockIncorporatedEntityIdentificationFrontendConnector,
       mockSoleTraderIdentificationFrontendConnector,
@@ -146,7 +147,9 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
 
             status(result) shouldBe SEE_OTHER
 
-            redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+            redirectLocation(result) shouldBe Some(
+              routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial)).url
+            )
           }
       }
 
@@ -485,7 +488,9 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
 
             status(result) shouldBe SEE_OTHER
 
-            redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+            redirectLocation(result) shouldBe Some(
+              routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial)).url
+            )
           }
       }
 
@@ -860,7 +865,9 @@ class GrsContinueControllerSpec extends SpecBase with BaseController {
 
             status(result) shouldBe SEE_OTHER
 
-            redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+            redirectLocation(result) shouldBe Some(
+              routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+            )
           }
       }
 

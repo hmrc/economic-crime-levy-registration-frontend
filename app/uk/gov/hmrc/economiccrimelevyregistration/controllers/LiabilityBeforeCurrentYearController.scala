@@ -21,9 +21,10 @@ import com.google.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
@@ -40,7 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class LiabilityBeforeCurrentYearController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataAction,
   storeUrl: StoreUrlAction,
   formProvider: LiabilityBeforeCurrentYearFormProvider,
   additionalInfoService: RegistrationAdditionalInfoService,
@@ -74,6 +75,11 @@ class LiabilityBeforeCurrentYearController @Inject() (
               liableBeforeCurrentYear
             )
 
+            val answerChanged = request.additionalInfo match {
+              case None       => true
+              case Some(info) => !info.liableForPreviousYears.contains(liableBeforeCurrentYear)
+            }
+
             val info = RegistrationAdditionalInfo(
               registration.internalId,
               liabilityYear,
@@ -94,7 +100,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
               .asResponseError
               .fold(
                 err => routeError(err),
-                _ => Redirect(navigateByMode(mode, registration, info, liableBeforeCurrentYear))
+                _ => Redirect(navigateByMode(mode, registration, info, liableBeforeCurrentYear, answerChanged))
               )
           }
         )
@@ -104,15 +110,16 @@ class LiabilityBeforeCurrentYearController @Inject() (
     mode: Mode,
     registration: Registration,
     info: RegistrationAdditionalInfo,
-    liableBeforeCurrentYear: Boolean
+    liableBeforeCurrentYear: Boolean,
+    answerChanged: Boolean
   )(implicit
     hc: HeaderCarrier
   ): Call =
     mode match {
       case NormalMode => navigateInNormalMode(liableBeforeCurrentYear, registration, mode)
       case CheckMode  =>
-        if (!liableBeforeCurrentYear || info.liabilityStartDate.isDefined) {
-          routes.CheckYourAnswersController.onPageLoad()
+        if (!answerChanged || !liableBeforeCurrentYear || info.liabilityStartDate.isDefined) {
+          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
         } else {
           routes.LiabilityDateController.onPageLoad(CheckMode)
         }
@@ -131,7 +138,8 @@ class LiabilityBeforeCurrentYearController @Inject() (
         routes.NotLiableController.youDoNotNeedToRegister()
       case (true, _, None)            =>
         routes.LiabilityDateController.onPageLoad(mode)
-      case (_, _, Some(_))            => routes.CheckYourAnswersController.onPageLoad()
+      case (_, _, Some(_))            =>
+        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
 
   private def sendNotLiableAuditEvent(registration: Registration)(implicit hc: HeaderCarrier) =

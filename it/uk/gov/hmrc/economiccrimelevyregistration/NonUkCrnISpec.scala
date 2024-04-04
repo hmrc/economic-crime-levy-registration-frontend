@@ -9,6 +9,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{NonUKEstablishment, UnincorporatedAssociation}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
@@ -87,7 +88,11 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
               (registration.isUnincorporatedAssociation && registration.otherEntityJourneyData.isCtUtrPresent.isEmpty)
               || (!registration.isUnincorporatedAssociation && registration.otherEntityJourneyData.utrType.isEmpty)
             ) { redirectLocation(result) shouldBe navigateToNextPage }
-            else { redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url) }
+            else {
+              redirectLocation(result) shouldBe Some(
+                routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+              )
+            }
         }
       }
     }

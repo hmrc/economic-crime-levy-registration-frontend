@@ -114,7 +114,7 @@ GET         /grs-continue/checkmode                                             
 GET         /address-lookup-continue/normalmode                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.AddressLookupContinueController.continue(mode: Mode = NormalMode, id)
 GET         /address-lookup-continue/checkmode                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.AddressLookupContinueController.continue(mode: Mode = CheckMode, id)
 
-GET         /check-your-answers                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
+GET         /check-your-answers                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad(registrationType: RegistrationType)
 POST        /check-your-answers                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onSubmit()
 
 GET         /registration-submitted                                             uk.gov.hmrc.economiccrimelevyregistration.controllers.RegistrationSubmittedController.onPageLoad()
@@ -136,6 +136,12 @@ GET         /registration-failed                                                
 GET         /entity-type-does-not-match                                         uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.partyTypeMismatch()
 
 GET         /verification-failed                                                uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.verificationFailed()
+
+GET         /you-have-already-registered                                        uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.youHaveAlreadyRegistered()
+
+GET         /you-have-already-amended-registration                              uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.youAlreadyRequestedToAmend()
+
+GET         /you-have-already-deregistered                                      uk.gov.hmrc.economiccrimelevyregistration.controllers.NotableErrorController.alreadyDeregistered()
 
 GET         /account/sign-out-survey                                            uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOut()
 GET         /account/sign-out                                                   uk.gov.hmrc.economiccrimelevyregistration.controllers.SignOutController.signOutNoSurvey()

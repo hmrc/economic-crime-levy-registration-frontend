@@ -47,7 +47,7 @@ class IsUkAddressControllerSpec extends SpecBase {
     val controller = new IsUkAddressController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,

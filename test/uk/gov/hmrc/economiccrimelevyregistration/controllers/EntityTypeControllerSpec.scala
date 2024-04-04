@@ -28,6 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AuditError, DataRetrievalError}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
@@ -53,7 +54,7 @@ class EntityTypeControllerSpec extends SpecBase {
     val controller = new EntityTypeController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,
@@ -109,8 +110,8 @@ class EntityTypeControllerSpec extends SpecBase {
           when(mockEclRegistrationService.registerEntityType(any(), any())(any()))
             .thenReturn(EitherT[Future, DataRetrievalError, String](Future.successful(Right(url))))
 
-          val nextPage: Call = if (registration.entityType.contains(entityType)) {
-            routes.CheckYourAnswersController.onPageLoad()
+          val nextPage = if (registration.entityType.contains(entityType)) {
+            routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
           } else if (EntityType.isOther(entityType)) {
             routes.BusinessNameController.onPageLoad(mode)
           } else {

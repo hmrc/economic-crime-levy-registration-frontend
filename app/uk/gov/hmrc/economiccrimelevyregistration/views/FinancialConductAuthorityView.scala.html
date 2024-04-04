@@ -32,10 +32,8 @@
 
     <p class="govuk-body">@Html(messages("registerWith.body.p2", messages("registerWith.body.p2.fcaLink")))</p>
 
-    <h2 class="govuk-heading-m">@messages("feedback.heading")</h2>
-
-    <p class="govuk-body">@messages("feedback.p1")</p>
-
-    <p class="govuk-body">@Html(messages("feedback.p2", messages("feedback.link", appConfig.exitSurveyUrl)))</p>
+    <h2 class="govuk-heading-m">@messages("exit.h2")</h2>
+    <p class="govuk-body">@messages("exit.p1")</p>
+    <p class="govuk-body">@Html(messages("exit.survey", messages("exit.survey.link", appConfig.exitSurveyUrl)))</p>
 
 }

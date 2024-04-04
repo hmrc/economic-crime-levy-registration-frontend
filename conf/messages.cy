@@ -53,7 +53,7 @@ start.p1 = Defnyddiwch y gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau
 start.b1 = sy’n cael ei reoleiddio gan CThEF ar gyfer goruchwyliaeth gwrth-wyngalchu arian (AML)
 start.b2 = sy’n cael ei reoleiddio gan un o Oruchwylwyr Corff Proffesiynol (PBS) ar gyfer goruchwyliaeth gwrth-wyngalchu arian (AML)
 start.p2 = Gwiriwch a {0}.
-start.p2.link = <a href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">oes angen i chi dalu’r ardoll</a>
+start.p2.link = <a target="_blank" href="https://www.gov.uk/government/publications/economic-crime-anti-money-laundering-levy/economic-crime-anti-money-laundering-levy" class="govuk-link">oes angen i chi dalu’r ardoll (yn agor mewn tab newydd)</a>
 start.p3 = Os ydych yn rhan o grŵp busnes, mae’n rhaid i chi gofrestru ar gyfer pob endid yn eich grŵp sy’n bodloni’r gofynion.
 start.p4 = Byddwch yn gallu cyflwyno datganiad a thalu’r ardoll ar ôl i chi gofrestru. Mae’n rhaid i chi dalu’r ardoll erbyn 30 Medi {0}. Codir llog arnoch os ydych yn talu’n hwyr.
 start.beforeYouStart = Cyn i chi ddechrau
@@ -61,7 +61,7 @@ start.provide = Bydd angen i chi roi gwybod i ni am y canlynol:
 start.provide.b1 = unrhyw gyfnodau cyfrifyddu ar gyfer eich sefydliad sy’n dod i ben yn ystod y flwyddyn ariannol berthnasol
 start.provide.b2 = refeniw yn y DU eich sefydliad yn ystod unrhyw gyfnodau cyfrifyddu perthnasol
 start.provide.b3 = a wnaeth eich sefydliad gynnal gweithgaredd a reoleiddir gan reoliadau AML ar gyfer y flwyddyn ariannol lawn
-start.provide.b4 = y manylion y gallwn eu defnyddio i adnabod eich busnes – gweler y rhestr o fanylion sydd eu hangen, <a href="https://www.gov.uk/guidance/register-for-the-economic-crime-levy" class="govuk-link">gweler y rhestr o fanylion sydd eu hangen</a>
+start.provide.b4 = y manylion y gallwn eu defnyddio i adnabod eich busnes – gweler y rhestr o fanylion sydd eu hangen, <a target="_blank" href="https://www.gov.uk/guidance/register-for-the-economic-crime-levy" class="govuk-link">gweler y rhestr o fanylion sydd eu hangen (yn agor mewn tab newydd)</a>
 start.provide.b5 = y sector busnes mae’ch sefydliad yn gweithredu ynddo
 start.provide.b6 = manylion rhywun yn eich sefydliad a all weithredu fel pwynt cyswllt ar gyfer unrhyw weithgareddau sy’n berthnasol i’r ECL
 start.doNotUse = Peidiwch â defnyddio’r gwasanaeth hwn os yw’r canlynol yn wir:
@@ -160,19 +160,19 @@ ukRevenue.hidden.b1 = gostyngiadau masnachol
 ukRevenue.hidden.b2 = treth ar werth (TAW)
 ukRevenue.hidden.b3 = unrhyw drethi eraill sy’n seiliedig ar eich trosiant
 
-relevantApLength.title = Pa mor hir yw’ch cyfnod cyfrifyddu perthnasol?
-relevantApLength.heading = Pa mor hir yw’ch cyfnod cyfrifyddu perthnasol?
+relevantApLength.title = Eich cyfnod cyfrifyddu perthnasol
+relevantApLength.heading = Eich cyfnod cyfrifyddu perthnasol
 relevantApLength.p1 = Eich cyfnod cyfrifyddu perthnasol yw unrhyw gyfnod sy’n dod i ben yn ystod y flwyddyn ariannol. Mae’n seiliedig ar y cyfnod cyfrifyddu rydych yn ei ddefnyddio ar gyfer eich Ffurflen Dreth y Cwmni.
 relevantApLength.p2 = Mae’n bosibl bod gennych fwy nag un cyfnod cyfrifyddu perthnasol yn dod i ben yn ystod y flwyddyn ariannol.
 relevantApLength.p3 = At ddibenion yr ECL, mae’r flwyddyn ariannol yn dechrau ar 1 Ebrill ac yn dod i ben ar 31 Mawrth y flwyddyn ganlynol.
-relevantApLength.hint = Nodwch hyd eich cyfnod cyfrifyddu mewn diwrnodau
+relevantApLength.hint = Dyma nifer y diwrnodau y gwnaethoch chi weithgaredd a reoleiddir gan y rheoliadau AML
 relevantApLength.ex.heading = Enghraifft
 relevantApLength.ex.p1 = Mae’ch cyfnod cyfrifyddu perthnasol yn 9 mis. Mae’n dechrau ar 1 Ionawr, ac yn dod i ben ar 30 Medi o’r un flwyddyn.
 relevantApLength.ex.p2 = Mae’r cyfnod cyfrifyddu hwn yn dod i ben yn ystod y flwyddyn ariannol ar gyfer yr ECL. Mae’r flwyddyn hon yn dechrau ar 1 Ebrill, ac yn dod i ben ar 31 Mawrth y flwyddyn ganlynol.
 relevantApLength.ex.p3 = Mae’ch busnes yn cael ei reoleiddio at ddibenion gwrth-wyngalchu arian (AML) drwy gydol eich cyfnod cyfrifyddu perthnasol cyfan. Mae’r cyfnod hwn yn rhedeg am 9 mis.
 relevantApLength.ex.p4 = Eich refeniw ar gyfer y cyfnod cyfrifyddu hwn yw £20 miliwn.
 relevantApLength.ex.p5 = Yn seiliedig ar yr enghraifft hon, bydd eich busnes yn agored i gofrestru ar gyfer yr ECL.
-relevantApLength.error.required = Nodwch yr hyd
+relevantApLength.error.required = Nodwch hyd eich cyfnod cyfrifyddu mewn diwrnodau
 relevantApLength.error.wholeNumber = Mae’n rhaid i’r hyd fod yn rhif cyfan
 relevantApLength.error.nonNumeric = Mae’n rhaid i’r hyd fod yn rhif cyfan
 relevantApLength.error.outOfRange = Mae’n rhaid i’r hyd fod rhwng {0} a {1}
@@ -471,13 +471,10 @@ verificationFailed.subHeading.p1 = Rhowch gynnig arall ar nodi eich Cyfeirnod Un
 verificationFailed.subHeading.p2 = Rhowch gynnig arall ar nodi eich Rhif Cofrestru’r Cwmni (CRN)
 verificationFailed.subHeading.p3 = Rhowch gynnig arall ar nodi eich cod post
 
-feedback.heading = Rhowch eich barn
-feedback.p1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw’ch barn amdano.
-feedback.link = <a href="{0}" class="govuk-link">Anfonwch eich adborth atom</a>
-feedback.p2 = {0}. Bydd eich meddyliau a’ch syniadau’n ein helpu i wneud gwelliannau.
-
-exit.survey.link = <a href="{0}" class="govuk-link">Beth oedd eich barn am y gwasanaeth hwn?</a>
-exit.survey = {0} Mae’r arolwg ymadael yn (cymryd 30 eiliad).
+exit.h2 = Cyn i chi fynd
+exit.p1 = Mae’ch adborth yn ein helpu i wella ein gwasanaeth.
+exit.survey.link = <a href="{0}" class="govuk-link">Llenwch ein harolwg</a>
+exit.survey = {0} i rannu’ch adborth ar y gwasanaeth.
 
 signedOut.title = Er eich diogelwch, gwnaethom eich allgofnodi
 signedOut.heading = Er eich diogelwch, gwnaethom eich allgofnodi
@@ -592,8 +589,6 @@ amendmentRequested.body.p4 = Pan fyddwch yn llenwi’ch datganiad blynyddol, byd
 amendmentRequested.body.p5 = Byddwn yn adolygu’ch atebion. Os oes angen rhagor o wybodaeth arnom mae’n bosibl byddwn yn cysylltu â chi drwy ddefnyddio’r manylion yr ydych wedi eu rhoi. Bydd y broses hon yn cymryd 15 diwrnod gwaith.
 amendmentRequested.body.p6 = Byddwn yn anfon llythyr atoch ar ôl i ni ddiwygio’ch datganiad.
 amendmentRequested.body.address.heading = Byddwn yn anfon llythyr at:
-amendmentRequested.body.p7 = {0} (mae’n cymryd 30 eiliad)
-amendmentRequested.body.p7.link = <a href="{0}" class="govuk-link">Beth oedd eich barn am y gwasanaeth hwn?</a>
 amendmentRequested.list.b1 = y cyfnod cyfrifyddu perthnasol ar gyfer eich sefydliad
 amendmentRequested.list.b2 = eich refeniw yn y DU ar gyfer y cyfnod cyfrifyddu perthnasol
 amendmentRequested.list.b3 = pa mor hir y gwnaethoch gynnal gweithgaredd a reoleiddir gan reoliadau gwrth-wyngalchu arian (AML) yn ystod y flwyddyn ariannol
@@ -754,3 +749,18 @@ deregistration.pdfHtml.title = Cais i ddadgofrestru
 deregistration.pdfHtml.submissionDate = Dyddiad y cyflwyniad {0}
 
 govukErrorMessage.visuallyHiddenText = Gwall
+
+youHaveAlreadyRegistered.title = Rydych eisoes wedi cofrestru ar gyfer yr Ardoll Troseddau Economaidd – Cofrestru ar gyfer yr Ardoll Troseddau Economaidd – GOV.UK
+youHaveAlreadyRegistered.heading = Rydych eisoes wedi cofrestru ar gyfer yr Ardoll Troseddau Economaidd
+youHaveAlreadyRegistered.body.p1 = Mae’ch gwybodaeth wedi cael ei hanfon i CThEF.
+youHaveAlreadyRegistered.body.link = <a href="{0}" class="govuk-link">Yn ôl i’ch cyfrif Ardoll Troseddau Economaidd</a>
+
+youAlreadyRequestedToAmend.title = Rydych eisoes wedi gwneud cais i ddiwygio’ch cofrestriad Ardoll Troseddau Economaidd – Diwygio cofrestriad ECL – GOV.UK
+youAlreadyRequestedToAmend.heading = Rydych eisoes wedi gwneud cais i ddiwygio’ch cofrestriad Ardoll Troseddau Economaidd
+youAlreadyRequestedToAmend.body.p1 = Mae’ch gwybodaeth wedi cael ei hanfon i CThEF.
+youAlreadyRequestedToAmend.body.link = <a href="{0}" class="govuk-link">Yn ôl i’ch cyfrif Ardoll Troseddau Economaidd</a>
+
+alreadyDeregistered.title = Rydych eisoes wedi datgofrestru’ch cyfrif Ardoll Troseddau Economaidd – Datgofrestru rhag ECL – GOV.UK
+alreadyDeregistered.heading = Rydych eisoes wedi datgofrestru’ch cyfrif Ardoll Troseddau Economaidd
+alreadyDeregistered.body.p1 = Mae’ch gwybodaeth wedi cael ei hanfon i CThEF.
+alreadyDeregistered.body.link = <a href="{0}" class="govuk-link">Yn ôl i’ch cyfrif Ardoll Troseddau Economaidd</a>

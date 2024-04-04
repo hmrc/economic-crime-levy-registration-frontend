@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, EclRegistrationModel, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AddressLookupContinuePageNavigator
@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext
 class AddressLookupContinueController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataAction,
   storeUrl: StoreUrlAction,
   addressLookupFrontendService: AddressLookupService,
   eclRegistrationService: EclRegistrationService,

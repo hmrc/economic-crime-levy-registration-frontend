@@ -20,6 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.IncorporatedEntityJourneyDataWi
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, EclRegistrationModel, NormalMode, Registration}
 
 class AddAnotherContactPageNavigatorSpec extends SpecBase {
@@ -103,7 +104,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
         pageNavigator.nextPage(
           CheckMode,
           EclRegistrationModel(updatedRegistration)
-        ) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        ) shouldBe routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
 
     "return a Call to the check your answers page when the 'No' option is selected" in forAll {
@@ -115,7 +116,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
         pageNavigator.nextPage(
           CheckMode,
           EclRegistrationModel(updatedRegistration)
-        ) shouldBe routes.CheckYourAnswersController.onPageLoad()
+        ) shouldBe routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
 
     "return a call to the answers are invalid page when the secondContact is set to None" in forAll {

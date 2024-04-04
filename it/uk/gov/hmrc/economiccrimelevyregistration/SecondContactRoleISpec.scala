@@ -7,6 +7,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class SecondContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
@@ -89,7 +90,9 @@ class SecondContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
           case CheckMode  =>
             updatedRegistration.contacts.secondContactDetails match {
               case ContactDetails(Some(_), Some(_), Some(_), Some(_)) =>
-                redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+                redirectLocation(result) shouldBe Some(
+                  routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+                )
               case _                                                  =>
                 redirectLocation(result) shouldBe Some(
                   contacts.routes.SecondContactEmailController.onPageLoad(CheckMode).url

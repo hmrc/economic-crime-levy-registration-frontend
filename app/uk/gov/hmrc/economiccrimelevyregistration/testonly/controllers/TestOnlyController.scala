@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithoutEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithoutEnrolmentCheck, RegistrationDataAction}
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.TestOnlyConnector
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.actions.TestOnlyAuthorisedAction
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -31,7 +31,7 @@ class TestOnlyController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithoutEnrolmentCheck,
   testOnlyAuthorise: TestOnlyAuthorisedAction,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataAction,
   testOnlyConnector: TestOnlyConnector
 )(implicit val ec: ExecutionContext)
     extends FrontendBaseController {

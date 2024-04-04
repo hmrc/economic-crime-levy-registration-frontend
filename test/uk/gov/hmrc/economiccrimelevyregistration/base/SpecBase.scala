@@ -33,8 +33,10 @@ import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions._
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister.{FakeDeregistrationDataAction, FakeDeregistrationOrErrorAction}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
+import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.http.HeaderCarrier
@@ -92,12 +94,36 @@ trait SpecBase
   def fakeAuthorisedActionAssistantsAllowed =
     new FakeAuthorisedActionAssistantsAllowed(bodyParsers)
 
-  def fakeDataRetrievalAction(
+  def fakeRegistrationDataAction(
     registration: Registration,
     registrationAdditionalInfo: Option[RegistrationAdditionalInfo] = None,
     eclRegistrationReference: Option[String] = Some(testEclRegistrationReference)
   ) =
-    new FakeDataRetrievalAction(registration, registrationAdditionalInfo, eclRegistrationReference)
+    new FakeRegistrationDataAction(registration, registrationAdditionalInfo, eclRegistrationReference)
+
+  def fakeRegistrationDataOrErrorAction(
+    registration: Registration,
+    registrationAdditionalInfo: Option[RegistrationAdditionalInfo] = None,
+    eclRegistrationReference: Option[String] = Some(testEclRegistrationReference),
+    dataRetrievalFailure: Boolean = false
+  ) =
+    new FakeRegistrationDataOrErrorAction(
+      registration,
+      registrationAdditionalInfo,
+      eclRegistrationReference,
+      dataRetrievalFailure
+    )
+
+  def fakeDeregistrationDataAction(
+    deregistration: Deregistration
+  ) =
+    new FakeDeregistrationDataAction(deregistration)
+
+  def fakeDeregistrationDataOrErrorAction(
+    deregistration: Deregistration,
+    dataRetrievalFailure: Boolean = false
+  ) =
+    new FakeDeregistrationOrErrorAction(deregistration, dataRetrievalFailure)
 
   def fakeStoreUrlAction() =
     new FakeStoreUrlAction()
