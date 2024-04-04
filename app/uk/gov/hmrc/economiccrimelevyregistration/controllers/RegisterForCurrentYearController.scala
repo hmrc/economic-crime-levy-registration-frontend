@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.SessionError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, LiabilityYear, Mode, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
@@ -79,9 +79,9 @@ class RegisterForCurrentYearController @Inject() (
                 view(
                   form.prepare(value.registeringForCurrentYear),
                   mode,
-                  s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}",
-                  EclTaxYear.currentFinancialYearStartDate,
-                  EclTaxYear.currentFinancialYearFinishDate
+                  s"${EclTaxYear.currentDueDateAdjustedStartYear().toString} to ${EclTaxYear.currentDueDateAdjustedFinishYear().toString}",
+                  EclTaxYear.currentDueDateAdjustedFinancialYearStartDate,
+                  EclTaxYear.currentDueDateAdjustedFinancialYearFinishDate
                 )
               )
             case None        =>
@@ -89,9 +89,9 @@ class RegisterForCurrentYearController @Inject() (
                 view(
                   form,
                   mode,
-                  s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}",
-                  EclTaxYear.currentFinancialYearStartDate,
-                  EclTaxYear.currentFinancialYearFinishDate
+                  s"${EclTaxYear.currentDueDateAdjustedStartYear().toString} to ${EclTaxYear.currentDueDateAdjustedFinishYear().toString}",
+                  EclTaxYear.currentDueDateAdjustedFinancialYearStartDate,
+                  EclTaxYear.currentDueDateAdjustedFinancialYearFinishDate
                 )
               )
           }
@@ -109,16 +109,16 @@ class RegisterForCurrentYearController @Inject() (
               view(
                 formWithErrors,
                 mode,
-                s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}",
-                EclTaxYear.currentFinancialYearStartDate,
-                EclTaxYear.currentFinancialYearFinishDate
+                s"${EclTaxYear.currentDueDateAdjustedStartYear().toString} to ${EclTaxYear.currentDueDateAdjustedFinishYear().toString}",
+                EclTaxYear.currentDueDateAdjustedFinancialYearStartDate,
+                EclTaxYear.currentDueDateAdjustedFinancialYearFinishDate
               )
             )
           ),
         answer =>
           (for {
             additionalInfo         <- registrationAdditionalInfoService.get(request.internalId).asResponseError
-            liabilityYear           = if (answer) Some(EclTaxYear.currentStartYear()) else None
+            liabilityYear           = if (answer) Some(EclTaxYear.currentDueDateAdjustedStartYear()) else None
             updatedAdditionalInfo   = additionalInfo.get.copy(
                                         registeringForCurrentYear = Some(answer),
                                         liabilityYear = liabilityYear.map(value => LiabilityYear(value))

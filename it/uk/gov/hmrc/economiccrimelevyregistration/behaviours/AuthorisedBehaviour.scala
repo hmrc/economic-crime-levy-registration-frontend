@@ -20,6 +20,7 @@ trait AuthorisedBehaviour {
   ): Unit =
     "authorisedActionWithEnrolmentCheckRoute" should {
       "redirect to sign in when there is no auth session" in {
+        resetWireMock()
         stubUnauthorised()
 
         val result: Future[Result] = callRoute(FakeRequest(call))
@@ -29,6 +30,7 @@ trait AuthorisedBehaviour {
       }
 
       "go to already registered page if the user has the ECL enrolment" in {
+        resetWireMock()
         stubAuthorisedWithEclEnrolment()
 
         val registration = random[Registration]
@@ -46,6 +48,7 @@ trait AuthorisedBehaviour {
       }
 
       "go to the group already registered if the user does not have the ECL enrolment but the group does" in {
+        resetWireMock()
         stubAuthorised()
         stubWithGroupEclEnrolment()
 
@@ -56,6 +59,7 @@ trait AuthorisedBehaviour {
       }
 
       "go to the agent not supported page if the user has an agent affinity group" in {
+        resetWireMock()
         stubAuthorisedWithAgentAffinityGroup()
 
         val result: Future[Result] = callRoute(FakeRequest(call))
@@ -65,6 +69,7 @@ trait AuthorisedBehaviour {
       }
 
       "go to the assistant not supported page if the user has an assistant credential role" in {
+        resetWireMock()
         stubAuthorisedWithAssistantCredentialRole()
 
         val result: Future[Result] = callRoute(FakeRequest(call))
@@ -77,6 +82,7 @@ trait AuthorisedBehaviour {
   def authorisedActionWithoutEnrolmentCheckRoute(call: Call): Unit =
     "authorisedActionWithoutEnrolmentCheckRoute" should {
       "redirect to sign in when there is no auth session" in {
+        resetWireMock()
         stubUnauthorised()
 
         val result: Future[Result] = callRoute(FakeRequest(call))
@@ -86,6 +92,7 @@ trait AuthorisedBehaviour {
       }
 
       "go to the agent not supported page if the user has an agent affinity group" in {
+        resetWireMock()
         stubAuthorisedWithAgentAffinityGroup()
 
         val result: Future[Result] = callRoute(FakeRequest(call))
@@ -95,6 +102,7 @@ trait AuthorisedBehaviour {
       }
 
       "go to the assistant not supported page if the user has an assistant credential role" in {
+        resetWireMock()
         stubAuthorisedWithAssistantCredentialRole()
 
         val result: Future[Result] = callRoute(FakeRequest(call))
@@ -107,6 +115,7 @@ trait AuthorisedBehaviour {
   def authorisedActionAgentsAllowedRoute(call: Call): Unit =
     "authorisedActionAgentsAllowedRoute" should {
       "redirect to sign in when there is no auth session" in {
+        resetWireMock()
         stubUnauthorised()
 
         val result: Future[Result] = callRoute(FakeRequest(call))
@@ -116,6 +125,7 @@ trait AuthorisedBehaviour {
       }
 
       "go to the assistant not supported page if the user has an assistant credential role" in {
+        resetWireMock()
         stubAuthorisedWithAssistantCredentialRole()
 
         val result: Future[Result] = callRoute(FakeRequest(call))
@@ -128,6 +138,7 @@ trait AuthorisedBehaviour {
   def authorisedActionAssistantsAllowedRoute(call: Call): Unit =
     "authorisedActionAssistantsAllowedRoute" should {
       "redirect to sign in when there is no auth session" in {
+        resetWireMock()
         stubUnauthorised()
 
         val result: Future[Result] = callRoute(FakeRequest(call))
@@ -137,6 +148,7 @@ trait AuthorisedBehaviour {
       }
 
       "go to the agent not supported page if the user has an agent affinity group" in {
+        resetWireMock()
         stubAuthorisedWithAgentAffinityGroup()
 
         val result: Future[Result] = callRoute(FakeRequest(call))

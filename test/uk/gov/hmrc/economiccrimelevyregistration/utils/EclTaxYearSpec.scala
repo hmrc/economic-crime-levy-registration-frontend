@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.utils
 
-import org.scalatest.prop.TableFor3
+import org.scalatest.prop.{TableFor2, TableFor3}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 
 import java.time.LocalDate
 
 class EclTaxYearSpec extends SpecBase {
 
-  val testParameters: TableFor3[LocalDate, Int, Int] = Table(
+  val calculateYearDueParameters: TableFor3[LocalDate, Int, Int] = Table(
     ("currentDate", "startOfEclTaxYear", "expectedYearDue"),
     (LocalDate.of(2023, 9, 29), 2022, 2023),
     (LocalDate.of(2024, 9, 29), 2023, 2024),
@@ -37,11 +37,27 @@ class EclTaxYearSpec extends SpecBase {
     (LocalDate.of(2028, 10, 1), 2028, 2029)
   )
 
+  val taxYearForParameters: TableFor2[LocalDate, EclTaxYear] = Table(
+    ("currentDate", "startOfEclTaxYear"),
+    (LocalDate.of(2023, 4, 1), EclTaxYear(2023)),
+    (LocalDate.of(2024, 4, 1), EclTaxYear(2024)),
+    (LocalDate.of(2025, 4, 1), EclTaxYear(2025)),
+    (LocalDate.of(2026, 4, 1), EclTaxYear(2026)),
+    (LocalDate.of(2027, 4, 1), EclTaxYear(2027)),
+    (LocalDate.of(2028, 4, 1), EclTaxYear(2028))
+  )
+
   "calculateYearDue" should {
-    "return expected year due" in forAll(testParameters) {
+    "return expected year due" in forAll(calculateYearDueParameters) {
       (currentDate: LocalDate, startOfEclTaxYear, expectedYearDue: Int) =>
         val yearDue: Int = EclTaxYear.calculateYearDue(yearDue = startOfEclTaxYear, currentDate = currentDate)
         expectedYearDue shouldBe yearDue
+    }
+  }
+
+  "taxYearFor" should {
+    "return expected year" in forAll(taxYearForParameters) { (currentDate: LocalDate, expectedYear: EclTaxYear) =>
+      EclTaxYear.taxYearFor(currentDate) shouldBe expectedYear
     }
   }
 }

@@ -164,8 +164,8 @@ class LiabilityBeforeCurrentYearController @Inject() (
     liableForPreviousFY: Boolean
   ): Option[LiabilityYear] =
     (liableForCurrentFY, liableForPreviousFY) match {
-      case (Some(_), true)     => Some(LiabilityYear(EclTaxYear.current.previous.startYear))
-      case (Some(true), false) => Some(LiabilityYear(EclTaxYear.current.currentYear))
+      case (Some(_), true)     => Some(LiabilityYear(EclTaxYear.currentDueDateAdjustedStartYear() - 1))
+      case (Some(true), false) => Some(LiabilityYear(EclTaxYear.currentDueDateAdjustedStartYear()))
       case _                   => None
     }
 
