@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister
 
 import cats.data.EitherT
 import org.mockito.ArgumentMatchers.any
-import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContentAsEmpty, Request, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
