@@ -182,7 +182,9 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(
+        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+      )
     }
 
     "save the selected AML regulated activity option then redirect to the LiabilityBeforeCurrentYear page in Check Mode when the No option is selected and the answer has changed" in {

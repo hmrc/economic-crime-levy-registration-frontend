@@ -21,6 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class NonUkCrnPageDeregisterNavigatorSpec extends SpecBase {
@@ -92,7 +93,7 @@ class NonUkCrnPageDeregisterNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
 
     "return a call to the check your answers page in Check mode when the entity type is not UnincorporatedAssociation and contains utrType" in forAll(
@@ -113,7 +114,7 @@ class NonUkCrnPageDeregisterNavigatorSpec extends SpecBase {
         )
 
       pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-        routes.CheckYourAnswersController.onPageLoad()
+        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
 
   }

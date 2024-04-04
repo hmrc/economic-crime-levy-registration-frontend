@@ -27,6 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclRegistrationConne
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CancelRegistrationAmendmentFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CancelRegistrationAmendmentView
 
 import scala.concurrent.Future
@@ -41,7 +42,7 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
     if (cancelRegistrationAmendment) {
       (appConfig.yourEclAccountUrl, 1)
     } else {
-      (routes.CheckYourAnswersController.onPageLoad().url, 0)
+      (routes.CheckYourAnswersController.onPageLoad(Amendment).url, 0)
     }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]
@@ -50,7 +51,7 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
     val controller = new CancelRegistrationAmendmentController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId, Some(testEclRegistrationReference)),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       mockEclRegistrationConnector,
       formProvider,
       appConfig,
@@ -60,7 +61,8 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(registration) {
+      val updatedRegistration = registration.copy(registrationType = Some(Amendment))
+      new TestContext(updatedRegistration) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
         status(result) shouldBe OK
@@ -73,7 +75,8 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the selected answer then redirect to the next page" in forAll {
       (registration: Registration, cancelRegistrationAmendment: Boolean) =>
-        new TestContext(registration) {
+        val updatedRegistration = registration.copy(registrationType = Some(Amendment))
+        new TestContext(updatedRegistration) {
 
           when(mockEclRegistrationConnector.deleteRegistration(ArgumentMatchers.eq(registration.internalId))(any()))
             .thenReturn(Future.successful(()))
@@ -96,7 +99,8 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
     }
 
     "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
-      new TestContext(registration) {
+      val updatedRegistration = registration.copy(registrationType = Some(Amendment))
+      new TestContext(updatedRegistration) {
         val result: Future[Result]        = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))
         val formWithErrors: Form[Boolean] = form.bind(Map("value" -> ""))
 

@@ -21,7 +21,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.{LiabilityDateAdditionalInfoCleanup, LiabilityDateRegistrationCleanup}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class RegisterForCurrentYearController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataAction,
   sessionService: SessionService,
   formProvider: RegisterForCurrentYearFormProvider,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
@@ -119,6 +119,7 @@ class RegisterForCurrentYearController @Inject() (
           (for {
             additionalInfo         <- registrationAdditionalInfoService.get(request.internalId).asResponseError
             liabilityYear           = if (answer) Some(EclTaxYear.currentStartYear()) else None
+            currentAnswer           = additionalInfo.get.liabilityYear.isDefined
             updatedAdditionalInfo   = additionalInfo.get.copy(
                                         registeringForCurrentYear = Some(answer),
                                         liabilityYear = liabilityYear.map(value => LiabilityYear(value))
@@ -128,8 +129,11 @@ class RegisterForCurrentYearController @Inject() (
             updatedRegistration     = request.registration.copy(registrationType = Some(Initial))
             cleanedUpRegistration   = registrationCleanup(updatedRegistration, cleanedUpAdditionalInfo)
             _                      <- registrationService.upsertRegistration(cleanedUpRegistration).asResponseError
-          } yield EclRegistrationModel(cleanedUpRegistration, Some(cleanedUpAdditionalInfo)))
-            .convertToResult(mode = mode, pageNavigator = pageNavigator)
+          } yield EclRegistrationModel(
+            registration = cleanedUpRegistration,
+            registrationAdditionalInfo = Some(cleanedUpAdditionalInfo),
+            hasAdditionalInfoChanged = (answer != currentAnswer)
+          )).convertToResult(mode = mode, pageNavigator = pageNavigator)
       )
   }
 

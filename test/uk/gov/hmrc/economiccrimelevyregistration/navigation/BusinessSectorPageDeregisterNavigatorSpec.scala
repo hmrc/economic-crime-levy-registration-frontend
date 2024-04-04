@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, CheckMode, EclRegistrationModel, NormalMode, Registration}
 
 class BusinessSectorPageDeregisterNavigatorSpec extends SpecBase {
@@ -39,7 +40,7 @@ class BusinessSectorPageDeregisterNavigatorSpec extends SpecBase {
         val updatedRegistration: Registration = registration.copy(businessSector = Some(businessSector))
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
   }
 

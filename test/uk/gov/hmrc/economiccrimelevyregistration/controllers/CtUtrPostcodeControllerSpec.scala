@@ -54,7 +54,7 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
     val controller = new CtUtrPostcodeController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registration.internalId),
-      fakeDataRetrievalAction(registration),
+      fakeRegistrationDataAction(registration),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       formProvider,

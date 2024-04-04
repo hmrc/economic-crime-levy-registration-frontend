@@ -6,7 +6,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviour {
@@ -89,7 +89,9 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(
+        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+      )
     }
   }
 }

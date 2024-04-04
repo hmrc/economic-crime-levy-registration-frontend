@@ -7,6 +7,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
@@ -124,7 +125,9 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(
+        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+      )
     }
 
     "save the selected option then redirect to the Uk Revenue page when the Yes option is selected and the answer has changed" in {
@@ -182,7 +185,9 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
       status(result) shouldBe SEE_OTHER
 
-      redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+      redirectLocation(result) shouldBe Some(
+        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+      )
     }
 
     "save the selected option then redirect to the relevant AP length page when the No option is selected and the answer has changed" in {

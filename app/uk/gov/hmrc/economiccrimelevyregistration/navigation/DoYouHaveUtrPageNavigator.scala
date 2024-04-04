@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 import javax.inject.Inject
@@ -42,7 +43,7 @@ class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
         case CheckMode  =>
           registration.otherEntityJourneyData.ctUtr match {
             case Some(_) =>
-              routes.CheckYourAnswersController.onPageLoad()
+              routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
             case None    =>
               routes.UtrTypeController.onPageLoad(mode)
           }
@@ -54,7 +55,7 @@ class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
         case NormalMode =>
           routes.BusinessSectorController.onPageLoad(mode)
         case CheckMode  =>
-          routes.CheckYourAnswersController.onPageLoad()
+          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
       }
     }
 
@@ -66,7 +67,7 @@ class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
         case CheckMode  =>
           registration.otherEntityJourneyData.ctUtr match {
             case Some(_) =>
-              routes.CheckYourAnswersController.onPageLoad()
+              routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
             case None    =>
               routes.UtrController.onPageLoad(mode)
           }
@@ -79,7 +80,7 @@ class DoYouHaveUtrPageNavigator @Inject() extends PageNavigator {
           if (registration.otherEntityJourneyData.companyRegistrationNumber.isEmpty) {
             routes.CompanyRegistrationNumberController.onPageLoad(mode)
           } else {
-            routes.CheckYourAnswersController.onPageLoad()
+            routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
           }
       }
     }

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
+import com.google.inject.ImplementedBy
 import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
@@ -27,11 +28,11 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RegistrationDataRetrievalAction @Inject() (
+class RegistrationDataActionImpl @Inject() (
   eclRegistrationService: EclRegistrationService,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService
 )(implicit val executionContext: ExecutionContext)
-    extends DataRetrievalAction
+    extends RegistrationDataAction
     with FrontendHeaderCarrierProvider
     with ErrorHandler {
 
@@ -63,4 +64,5 @@ class RegistrationDataRetrievalAction @Inject() (
   }
 }
 
-trait DataRetrievalAction extends ActionRefiner[AuthorisedRequest, RegistrationDataRequest]
+@ImplementedBy(classOf[RegistrationDataActionImpl])
+trait RegistrationDataAction extends ActionRefiner[AuthorisedRequest, RegistrationDataRequest]

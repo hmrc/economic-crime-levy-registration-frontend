@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.UtrType.{CtUtr, SaUtr}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
@@ -54,8 +55,10 @@ class UtrTypePageNavigatorSpec extends SpecBase {
         val otherData           = OtherEntityJourneyData.empty().copy(utrType = None)
         val updatedRegistration = registration.copy(optOtherEntityJourneyData = Some(otherData))
 
-        pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+        pageNavigator.nextPage(
+          CheckMode,
+          EclRegistrationModel(updatedRegistration)
+        ) shouldBe routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
     }
 
     "return a call to the correct UTR entry page in Check mode" in forAll {

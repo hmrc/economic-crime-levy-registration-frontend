@@ -45,7 +45,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
     val controller = new LiabilityBeforeCurrentYearController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData, additionalInfo),
+      fakeRegistrationDataAction(registrationData, additionalInfo),
       fakeStoreUrlAction(),
       formProvider,
       mockAdditionalInfoService,

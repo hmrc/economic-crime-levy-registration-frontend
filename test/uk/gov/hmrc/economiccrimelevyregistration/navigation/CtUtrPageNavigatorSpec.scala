@@ -17,11 +17,11 @@
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import org.scalacheck.Arbitrary
-
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{NonUKEstablishment, Trust}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CtUtrPageNavigatorSpec extends SpecBase {
@@ -121,7 +121,7 @@ class CtUtrPageNavigatorSpec extends SpecBase {
             )
 
           pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-            routes.CheckYourAnswersController.onPageLoad()
+            routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial))
       }
     }
 
@@ -175,7 +175,7 @@ class CtUtrPageNavigatorSpec extends SpecBase {
         )
 
       pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-        routes.CheckYourAnswersController.onPageLoad()
+        routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial))
 
     }
 
@@ -198,7 +198,7 @@ class CtUtrPageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad()
+          routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial))
 
       }
 

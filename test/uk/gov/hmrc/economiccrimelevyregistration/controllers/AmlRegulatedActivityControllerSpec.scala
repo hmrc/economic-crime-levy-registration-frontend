@@ -55,7 +55,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
     val controller = new AmlRegulatedActivityController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData),
+      fakeRegistrationDataAction(registrationData),
       fakeStoreUrlAction(),
       mockEclRegistrationService,
       mockAdditionalInfoService,

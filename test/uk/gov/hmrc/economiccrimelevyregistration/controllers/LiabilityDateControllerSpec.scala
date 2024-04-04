@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityDateFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityDatePageNavigator
@@ -51,14 +52,16 @@ class LiabilityDateControllerSpec extends SpecBase {
 
     override protected def navigateInCheckMode(
       eclRegistrationModel: EclRegistrationModel
-    ): Call = routes.CheckYourAnswersController.onPageLoad()
+    ): Call = routes.CheckYourAnswersController.onPageLoad(
+      eclRegistrationModel.registration.registrationType.getOrElse(Initial)
+    )
   }
 
   class TestContext(registrationData: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None) {
     val controller = new LiabilityDateController(
       mcc,
       fakeAuthorisedActionWithEnrolmentCheck(registrationData.internalId),
-      fakeDataRetrievalAction(registrationData, additionalInfo),
+      fakeRegistrationDataAction(registrationData, additionalInfo),
       fakeStoreUrlAction(),
       mockRegistrationAdditionalInfoService,
       formProvider,
@@ -144,7 +147,9 @@ class LiabilityDateControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+          redirectLocation(result) shouldBe Some(
+            routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+          )
         }
     }
   }

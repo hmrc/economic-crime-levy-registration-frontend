@@ -16,8 +16,10 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.deregister
 
+import com.google.inject.ImplementedBy
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.ErrorHandler
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.{ErrorHandler, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.AuthorisedRequest
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.deregister.DeregistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
@@ -28,10 +30,10 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeregistrationDataRetrievalAction @Inject() (
+class DeregistrationDataOrErrorActionImpl @Inject() (
   deregistrationService: DeregistrationService
 )(implicit val executionContext: ExecutionContext)
-    extends ActionRefiner[AuthorisedRequest, DeregistrationDataRequest]
+    extends DeregistrationDataOrErrorAction
     with FrontendHeaderCarrierProvider
     with ErrorHandler {
 
@@ -40,20 +42,28 @@ class DeregistrationDataRetrievalAction @Inject() (
   ): Future[Either[Result, DeregistrationDataRequest[A]]] = {
     implicit val hcFromRequest: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     (for {
-      deregistration <- deregistrationService.getOrCreate(request.internalId).asResponseError
+      deregistration <- deregistrationService.get(request.internalId).asResponseError
     } yield deregistration).foldF(
       error => Future.failed(new Exception(error.message)),
-      deregistration =>
-        Future.successful(
-          Right(
-            DeregistrationDataRequest(
-              request.request,
-              request.internalId,
-              deregistration,
-              request.eclRegistrationReference
+      {
+        case Some(deregistration) =>
+          Future.successful(
+            Right(
+              DeregistrationDataRequest(
+                request.request,
+                request.internalId,
+                deregistration,
+                request.eclRegistrationReference
+              )
             )
           )
-        )
+        case None                 => Future.successful(Left(Redirect(routes.NotableErrorController.alreadyDeregistered())))
+
+      }
     )
   }
+
 }
+
+@ImplementedBy(classOf[DeregistrationDataOrErrorActionImpl])
+trait DeregistrationDataOrErrorAction extends ActionRefiner[AuthorisedRequest, DeregistrationDataRequest]

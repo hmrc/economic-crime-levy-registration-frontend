@@ -20,9 +20,10 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, DataRetrievalAction, StoreUrlAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.EntityTypeSelectedEvent
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
@@ -38,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class EntityTypeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithEnrolmentCheck,
-  getRegistrationData: DataRetrievalAction,
+  getRegistrationData: RegistrationDataAction,
   storeUrl: StoreUrlAction,
   eclRegistrationService: EclRegistrationService,
   formProvider: EntityTypeFormProvider,
@@ -102,7 +103,11 @@ class EntityTypeController @Inject() (
 
     (sameEntityTypeAsPrevious, EntityType.isOther(newEntityType)) match {
       case (true, _)      =>
-        Future.successful(Redirect(routes.CheckYourAnswersController.onPageLoad()))
+        Future.successful(
+          Redirect(
+            routes.CheckYourAnswersController.onPageLoad(request.registration.registrationType.getOrElse(Initial))
+          )
+        )
       case (false, true)  =>
         Future.successful(Redirect(routes.BusinessNameController.onPageLoad(CheckMode)))
       case (false, false) =>

@@ -36,7 +36,7 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
 
         status(result) shouldBe OK
 
-        html(result) should include("How long is your relevant accounting period?")
+        html(result) should include("Your relevant accounting period")
       }
     }
 
