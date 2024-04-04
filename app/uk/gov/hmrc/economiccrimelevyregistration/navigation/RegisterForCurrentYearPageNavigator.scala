@@ -15,6 +15,7 @@
  */
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation
+
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
@@ -38,23 +39,29 @@ class RegisterForCurrentYearPageNavigator extends PageNavigator {
     }
 
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
-    eclRegistrationModel.registrationAdditionalInfo match {
-      case Some(additionalInfo) =>
-        additionalInfo.registeringForCurrentYear match {
-          case Some(value) =>
-            if (value) {
-              routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
-            } else {
-              if (additionalInfo.liabilityStartDate.isDefined) {
-                routes.CheckYourAnswersController.onPageLoad(
-                  eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-                )
+    if (eclRegistrationModel.hasAdditionalInfoChanged) {
+      eclRegistrationModel.registrationAdditionalInfo match {
+        case Some(additionalInfo) =>
+          additionalInfo.registeringForCurrentYear match {
+            case Some(value) =>
+              if (value) {
+                routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
               } else {
-                routes.LiabilityDateController.onPageLoad(CheckMode)
+                if (additionalInfo.liabilityStartDate.isDefined) {
+                  routes.CheckYourAnswersController.onPageLoad(
+                    eclRegistrationModel.registration.registrationType.getOrElse(Initial)
+                  )
+                } else {
+                  routes.LiabilityDateController.onPageLoad(CheckMode)
+                }
               }
-            }
-          case None        => routes.NotableErrorController.answersAreInvalid()
-        }
-      case None                 => routes.NotableErrorController.answersAreInvalid()
+            case None        => routes.NotableErrorController.answersAreInvalid()
+          }
+        case None                 => routes.NotableErrorController.answersAreInvalid()
+      }
+    } else {
+      routes.CheckYourAnswersController.onPageLoad(
+        eclRegistrationModel.registration.registrationType.getOrElse(Initial)
+      )
     }
 }

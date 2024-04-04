@@ -75,6 +75,11 @@ class LiabilityBeforeCurrentYearController @Inject() (
               liableBeforeCurrentYear
             )
 
+            val answerChanged = request.additionalInfo match {
+              case None       => true
+              case Some(info) => !info.liableForPreviousYears.contains(liableBeforeCurrentYear)
+            }
+
             val info = RegistrationAdditionalInfo(
               registration.internalId,
               liabilityYear,
@@ -95,7 +100,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
               .asResponseError
               .fold(
                 err => routeError(err),
-                _ => Redirect(navigateByMode(mode, registration, info, liableBeforeCurrentYear))
+                _ => Redirect(navigateByMode(mode, registration, info, liableBeforeCurrentYear, answerChanged))
               )
           }
         )
@@ -105,14 +110,15 @@ class LiabilityBeforeCurrentYearController @Inject() (
     mode: Mode,
     registration: Registration,
     info: RegistrationAdditionalInfo,
-    liableBeforeCurrentYear: Boolean
+    liableBeforeCurrentYear: Boolean,
+    answerChanged: Boolean
   )(implicit
     hc: HeaderCarrier
   ): Call =
     mode match {
       case NormalMode => navigateInNormalMode(liableBeforeCurrentYear, registration, mode)
       case CheckMode  =>
-        if (!liableBeforeCurrentYear || info.liabilityStartDate.isDefined) {
+        if (!answerChanged || !liableBeforeCurrentYear || info.liabilityStartDate.isDefined) {
           routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
         } else {
           routes.LiabilityDateController.onPageLoad(CheckMode)
