@@ -19,8 +19,8 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the Aml regulated HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val expectedTaxYearStart = EclTaxYear.currentDueDateAdjustedFyStartYear.toString
-      val expectedTaxYearEnd   = EclTaxYear.currentDueDateAdjustedFyFinishYear.toString
+      val expectedTaxYearStart = EclTaxYear.currentFyStartYear.toString
+      val expectedTaxYearEnd   = EclTaxYear.currentFyFinishYear.toString
       val registration         = random[Registration]
         .copy(
           internalId = testInternalId,
@@ -50,8 +50,8 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the Aml regulated HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val expectedTaxYearStart = EclTaxYear.currentDueDateAdjustedFyStartYear.toString
-      val expectedTaxYearEnd   = EclTaxYear.currentDueDateAdjustedFyFinishYear.toString
+      val expectedTaxYearStart = EclTaxYear.currentFyStartYear.toString
+      val expectedTaxYearEnd   = EclTaxYear.currentFyFinishYear.toString
       val additionalInfo       = RegistrationAdditionalInfo(testInternalId)
 
       stubGetRegistrationAdditionalInfo(additionalInfo)

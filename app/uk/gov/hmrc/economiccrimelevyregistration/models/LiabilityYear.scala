@@ -20,14 +20,11 @@ import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 case class LiabilityYear(value: Int) {
-  def currentFinishYear(): Int = EclTaxYear.currentDueDateAdjustedFinishYear()
-  def currentStartYear(): Int  = EclTaxYear.currentDueDateAdjustedStartYear()
-
-  val followingYear: String   = (value + 1).toString
-  val asString: String        = value.toString
-  val isCurrentFY: Boolean    =
-    value == currentStartYear() || value == currentFinishYear()
-  val isNotCurrentFY: Boolean = !isCurrentFY
+  def currentTaxYear(): EclTaxYear = EclTaxYear.current
+  val followingYear: String        = (value + 1).toString
+  val asString: String             = value.toString
+  val isCurrentFY: Boolean         = value == currentTaxYear().startYear || value == currentTaxYear().finishYear
+  val isNotCurrentFY: Boolean      = !isCurrentFY
 
 }
 

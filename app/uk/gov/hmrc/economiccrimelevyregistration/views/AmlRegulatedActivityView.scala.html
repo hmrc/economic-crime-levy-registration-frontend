@@ -28,7 +28,7 @@
 
 @(form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleWithForm(form, messages("amlRegulatedActivity.title", EclTaxYear.currentDueDateAdjustedFyStartYear.toString, EclTaxYear.currentDueDateAdjustedFyFinishYear.toString))) {
+@layout(pageTitle = titleWithForm(form, messages("amlRegulatedActivity.title", EclTaxYear.currentFyStartYear.toString, EclTaxYear.currentFyFinishYear.toString))) {
     @formHelper(action = AmlRegulatedActivityController.onSubmit(mode)) {
         @if(form.errors.nonEmpty) {
             @errorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "yes")))
@@ -37,7 +37,7 @@
         @radios(
             RadiosViewModel(
                 field = form("value"),
-                legend = LegendViewModel(messages("amlRegulatedActivity.heading", EclTaxYear.currentDueDateAdjustedFyStartYear.toString, EclTaxYear.currentDueDateAdjustedFyFinishYear.toString)).asPageHeading(LegendSize.Large),
+                legend = LegendViewModel(messages("amlRegulatedActivity.heading", EclTaxYear.currentFyStartYear.toString, EclTaxYear.currentFyFinishYear.toString)).asPageHeading(LegendSize.Large),
                 items = Seq(
                     RadioItem(
                         id = Some("yes"),

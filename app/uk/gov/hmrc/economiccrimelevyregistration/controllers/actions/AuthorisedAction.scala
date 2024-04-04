@@ -20,7 +20,7 @@ import cats.data.EitherT
 import com.google.inject.{ImplementedBy, Inject}
 import play.api.Logging
 import play.api.mvc.Results._
-import play.api.mvc._
+import play.api.mvc.{request, _}
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._

@@ -21,7 +21,6 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       )
 
       "respond with 200 status and the liability before current year HTML view" in {
-        resetWireMock()
         stubAuthorisedWithNoGroupEnrolment()
 
         val registration   = random[Registration]
@@ -50,7 +49,6 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
     )
 
     "save the selected option then redirect to the liability date page when the answer is yes" in {
-      resetWireMock()
       stubAuthorisedWithNoGroupEnrolment()
 
       val liableBeforeCurrentYear = true
@@ -89,7 +87,6 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
     }
 
     "save the answer then redirect to the Entity Type page when the answer is no and the revenue meets the threshold" in {
-      resetWireMock()
       stubAuthorisedWithNoGroupEnrolment()
 
       val liableBeforeCurrentYear = false
@@ -130,7 +127,6 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
 
     Seq(None, Some(false)).foreach { revenueMeetsThreshold =>
       s"save the answer then redirect to the Not liable page when the answer is no and revenueMeetsThreshold is $revenueMeetsThreshold" in {
-        resetWireMock()
         stubAuthorisedWithNoGroupEnrolment()
 
         val liableBeforeCurrentYear = false
@@ -177,7 +173,6 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
     )
 
     "redirect to check your answers page if nothing changed" in {
-      resetWireMock()
       stubAuthorisedWithNoGroupEnrolment()
 
       val liableBeforeCurrentYear = true
@@ -196,7 +191,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
           internalId = registration.internalId,
           liableForPreviousYears = Some(liableBeforeCurrentYear),
           liabilityStartDate = Some(random[LocalDate]),
-          liabilityYear = Some(LiabilityYear(EclTaxYear.currentDueDateAdjustedFyStartYear - 1)),
+          liabilityYear = Some(LiabilityYear(EclTaxYear.current.previous.startYear)),
           eclReference = None
         )
 
@@ -219,7 +214,6 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
     }
 
     "redirect to liability date page if change to yes" in {
-      resetWireMock()
       stubAuthorisedWithNoGroupEnrolment()
 
       val liableBeforeCurrentYear = true
