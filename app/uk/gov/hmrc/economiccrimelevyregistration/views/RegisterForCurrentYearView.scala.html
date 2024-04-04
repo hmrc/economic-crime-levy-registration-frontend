@@ -31,7 +31,7 @@
         errorSummary: GovukErrorSummary
 )
 
-@(form: Form[Boolean], mode: Mode, currentYear: String, currentFinancialYearStartDate: LocalDate, currentFinancialYearEndDate: LocalDate)(implicit messages: Messages, request: Request[_])
+@(form: Form[Boolean], mode: Mode, currentFyStartYear: String, currentFyFinishYear: String, currentFinancialYearStartDate: LocalDate, currentFinancialYearEndDate: LocalDate)(implicit messages: Messages, request: Request[_])
 
 @layout(
     pageTitle = title(messages("register.currentYear.title")),
@@ -50,7 +50,7 @@
                     RadioItem(
                         id = Some("yes"),
                         value = Some("true"),
-                        content = Text(messages("register.currentYear.yes", currentYear))
+                        content = Text(messages("register.currentYear.yes", currentFyStartYear, currentFyFinishYear))
                     ),
                     RadioItem(
                         id = Some("no"),

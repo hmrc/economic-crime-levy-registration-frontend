@@ -730,10 +730,10 @@ savedResponses.false = Delete your progress and start again
 savedResponses.error.required = Select the first option if you want to continue with your saved answers
 
 register.currentYear.h1 = Are you registering for the {0} to {1} financial year?
-register.currentYear.title = Are you registering for the {0} financial year?
-register.currentYear.error = Select yes if you are registering for {0}
+register.currentYear.title = Are you registering for the current financial year?
+register.currentYear.error = Select yes if you are registering for {0} to {1}
 register.currentYear.label = Registering for current financial year
-register.currentYear.yes = Yes, continue with registration for {0}
+register.currentYear.yes = Yes, continue with registration for {0} to {1}
 register.currentYear.no = No, enter the date you became liable for ECL
 
 liability.date.title = Enter the date you became liable for ECL

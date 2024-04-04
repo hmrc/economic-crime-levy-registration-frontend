@@ -79,7 +79,8 @@ class RegisterForCurrentYearController @Inject() (
                 view(
                   form.prepare(value.registeringForCurrentYear),
                   mode,
-                  s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}",
+                  EclTaxYear.currentStartYear().toString,
+                  EclTaxYear.currentFinishYear().toString,
                   EclTaxYear.currentFinancialYearStartDate,
                   EclTaxYear.currentFinancialYearFinishDate
                 )
@@ -89,7 +90,8 @@ class RegisterForCurrentYearController @Inject() (
                 view(
                   form,
                   mode,
-                  s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}",
+                  EclTaxYear.currentStartYear().toString,
+                  EclTaxYear.currentFinishYear().toString,
                   EclTaxYear.currentFinancialYearStartDate,
                   EclTaxYear.currentFinancialYearFinishDate
                 )
@@ -109,7 +111,8 @@ class RegisterForCurrentYearController @Inject() (
               view(
                 formWithErrors,
                 mode,
-                s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}",
+                EclTaxYear.currentStartYear().toString,
+                EclTaxYear.currentFinishYear().toString,
                 EclTaxYear.currentFinancialYearStartDate,
                 EclTaxYear.currentFinancialYearFinishDate
               )
