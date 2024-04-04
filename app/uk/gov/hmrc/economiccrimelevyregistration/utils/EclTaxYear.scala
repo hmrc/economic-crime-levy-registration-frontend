@@ -58,26 +58,6 @@ object EclTaxYear extends EclCurrentTaxYear with (Int => EclTaxYear) {
 
   def currentStartYear(): Int = EclTaxYear.current.startYear
 
-  def currentDueDateAdjustedStartYear(): Int =
-    if (now().isBefore(LocalDate.of(currentStartYear(), monthDue, dayDue).plusDays(1))) {
-      currentStartYear() - 1
-    } else {
-      currentStartYear()
-    }
-
-  def currentDueDateAdjustedFinishYear(): Int =
-    if (now().isBefore(LocalDate.of(currentStartYear(), monthDue, dayDue).plusDays(1))) {
-      currentFinishYear() - 1
-    } else {
-      currentFinishYear()
-    }
-
-  def currentDueDateAdjustedFinancialYearFinishDate: LocalDate =
-    LocalDate.of(currentDueDateAdjustedFinishYear(), finishMonth, finishDay)
-
-  def currentDueDateAdjustedFinancialYearStartDate: LocalDate =
-    LocalDate.of(currentDueDateAdjustedStartYear(), startMonth, startDay)
-
   def currentFinancialYearFinishDate: LocalDate =
     LocalDate.of(currentFinishYear(), finishMonth, finishDay)
 
@@ -87,10 +67,6 @@ object EclTaxYear extends EclCurrentTaxYear with (Int => EclTaxYear) {
   def currentFyFinishYear: Int = currentFinancialYearFinishDate.getYear
 
   def currentFyStartYear: Int = currentFinancialYearStartDate.getYear
-
-  def currentDueDateAdjustedFyFinishYear: Int = currentDueDateAdjustedFinancialYearFinishDate.getYear
-
-  def currentDueDateAdjustedFyStartYear: Int = currentDueDateAdjustedFinancialYearStartDate.getYear
 
   def dueDate: LocalDate = LocalDate.of(calculateYearDue(), monthDue, dayDue)
 

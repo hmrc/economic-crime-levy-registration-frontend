@@ -54,7 +54,7 @@
                     RadioItem(
                         id = Some("no"),
                         value = Some("false"),
-                        content = Text(messages("liabilityBeforeCurrentYear.no", s"${EclTaxYear.currentDueDateAdjustedStartYear().toString} to ${EclTaxYear.currentDueDateAdjustedFinishYear().toString}"))
+                        content = Text(messages("liabilityBeforeCurrentYear.no", s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}"))
                     )
                 )
             )
