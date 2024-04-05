@@ -27,7 +27,7 @@ class RegisterForCurrentYearFormProvider extends Mappings {
       "value",
       boolean(
         "register.currentYear.error",
-        messageArgs = Seq(s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}")
+        messageArgs = Seq(EclTaxYear.currentStartYear().toString, EclTaxYear.currentFinishYear().toString)
       )
     )
   )
