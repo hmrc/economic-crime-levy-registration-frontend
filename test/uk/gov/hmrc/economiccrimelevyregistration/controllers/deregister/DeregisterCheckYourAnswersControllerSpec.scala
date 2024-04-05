@@ -19,7 +19,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister
 import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, anyString}
-import org.scalacheck.Arbitrary
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase

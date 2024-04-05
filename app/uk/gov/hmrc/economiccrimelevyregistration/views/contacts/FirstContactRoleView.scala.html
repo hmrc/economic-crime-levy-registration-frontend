@@ -41,13 +41,12 @@
     }
 
     <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("firstContactRole.heading", name))</h1>
-    <p class="govuk-body">@messages("firstContactRole.legend")</p>
 
     @formHelper(action = FirstContactRoleController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text(messages("firstContactRole.heading"))).asHidden()
+                label = LabelViewModel(Text(messages("firstContactRole.legend")))
             ).withWidth(Fixed20).withHint(Hint(content = Text(messages("firstContactRole.hint"))))
         )
 
