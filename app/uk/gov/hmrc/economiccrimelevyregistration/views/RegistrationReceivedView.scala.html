@@ -27,16 +27,14 @@
 @(firstContactEmailAddress: String, secondContactEmailAddress: Option[String], liabilityYear: Option[LiabilityYear], registeringForCurrentYear: Boolean)(implicit request: Request[_], messages: Messages)
 
 @getPreviousYearContent() = {
-    <p class="govuk-body">@messages("registration.received.p7.previous.p1", liabilityYear.get.asString, liabilityYear.get.followingYear)</p>
-    <p class="govuk-body">@messages("registration.received.p7.previous.p2")</p>
+    <p class="govuk-body">@messages("registration.received.p7.previous")</p>
 }
 @getCurrentYearContent() = {
     <p class="govuk-body">@messages("registration.received.p7.current", formatLocalDate(EclTaxYear.dueDate))</p>
 }
 @getBothYearsContent() = {
     <p class="govuk-body">@messages("registration.received.p7.both.years.p1", formatLocalDate(EclTaxYear.dueDate))</p>
-    <p class="govuk-body">@messages("registration.received.p7.both.years.p2", liabilityYear.get.asString, liabilityYear.get.followingYear)</p>
-    <p class="govuk-body">@messages("registration.received.p7.both.years.p3")</p>
+    <p class="govuk-body">@messages("registration.received.p7.both.years.p2")</p>
 }
 @layout(
     pageTitle = title(messages("registration.received.title")),
