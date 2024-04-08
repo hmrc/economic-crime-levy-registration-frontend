@@ -45,11 +45,16 @@ object EntityNameSummary {
         case _                                              => Seq.empty
       }
 
-      SummaryListRowViewModel(
-        key = Key("checkYourAnswers.entityName.label"),
-        value = value,
-        actions = changeAction
-      )
+      if (changeAction.isEmpty) {
+        SummaryListRowViewModel(key = Key("checkYourAnswers.entityName.label"), value = value)
+
+      } else {
+        SummaryListRowViewModel(
+          key = Key("checkYourAnswers.entityName.label"),
+          value = value,
+          actions = changeAction
+        )
+      }
     }
 
 }
