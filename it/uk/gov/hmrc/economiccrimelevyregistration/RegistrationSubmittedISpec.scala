@@ -45,7 +45,11 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(routes.RegistrationSubmittedController.onPageLoad())
-          .withSession(SessionKeys.FirstContactEmail -> email, SessionKeys.LiabilityYear -> liabilityYear.asString)
+          .withSession(
+            SessionKeys.FirstContactEmail       -> email,
+            SessionKeys.LiabilityYear           -> liabilityYear.asString,
+            SessionKeys.RegisteringForCurrentFY -> random[Boolean].toString
+          )
       )
 
       status(result) shouldBe OK

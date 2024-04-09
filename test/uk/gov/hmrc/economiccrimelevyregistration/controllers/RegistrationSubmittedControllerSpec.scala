@@ -55,7 +55,8 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         liabilityYear: LiabilityYear,
         email: String,
         registration: Registration,
-        additionalInfo: RegistrationAdditionalInfo
+        additionalInfo: RegistrationAdditionalInfo,
+        registeringForCurrentFY: Boolean
       ) =>
         new TestContext(registration, Some(additionalInfo)) {
           when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
@@ -66,9 +67,10 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.onPageLoad()(
             fakeRequest.withSession(
-              SessionKeys.EclReference      -> testEclRegistrationReference,
-              SessionKeys.FirstContactEmail -> email,
-              SessionKeys.LiabilityYear     -> liabilityYear.asString
+              SessionKeys.EclReference            -> testEclRegistrationReference,
+              SessionKeys.FirstContactEmail       -> email,
+              SessionKeys.LiabilityYear           -> liabilityYear.asString,
+              SessionKeys.RegisteringForCurrentFY -> registeringForCurrentFY.toString
             )
           )
 
@@ -81,9 +83,15 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
       (
         liabilityYear: LiabilityYear,
         registration: Registration,
-        additionalInfo: RegistrationAdditionalInfo
+        additionalInfo: RegistrationAdditionalInfo,
+        registeringForCurrentFY: Boolean
       ) =>
-        new TestContext(registration, Some(additionalInfo)) {
+        val updatedAdditionalInfo = additionalInfo.copy(
+          eclReference = Some(testEclRegistrationReference),
+          registeringForCurrentYear = Some(registeringForCurrentFY)
+        )
+
+        new TestContext(registration, Some(updatedAdditionalInfo)) {
           when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
@@ -92,8 +100,9 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.onPageLoad()(
             fakeRequest.withSession(
-              SessionKeys.EclReference  -> testEclRegistrationReference,
-              SessionKeys.LiabilityYear -> liabilityYear.asString
+              SessionKeys.EclReference            -> testEclRegistrationReference,
+              SessionKeys.LiabilityYear           -> liabilityYear.asString,
+              SessionKeys.RegisteringForCurrentFY -> registeringForCurrentFY.toString
             )
           )
 
@@ -106,9 +115,15 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
       (
         registration: Registration,
         additionalInfo: RegistrationAdditionalInfo,
-        email: String
+        email: String,
+        registeringForCurrentFY: Boolean
       ) =>
-        new TestContext(registration, Some(additionalInfo)) {
+        val updatedAdditionalInfo = additionalInfo.copy(
+          eclReference = Some(testEclRegistrationReference),
+          registeringForCurrentYear = Some(registeringForCurrentFY)
+        )
+
+        new TestContext(registration, Some(updatedAdditionalInfo)) {
           when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
@@ -117,8 +132,9 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.onPageLoad()(
             fakeRequest.withSession(
-              SessionKeys.EclReference      -> testEclRegistrationReference,
-              SessionKeys.FirstContactEmail -> email
+              SessionKeys.EclReference            -> testEclRegistrationReference,
+              SessionKeys.FirstContactEmail       -> email,
+              SessionKeys.RegisteringForCurrentFY -> registeringForCurrentFY.toString
             )
           )
 
@@ -132,9 +148,13 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         liabilityYear: LiabilityYear,
         email: String,
         registration: Registration,
-        additionalInfo: RegistrationAdditionalInfo
+        additionalInfo: RegistrationAdditionalInfo,
+        registeringForCurrentFY: Boolean
       ) =>
-        val updatedAdditionalInfo = additionalInfo.copy(eclReference = None)
+        val updatedAdditionalInfo = additionalInfo.copy(
+          eclReference = None,
+          registeringForCurrentYear = Some(registeringForCurrentFY)
+        )
 
         new TestContext(registration, Some(updatedAdditionalInfo)) {
           when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
@@ -145,8 +165,9 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.onPageLoad()(
             fakeRequest.withSession(
-              SessionKeys.FirstContactEmail -> email,
-              SessionKeys.LiabilityYear     -> liabilityYear.asString
+              SessionKeys.FirstContactEmail       -> email,
+              SessionKeys.LiabilityYear           -> liabilityYear.asString,
+              SessionKeys.RegisteringForCurrentFY -> registeringForCurrentFY.toString
             )
           )
 
@@ -159,9 +180,13 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
         liabilityYear: LiabilityYear,
         email: String,
         registration: Registration,
-        additionalInfo: RegistrationAdditionalInfo
+        additionalInfo: RegistrationAdditionalInfo,
+        registeringForCurrentFY: Boolean
       ) =>
-        val updatedAdditionalInfo = additionalInfo.copy(eclReference = None)
+        val updatedAdditionalInfo = additionalInfo.copy(
+          eclReference = Some(testEclRegistrationReference),
+          registeringForCurrentYear = Some(registeringForCurrentFY)
+        )
 
         new TestContext(registration, Some(updatedAdditionalInfo)) {
           when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))
@@ -172,9 +197,10 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.onPageLoad()(
             fakeRequest.withSession(
-              SessionKeys.FirstContactEmail -> email,
-              SessionKeys.EclReference      -> testEclRegistrationReference,
-              SessionKeys.LiabilityYear     -> liabilityYear.asString
+              SessionKeys.FirstContactEmail       -> email,
+              SessionKeys.EclReference            -> testEclRegistrationReference,
+              SessionKeys.LiabilityYear           -> liabilityYear.asString,
+              SessionKeys.RegisteringForCurrentFY -> registeringForCurrentFY.toString
             )
           )
 
