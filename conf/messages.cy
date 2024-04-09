@@ -176,6 +176,7 @@ relevantApLength.error.required = Nodwch hyd eich cyfnod cyfrifyddu mewn diwrnod
 relevantApLength.error.wholeNumber = Mae’n rhaid i’r hyd fod yn rhif cyfan
 relevantApLength.error.nonNumeric = Mae’n rhaid i’r hyd fod yn rhif cyfan
 relevantApLength.error.outOfRange = Mae’n rhaid i’r hyd fod rhwng {0} a {1}
+relevantApLength.question = Pa mor hir yw’ch cyfnod cyfrifyddu perthnasol?
 
 registerWith.title = Mae angen i chi gofrestru gyda’r
 registerWith.title.fca = FCA

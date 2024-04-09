@@ -47,5 +47,9 @@ trait LabelFluency {
       label
         .copy(isPageHeading = false)
         .withCssClass("govuk-visually-hidden")
+
+    def withSize(size: LabelSize = LabelSize.Medium): Label =
+      label
+        .withCssClass(size.toString)
   }
 }
