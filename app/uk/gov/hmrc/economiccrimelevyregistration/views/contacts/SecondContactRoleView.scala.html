@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LabelSize._
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 
 @this(
@@ -38,13 +39,12 @@
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-    <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("secondContactRole.heading", name))</h1>
 
     @formHelper(action = SecondContactRoleController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text(messages("secondContactRole.legend")))
+                label = LabelViewModel(Text(messages("secondContactRole.heading", name))).asPageHeading(Large)
             ).withWidth(Fixed20).withHint(Hint(content = Text(messages("secondContactRole.hint"))))
         )
 

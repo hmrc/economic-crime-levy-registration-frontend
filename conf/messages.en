@@ -252,9 +252,8 @@ firstContactName.hint = For example, ''John Jones'' or ''Laura Smith''.
 firstContactName.error.required = Enter a full name
 firstContactName.error.length = Full name must be {0} characters or less
 
-firstContactRole.title = What is {0}''s role in your organisation?
+firstContactRole.title = What is their role in your organisation?
 firstContactRole.heading = What is {0}''s role in your organisation?
-firstContactRole.legend = Tell us about their role in your organisation.
 firstContactRole.hint = For example, ''Compliance officer''.
 firstContactRole.error.required = Enter a role
 firstContactRole.error.length = Role must be {0} characters or less
@@ -289,9 +288,8 @@ secondContactName.hint = For example, ''John Jones'' or ''Laura Smith''.
 secondContactName.error.required = Enter a full name
 secondContactName.error.length = Full name must be {0} characters or less
 
-secondContactRole.title = What is {0}''s role in your organisation?
+secondContactRole.title = What is their role in your organisation?
 secondContactRole.heading = What is {0}''s role in your organisation?
-secondContactRole.legend = Tell us about their role in your organisation.
 secondContactRole.hint = For example, ''Compliance officer''.
 secondContactRole.error.required = Enter a role
 secondContactRole.error.length = Role must be {0} characters or less
@@ -668,9 +666,8 @@ deregisterContactName.hint = For example, ''John Jones'' or ''Laura Smith''.
 deregisterContactName.error.required = Enter a full name
 deregisterContactName.error.length = Full name must be {0} characters or less
 
-deregisterContactRole.title = What is {0}''s role in your organisation?
+deregisterContactRole.title = What is their role in your organisation?
 deregisterContactRole.heading = What is {0}''s role in your organisation?
-deregisterContactRole.legend = Tell us about their role in your organisation.
 deregisterContactRole.hint = For example, ''Compliance officer''.
 deregisterContactRole.error.required = Enter a role
 deregisterContactRole.error.length = Role must be {0} characters or less

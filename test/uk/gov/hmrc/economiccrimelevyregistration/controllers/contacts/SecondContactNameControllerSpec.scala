@@ -95,7 +95,12 @@ class SecondContactNameControllerSpec extends SpecBase {
 
           status(result) shouldBe OK
 
-          contentAsString(result) shouldBe view(form.fill(name), NormalMode, None, Some(testEclRegistrationReference))(
+          contentAsString(result) shouldBe view(
+            form.fill(name.trim),
+            NormalMode,
+            None,
+            Some(testEclRegistrationReference)
+          )(
             fakeRequest,
             messages
           ).toString
