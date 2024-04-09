@@ -43,8 +43,7 @@
     }
 
     @if(liabilityYear.exists(_.isNotCurrentFY)) {
-        <p class="govuk-body">@messages("submitted.previousFY.p1", liabilityYear.get.asString, liabilityYear.get.followingYear)</p>
-        <p class="govuk-body">@messages("submitted.previousFY.p2")</p>
+        <p class="govuk-body">@messages("submitted.previousFY")</p>
     }
 
     <p class="govuk-body">@messages("submitted.p4")</p>
