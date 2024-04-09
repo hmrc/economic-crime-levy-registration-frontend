@@ -22,7 +22,7 @@ import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction, RegistrationDataOrErrorAction, StoreUrlAction}
+import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataOrErrorAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionKeys, _}
