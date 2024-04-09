@@ -251,9 +251,8 @@ firstContactName.hint = Er enghraifft, ''John Jones'' neu ''Laura Smith''.
 firstContactName.error.required = Nodwch enw llawn
 firstContactName.error.length = Dewiswch sector busnes
 
-firstContactRole.title = Beth yw rôl {0} yn eich sefydliad?
+firstContactRole.title = Beth yw eu rôl yn eich sefydliad?
 firstContactRole.heading = Beth yw rôl {0} yn eich sefydliad?
-firstContactRole.legend = Rhowch fanylion i ni am ei rôl yn eich sefydliad.
 firstContactRole.hint = Er enghraifft, ''Swyddog Cydymffurfiad''.
 firstContactRole.error.required = Nodwch rôl
 firstContactRole.error.length = Mae’n rhaid i’r rôl fod yn {0} o gymeriadau neu lai
@@ -288,9 +287,8 @@ secondContactName.hint = Er enghraifft, ''John Jones'' neu ''Laura Smith''
 secondContactName.error.required = Nodwch enw llawn
 secondContactName.error.length = Mae’n rhaid i’r enw llawn fod yn {0} o gymeriadau neu lai
 
-secondContactRole.title = Beth yw rôl {0} yn eich sefydliad?
+secondContactRole.title = Beth yw eu rôl yn eich sefydliad?
 secondContactRole.heading = Beth yw rôl {0} yn eich sefydliad?
-secondContactRole.legend = Rhowch fanylion i ni am ei rôl yn eich sefydliad.
 secondContactRole.hint = Er enghraifft, ‘Swyddog Cydymffurfiad’.
 secondContactRole.error.required = Nodwch rôl
 secondContactRole.error.length = Mae’n rhaid i’r rôl fod yn {0} o gymeriadau neu lai
@@ -667,9 +665,8 @@ deregisterContactName.hint = Er enghraifft, ''John Jones'' neu ''Laura Smith''.
 deregisterContactName.error.required = Nodwch enw llawn
 deregisterContactName.error.length = Dewiswch sector busnes
 
-deregisterContactRole.title = Beth yw rôl {0} yn eich sefydliad?
+deregisterContactRole.title = Beth yw eu rôl yn eich sefydliad?
 deregisterContactRole.heading = Beth yw rôl {0} yn eich sefydliad?
-deregisterContactRole.legend = Rhowch fanylion i ni am ei rôl yn eich sefydliad.
 deregisterContactRole.hint = Er enghraifft, ''Swyddog Cydymffurfiad''.
 deregisterContactRole.error.required = Nodwch rôl
 deregisterContactRole.error.length = Mae’n rhaid i’r rôl fod yn {0} o gymeriadau neu lai

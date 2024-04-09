@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.InputWidth._
+@import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LabelSize._
 @import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 
@@ -39,13 +40,12 @@
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-    <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("deregisterContactRole.heading", name))</h1>
 
     @formHelper(action = DeregisterContactRoleController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text(messages("deregisterContactRole.legend")))
+                label = LabelViewModel(Text(messages("deregisterContactRole.heading", name))).asPageHeading(Large)
             ).withWidth(Fixed20).withHint(Hint(content = Text(messages("deregisterContactRole.hint"))))
         )
 
