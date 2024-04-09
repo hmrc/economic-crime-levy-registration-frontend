@@ -228,10 +228,11 @@ class CheckYourAnswersController @Inject() (
 
           case _ =>
             val session = request.session ++ Seq(
-              SessionKeys.EclReference      -> response.eclReference,
-              SessionKeys.FirstContactEmail -> firstEmail,
-              SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(address)),
-              SessionKeys.LiabilityYear     -> liabilityYear.asString
+              SessionKeys.EclReference            -> response.eclReference,
+              SessionKeys.FirstContactEmail       -> firstEmail,
+              SessionKeys.ContactAddress          -> Json.stringify(Json.toJson(address)),
+              SessionKeys.RegisteringForCurrentFY -> registeredForCurrentFY.toString,
+              SessionKeys.LiabilityYear           -> liabilityYear.asString
             )
             Redirect(routes.RegistrationSubmittedController.onPageLoad()).withSession(session)
         }

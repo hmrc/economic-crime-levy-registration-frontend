@@ -60,23 +60,35 @@ class RegistrationSubmittedController @Inject() (
       firstContactEmailAddress <-
         valueOrError(request.session.get(SessionKeys.FirstContactEmail), "First contact email address")
       secondContactEmailAddress = request.session.get(SessionKeys.SecondContactEmail)
+      registeringForCurrentFY  <-
+        valueOrError(request.session.get(SessionKeys.RegisteringForCurrentFY), "Registering for current FY")
       liabilityYear            <- valueOrError(request.session.get(SessionKeys.LiabilityYear), "Liability Year")
-    } yield (liabilityYear, firstContactEmailAddress, secondContactEmailAddress))
+    } yield (liabilityYear, firstContactEmailAddress, secondContactEmailAddress, registeringForCurrentFY))
       .fold(
         _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
         data => {
-          val liabilityYear      = data._1.toInt
-          val firstContactEmail  = data._2
-          val secondContactEmail = data._3
-          Ok(view(eclReference, firstContactEmail, secondContactEmail, Some(LiabilityYear(liabilityYear))))
+          val liabilityYear           = data._1.toInt
+          val firstContactEmail       = data._2
+          val secondContactEmail      = data._3
+          val registeringForCurrentFY = data._4.toBoolean
+          Ok(
+            view(
+              eclReference,
+              firstContactEmail,
+              secondContactEmail,
+              Some(LiabilityYear(liabilityYear)),
+              Some(registeringForCurrentFY)
+            )
+          )
         }
       )
 
   private def outOfSessionRouting(eclReference: String)(implicit
     request: RegistrationDataRequest[_]
   ) = {
-    val liabilityYear = request.session.get(SessionKeys.LiabilityYear).map(year => LiabilityYear(year.toInt))
+    val liabilityYear           = request.session.get(SessionKeys.LiabilityYear).map(year => LiabilityYear(year.toInt))
+    val registeringForCurrentFY = request.session.get(SessionKeys.RegisteringForCurrentFY).map(_.toBoolean)
 
-    Future.successful(Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear)))
+    Future.successful(Ok(outOfSessionRegistrationSubmittedView(eclReference, liabilityYear, registeringForCurrentFY)))
   }
 }
