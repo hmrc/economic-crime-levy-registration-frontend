@@ -176,6 +176,7 @@ relevantApLength.error.required = Enter the length of your accounting period in 
 relevantApLength.error.wholeNumber = Length must be a whole number
 relevantApLength.error.nonNumeric = Length must be a whole number
 relevantApLength.error.outOfRange = Length must be between {0} and {1} days
+relevantApLength.question = How long is your relevant accounting period?
 
 registerWith.title = You need to register with the {0}
 registerWith.title.fca = FCA
