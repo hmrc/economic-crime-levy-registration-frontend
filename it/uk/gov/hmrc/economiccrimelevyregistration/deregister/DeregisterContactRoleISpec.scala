@@ -50,7 +50,7 @@ class DeregisterContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
         )
 
         status(result) shouldBe OK
-        html(result)     should include(s"What is $name's role?")
+        html(result)     should include(s"What is $name's role in your organisation?")
       }
     }
 

@@ -40,13 +40,12 @@
     }
 
     <h1 class="govuk-heading-l">@HtmlFormat.escape(messages("deregisterContactRole.heading", name))</h1>
-    <p class="govuk-body">@messages("deregisterContactRole.legend")</p>
 
     @formHelper(action = DeregisterContactRoleController.onSubmit(mode)) {
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text(messages("deregisterContactRole.heading"))).asHidden()
+                label = LabelViewModel(Text(messages("deregisterContactRole.legend")))
             ).withWidth(Fixed20).withHint(Hint(content = Text(messages("deregisterContactRole.hint"))))
         )
 
