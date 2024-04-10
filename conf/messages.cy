@@ -369,7 +369,7 @@ checkYourAnswers.secondContactNumber.label = Ail rif ffôn cyswllt
 checkYourAnswers.useRegisteredAddress.label = Defnyddiwch y cyfeiriad cofrestredig
 checkYourAnswers.address.label = Cyfeiriad cyswllt
 checkYourAnswers.nowSend = Anfonwch eich cofrestriad nawr
-checkYourAnswers.bySubmitting = Drwy gyflwyno’r cofrestriad hwn, rydych yn cadarnhau, hyd eithaf eich gwybodaeth, fod y manylion rydych chi’n eu darparu yn gywir.
+checkYourAnswers.bySubmitting = Trwy gyflwyno'r cofrestriad hwn, rydych chi'n cadarnhau, hyd eithaf eich gwybodaeth, bod y manylion rydych chi'n eu darparu yn gywir ac yn gyflawn.
 checkYourAnswers.confirmAndSend = Cadarnhau ac anfon
 checkYourAnswers.otherEntityType.label = Math o endid arall
 checkYourAnswers.businessName.label = Enw’r busnes
@@ -387,7 +387,7 @@ checkYourAnswers.amendReason.label = Gwybodaeth ychwanegol
 checkYourAnswers.cancel = <a href="{0}" class="govuk-link">Canslo’r diwygiad hwn</a>
 checkYourAnswers.amendedAnswers = Atebion sydd wedi’u diwygio
 checkYourAnswers.nowSend = Anfonwch eich cofrestriad nawr
-checkYourAnswers.bySending = Drwy gyflwyno’r cais hwn i ddiwygio’ch cofrestriad, rydych yn cadarnhau, hyd eithaf eich gwybodaeth, fod y manylion a rowch yn gywir.
+checkYourAnswers.bySending = Drwy anfon y cais hwn i newid eich cofrestriad, rydych yn cadarnhau, hyd eithaf eich gwybodaeth, bod y manylion yr ydych yn eu darparu yn gywir ac yn gyflawn.
 checkYourAnswers.submittingRequest = Wrthi’n cyflwyno’ch cais i ddiwygio’ch cofrestriad
 checkYourAnswers.notMadeChanges = Ni allwch gyflwyno'r cais hwn gan nad ydych wedi gwneud unrhyw newidiadau.
 
