@@ -27,7 +27,7 @@
 @(form: Form[AlfStubFormData], continueUrl: String)(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle = title("Stub Address Lookup Journey Data"),
+    pageTitle = titleWithForm(form, "Stub Address Lookup Journey Data"),
     isWelshTranslationAvailable = Some(false)
 ) {
 

@@ -31,7 +31,7 @@
 @(form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle = title(messages("otherEntityType.utr.question.title")),
+    pageTitle = titleWithForm(form, messages("otherEntityType.utr.question.title")),
     showBackLink = true
 ) {
     @formHelper(action = DoYouHaveUtrController.onSubmit(mode)) {
