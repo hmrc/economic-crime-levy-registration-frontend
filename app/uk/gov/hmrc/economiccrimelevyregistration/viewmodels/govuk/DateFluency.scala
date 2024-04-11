@@ -51,8 +51,7 @@ trait DateFluency {
       val errorClass =
         if (errorMessage(field, Some(messages("govukErrorMessage.visuallyHiddenText"))).isDefined) {
           "govuk-input--error"
-        }
-        else {
+        } else {
           ""
         }
 
