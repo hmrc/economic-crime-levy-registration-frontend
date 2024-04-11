@@ -32,7 +32,7 @@
 @(form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle = title(messages("liabilityBeforeCurrentYear.title")),
+    pageTitle = titleWithForm(form, messages("liabilityBeforeCurrentYear.title")),
     showBackLink = true
 ) {
     @formHelper(action = LiabilityBeforeCurrentYearController.onSubmit(mode)) {

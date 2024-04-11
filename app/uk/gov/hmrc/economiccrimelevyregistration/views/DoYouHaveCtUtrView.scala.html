@@ -29,7 +29,7 @@
 @(form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle = title(messages("otherEntityType.ctutr.question.title")),
+    pageTitle = titleWithForm(form, messages("otherEntityType.ctutr.question.title")),
     showBackLink = true
 ) {
 
