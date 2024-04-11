@@ -127,7 +127,7 @@ class AmlSupervisorController @Inject() (
 
   private def registerWithGcOrFca(registration: Registration)(implicit
     hc: HeaderCarrier
-  ) =
+  ): EitherT[Future, AuditError, Unit] =
     registration.amlSupervisor.map(_.supervisorType) match {
       case Some(GamblingCommission)        =>
         val event = RegistrationNotLiableAuditEvent(
