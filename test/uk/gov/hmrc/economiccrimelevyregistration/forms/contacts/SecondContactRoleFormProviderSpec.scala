@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.roleMaxLength
 
 class SecondContactRoleFormProviderSpec extends StringFieldBehaviours {
 
@@ -34,14 +34,14 @@ class SecondContactRoleFormProviderSpec extends StringFieldBehaviours {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(RoleMaxLength)
+      stringsWithMaxLength(roleMaxLength)
     )
 
     behave like fieldWithMaxLength(
       form,
       fieldName,
-      maxLength = RoleMaxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(RoleMaxLength))
+      maxLength = roleMaxLength,
+      lengthError = FormError(fieldName, lengthKey, Seq(roleMaxLength))
     )
 
     behave like mandatoryField(
@@ -53,7 +53,7 @@ class SecondContactRoleFormProviderSpec extends StringFieldBehaviours {
     behave like stripValue(
       form,
       fieldName,
-      telephoneNumber(RoleMaxLength)
+      telephoneNumber(roleMaxLength)
     )
   }
 }

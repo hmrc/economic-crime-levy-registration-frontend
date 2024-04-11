@@ -46,9 +46,9 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
       val result = callRoute(
         FakeRequest(routes.RegistrationSubmittedController.onPageLoad())
           .withSession(
-            SessionKeys.FirstContactEmail       -> email,
-            SessionKeys.LiabilityYear           -> liabilityYear.asString,
-            SessionKeys.RegisteringForCurrentFY -> random[Boolean].toString
+            SessionKeys.firstContactEmail       -> email,
+            SessionKeys.liabilityYear           -> liabilityYear.asString,
+            SessionKeys.registeringForCurrentFY -> random[Boolean].toString
           )
       )
 
@@ -71,7 +71,7 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(routes.RegistrationSubmittedController.onPageLoad())
-          .withSession(SessionKeys.LiabilityYear -> liabilityYear.asString)
+          .withSession(SessionKeys.liabilityYear -> liabilityYear.asString)
       )
 
       status(result)           shouldBe SEE_OTHER
@@ -93,7 +93,7 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(routes.RegistrationSubmittedController.onPageLoad())
-          .withSession(SessionKeys.FirstContactEmail -> email)
+          .withSession(SessionKeys.firstContactEmail -> email)
       )
 
       status(result)           shouldBe SEE_OTHER

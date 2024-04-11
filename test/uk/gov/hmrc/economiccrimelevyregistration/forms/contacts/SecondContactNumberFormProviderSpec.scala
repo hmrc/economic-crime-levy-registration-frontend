@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
 import play.api.data.{Form, FormError}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.TelephoneNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.telephoneNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Regex
 
 class SecondContactNumberFormProviderSpec extends StringFieldBehaviours {
@@ -35,14 +35,14 @@ class SecondContactNumberFormProviderSpec extends StringFieldBehaviours {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      telephoneNumber(TelephoneNumberMaxLength)
+      telephoneNumber(telephoneNumberMaxLength)
     )
 
     behave like fieldWithMaxLength(
       form,
       fieldName,
-      maxLength = TelephoneNumberMaxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(TelephoneNumberMaxLength))
+      maxLength = telephoneNumberMaxLength,
+      lengthError = FormError(fieldName, lengthKey, Seq(telephoneNumberMaxLength))
     )
 
     behave like mandatoryField(
@@ -54,11 +54,11 @@ class SecondContactNumberFormProviderSpec extends StringFieldBehaviours {
     behave like removeAllWhitespace(
       form,
       fieldName,
-      telephoneNumber(TelephoneNumberMaxLength)
+      telephoneNumber(telephoneNumberMaxLength)
     )
 
     "fail to bind an invalid telephone number" in forAll(
-      stringsWithMaxLength(TelephoneNumberMaxLength).retryUntil(!_.matches(Regex.TelephoneNumberRegex))
+      stringsWithMaxLength(telephoneNumberMaxLength).retryUntil(!_.matches(Regex.telephoneNumberRegex))
     ) { invalidNumber: String =>
       val result: Form[String] = form.bind(Map("value" -> invalidNumber))
 

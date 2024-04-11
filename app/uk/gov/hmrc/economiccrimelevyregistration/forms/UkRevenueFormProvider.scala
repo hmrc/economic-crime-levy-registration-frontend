@@ -17,12 +17,9 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.{Mappings, MinMaxValues}
 
 class UkRevenueFormProvider extends Mappings {
-
-  val minRevenue: BigDecimal = 0
-  val maxRevenue: BigDecimal = 99999999999.99
 
   def apply(): Form[BigDecimal] =
     Form(
@@ -30,7 +27,7 @@ class UkRevenueFormProvider extends Mappings {
         "ukRevenue.error.required",
         "ukRevenue.error.nonNumeric"
       )
-        .verifying(inRange(minRevenue, maxRevenue, "ukRevenue.error.outOfRange"))
+        .verifying(inRange(MinMaxValues.minRevenue, MinMaxValues.maxRevenue, "ukRevenue.error.outOfRange"))
     )
 
 }

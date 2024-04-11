@@ -5,7 +5,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.UtrLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.utrLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -57,7 +57,7 @@ class UtrISpec extends ISpecBase with AuthorisedBehaviour {
         val registration   = random[Registration]
           .copy(entityType = Some(random[EntityType]), relevantApRevenue = Some(randomApRevenue()))
         val additionalInfo = random[RegistrationAdditionalInfo]
-        val Utr            = numStringsWithConcreteLength(UtrLength).sample.get
+        val Utr            = numStringsWithConcreteLength(utrLength).sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)

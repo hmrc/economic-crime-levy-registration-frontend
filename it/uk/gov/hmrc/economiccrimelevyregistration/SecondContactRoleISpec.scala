@@ -5,7 +5,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.roleMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -65,7 +65,7 @@ class SecondContactRoleISpec extends ISpecBase with AuthorisedBehaviour {
             relevantApRevenue = Some(randomApRevenue())
           )
         val name         = random[String]
-        val role         = stringsWithMaxLength(RoleMaxLength).sample.get
+        val role         = stringsWithMaxLength(roleMaxLength).sample.get
 
         val updatedRegistration = registration.copy(contacts =
           registration.contacts.copy(secondContactDetails =

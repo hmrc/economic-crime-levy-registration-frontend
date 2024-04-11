@@ -17,14 +17,11 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.{Mappings, MinMaxValues}
 
 import javax.inject.Inject
 
 class RelevantApLengthFormProvider @Inject() extends Mappings {
-
-  val minDays = 1
-  val maxDays = 999
 
   def apply(): Form[Int] =
     Form(
@@ -33,7 +30,7 @@ class RelevantApLengthFormProvider @Inject() extends Mappings {
         "relevantApLength.error.wholeNumber",
         "relevantApLength.error.nonNumeric"
       )
-        .verifying(inRange(minDays, maxDays, "relevantApLength.error.outOfRange"))
+        .verifying(inRange(MinMaxValues.minDays, MinMaxValues.maxDays, "relevantApLength.error.outOfRange"))
     )
 
 }

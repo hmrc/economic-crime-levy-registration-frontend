@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.navigation.deregister
 
-import play.api.mvc.Call
+import play.api.mvc.{Call, Result}
 import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, Mode, NormalMode}
 
 trait DeregisterNavigator {
-  def toNextPage(mode: Mode, nextPage: Call) =
+  def toNextPage(mode: Mode, nextPage: Call): Result =
     Redirect(mode match {
       case NormalMode => nextPage
       case CheckMode  => routes.DeregisterCheckYourAnswersController.onPageLoad()

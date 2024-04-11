@@ -21,7 +21,8 @@ import cats.implicits.toTraverseOps
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataOrErrorAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
@@ -97,7 +98,7 @@ class CheckYourAnswersController @Inject() (
     }
   }
 
-  private def routeWithSubscription(implicit request: RegistrationDataRequest[_]) =
+  private def routeWithSubscription(implicit request: RegistrationDataRequest[_]): Future[Result] =
     registrationService
       .getSubscription(request.eclRegistrationReference.get)
       .map { getSubscriptionResponse =>
@@ -118,7 +119,7 @@ class CheckYourAnswersController @Inject() (
         success => success
       )
 
-  private def routeWithoutSubscription(implicit request: RegistrationDataRequest[_]) =
+  private def routeWithoutSubscription(implicit request: RegistrationDataRequest[_]): Future[Result] =
     Future.successful(
       Ok(
         view(
@@ -172,7 +173,7 @@ class CheckYourAnswersController @Inject() (
 
   private def createHtmlView(
     getSubscriptionResponse: Option[GetSubscriptionResponse]
-  )(implicit request: RegistrationDataRequest[_]) =
+  )(implicit request: RegistrationDataRequest[_]): HtmlFormat.Appendable =
     view(
       CheckYourAnswersViewModel(
         request.registration,
@@ -182,7 +183,9 @@ class CheckYourAnswersController @Inject() (
       )
     )
 
-  private def fetchSubscription(implicit request: RegistrationDataRequest[_]) = {
+  private def fetchSubscription(implicit
+    request: RegistrationDataRequest[_]
+  ): EitherT[Future, DataRetrievalError, Option[GetSubscriptionResponse]] = {
     val getSubscriptionResponse =
       (if (appConfig.getSubscriptionEnabled && request.registration.registrationType.contains(Amendment)) {
          Some(
@@ -199,7 +202,7 @@ class CheckYourAnswersController @Inject() (
     registration: Registration,
     additionalInfo: RegistrationAdditionalInfo,
     response: CreateEclSubscriptionResponse
-  )(implicit request: RegistrationDataRequest[_]) =
+  )(implicit request: RegistrationDataRequest[_]): Future[Result] =
     (for {
       firstEmail             <- valueOrError(registration.contacts.firstContactDetails.emailAddress, "First contact email")
       address                <- valueOrError(registration.contactAddress, "Contact address")
@@ -218,28 +221,30 @@ class CheckYourAnswersController @Inject() (
         registration.entityType match {
           case Some(value) if EntityType.isOther(value) =>
             val session = request.session ++ Seq(
-              SessionKeys.FirstContactEmail       -> firstEmail,
-              SessionKeys.RegisteringForCurrentFY -> registeredForCurrentFY.toString,
-              SessionKeys.LiabilityYear           -> liabilityYear.asString
+              SessionKeys.firstContactEmail       -> firstEmail,
+              SessionKeys.registeringForCurrentFY -> registeredForCurrentFY.toString,
+              SessionKeys.liabilityYear           -> liabilityYear.asString
             ) ++ secondEmail.fold(Seq.empty[(String, String)])(secondEmail =>
-              Seq(SessionKeys.SecondContactEmail -> secondEmail)
+              Seq(SessionKeys.secondContactEmail -> secondEmail)
             )
             Redirect(routes.RegistrationReceivedController.onPageLoad()).withSession(session)
 
           case _ =>
             val session = request.session ++ Seq(
-              SessionKeys.EclReference            -> response.eclReference,
-              SessionKeys.FirstContactEmail       -> firstEmail,
-              SessionKeys.ContactAddress          -> Json.stringify(Json.toJson(address)),
-              SessionKeys.RegisteringForCurrentFY -> registeredForCurrentFY.toString,
-              SessionKeys.LiabilityYear           -> liabilityYear.asString
+              SessionKeys.eclReference            -> response.eclReference,
+              SessionKeys.firstContactEmail       -> firstEmail,
+              SessionKeys.contactAddress          -> Json.stringify(Json.toJson(address)),
+              SessionKeys.registeringForCurrentFY -> registeredForCurrentFY.toString,
+              SessionKeys.liabilityYear           -> liabilityYear.asString
             )
             Redirect(routes.RegistrationSubmittedController.onPageLoad()).withSession(session)
         }
       }
     )
 
-  private def routeForAmendment(registration: Registration)(implicit request: RegistrationDataRequest[_]) =
+  private def routeForAmendment(
+    registration: Registration
+  )(implicit request: RegistrationDataRequest[_]): Future[Result] =
     (for {
       email   <- valueOrError(registration.contacts.firstContactDetails.emailAddress, "First contact email")
       address <- valueOrError(registration.contactAddress, "Contact address")
@@ -249,8 +254,8 @@ class CheckYourAnswersController @Inject() (
         val email   = emailAndAddress._1
         val address = emailAndAddress._2
         val session = request.session ++ Seq(
-          SessionKeys.FirstContactEmail -> email,
-          SessionKeys.ContactAddress    -> Json.stringify(Json.toJson(address))
+          SessionKeys.firstContactEmail -> email,
+          SessionKeys.contactAddress    -> Json.stringify(Json.toJson(address))
         )
         Redirect(routes.AmendmentRequestedController.onPageLoad()).withSession(session)
       }
@@ -260,7 +265,7 @@ class CheckYourAnswersController @Inject() (
     registration: Registration,
     additionalInfo: RegistrationAdditionalInfo,
     response: CreateEclSubscriptionResponse
-  )(implicit request: RegistrationDataRequest[_]) =
+  )(implicit request: RegistrationDataRequest[_]): Future[Result] =
     registration.registrationType match {
       case Some(Initial)   => routeForInitialRegistration(registration, additionalInfo, response)
       case Some(Amendment) => routeForAmendment(registration)

@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrat
 
 import javax.inject.Inject
 
-class AmlRegulatedActivityPageNavigator @Inject() () extends PageNavigator {
+class AmlRegulatedActivityPageNavigator @Inject() extends PageNavigator {
 
   override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
     navigateInBothModes(eclRegistrationModel.registration, NormalMode)

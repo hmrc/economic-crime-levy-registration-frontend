@@ -26,7 +26,7 @@ import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CompanyRegistrationNumberFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.companyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
@@ -94,7 +94,7 @@ class CompanyRegistrationNumberControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the company number then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(CompanyRegistrationNumberMaxLength),
+      stringsWithMaxLength(companyRegistrationNumberMaxLength),
       Arbitrary.arbitrary[Mode]
     ) { (registration: Registration, companyNumber: String, mode: Mode) =>
       val otherEntityJourneyData =

@@ -20,7 +20,7 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.emailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, NormalMode}
@@ -63,7 +63,7 @@ class DeregisterContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
       "save the selected answer then redirect the correct page" in {
         stubAuthorisedWithEclEnrolment()
         val deregistration = random[Deregistration].copy(internalId = testInternalId)
-        val email          = emailAddress(EmailMaxLength).sample.get
+        val email          = emailAddress(emailMaxLength).sample.get
         stubGetDeregistration(deregistration)
         stubUpsertDeregistration(
           deregistration.copy(contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email)))

@@ -24,27 +24,27 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 sealed trait BusinessSector
 
 object BusinessSector {
-  case object CreditInstitution extends BusinessSector
-
-  case object FinancialInstitution extends BusinessSector
-
   case object Auditor extends BusinessSector
 
-  case object InsolvencyPractitioner extends BusinessSector
+  case object CreditInstitution extends BusinessSector
 
-  case object ExternalAccountant extends BusinessSector
-
-  case object TaxAdviser extends BusinessSector
-
-  case object IndependentLegalProfessional extends BusinessSector
-
-  case object TrustOrCompanyServiceProvider extends BusinessSector
+  case object CryptoAssetExchangeProvider extends BusinessSector
 
   case object EstateAgentOrLettingAgent extends BusinessSector
 
+  case object ExternalAccountant extends BusinessSector
+
+  case object FinancialInstitution extends BusinessSector
+
   case object HighValueDealer extends BusinessSector
 
-  case object CryptoAssetExchangeProvider extends BusinessSector
+  case object IndependentLegalProfessional extends BusinessSector
+
+  case object InsolvencyPractitioner extends BusinessSector
+
+  case object TaxAdviser extends BusinessSector
+
+  case object TrustOrCompanyServiceProvider extends BusinessSector
 
   val values: Seq[BusinessSector] = Seq(
     Auditor,

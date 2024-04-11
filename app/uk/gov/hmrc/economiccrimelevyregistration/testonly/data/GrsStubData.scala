@@ -109,7 +109,7 @@ trait GrsStubData {
     failures = Some(
       Seq(
         GrsRegistrationResultFailure(
-          code = GrsErrorCodes.PartyTypeMismatch,
+          code = GrsErrorCodes.partyTypeMismatch,
           reason = "The remote endpoint has indicated there is Party Type mismatch"
         )
       )

@@ -26,7 +26,7 @@ import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.FirstContactRoleFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.roleMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
@@ -128,7 +128,7 @@ class FirstContactRoleControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the provided contact role then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(RoleMaxLength)
+      stringsWithMaxLength(roleMaxLength)
     ) { (registration: Registration, role: String) =>
       new TestContext(registration) {
         val updatedRegistration: Registration =

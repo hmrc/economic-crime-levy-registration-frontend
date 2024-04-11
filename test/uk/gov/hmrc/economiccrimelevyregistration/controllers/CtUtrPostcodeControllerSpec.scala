@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.RegistrationWithUnincorporatedA
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CtUtrPostcodeFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CtUtrPostcodeLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.ctUtrPostcodeLength
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, NormalMode, OtherEntityJourneyData, Registration}
@@ -102,7 +102,7 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the postcode then redirect to the next page" in forAll(
       Arbitrary.arbitrary[RegistrationWithUnincorporatedAssociation],
-      stringsWithMaxLength(CtUtrPostcodeLength),
+      stringsWithMaxLength(ctUtrPostcodeLength),
       Arbitrary.arbitrary[Mode]
     ) { (registration: RegistrationWithUnincorporatedAssociation, postcode: String, mode: Mode) =>
       val otherEntityData = registration.registration.otherEntityJourneyData.copy(postcode = Some(postcode))

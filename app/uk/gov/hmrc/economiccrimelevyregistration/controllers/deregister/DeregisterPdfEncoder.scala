@@ -17,9 +17,10 @@
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister
 
 import play.api.i18n.Messages
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, GetSubscriptionResponse}
-import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.deregister.{CompanyNameSummary, DeregisterDateSummary, DeregisterEmailSummary, DeregisterNameSummary, DeregisterNumberSummary, DeregisterReasonSummary, DeregisterRoleSummary, EclReferenceSummary}
+import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.deregister._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.govuk.all.FluentSummaryList
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregistrationPdfView
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
@@ -62,7 +63,7 @@ trait DeregisterPdfEncoder {
     pdfView: DeregistrationPdfView,
     eclRegistrationReference: Option[String],
     deregistration: Deregistration
-  )(implicit messages: Messages) =
+  )(implicit messages: Messages): HtmlFormat.Appendable =
     pdfView(
       organisation(
         eclRegistrationReference,

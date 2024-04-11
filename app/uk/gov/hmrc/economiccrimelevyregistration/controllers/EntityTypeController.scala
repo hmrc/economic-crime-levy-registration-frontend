@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.EntityTypeDataCleanup
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.EntityTypeFormProvider
@@ -89,7 +89,9 @@ class EntityTypeController @Inject() (
       )
   }
 
-  private def navigateInNormalMode(newEntityType: EntityType)(implicit request: RegistrationDataRequest[_]) =
+  private def navigateInNormalMode(
+    newEntityType: EntityType
+  )(implicit request: RegistrationDataRequest[_]): Future[Result] =
     if (EntityType.isOther(newEntityType)) {
       Future.successful(Redirect(routes.BusinessNameController.onPageLoad(NormalMode)))
     } else {
@@ -98,7 +100,7 @@ class EntityTypeController @Inject() (
 
   private def navigateInCheckMode(newEntityType: EntityType, previousEntityType: Option[EntityType])(implicit
     request: RegistrationDataRequest[_]
-  ) = {
+  ): Future[Result] = {
     val sameEntityTypeAsPrevious = previousEntityType.contains(newEntityType)
 
     (sameEntityTypeAsPrevious, EntityType.isOther(newEntityType)) match {
@@ -118,7 +120,7 @@ class EntityTypeController @Inject() (
   private def redirectToGRS(
     mode: Mode,
     newEntityType: EntityType
-  )(implicit request: RegistrationDataRequest[_]) =
+  )(implicit request: RegistrationDataRequest[_]): Future[Result] =
     (for {
       grsJourneyUrl <- eclRegistrationService.registerEntityType(newEntityType, mode).asResponseError
     } yield grsJourneyUrl).fold(
@@ -130,7 +132,7 @@ class EntityTypeController @Inject() (
     registration: Registration,
     newEntityType: EntityType,
     previousEntityType: Option[EntityType]
-  ) =
+  ): Registration =
     previousEntityType match {
       case Some(value) if value == newEntityType  =>
         registration

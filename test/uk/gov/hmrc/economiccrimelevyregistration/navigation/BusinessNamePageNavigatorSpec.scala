@@ -20,7 +20,7 @@ import org.scalacheck.Arbitrary
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityRegistrationNumberMaxLength, CompanyRegistrationNumberMaxLength, OrganisationNameMaxLength, UtrLength}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{charityRegistrationNumberMaxLength, companyRegistrationNumberMaxLength, organisationNameMaxLength, utrLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
@@ -40,7 +40,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
   "nextPage" should {
     "(Normal Mode) return a call to the charity registration number page if charity selected" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength)
     ) { (registration: Registration, businessName: String) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
@@ -60,7 +60,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
     "(Normal Mode) return a call to the Company registration number page if UnincorporatedAssociation is selected" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength)
     ) { (registration: Registration, businessName: String) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
@@ -80,7 +80,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
     "(Normal Mode) return a call to the Company registration number page if NonUkEstablishment is selected" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength)
     ) { (registration: Registration, businessName: String) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
@@ -100,7 +100,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
     "(Normal Mode) return a call to the CtUtr page if Trust is selected" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength)
     ) { (registration: Registration, businessName: String) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
@@ -132,8 +132,8 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
     "(Check mode) return a call to the CheckYourAnswers page if entity type is Charity and charity registration number is present" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength),
-      stringsWithMaxLength(CharityRegistrationNumberMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength),
+      stringsWithMaxLength(charityRegistrationNumberMaxLength)
     ) {
       (
         registration: Registration,
@@ -159,7 +159,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
     "(Check Mode) return a call to the charity registration number page if entity type is Charity and charity registration number is not present" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength)
     ) {
       (
         registration: Registration,
@@ -184,8 +184,8 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
     "(Check Mode) return a call to the CheckYourAnswers page if entity type is UnincorporatedAssociation and company registration number is present" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength),
-      stringsWithMaxLength(CompanyRegistrationNumberMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength),
+      stringsWithMaxLength(companyRegistrationNumberMaxLength)
     ) {
       (
         registration: Registration,
@@ -211,7 +211,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
     "(Check mode)return a call to the do you have crn page if entity type is UnincorporatedAssociation and company registration number is not present" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength)
     ) {
       (
         registration: Registration,
@@ -236,8 +236,8 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
     "(Check Mode) return a call to the CheckYourAnswers page if entity type is NonUkEstablishment and company registration number is present" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength),
-      stringsWithMaxLength(CompanyRegistrationNumberMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength),
+      stringsWithMaxLength(companyRegistrationNumberMaxLength)
     ) {
       (
         registration: Registration,
@@ -263,7 +263,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
     "(Check mode) return a call to the do you have crn page if entity type is NonUkEstablishment and company registration number is not present" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength)
     ) {
       (
         registration: Registration,
@@ -288,8 +288,8 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
     "(Check Mode) return a call to the CheckYourAnswers page if entity type is Trust is selected and ctUtr is present" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength),
-      stringsWithMaxLength(UtrLength)
+      stringsWithMaxLength(organisationNameMaxLength),
+      stringsWithMaxLength(utrLength)
     ) {
       (
         registration: Registration,
@@ -315,7 +315,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
 
     "(Check mode) return a call to the charity registration number page if entity type is Trust and company registration number is not present" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength)
     ) {
       (
         registration: Registration,

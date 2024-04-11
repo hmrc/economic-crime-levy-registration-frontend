@@ -131,7 +131,7 @@ trait Generators {
 
   def telephoneNumber(maxLength: Int): Gen[String] =
     RegexpGen
-      .from(s"${Regex.TelephoneNumberRegex}")
+      .from(s"${Regex.telephoneNumberRegex}")
       .retryUntil(s => s.length <= maxLength && s.trim.nonEmpty)
       .map(_.trim.filterNot(_.isWhitespace))
 

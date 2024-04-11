@@ -27,7 +27,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.ValidRegistrationWithRegistrationType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.emailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -221,7 +221,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       Arbitrary.arbitrary[Registration],
       Arbitrary.arbitrary[RegistrationAdditionalInfo],
       Arbitrary.arbitrary[EntityType].retryUntil(!EntityType.isOther(_)),
-      emailAddress(EmailMaxLength)
+      emailAddress(emailMaxLength)
     ) {
       (
         createEclSubscriptionResponse: CreateEclSubscriptionResponse,
@@ -285,7 +285,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       Arbitrary.arbitrary[Registration],
       Arbitrary.arbitrary[RegistrationAdditionalInfo],
       Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther),
-      emailAddress(EmailMaxLength)
+      emailAddress(emailMaxLength)
     ) {
       (
         createEclSubscriptionResponse: CreateEclSubscriptionResponse,
@@ -352,8 +352,8 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       Arbitrary.arbitrary[Registration],
       Arbitrary.arbitrary[RegistrationAdditionalInfo],
       Arbitrary.arbitrary[EntityType].retryUntil(!EntityType.isOther(_)),
-      emailAddress(EmailMaxLength),
-      emailAddress(EmailMaxLength)
+      emailAddress(emailMaxLength),
+      emailAddress(emailMaxLength)
     ) {
       (
         createEclSubscriptionResponse: CreateEclSubscriptionResponse,
@@ -414,7 +414,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       Arbitrary.arbitrary[Registration],
       Arbitrary.arbitrary[RegistrationAdditionalInfo],
       Arbitrary.arbitrary[EntityType].retryUntil(EntityType.isOther),
-      emailAddress(EmailMaxLength),
+      emailAddress(emailMaxLength),
       Arbitrary.arbitrary[LiabilityYear]
     ) {
       (
@@ -486,7 +486,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       Arbitrary.arbitrary[Registration],
       Arbitrary.arbitrary[RegistrationAdditionalInfo],
       Arbitrary.arbitrary[EntityType].retryUntil(!EntityType.isOther(_)),
-      emailAddress(EmailMaxLength)
+      emailAddress(emailMaxLength)
     ) {
       (
         subscriptionResponse: GetSubscriptionResponse,
@@ -562,7 +562,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       Arbitrary.arbitrary[CreateEclSubscriptionResponse],
       Arbitrary.arbitrary[Registration],
       Arbitrary.arbitrary[EntityType].retryUntil(!EntityType.isOther(_)),
-      emailAddress(EmailMaxLength)
+      emailAddress(emailMaxLength)
     ) {
       (
         createEclSubscriptionResponse: CreateEclSubscriptionResponse,

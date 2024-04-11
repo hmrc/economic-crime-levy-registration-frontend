@@ -49,8 +49,8 @@ class TestOnlyAuthorisedAction @Inject() (
         val internalId: String                       = optInternalId.getOrElseFail("Unable to retrieve internalId")
         val groupId: String                          = optGroupId.getOrElseFail("Unable to retrieve groupIdentifier")
         val eclRegistrationReference: Option[String] = enrolments
-          .getEnrolment(EclEnrolment.ServiceName)
-          .flatMap(_.getIdentifier(EclEnrolment.IdentifierKey).map(_.value))
+          .getEnrolment(EclEnrolment.serviceName)
+          .flatMap(_.getIdentifier(EclEnrolment.identifierKey).map(_.value))
 
         block(TestOnlyAuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
     }(hc(request), executionContext) recover { case _: NoActiveSession =>

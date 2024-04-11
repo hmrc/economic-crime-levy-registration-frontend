@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait BaseController extends I18nSupport {
 
-  def valueOrError[T](value: Option[T], valueType: String) =
+  def valueOrError[T](value: Option[T], valueType: String): EitherT[Future, ResponseError, T] =
     EitherT {
       Future.successful(value.map(Right(_)).getOrElse(Left(ResponseError.internalServiceError(s"Missing $valueType"))))
     }

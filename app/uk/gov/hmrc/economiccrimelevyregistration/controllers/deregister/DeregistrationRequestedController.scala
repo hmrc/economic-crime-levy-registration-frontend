@@ -49,7 +49,7 @@ class DeregistrationRequestedController @Inject() (
       eclReference         <- valueOrError(request.eclRegistrationReference, "ECL reference")
       subscriptionResponse <- registrationService.getSubscription(eclReference).asResponseError
       address               = subscriptionResponse.correspondenceAddressDetails
-      email                <- valueOrError(request.session.get(SessionKeys.FirstContactEmail), "contact email address")
+      email                <- valueOrError(request.session.get(SessionKeys.firstContactEmail), "contact email address")
     } yield (eclReference, email, address)).fold(
       error => routeError(error),
       tuple => {

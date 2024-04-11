@@ -95,24 +95,17 @@ trait Constraints {
         Valid
     }
 
-  protected def nonEmptySet(errorKey: String): Constraint[Set[_]]                                       =
-    Constraint {
-      case set if set.nonEmpty =>
-        Valid
-      case _                   =>
-        Invalid(errorKey)
-    }
   protected def telephoneNumber(max: Int, maxLengthKey: String, invalidKey: String): Constraint[String] = Constraint {
     s =>
       maxLength(max, maxLengthKey)(s) match {
-        case Valid   => regexp(Regex.TelephoneNumberRegex, invalidKey)(s)
+        case Valid   => regexp(Regex.telephoneNumberRegex, invalidKey)(s)
         case invalid => invalid
       }
   }
 
   protected def emailAddress(max: Int, maxLengthKey: String, invalidKey: String): Constraint[String] = Constraint { s =>
     maxLength(max, maxLengthKey)(s) match {
-      case Valid   => regexp(Regex.EmailRegex, invalidKey)(s)
+      case Valid   => regexp(Regex.emailRegex, invalidKey)(s)
       case invalid => invalid
     }
   }

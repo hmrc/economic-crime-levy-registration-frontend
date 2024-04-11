@@ -58,8 +58,8 @@ class EnrolmentStoreProxyService @Inject() (enrolmentStoreProxyConnector: Enrolm
   private def getEclReference(response: GroupEnrolmentsResponse): EitherT[Future, EnrolmentStoreProxyError, String] =
     EitherT {
       response.enrolments
-        .find(_.service == EclEnrolment.ServiceName)
-        .flatMap(_.identifiers.find(_.key == EclEnrolment.IdentifierKey))
+        .find(_.service == EclEnrolment.serviceName)
+        .flatMap(_.identifiers.find(_.key == EclEnrolment.identifierKey))
         .map(_.value) match {
         case Some(value) => Future.successful(Right(value))
         case None        =>

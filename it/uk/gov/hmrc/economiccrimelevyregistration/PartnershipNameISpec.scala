@@ -5,7 +5,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.organisationNameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -51,7 +51,7 @@ class PartnershipNameISpec extends ISpecBase with AuthorisedBehaviour {
             entityType = Some(random[EntityType]),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val partnershipName = stringsWithMaxLength(OrganisationNameMaxLength).sample.get
+        val partnershipName = stringsWithMaxLength(organisationNameMaxLength).sample.get
         val additionalInfo  = random[RegistrationAdditionalInfo]
 
         stubGetRegistrationAdditionalInfo(additionalInfo)

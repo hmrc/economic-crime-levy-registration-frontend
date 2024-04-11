@@ -67,7 +67,7 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
             )
 
           val result: Future[Result] = controller.onPageLoad()(
-            fakeRequest.withSession(SessionKeys.FirstContactEmail -> email)
+            fakeRequest.withSession(SessionKeys.firstContactEmail -> email)
           )
 
           status(result) shouldBe OK
@@ -98,7 +98,7 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
             )
 
           val result: Future[Result] = controller.onPageLoad()(
-            fakeRequest.withSession(SessionKeys.FirstContactEmail -> email)
+            fakeRequest.withSession(SessionKeys.firstContactEmail -> email)
           )
 
           status(result) shouldBe INTERNAL_SERVER_ERROR
@@ -115,7 +115,7 @@ class DeregistrationRequestedControllerSpec extends SpecBase {
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 
           val result: Future[Result] = controller.onPageLoad()(
-            fakeRequest.withSession(SessionKeys.FirstContactEmail -> email)
+            fakeRequest.withSession(SessionKeys.firstContactEmail -> email)
           )
 
           status(result) shouldBe INTERNAL_SERVER_ERROR

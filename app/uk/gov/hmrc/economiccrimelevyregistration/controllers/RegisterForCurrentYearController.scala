@@ -61,7 +61,7 @@ class RegisterForCurrentYearController @Inject() (
       urlToReturnTo <- mode match {
                          case NormalMode =>
                            sessionService
-                             .getOptional(request.session, request.internalId, SessionKeys.UrlToReturnTo)
+                             .getOptional(request.session, request.internalId, SessionKeys.urlToReturnTo)
                              .asResponseError
                          case CheckMode  =>
                            EitherT[Future, SessionError, Option[String]] {

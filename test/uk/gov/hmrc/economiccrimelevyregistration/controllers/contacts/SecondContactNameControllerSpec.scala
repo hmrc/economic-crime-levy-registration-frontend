@@ -26,7 +26,7 @@ import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactNameFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.NameMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.nameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
@@ -111,7 +111,7 @@ class SecondContactNameControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the provided contact name then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(NameMaxLength)
+      stringsWithMaxLength(nameMaxLength)
     ) { (registration: Registration, name: String) =>
       new TestContext(registration) {
         val updatedRegistration: Registration =

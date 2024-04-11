@@ -43,10 +43,10 @@ class AmendmentRequestedController @Inject() (
     (for {
       _              <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
       _              <- registrationService.deleteRegistration(request.internalId).asResponseError
-      email          <- valueOrError(request.session.get(SessionKeys.FirstContactEmail), "First contact email")
+      email          <- valueOrError(request.session.get(SessionKeys.firstContactEmail), "First contact email")
       contactAddress <- valueOrError(
                           request.session
-                            .get(SessionKeys.ContactAddress),
+                            .get(SessionKeys.contactAddress),
                           "Contact address in session"
                         )
       eclAddress     <- valueOrError(

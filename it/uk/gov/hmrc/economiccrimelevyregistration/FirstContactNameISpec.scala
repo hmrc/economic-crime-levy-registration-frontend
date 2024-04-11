@@ -5,7 +5,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.NameMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.nameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -53,7 +53,7 @@ class FirstContactNameISpec extends ISpecBase with AuthorisedBehaviour {
             entityType = Some(random[EntityType]),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val name           = stringsWithMaxLength(NameMaxLength).sample.get
+        val name           = stringsWithMaxLength(nameMaxLength).sample.get
         val additionalInfo = random[RegistrationAdditionalInfo]
 
         stubGetRegistrationAdditionalInfo(additionalInfo)

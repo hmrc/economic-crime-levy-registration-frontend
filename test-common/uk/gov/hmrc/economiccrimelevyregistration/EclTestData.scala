@@ -151,9 +151,9 @@ trait EclTestData {
       enrolment          <- Arbitrary.arbitrary[AuthEnrolment]
       eclReferenceNumber <- Arbitrary.arbitrary[String]
       eclEnrolment        = enrolment.copy(
-                              key = EclEnrolment.ServiceName,
+                              key = EclEnrolment.serviceName,
                               identifiers =
-                                Seq(EnrolmentIdentifier(key = EclEnrolment.IdentifierKey, value = eclReferenceNumber))
+                                Seq(EnrolmentIdentifier(key = EclEnrolment.identifierKey, value = eclReferenceNumber))
                             )
     } yield EnrolmentsWithEcl(enrolments.copy(enrolments.enrolments + eclEnrolment), eclReferenceNumber)
   }
@@ -185,7 +185,7 @@ trait EclTestData {
   implicit val arbEnrolmentsWithoutEcl: Arbitrary[EnrolmentsWithoutEcl] = Arbitrary {
     Arbitrary
       .arbitrary[Enrolments]
-      .retryUntil(!_.enrolments.exists(_.key == EclEnrolment.ServiceName))
+      .retryUntil(!_.enrolments.exists(_.key == EclEnrolment.serviceName))
       .map(EnrolmentsWithoutEcl)
   }
 
@@ -282,7 +282,7 @@ trait EclTestData {
       Some(
         Seq(
           GrsRegistrationResultFailure(
-            GrsErrorCodes.PartyTypeMismatch,
+            GrsErrorCodes.partyTypeMismatch,
             "The remote endpoint has indicated there is Party Type mismatch"
           )
         )

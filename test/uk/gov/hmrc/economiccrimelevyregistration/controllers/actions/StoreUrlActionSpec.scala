@@ -51,7 +51,7 @@ class StoreUrlActionSpec extends SpecBase {
 
   "refine" should {
     "store given url if Registration type is Initial" in forAll { (registration: Registration, url: String) =>
-      val sessionData = SessionData(registration.internalId, Map(SessionKeys.UrlToReturnTo -> url))
+      val sessionData = SessionData(registration.internalId, Map(SessionKeys.urlToReturnTo -> url))
       when(mockSessionService.upsert(ArgumentMatchers.eq(sessionData))(any()))
         .thenReturn(EitherT.fromEither[Future](Right(())))
 

@@ -43,7 +43,7 @@ class StoreUrlAction @Inject() (
   ): Future[Either[Result, RegistrationDataRequest[A]]] = {
     implicit val hcFromRequest: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    val sessionData = SessionData(request.internalId, Map(SessionKeys.UrlToReturnTo -> request.uri))
+    val sessionData = SessionData(request.internalId, Map(SessionKeys.urlToReturnTo -> request.uri))
 
     (for {
       _ <- request.registration.registrationType match {

@@ -22,5 +22,8 @@ import java.time.LocalDate
 
 object MinMaxValues {
   val eclStartDate: LocalDate = LocalDate.of(EclTaxYear.initialYear, EclTaxYear.startMonth, EclTaxYear.startDay)
-
+  val minDays                 = 1
+  val maxDays                 = 999
+  val minRevenue: BigDecimal  = 0
+  val maxRevenue: BigDecimal  = 99999999999.99
 }

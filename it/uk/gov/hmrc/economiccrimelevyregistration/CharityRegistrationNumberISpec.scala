@@ -5,7 +5,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CharityRegistrationNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.charityRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -45,7 +45,7 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
     "save the charity registration number then redirect to the Do you have a Utr page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val charityNumber = stringsWithMaxLength(CharityRegistrationNumberMaxLength).sample.get
+      val charityNumber = stringsWithMaxLength(charityRegistrationNumberMaxLength).sample.get
 
       val registration   = random[Registration]
         .copy(
@@ -83,7 +83,7 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
     "save the charity registration number then redirect to the Do you have a Utr page if isCtUtrPresent value is empty" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val charityNumber = stringsWithMaxLength(CharityRegistrationNumberMaxLength).sample.get
+      val charityNumber = stringsWithMaxLength(charityRegistrationNumberMaxLength).sample.get
       val data          = OtherEntityJourneyData.empty().copy(isCtUtrPresent = None)
 
       val registration = random[Registration]
@@ -118,7 +118,7 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
     "save the charity registration number then redirect to the Check Your Answers page if isCtUtrPresent value is present" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val charityNumber  = stringsWithMaxLength(CharityRegistrationNumberMaxLength).sample.get
+      val charityNumber  = stringsWithMaxLength(charityRegistrationNumberMaxLength).sample.get
       val isCtUtrPresent = random[Boolean]
       val data           = OtherEntityJourneyData.empty().copy(isCtUtrPresent = Some(isCtUtrPresent))
 

@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.NameMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.nameMaxLength
 
 import javax.inject.Inject
 
@@ -27,6 +27,6 @@ class FirstContactNameFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("firstContactName.error.required", removeAllWhitespace = false)
-        .verifying(maxLength(NameMaxLength, "firstContactName.error.length"))
+        .verifying(maxLength(nameMaxLength, "firstContactName.error.length"))
     )
 }

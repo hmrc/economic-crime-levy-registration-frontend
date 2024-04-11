@@ -180,7 +180,7 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
 
           redirectLocation(result) shouldBe Some(routes.DeregistrationRequestedController.onPageLoad().url)
 
-          session(result).get(SessionKeys.FirstContactEmail) shouldBe Some(email)
+          session(result).get(SessionKeys.firstContactEmail) shouldBe Some(email)
         }
     }
 

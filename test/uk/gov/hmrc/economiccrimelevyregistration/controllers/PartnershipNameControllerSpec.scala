@@ -26,7 +26,7 @@ import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.PartnershipNameFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.OrganisationNameMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.organisationNameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
@@ -94,7 +94,7 @@ class PartnershipNameControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the provided partnership name then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength)
     ) { (registration: Registration, partnershipName: String) =>
       new TestContext(registration) {
         val updatedRegistration: Registration =

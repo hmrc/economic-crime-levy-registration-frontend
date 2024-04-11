@@ -17,5 +17,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models.grs
 
 object GrsErrorCodes {
-  val PartyTypeMismatch: String = "PARTY_TYPE_MISMATCH"
+  val partyTypeMismatch: String = "PARTY_TYPE_MISMATCH"
 }
