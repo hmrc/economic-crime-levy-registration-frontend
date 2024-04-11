@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
 import play.api.data.{Form, FormError}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.emailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Regex
 
 class SecondContactEmailFormProviderSpec extends StringFieldBehaviours {
@@ -35,14 +35,14 @@ class SecondContactEmailFormProviderSpec extends StringFieldBehaviours {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      emailAddress(EmailMaxLength)
+      emailAddress(emailMaxLength)
     )
 
     behave like fieldWithMaxLength(
       form,
       fieldName,
-      maxLength = EmailMaxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(EmailMaxLength))
+      maxLength = emailMaxLength,
+      lengthError = FormError(fieldName, lengthKey, Seq(emailMaxLength))
     )
 
     behave like mandatoryField(
@@ -51,7 +51,7 @@ class SecondContactEmailFormProviderSpec extends StringFieldBehaviours {
       requiredError = FormError(fieldName, requiredKey)
     )
 
-    "remove all whitespace" in forAll(emailAddress(EmailMaxLength)) { dataItem: String =>
+    "remove all whitespace" in forAll(emailAddress(emailMaxLength)) { dataItem: String =>
       val expectedValue  = dataItem.filterNot(_ == ',').toLowerCase
       val dataWithSpaces = "  " + dataItem.mkString(" ") + "  "
       val result         = form.bind(Map(fieldName -> dataWithSpaces))
@@ -60,7 +60,7 @@ class SecondContactEmailFormProviderSpec extends StringFieldBehaviours {
     }
 
     "fail to bind an invalid email address" in forAll(
-      stringsWithMaxLength(EmailMaxLength).retryUntil(!_.matches(Regex.EmailRegex))
+      stringsWithMaxLength(emailMaxLength).retryUntil(!_.matches(Regex.emailRegex))
     ) { invalidEmail: String =>
       val result: Form[String] = form.bind(Map("value" -> invalidEmail))
 

@@ -109,8 +109,8 @@ trait AuthStubs { self: WireMockStubs =>
              |  "affinityGroup": "Organisation",
              |  "credentialRole": "User",
              |  "allEnrolments": [{
-             |    "key":"${EclEnrolment.ServiceName}",
-             |    "identifiers": [{ "key":"${EclEnrolment.IdentifierKey}", "value": "$testEclRegistrationReference" }],
+             |    "key":"${EclEnrolment.serviceName}",
+             |    "identifiers": [{ "key":"${EclEnrolment.identifierKey}", "value": "$testEclRegistrationReference" }],
              |    "state": "activated"
              |  }]
              |}
@@ -141,8 +141,8 @@ trait AuthStubs { self: WireMockStubs =>
              |  "affinityGroup": "Organisation",
              |  "credentialRole": "Assistant",
              |  "allEnrolments": [{
-             |    "key":"${EclEnrolment.ServiceName}",
-             |    "identifiers": [{ "key":"${EclEnrolment.IdentifierKey}", "value": "$testEclRegistrationReference" }],
+             |    "key":"${EclEnrolment.serviceName}",
+             |    "identifiers": [{ "key":"${EclEnrolment.identifierKey}", "value": "$testEclRegistrationReference" }],
              |    "state": "activated"
              |  }]
              |}

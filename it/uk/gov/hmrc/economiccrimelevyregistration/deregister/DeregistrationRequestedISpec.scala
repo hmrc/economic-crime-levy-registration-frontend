@@ -47,7 +47,7 @@ class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
         FakeRequest(
           routes.DeregistrationRequestedController
             .onPageLoad()
-        ).withSession(SessionKeys.FirstContactEmail -> email)
+        ).withSession(SessionKeys.firstContactEmail -> email)
       )
 
       status(result) shouldBe OK

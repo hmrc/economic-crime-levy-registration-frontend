@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.{EclRegistrationConn
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{GeneralPartnership, LimitedLiabilityPartnership, LimitedPartnership, RegisteredSociety, ScottishLimitedPartnership, ScottishPartnership, SoleTrader, UkLimitedCompany, UnlimitedCompany}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, DataValidationError}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, BusinessSector, ContactDetails, Contacts, CreateEclSubscriptionResponse, EclAddress, EclSubscriptionStatus, GetAdditionalDetails, GetSubscriptionResponse, Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, BusinessSector, ContactDetails, Contacts, CreateEclSubscriptionResponse, EclAddress, EclSubscriptionStatus, EntityType, GetAdditionalDetails, GetSubscriptionResponse, Mode, Registration}
 import uk.gov.hmrc.http.{StringContextOps, UpstreamErrorResponse}
 
 import scala.concurrent.Future
@@ -311,6 +311,7 @@ class EclRegistrationServiceSpec extends SpecBase {
         val url: URL               = entityType match {
           case UkLimitedCompany | UnlimitedCompany => url"$apiUrl/limited-company-journey"
           case RegisteredSociety                   => url"$apiUrl/registered-society-journey"
+          case entityType: EntityType              => fail(s"Invalid entityType $entityType")
         }
         val updatedJourneyResponse = journeyResponse.copy(journeyStartUrl = url.toString)
 
@@ -410,6 +411,7 @@ class EclRegistrationServiceSpec extends SpecBase {
           case LimitedPartnership          => url"$apiUrl/limited-partnership-journey"
           case ScottishLimitedPartnership  => url"$apiUrl/scottish-limited-partnership-journey"
           case LimitedLiabilityPartnership => url"$apiUrl/limited-liability-partnership-journey"
+          case entityType: EntityType      => fail(s"Invalid entityType $entityType")
         }
 
         val updatedJourneyResponse = journeyResponse.copy(journeyStartUrl = url.toString)

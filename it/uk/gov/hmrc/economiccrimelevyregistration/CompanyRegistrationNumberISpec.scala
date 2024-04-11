@@ -5,7 +5,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.companyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -21,7 +21,7 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
       "respond with 200 status and the company registration number HTML view" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val companyNumber: String = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
+        val companyNumber: String = stringsWithMaxLength(companyRegistrationNumberMaxLength).sample.get
 
         val otherEntityJourneyData: OtherEntityJourneyData = OtherEntityJourneyData
           .empty()
@@ -65,7 +65,7 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
           )
         val additionalInfo = random[RegistrationAdditionalInfo]
 
-        val companyNumber = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
+        val companyNumber = stringsWithMaxLength(companyRegistrationNumberMaxLength).sample.get
 
         val otherEntityJourneyData =
           OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(companyNumber))

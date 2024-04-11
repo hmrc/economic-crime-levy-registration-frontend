@@ -6,7 +6,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.companyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{NonUKEstablishment, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
@@ -57,7 +57,7 @@ class NonUkCrnISpec extends ISpecBase with AuthorisedBehaviour {
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
 
-        val companyNumber = stringsWithMaxLength(CompanyRegistrationNumberMaxLength).sample.get
+        val companyNumber = stringsWithMaxLength(companyRegistrationNumberMaxLength).sample.get
 
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
 

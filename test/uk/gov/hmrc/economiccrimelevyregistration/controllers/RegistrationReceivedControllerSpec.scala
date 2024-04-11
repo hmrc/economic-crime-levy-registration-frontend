@@ -55,9 +55,9 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.FirstContactEmail       -> firstContactEmailAddress,
-            SessionKeys.RegisteringForCurrentFY -> registeringForCurrentYear.toString,
-            SessionKeys.LiabilityYear           -> liabilityYear.asString
+            SessionKeys.firstContactEmail       -> firstContactEmailAddress,
+            SessionKeys.registeringForCurrentFY -> registeringForCurrentYear.toString,
+            SessionKeys.liabilityYear           -> liabilityYear.asString
           )
         )
 
@@ -82,10 +82,10 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.FirstContactEmail       -> firstContactEmailAddress,
-            SessionKeys.SecondContactEmail      -> secondContactEmailAddress,
-            SessionKeys.RegisteringForCurrentFY -> registeringForCurrentYear.toString,
-            SessionKeys.LiabilityYear           -> liabilityYear.asString
+            SessionKeys.firstContactEmail       -> firstContactEmailAddress,
+            SessionKeys.secondContactEmail      -> secondContactEmailAddress,
+            SessionKeys.registeringForCurrentFY -> registeringForCurrentYear.toString,
+            SessionKeys.liabilityYear           -> liabilityYear.asString
           )
         )
 
@@ -111,8 +111,8 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.RegisteringForCurrentFY -> registeringForCurrentYear.toString,
-            SessionKeys.LiabilityYear           -> liabilityYear.asString
+            SessionKeys.registeringForCurrentFY -> registeringForCurrentYear.toString,
+            SessionKeys.liabilityYear           -> liabilityYear.asString
           )
         )
 
@@ -130,8 +130,8 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.FirstContactEmail -> firstContactEmailAddress,
-            SessionKeys.LiabilityYear     -> liabilityYear.asString
+            SessionKeys.firstContactEmail -> firstContactEmailAddress,
+            SessionKeys.liabilityYear     -> liabilityYear.asString
           )
         )
 
@@ -151,8 +151,8 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.FirstContactEmail       -> firstContactEmailAddress,
-            SessionKeys.RegisteringForCurrentFY -> registeringForCurrentYear.toString
+            SessionKeys.firstContactEmail       -> firstContactEmailAddress,
+            SessionKeys.registeringForCurrentFY -> registeringForCurrentYear.toString
           )
         )
 
@@ -169,9 +169,9 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.FirstContactEmail       -> firstContactEmailAddress,
-            SessionKeys.RegisteringForCurrentFY -> registeringForCurrentYear.toString,
-            SessionKeys.LiabilityYear           -> liabilityYear.asString
+            SessionKeys.firstContactEmail       -> firstContactEmailAddress,
+            SessionKeys.registeringForCurrentFY -> registeringForCurrentYear.toString,
+            SessionKeys.liabilityYear           -> liabilityYear.asString
           )
         )
 
@@ -191,9 +191,9 @@ class RegistrationReceivedControllerSpec extends SpecBase {
 
         val result: Future[Result] = controller.onPageLoad()(
           fakeRequest.withSession(
-            SessionKeys.FirstContactEmail       -> firstContactEmailAddress,
-            SessionKeys.RegisteringForCurrentFY -> registeringForCurrentYear.toString,
-            SessionKeys.LiabilityYear           -> liabilityYear.asString
+            SessionKeys.firstContactEmail       -> firstContactEmailAddress,
+            SessionKeys.registeringForCurrentFY -> registeringForCurrentYear.toString,
+            SessionKeys.liabilityYear           -> liabilityYear.asString
           )
         )
 

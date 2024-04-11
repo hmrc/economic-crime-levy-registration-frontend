@@ -23,9 +23,9 @@ sealed abstract class RegistrationType(value: String)
 
 object RegistrationType {
 
-  case object Initial extends RegistrationType("Initial")
   case object Amendment extends RegistrationType("Amendment")
   case object DeRegistration extends RegistrationType("DeRegistration")
+  case object Initial extends RegistrationType("Initial")
 
   lazy val values: Set[RegistrationType] = Set(Initial, Amendment, DeRegistration)
 

@@ -24,8 +24,8 @@ final case class EclSubscriptionStatus(subscriptionStatus: SubscriptionStatus)
 
 object EclSubscriptionStatus {
   case class DeRegistered(eclRegistrationReference: String) extends SubscriptionStatus
-  case class Subscribed(eclRegistrationReference: String) extends SubscriptionStatus
   case object NotSubscribed extends SubscriptionStatus
+  case class Subscribed(eclRegistrationReference: String) extends SubscriptionStatus
 
   implicit val subscriptionStatusFormat: Format[SubscriptionStatus] = new Format[SubscriptionStatus] {
     override def reads(json: JsValue): JsResult[SubscriptionStatus] = json match {

@@ -17,6 +17,6 @@
 package uk.gov.hmrc.economiccrimelevyregistration.models.eacd
 
 object EclEnrolment {
-  val ServiceName: String   = "HMRC-ECL-ORG"
-  val IdentifierKey: String = "EclRegistrationReference"
+  val identifierKey: String = "EclRegistrationReference"
+  val serviceName: String   = "HMRC-ECL-ORG"
 }

@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.UtrLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.utrLength
 
 class UtrFormProviderSpec extends StringFieldBehaviours {
 
@@ -33,7 +33,7 @@ class UtrFormProviderSpec extends StringFieldBehaviours {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      numStringsWithConcreteLength(UtrLength)
+      numStringsWithConcreteLength(utrLength)
     )
 
     behave like mandatoryField(
@@ -45,7 +45,7 @@ class UtrFormProviderSpec extends StringFieldBehaviours {
     behave like removeAllWhitespace(
       form,
       fieldName,
-      numStringsWithConcreteLength(UtrLength)
+      numStringsWithConcreteLength(utrLength)
     )
   }
 }

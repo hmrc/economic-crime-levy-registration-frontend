@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.emailMaxLength
 
 import javax.inject.Inject
 
@@ -28,7 +28,7 @@ class SecondContactEmailFormProvider @Inject() extends Mappings {
     Form(
       "value" -> text("secondContactEmail.error.required")
         .transform[String](_.toLowerCase, identity)
-        .verifying(emailAddress(EmailMaxLength, "secondContactEmail.error.length", "secondContactEmail.error.invalid"))
+        .verifying(emailAddress(emailMaxLength, "secondContactEmail.error.length", "secondContactEmail.error.invalid"))
     )
 
 }

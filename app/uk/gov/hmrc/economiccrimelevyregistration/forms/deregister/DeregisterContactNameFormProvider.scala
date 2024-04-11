@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.deregister
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.NameMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.nameMaxLength
 
 import javax.inject.Inject
 
@@ -27,6 +27,6 @@ class DeregisterContactNameFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("deregisterContactName.error.required", removeAllWhitespace = false)
-        .verifying(maxLength(NameMaxLength, "deregisterContactName.error.length"))
+        .verifying(maxLength(nameMaxLength, "deregisterContactName.error.length"))
     )
 }

@@ -67,10 +67,10 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.onPageLoad()(
             fakeRequest.withSession(
-              SessionKeys.EclReference            -> testEclRegistrationReference,
-              SessionKeys.FirstContactEmail       -> email,
-              SessionKeys.LiabilityYear           -> liabilityYear.asString,
-              SessionKeys.RegisteringForCurrentFY -> registeringForCurrentFY.toString
+              SessionKeys.eclReference            -> testEclRegistrationReference,
+              SessionKeys.firstContactEmail       -> email,
+              SessionKeys.liabilityYear           -> liabilityYear.asString,
+              SessionKeys.registeringForCurrentFY -> registeringForCurrentFY.toString
             )
           )
 
@@ -100,9 +100,9 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.onPageLoad()(
             fakeRequest.withSession(
-              SessionKeys.EclReference            -> testEclRegistrationReference,
-              SessionKeys.LiabilityYear           -> liabilityYear.asString,
-              SessionKeys.RegisteringForCurrentFY -> registeringForCurrentFY.toString
+              SessionKeys.eclReference            -> testEclRegistrationReference,
+              SessionKeys.liabilityYear           -> liabilityYear.asString,
+              SessionKeys.registeringForCurrentFY -> registeringForCurrentFY.toString
             )
           )
 
@@ -132,9 +132,9 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.onPageLoad()(
             fakeRequest.withSession(
-              SessionKeys.EclReference            -> testEclRegistrationReference,
-              SessionKeys.FirstContactEmail       -> email,
-              SessionKeys.RegisteringForCurrentFY -> registeringForCurrentFY.toString
+              SessionKeys.eclReference            -> testEclRegistrationReference,
+              SessionKeys.firstContactEmail       -> email,
+              SessionKeys.registeringForCurrentFY -> registeringForCurrentFY.toString
             )
           )
 
@@ -165,9 +165,9 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.onPageLoad()(
             fakeRequest.withSession(
-              SessionKeys.FirstContactEmail       -> email,
-              SessionKeys.LiabilityYear           -> liabilityYear.asString,
-              SessionKeys.RegisteringForCurrentFY -> registeringForCurrentFY.toString
+              SessionKeys.firstContactEmail       -> email,
+              SessionKeys.liabilityYear           -> liabilityYear.asString,
+              SessionKeys.registeringForCurrentFY -> registeringForCurrentFY.toString
             )
           )
 
@@ -197,10 +197,10 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
 
           val result: Future[Result] = controller.onPageLoad()(
             fakeRequest.withSession(
-              SessionKeys.FirstContactEmail       -> email,
-              SessionKeys.EclReference            -> testEclRegistrationReference,
-              SessionKeys.LiabilityYear           -> liabilityYear.asString,
-              SessionKeys.RegisteringForCurrentFY -> registeringForCurrentFY.toString
+              SessionKeys.firstContactEmail       -> email,
+              SessionKeys.eclReference            -> testEclRegistrationReference,
+              SessionKeys.liabilityYear           -> liabilityYear.asString,
+              SessionKeys.registeringForCurrentFY -> registeringForCurrentFY.toString
             )
           )
 

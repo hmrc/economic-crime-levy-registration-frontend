@@ -24,7 +24,7 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.deregister.DeregisterContactRoleFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.RoleMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.roleMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.{arbDeregistration, arbMode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
@@ -108,7 +108,7 @@ class DeregisterContactRoleControllerSpec extends SpecBase {
   "onSubmit" should {
     "go to deregistration contact email view" in forAll(
       Arbitrary.arbitrary[Deregistration],
-      stringsWithMaxLength(RoleMaxLength)
+      stringsWithMaxLength(roleMaxLength)
     ) { (deregistration: Deregistration, role: String) =>
       new TestContext(deregistration) {
         when(mockDeregistrationService.getOrCreate(anyString())(any()))
@@ -134,7 +134,7 @@ class DeregisterContactRoleControllerSpec extends SpecBase {
 
     "return an error when the upsert fails" in forAll(
       Arbitrary.arbitrary[Deregistration],
-      stringsWithMaxLength(RoleMaxLength)
+      stringsWithMaxLength(roleMaxLength)
     ) { (deregistration: Deregistration, role: String) =>
       new TestContext(deregistration) {
         when(mockDeregistrationService.getOrCreate(anyString())(any()))

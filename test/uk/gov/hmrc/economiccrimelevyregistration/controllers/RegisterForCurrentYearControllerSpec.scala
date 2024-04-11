@@ -88,7 +88,7 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
     "return OK with correct view when no answers has been provided" in forAll {
       (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
         new TestContext(registration, additionalInfo.copy(registeringForCurrentYear = None)) {
-          when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
+          when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.urlToReturnTo))(any()))
             .thenReturn(EitherT.fromEither[Future](Right(None)))
 
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
@@ -108,7 +108,7 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
 
     "return OK with correct view when true as answer has been provided" in forAll {
       (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
-        when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
+        when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.urlToReturnTo))(any()))
           .thenReturn(EitherT.fromEither[Future](Right(None)))
 
         new TestContext(registration, additionalInfo.copy(registeringForCurrentYear = Some(true))) {
@@ -130,7 +130,7 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
     "return OK with correct view when false as answer has been provided" in forAll {
       (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
         new TestContext(registration, additionalInfo.copy(registeringForCurrentYear = Some(false))) {
-          when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
+          when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.urlToReturnTo))(any()))
             .thenReturn(EitherT.fromEither[Future](Right(None)))
 
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
@@ -151,7 +151,7 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
     "redirect to Saved Responses page if there is a return url" in forAll {
       (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
         new TestContext(registration, additionalInfo.copy(registeringForCurrentYear = Some(false))) {
-          when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.UrlToReturnTo))(any()))
+          when(mockSessionService.getOptional(any(), any(), ArgumentMatchers.eq(SessionKeys.urlToReturnTo))(any()))
             .thenReturn(EitherT.fromEither[Future](Right(Some(random[String]))))
 
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)

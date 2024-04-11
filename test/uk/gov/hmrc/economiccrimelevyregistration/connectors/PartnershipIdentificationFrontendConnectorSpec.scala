@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.PartnershipType
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
-import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Mode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
@@ -49,6 +49,7 @@ class PartnershipIdentificationFrontendConnectorSpec extends SpecBase {
           case LimitedPartnership          => url"$apiUrl/limited-partnership-journey"
           case ScottishLimitedPartnership  => url"$apiUrl/scottish-limited-partnership-journey"
           case LimitedLiabilityPartnership => url"$apiUrl/limited-liability-partnership-journey"
+          case entityType: EntityType      => fail(s"Invalid entityType $entityType")
         }
 
         val expectedPartnershipEntityCreateJourneyRequest: PartnershipEntityCreateJourneyRequest = {

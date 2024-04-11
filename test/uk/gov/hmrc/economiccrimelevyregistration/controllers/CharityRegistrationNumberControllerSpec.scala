@@ -27,7 +27,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CharityRegistrationNumberFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CharityRegistrationNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.charityRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
@@ -93,7 +93,7 @@ class CharityRegistrationNumberControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the charity registration number then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(CharityRegistrationNumberMaxLength),
+      stringsWithMaxLength(charityRegistrationNumberMaxLength),
       Arbitrary.arbitrary[Mode]
     ) { (registration: Registration, charityNumber: String, mode: Mode) =>
       new TestContext(registration) {

@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.companyRegistrationNumberMaxLength
 
 import javax.inject.Inject
 
@@ -27,7 +27,7 @@ class NonUkCrnFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("nonUkCrn.error.required")
-        .verifying(maxLength(CompanyRegistrationNumberMaxLength, "nonUkCrn.error.length"))
+        .verifying(maxLength(companyRegistrationNumberMaxLength, "nonUkCrn.error.length"))
     )
 
 }

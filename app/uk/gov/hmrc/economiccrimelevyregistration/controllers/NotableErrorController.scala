@@ -70,7 +70,7 @@ class NotableErrorController @Inject() (
 
   def groupAlreadyEnrolled: Action[AnyContent] = authoriseWithoutEnrolmentCheck { implicit request =>
     def taxAndSchemeManagementUrl(eclReference: String) =
-      s"${appConfig.taxAndSchemeManagementUrl}/services/${EclEnrolment.ServiceName}/${EclEnrolment.IdentifierKey}~$eclReference/users"
+      s"${appConfig.taxAndSchemeManagementUrl}/services/${EclEnrolment.serviceName}/${EclEnrolment.identifierKey}~$eclReference/users"
 
     (for {
       eclReference <- request.eclReferenceOrError

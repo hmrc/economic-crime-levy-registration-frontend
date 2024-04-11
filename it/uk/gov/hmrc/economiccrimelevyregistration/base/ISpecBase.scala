@@ -128,8 +128,8 @@ abstract class ISpecBase
 
   val apRevenueMin: Double          = 10_200_000
   val apRevenueMax: Double          = 999_999_999.99
-  val ApLengthMin                   = 0
-  val ApLengthMax                   = 364
+  val apLengthMin                   = 0
+  val apLengthMax                   = 364
   def randomApRevenue(): BigDecimal = bigDecimalInRange(apRevenueMin.doubleValue, apRevenueMax.doubleValue).sample.value
 
   def generateOtherEntityType: Gen[EntityType] =

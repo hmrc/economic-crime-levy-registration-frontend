@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.contacts
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.TelephoneNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.telephoneNumberMaxLength
 
 import javax.inject.Inject
 
@@ -29,7 +29,7 @@ class SecondContactNumberFormProvider @Inject() extends Mappings {
       "value" -> text("secondContactNumber.error.required")
         .verifying(
           telephoneNumber(
-            TelephoneNumberMaxLength,
+            telephoneNumberMaxLength,
             "secondContactNumber.error.length",
             "secondContactNumber.error.invalid"
           )

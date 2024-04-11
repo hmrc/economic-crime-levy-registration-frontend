@@ -76,7 +76,7 @@ class LiabilityDateController @Inject() (
               .convertToResult(
                 mode = mode,
                 pageNavigator = pageNavigator,
-                session = Map(SessionKeys.LiabilityYear -> liabilityDate.getYear.toString)
+                session = Map(SessionKeys.liabilityYear -> liabilityDate.getYear.toString)
               )
           }
         )

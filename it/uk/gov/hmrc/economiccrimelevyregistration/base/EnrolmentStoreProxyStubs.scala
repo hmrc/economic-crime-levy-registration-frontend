@@ -26,7 +26,7 @@ trait EnrolmentStoreProxyStubs { self: WireMockStubs =>
             |    "totalRecords": 1,
             |    "enrolments": [
             |        {
-            |           "service": "${EclEnrolment.ServiceName}",
+            |           "service": "${EclEnrolment.serviceName}",
             |           "state": "Activated",
             |           "friendlyName": "ECL Enrolment",
             |           "enrolmentDate": "2023-10-05T14:48:00.000Z",
@@ -34,7 +34,7 @@ trait EnrolmentStoreProxyStubs { self: WireMockStubs =>
             |           "activationDate": "2023-10-13T17:36:00.000Z",
             |           "identifiers": [
             |              {
-            |                 "key": "${EclEnrolment.IdentifierKey}",
+            |                 "key": "${EclEnrolment.identifierKey}",
             |                 "value": "$testEclRegistrationReference"
             |              }
             |           ]

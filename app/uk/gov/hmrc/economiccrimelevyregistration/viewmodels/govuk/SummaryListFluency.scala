@@ -31,9 +31,6 @@ trait SummaryListFluency {
 
   implicit class FluentSummaryList(list: SummaryList) {
 
-    def withoutBorders(): SummaryList =
-      list.copy(classes = s"${list.classes} govuk-summary-list--no-border")
-
     def withCssClass(className: String): SummaryList =
       list.copy(classes = s"${list.classes} $className")
 
@@ -92,12 +89,6 @@ trait SummaryListFluency {
 
     def withAttribute(attribute: (String, String)): ActionItem =
       actionItem.copy(attributes = actionItem.attributes + attribute)
-  }
-
-  object KeyViewModel {
-
-    def apply(content: Content): Key =
-      Key(content = content)
   }
 
   implicit class FluentKey(key: Key) {

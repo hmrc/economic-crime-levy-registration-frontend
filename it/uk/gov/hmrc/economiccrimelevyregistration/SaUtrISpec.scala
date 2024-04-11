@@ -5,7 +5,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.UtrLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.utrLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -50,7 +50,7 @@ class SaUtrISpec extends ISpecBase with AuthorisedBehaviour {
             relevantApRevenue = Some(randomApRevenue())
           )
 
-        val saUtr          = numStringsWithConcreteLength(UtrLength).sample.get
+        val saUtr          = numStringsWithConcreteLength(utrLength).sample.get
         val additionalInfo = random[RegistrationAdditionalInfo]
 
         stubGetRegistrationAdditionalInfo(additionalInfo)

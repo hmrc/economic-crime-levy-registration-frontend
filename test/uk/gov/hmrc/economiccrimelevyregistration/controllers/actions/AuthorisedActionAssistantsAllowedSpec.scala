@@ -55,7 +55,7 @@ class AuthorisedActionAssistantsAllowedSpec extends SpecBase {
     Future(Ok("Test"))
   }
 
-  val eclEnrolmentKey: String = EclEnrolment.ServiceName
+  val eclEnrolmentKey: String = EclEnrolment.serviceName
 
   val expectedRetrievals
     : Retrieval[Option[String] ~ Enrolments ~ Option[String] ~ Option[AffinityGroup] ~ Option[CredentialRole]] =

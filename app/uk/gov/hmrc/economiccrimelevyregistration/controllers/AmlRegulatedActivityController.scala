@@ -83,7 +83,7 @@ class AmlRegulatedActivityController @Inject() (
       )
   }
 
-  def clearValueIfChange[T](answerChanged: Boolean, existingValue: Option[T]) =
+  private def clearValueIfChange[T](answerChanged: Boolean, existingValue: Option[T]): Option[T] =
     answerChanged match {
       case true  => None
       case false => existingValue

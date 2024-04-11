@@ -46,7 +46,7 @@ final case class Registration(
   amendReason: Option[String]
 ) {
 
-  val isUnincorporatedAssociation = entityType.contains(UnincorporatedAssociation)
+  val isUnincorporatedAssociation: Boolean = entityType.contains(UnincorporatedAssociation)
 
   val grsAddressToEclAddress: Option[EclAddress] = {
     val incorporatedEntityAddress: Option[IncorporatedEntityAddress] =
@@ -104,7 +104,7 @@ final case class Registration(
   def otherEntityJourneyData: OtherEntityJourneyData =
     optOtherEntityJourneyData.getOrElse(OtherEntityJourneyData.empty())
 
-  def isVoid = Seq(
+  def isVoid: Boolean = Seq(
     carriedOutAmlRegulatedActivityInCurrentFy,
     revenueMeetsThreshold
   ).exists(_.contains(false))

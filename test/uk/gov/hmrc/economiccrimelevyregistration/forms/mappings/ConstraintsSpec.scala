@@ -21,7 +21,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.data.validation.{Invalid, Valid}
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{EmailMaxLength, TelephoneNumberMaxLength, UtrLength}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{emailMaxLength, telephoneNumberMaxLength, utrLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
 
 import java.time.LocalDate
@@ -182,31 +182,31 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
   }
 
   "telephoneNumber" should {
-    "return invalid when the telephone number is too long" in forAll(stringsLongerThan(TelephoneNumberMaxLength)) {
+    "return invalid when the telephone number is too long" in forAll(stringsLongerThan(telephoneNumberMaxLength)) {
       s: String =>
-        val result = telephoneNumber(TelephoneNumberMaxLength, "error.length", "error.invalid")(s)
-        result shouldEqual Invalid("error.length", TelephoneNumberMaxLength)
+        val result = telephoneNumber(telephoneNumberMaxLength, "error.length", "error.invalid")(s)
+        result shouldEqual Invalid("error.length", telephoneNumberMaxLength)
     }
 
     "return invalid when the telephone number is not valid" in forAll(
-      stringsWithMaxLength(TelephoneNumberMaxLength).retryUntil(s => !s.matches(Regex.TelephoneNumberRegex))
+      stringsWithMaxLength(telephoneNumberMaxLength).retryUntil(s => !s.matches(Regex.telephoneNumberRegex))
     ) { s: String =>
-      val result = telephoneNumber(TelephoneNumberMaxLength, "error.length", "error.invalid")(s)
-      result shouldEqual Invalid("error.invalid", Regex.TelephoneNumberRegex)
+      val result = telephoneNumber(telephoneNumberMaxLength, "error.length", "error.invalid")(s)
+      result shouldEqual Invalid("error.invalid", Regex.telephoneNumberRegex)
     }
   }
 
   "emailAddress" should {
-    "return invalid when the email address is too long" in forAll(stringsLongerThan(EmailMaxLength)) { s: String =>
-      val result = emailAddress(EmailMaxLength, "error.length", "error.invalid")(s)
-      result shouldEqual Invalid("error.length", EmailMaxLength)
+    "return invalid when the email address is too long" in forAll(stringsLongerThan(emailMaxLength)) { s: String =>
+      val result = emailAddress(emailMaxLength, "error.length", "error.invalid")(s)
+      result shouldEqual Invalid("error.length", emailMaxLength)
     }
 
     "return invalid when the email address is not valid" in forAll(
-      stringsWithMaxLength(EmailMaxLength).retryUntil(s => !s.matches(Regex.EmailRegex))
+      stringsWithMaxLength(emailMaxLength).retryUntil(s => !s.matches(Regex.emailRegex))
     ) { s: String =>
-      val result = emailAddress(EmailMaxLength, "error.length", "error.invalid")(s)
-      result shouldEqual Invalid("error.invalid", Regex.EmailRegex)
+      val result = emailAddress(emailMaxLength, "error.length", "error.invalid")(s)
+      result shouldEqual Invalid("error.invalid", Regex.emailRegex)
     }
   }
 
@@ -229,14 +229,14 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
   "areAllElementsNumbers" should {
     "return Valid for a string of numbers" in {
       val result =
-        areAllElementsNumbersOfExactLength(UtrLength, "otherEntityType.addCtutr.error.length").apply("0123456789")
+        areAllElementsNumbersOfExactLength(utrLength, "otherEntityType.addCtutr.error.length").apply("0123456789")
       result shouldEqual Valid
     }
 
     "return Invalid for a string that contains alphanumerical values" in {
       val result =
-        areAllElementsNumbersOfExactLength(UtrLength, "otherEntityType.addCtutr.error.length").apply("10234567UK")
-      result shouldEqual Invalid("otherEntityType.addCtutr.error.length", UtrLength)
+        areAllElementsNumbersOfExactLength(utrLength, "otherEntityType.addCtutr.error.length").apply("10234567UK")
+      result shouldEqual Invalid("otherEntityType.addCtutr.error.length", utrLength)
     }
   }
 }

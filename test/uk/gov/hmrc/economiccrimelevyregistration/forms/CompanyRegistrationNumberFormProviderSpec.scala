@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.StringFieldBehaviours
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CompanyRegistrationNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.companyRegistrationNumberMaxLength
 
 class CompanyRegistrationNumberFormProviderSpec extends StringFieldBehaviours {
 
@@ -34,14 +34,14 @@ class CompanyRegistrationNumberFormProviderSpec extends StringFieldBehaviours {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(CompanyRegistrationNumberMaxLength)
+      stringsWithMaxLength(companyRegistrationNumberMaxLength)
     )
 
     behave like fieldWithMaxLength(
       form,
       fieldName,
-      maxLength = CompanyRegistrationNumberMaxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(CompanyRegistrationNumberMaxLength))
+      maxLength = companyRegistrationNumberMaxLength,
+      lengthError = FormError(fieldName, lengthKey, Seq(companyRegistrationNumberMaxLength))
     )
 
     behave like mandatoryField(
@@ -53,7 +53,7 @@ class CompanyRegistrationNumberFormProviderSpec extends StringFieldBehaviours {
     behave like removeAllWhitespace(
       form,
       fieldName,
-      stringsWithMaxLength(CompanyRegistrationNumberMaxLength)
+      stringsWithMaxLength(companyRegistrationNumberMaxLength)
     )
   }
 }

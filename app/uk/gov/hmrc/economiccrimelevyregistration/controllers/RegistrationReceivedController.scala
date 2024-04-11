@@ -45,11 +45,11 @@ class RegistrationReceivedController @Inject() (
       _                         <- registrationAdditionalInfoService.delete(request.internalId).asResponseError
       _                         <- registrationService.deleteRegistration(request.internalId).asResponseError
       firstContactEmailAddress  <-
-        valueOrError(request.session.get(SessionKeys.FirstContactEmail), "First contact email address")
-      secondContactEmailAddress  = request.session.get(SessionKeys.SecondContactEmail)
+        valueOrError(request.session.get(SessionKeys.firstContactEmail), "First contact email address")
+      secondContactEmailAddress  = request.session.get(SessionKeys.secondContactEmail)
       registeringForCurrentYear <-
-        valueOrError(request.session.get(SessionKeys.RegisteringForCurrentFY), "Registering for current FY")
-      liabilityYear             <- valueOrError(request.session.get(SessionKeys.LiabilityYear), "Liability Year")
+        valueOrError(request.session.get(SessionKeys.registeringForCurrentFY), "Registering for current FY")
+      liabilityYear             <- valueOrError(request.session.get(SessionKeys.liabilityYear), "Liability Year")
       registrationReceivedView   = view(
                                      firstContactEmailAddress,
                                      secondContactEmailAddress,

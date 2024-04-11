@@ -26,7 +26,7 @@ import play.api.mvc.{Call, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.contacts.SecondContactEmailFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.emailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
@@ -135,7 +135,7 @@ class SecondContactEmailControllerSpec extends SpecBase {
   "onSubmit" should {
     "save the provided contact email then redirect to the next page" in forAll(
       Arbitrary.arbitrary[Registration],
-      emailAddress(EmailMaxLength)
+      emailAddress(emailMaxLength)
     ) { (registration: Registration, email: String) =>
       new TestContext(registration) {
         val updatedRegistration: Registration =

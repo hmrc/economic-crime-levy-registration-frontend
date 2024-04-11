@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.deregister
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.EmailMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.emailMaxLength
 
 import javax.inject.Inject
 
@@ -29,7 +29,7 @@ class DeregisterContactEmailFormProvider @Inject() extends Mappings {
       "value" -> text("deregisterContactEmail.error.required")
         .transform[String](_.toLowerCase, identity)
         .verifying(
-          emailAddress(EmailMaxLength, "deregisterContactEmail.error.length", "deregisterContactEmail.error.invalid")
+          emailAddress(emailMaxLength, "deregisterContactEmail.error.length", "deregisterContactEmail.error.invalid")
         )
     )
 

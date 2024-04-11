@@ -20,7 +20,7 @@ import org.scalacheck.{Arbitrary, Gen}
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{CharityRegistrationNumberMaxLength, OrganisationNameMaxLength}
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{charityRegistrationNumberMaxLength, organisationNameMaxLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
@@ -40,7 +40,7 @@ class BusinessNamePageDeregisterNavigatorSpec extends SpecBase {
   "nextPage" should {
     "(Normal Mode) return a call to the charity page if charity selected" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength),
+      stringsWithMaxLength(organisationNameMaxLength),
       Gen.oneOf[EntityType](Charity, Trust, NonUKEstablishment, UnincorporatedAssociation)
     ) { (registration: Registration, businessName: String, entityType: EntityType) =>
       val otherEntityJourneyData = OtherEntityJourneyData
@@ -61,8 +61,8 @@ class BusinessNamePageDeregisterNavigatorSpec extends SpecBase {
 
     "(Check Mode) return a call to the check your answers page if charity selected" in forAll(
       Arbitrary.arbitrary[Registration],
-      stringsWithMaxLength(OrganisationNameMaxLength),
-      stringsWithMaxLength(CharityRegistrationNumberMaxLength)
+      stringsWithMaxLength(organisationNameMaxLength),
+      stringsWithMaxLength(charityRegistrationNumberMaxLength)
     ) { (registration: Registration, businessName: String, number: String) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()

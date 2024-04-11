@@ -34,8 +34,8 @@ class StubEnrolmentStoreProxyConnector @Inject() (appConfig: AppConfig) extends 
       val groupEnrolmentsWithEcl = GroupEnrolmentsResponse(
         Seq(
           Enrolment(
-            service = EclEnrolment.ServiceName,
-            identifiers = Seq(KeyValue(key = EclEnrolment.IdentifierKey, value = "XMECL0000000001"))
+            service = EclEnrolment.serviceName,
+            identifiers = Seq(KeyValue(key = EclEnrolment.identifierKey, value = "XMECL0000000001"))
           )
         )
       )

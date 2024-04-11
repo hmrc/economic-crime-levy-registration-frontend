@@ -22,8 +22,8 @@ sealed trait Band
 
 object Band {
   case object Small extends Band
-  case object Medium extends Band
   case object Large extends Band
+  case object Medium extends Band
   case object VeryLarge extends Band
 
   implicit val format: Format[Band] = new Format[Band] {

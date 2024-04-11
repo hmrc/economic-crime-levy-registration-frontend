@@ -131,9 +131,9 @@ abstract class BaseAuthorisedAction @Inject() (
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
     authorised().retrieve(internalId and allEnrolments and groupIdentifier and affinityGroup and credentialRole) {
       case Some(internalId) ~ enrolments ~ Some(groupId) ~ Some(affinityGroup) ~ Some(credentialRole) =>
-        val eclEnrolment: Option[Enrolment]          = enrolments.enrolments.find(_.key == EclEnrolment.ServiceName)
+        val eclEnrolment: Option[Enrolment]          = enrolments.enrolments.find(_.key == EclEnrolment.serviceName)
         val eclRegistrationReference: Option[String] =
-          eclEnrolment.flatMap(_.getIdentifier(EclEnrolment.IdentifierKey).map(_.value))
+          eclEnrolment.flatMap(_.getIdentifier(EclEnrolment.identifierKey).map(_.value))
 
         affinityGroup match {
           case Agent =>

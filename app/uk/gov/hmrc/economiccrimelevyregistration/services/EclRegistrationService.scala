@@ -200,6 +200,9 @@ class EclRegistrationService @Inject() (
               case NonFatal(thr) => Left(DataRetrievalError.InternalUnexpectedError(thr.getMessage, Some(thr)))
             }
         }
+
+      case entityType: EntityType =>
+        EitherT.leftT(DataRetrievalError.InternalUnexpectedError(s"Invalid entityType: $entityType", None))
     }
 
   def getSubscriptionStatus(

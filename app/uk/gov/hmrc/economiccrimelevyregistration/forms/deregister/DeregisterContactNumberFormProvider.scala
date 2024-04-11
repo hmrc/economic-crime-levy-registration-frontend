@@ -18,7 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms.deregister
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.TelephoneNumberMaxLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.telephoneNumberMaxLength
 
 import javax.inject.Inject
 
@@ -29,7 +29,7 @@ class DeregisterContactNumberFormProvider @Inject() extends Mappings {
       "value" -> text("deregisterContactNumber.error.required")
         .verifying(
           telephoneNumber(
-            TelephoneNumberMaxLength,
+            telephoneNumberMaxLength,
             "deregisterContactNumber.error.length",
             "deregisterContactNumber.error.invalid"
           )

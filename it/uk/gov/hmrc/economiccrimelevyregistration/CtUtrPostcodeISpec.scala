@@ -5,7 +5,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.CtUtrPostcodeLength
+import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.ctUtrPostcodeLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
@@ -22,7 +22,7 @@ class CtUtrPostcodeISpec extends ISpecBase with AuthorisedBehaviour {
       "respond with 200 status and the CtUtrPostcode HTML view" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val postcode: String = stringsWithMaxLength(CtUtrPostcodeLength).sample.get
+        val postcode: String = stringsWithMaxLength(ctUtrPostcodeLength).sample.get
 
         val otherEntityJourneyData: OtherEntityJourneyData = OtherEntityJourneyData
           .empty()
@@ -63,7 +63,7 @@ class CtUtrPostcodeISpec extends ISpecBase with AuthorisedBehaviour {
           )
         val additionalInfo = random[RegistrationAdditionalInfo]
 
-        val postcode = stringsWithMaxLength(CtUtrPostcodeLength).sample.get
+        val postcode = stringsWithMaxLength(ctUtrPostcodeLength).sample.get
 
         val otherEntityJourneyData = OtherEntityJourneyData.empty().copy(companyRegistrationNumber = Some(postcode))
         val updatedRegistration    = registration.copy(

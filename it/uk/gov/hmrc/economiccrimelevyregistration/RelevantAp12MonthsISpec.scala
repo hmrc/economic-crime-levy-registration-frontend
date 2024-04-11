@@ -132,7 +132,7 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
     "save the selected option then redirect to the Uk Revenue page when the Yes option is selected and the answer has changed" in {
       stubAuthorisedWithNoGroupEnrolment()
-      val validLength = Gen.chooseNum(ApLengthMin, ApLengthMax).sample.get
+      val validLength = Gen.chooseNum(apLengthMin, apLengthMax).sample.get
 
       val registration   = random[Registration]
         .copy(

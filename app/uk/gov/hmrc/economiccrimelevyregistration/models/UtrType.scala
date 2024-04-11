@@ -18,22 +18,21 @@ package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.i18n.Messages
 import play.api.libs.json._
-import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 sealed trait UtrType
 
 object UtrType {
-  case object SaUtr extends UtrType
   case object CtUtr extends UtrType
+  case object SaUtr extends UtrType
 
   val values: Seq[UtrType] = Seq(
     CtUtr,
     SaUtr
   )
 
-  def options(appConfig: AppConfig)(implicit messages: Messages): Seq[RadioItem] = {
+  def options()(implicit messages: Messages): Seq[RadioItem] = {
     val radioItems = values.zipWithIndex.map { case (value, index) =>
       RadioItem(
         content = Text(messages(s"utrType.${value.toString}")),
