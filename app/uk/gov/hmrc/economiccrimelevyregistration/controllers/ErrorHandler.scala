@@ -44,10 +44,13 @@ trait ErrorHandler extends Logging {
       ResponseError.badGateway(cause, statusCode)
     case AddressLookupContinueError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
+    case _                                                                  => ResponseError.internalServiceError("Invalid AddressLookupContinueError")
   }
 
-  implicit val auditErrorConverter: Converter[AuditError] = { case AuditError.InternalUnexpectedError(message, cause) =>
-    ResponseError.internalServiceError(message = message, cause = cause)
+  implicit val auditErrorConverter: Converter[AuditError] = {
+    case AuditError.InternalUnexpectedError(message, cause) =>
+      ResponseError.internalServiceError(message = message, cause = cause)
+    case _                                                  => ResponseError.internalServiceError("Invalid AuditError")
   }
 
   implicit val dataRetrievalErrorConverter: Converter[DataRetrievalError] = {
@@ -55,6 +58,7 @@ trait ErrorHandler extends Logging {
       ResponseError.badGateway(cause, statusCode)
     case DataRetrievalError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
+    case _                                                          => ResponseError.internalServiceError("Invalid DataRetrievalError")
   }
 
   implicit val sessionErrorConverter: Converter[SessionError] = {
@@ -62,6 +66,7 @@ trait ErrorHandler extends Logging {
       ResponseError.badGateway(cause, statusCode)
     case SessionError.InternalUnexpectedError(message, cause) =>
       ResponseError.internalServiceError(message = message, cause = cause)
+    case _                                                    => ResponseError.internalServiceError("Invalid SessionError")
   }
 
 }

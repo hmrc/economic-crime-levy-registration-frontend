@@ -294,7 +294,11 @@ class CheckYourAnswersController @Inject() (
       case Some(Amendment)                                     => emailService.sendAmendRegistrationSubmitted(registration.contacts, None)(hc, messages)
       case None                                                =>
         EitherT[Future, DataRetrievalError, Unit](
-          Future.successful(Left(DataRetrievalError.InternalUnexpectedError("Registration type is null.", None)))
+          Future.successful(Left(DataRetrievalError.InternalUnexpectedError("Registration type is None.", None)))
+        )
+      case _                                                   =>
+        EitherT[Future, DataRetrievalError, Unit](
+          Future.successful(Left(DataRetrievalError.InternalUnexpectedError("Invalid registrationType", None)))
         )
     }
 

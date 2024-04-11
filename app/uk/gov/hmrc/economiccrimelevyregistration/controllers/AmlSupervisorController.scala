@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Finan
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AuditError, ResponseError}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlSupervisorView, ErrorTemplate}
@@ -87,6 +87,7 @@ class AmlSupervisorController @Inject() (
               request.eclRegistrationReference
             )
           )
+        case _         => routeError(error = ResponseError.badRequestError("Invalid registrationType"))
       }
     }
 
