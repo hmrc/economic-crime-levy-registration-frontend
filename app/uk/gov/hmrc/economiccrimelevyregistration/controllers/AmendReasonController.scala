@@ -18,11 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.data.Form
 import play.api.i18n.I18nSupport
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.AmendReasonFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
-import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmendReasonPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmendReasonView, ErrorTemplate}
@@ -53,6 +54,10 @@ class AmendReasonController @Inject() (
         mode,
         request.registration.registrationType,
         request.eclRegistrationReference
+      )
+    ).withSession(
+      request.session ++ Seq(
+        SessionKeys.registrationType -> Json.stringify(Json.toJson(request.registration.registrationType))
       )
     )
   }

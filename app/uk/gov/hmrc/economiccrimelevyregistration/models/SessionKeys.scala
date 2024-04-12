@@ -22,6 +22,7 @@ object SessionKeys {
   val firstContactEmail       = "firstContactEmail"
   val liabilityYear           = "liabilityYear"
   val registeringForCurrentFY = "amlRegulatedActivity"
+  val registrationType        = "registrationType"
   val secondContactEmail      = "secondContactEmail"
   val urlToReturnTo           = "UrlToReturnTo"
 }

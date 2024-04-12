@@ -86,7 +86,7 @@ class CheckYourAnswersController @Inject() (
     pdfViewModel: PdfViewModel
   )(implicit
     request: RegistrationDataRequest[_]
-  ) = {
+  ): String = {
     val registrationType = checkYourAnswersViewModel.registrationType
     (checkYourAnswersViewModel.registration.entityType, registrationType) match {
       case (_, Some(Amendment))                          =>
@@ -116,7 +116,12 @@ class CheckYourAnswersController @Inject() (
       .asResponseError
       .fold(
         error => routeError(error),
-        success => success
+        success =>
+          success.withSession(
+            request.session ++ Seq(
+              SessionKeys.registrationType -> Json.stringify(Json.toJson(request.registration.registrationType))
+            )
+          )
       )
 
   private def routeWithoutSubscription(implicit request: RegistrationDataRequest[_]): Future[Result] =
@@ -129,6 +134,10 @@ class CheckYourAnswersController @Inject() (
             request.eclRegistrationReference,
             request.additionalInfo
           )
+        )
+      ).withSession(
+        request.session ++ Seq(
+          SessionKeys.registrationType -> Json.stringify(Json.toJson(request.registration.registrationType))
         )
       )
     )

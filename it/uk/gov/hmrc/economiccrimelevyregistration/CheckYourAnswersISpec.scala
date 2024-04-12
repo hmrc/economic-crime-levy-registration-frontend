@@ -20,8 +20,8 @@ import java.time.{LocalDate, ZoneOffset}
 
 class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
 
-  s"GET ${routes.CheckYourAnswersController.onPageLoad(Initial).url}" should {
-    behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onPageLoad(Initial))
+  s"GET ${routes.CheckYourAnswersController.onPageLoad().url}" should {
+    behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onPageLoad())
 
     "respond with 200 status and the Check your answers HTML view when the registration data is valid" in {
       stubAuthorisedWithNoGroupEnrolment()
@@ -41,7 +41,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       stubSessionForStoreUrl()
 
       val result = callRoute(
-        FakeRequest(routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)))
+        FakeRequest(routes.CheckYourAnswersController.onPageLoad())
       )
 
       status(result) shouldBe OK
@@ -66,7 +66,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       stubSessionForStoreUrl()
 
       val result = callRoute(
-        FakeRequest(routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)))
+        FakeRequest(routes.CheckYourAnswersController.onPageLoad())
       )
 
       status(result) shouldBe SEE_OTHER
@@ -75,7 +75,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     }
   }
 
-  s"POST ${routes.CheckYourAnswersController.onSubmit().url}"         should {
+  s"POST ${routes.CheckYourAnswersController.onSubmit().url}"  should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.CheckYourAnswersController.onSubmit())
 
     "redirect to the registration submitted page after submitting the registration successfully" in {

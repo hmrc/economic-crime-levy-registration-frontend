@@ -8,7 +8,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.utrLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{NonUKEstablishment, Trust, UnincorporatedAssociation}
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CtUtrISpec extends ISpecBase with AuthorisedBehaviour {
@@ -85,11 +84,11 @@ class CtUtrISpec extends ISpecBase with AuthorisedBehaviour {
               case None                     => redirectLocation(result) shouldBe Some(routes.NotableErrorController.answersAreInvalid().url)
               case Some(Trust)              =>
                 redirectLocation(result) shouldBe Some(
-                  routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+                  routes.CheckYourAnswersController.onPageLoad().url
                 )
               case Some(NonUKEstablishment) =>
                 redirectLocation(result) shouldBe Some(
-                  routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+                  routes.CheckYourAnswersController.onPageLoad().url
                 )
               case Some(_)                  =>
                 updatedRegistration.otherEntityJourneyData.postcode match {
@@ -97,7 +96,7 @@ class CtUtrISpec extends ISpecBase with AuthorisedBehaviour {
                     redirectLocation(result) shouldBe Some(routes.CtUtrPostcodeController.onPageLoad(CheckMode).url)
                   case Some(_) =>
                     redirectLocation(result) shouldBe Some(
-                      routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+                      routes.CheckYourAnswersController.onPageLoad().url
                     )
                 }
             }

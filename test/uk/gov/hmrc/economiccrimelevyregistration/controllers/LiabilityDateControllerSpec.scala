@@ -144,7 +144,7 @@ class LiabilityDateControllerSpec extends SpecBase {
 
           status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) shouldBe Some()
+          redirectLocation(result) shouldBe Some(routes.CheckYourAnswersController.onPageLoad().url)
         }
     }
   }

@@ -18,10 +18,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
 import cats.data.EitherT
 import com.google.inject.ImplementedBy
+import play.api.libs.json.Json
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{ErrorHandler, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationType, SessionKeys}
+import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, DeRegistration, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{ErrorCode, ResponseError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
@@ -74,10 +76,18 @@ class RegistrationDataOrErrorActionImpl @Inject() (
   }
 
   private def getRedirectUrl(request: AuthorisedRequest[_]) =
-    request.uri match {
-      case amendUrl if amendUrl == routes.CheckYourAnswersController.onPageLoad().url =>
-        routes.NotableErrorController.youAlreadyRequestedToAmend()
-      case _                                                                          => routes.NotableErrorController.youHaveAlreadyRegistered()
+    request.session.get(SessionKeys.registrationType) match {
+      case Some(registrationTypeString: String) =>
+        Json.fromJson[RegistrationType](Json.parse(registrationTypeString)).asOpt match {
+          case Some(registrationType: RegistrationType) =>
+            registrationType match {
+              case Initial        => routes.NotableErrorController.youHaveAlreadyRegistered()
+              case Amendment      => routes.NotableErrorController.youAlreadyRequestedToAmend()
+              case DeRegistration => routes.NotableErrorController.answersAreInvalid()
+            }
+          case None                                     => routes.NotableErrorController.answersAreInvalid()
+        }
+      case None                                 => routes.NotableErrorController.answersAreInvalid()
     }
 
   private def extractRegistration(registrationOption: Option[Registration]) =

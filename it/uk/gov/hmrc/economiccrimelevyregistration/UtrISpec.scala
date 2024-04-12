@@ -7,7 +7,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.utrLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class UtrISpec extends ISpecBase with AuthorisedBehaviour {
@@ -88,7 +87,7 @@ class UtrISpec extends ISpecBase with AuthorisedBehaviour {
               )
             } else {
               redirectLocation(result) shouldBe Some(
-                routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+                routes.CheckYourAnswersController.onPageLoad().url
               )
             }
 
