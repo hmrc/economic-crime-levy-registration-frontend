@@ -19,7 +19,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 
 class PartnershipNamePageNavigatorSpec extends SpecBase {
@@ -42,12 +41,12 @@ class PartnershipNamePageNavigatorSpec extends SpecBase {
           registration.copy(partnershipName = Some(partnershipName))
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial))
+          routes.CheckYourAnswersController.onPageLoad()
     }
 
     Seq(NormalMode, CheckMode).foreach { mode =>
       s"return a call to the answers are invalid page when there is no partnership name present in $mode " in forAll {
-        (registration: Registration, partnershipName: String) =>
+        (registration: Registration) =>
           val updatedRegistration: Registration =
             registration.copy(partnershipName = None)
 

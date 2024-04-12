@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode}
 
 class UtrPageNavigator extends PageNavigator {
@@ -35,9 +34,7 @@ class UtrPageNavigator extends PageNavigator {
         if (eclRegistrationModel.registration.otherEntityJourneyData.companyRegistrationNumber.isEmpty) {
           routes.CompanyRegistrationNumberController.onPageLoad(CheckMode)
         } else {
-          routes.CheckYourAnswersController.onPageLoad(
-            eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-          )
+          routes.CheckYourAnswersController.onPageLoad()
         }
     }
 

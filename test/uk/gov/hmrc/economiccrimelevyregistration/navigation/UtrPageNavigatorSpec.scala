@@ -21,7 +21,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Charity
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class UtrPageNavigatorSpec extends SpecBase {
@@ -86,14 +85,13 @@ class UtrPageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+          routes.CheckYourAnswersController.onPageLoad()
     }
 
     Seq(NormalMode, CheckMode).foreach { mode =>
       s"return a call to the answersAreInvalid page when there is no ctUtr present in $mode" in forAll(
-        Arbitrary.arbitrary[Registration],
-        stringsLongerThan(1)
-      ) { (registration: Registration, utr: String) =>
+        Arbitrary.arbitrary[Registration]
+      ) { (registration: Registration) =>
         val otherEntityJourneyData = OtherEntityJourneyData
           .empty()
           .copy(

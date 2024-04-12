@@ -114,7 +114,7 @@ GET         /grs-continue/checkmode                                             
 GET         /address-lookup-continue/normalmode                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.AddressLookupContinueController.continue(mode: Mode = NormalMode, id)
 GET         /address-lookup-continue/checkmode                                  uk.gov.hmrc.economiccrimelevyregistration.controllers.AddressLookupContinueController.continue(mode: Mode = CheckMode, id)
 
-GET         /check-your-answers                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad(registrationType: RegistrationType)
+GET         /check-your-answers                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onPageLoad()
 POST        /check-your-answers                                                 uk.gov.hmrc.economiccrimelevyregistration.controllers.CheckYourAnswersController.onSubmit()
 
 GET         /registration-submitted                                             uk.gov.hmrc.economiccrimelevyregistration.controllers.RegistrationSubmittedController.onPageLoad()

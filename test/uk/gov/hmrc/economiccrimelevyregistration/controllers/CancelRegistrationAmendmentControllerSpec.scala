@@ -42,7 +42,7 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
     if (cancelRegistrationAmendment) {
       (appConfig.yourEclAccountUrl, 1)
     } else {
-      (routes.CheckYourAnswersController.onPageLoad(Amendment).url, 0)
+      (routes.CheckYourAnswersController.onPageLoad().url, 0)
     }
 
   val mockEclRegistrationConnector: EclRegistrationConnector = mock[EclRegistrationConnector]

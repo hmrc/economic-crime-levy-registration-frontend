@@ -23,7 +23,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{charityRegistrationNumberMaxLength, companyRegistrationNumberMaxLength, organisationNameMaxLength, utrLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class BusinessNamePageNavigatorSpec extends SpecBase {
@@ -154,7 +153,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial))
+          routes.CheckYourAnswersController.onPageLoad()
     }
 
     "(Check Mode) return a call to the charity registration number page if entity type is Charity and charity registration number is not present" in forAll(
@@ -206,7 +205,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial))
+          routes.CheckYourAnswersController.onPageLoad()
     }
 
     "(Check mode)return a call to the do you have crn page if entity type is UnincorporatedAssociation and company registration number is not present" in forAll(
@@ -258,7 +257,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial))
+          routes.CheckYourAnswersController.onPageLoad()
     }
 
     "(Check mode) return a call to the do you have crn page if entity type is NonUkEstablishment and company registration number is not present" in forAll(
@@ -310,7 +309,7 @@ class BusinessNamePageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial))
+          routes.CheckYourAnswersController.onPageLoad()
     }
 
     "(Check mode) return a call to the charity registration number page if entity type is Trust and company registration number is not present" in forAll(

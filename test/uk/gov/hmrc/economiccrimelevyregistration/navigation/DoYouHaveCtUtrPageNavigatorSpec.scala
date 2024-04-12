@@ -19,7 +19,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class DoYouHaveCtUtrPageNavigatorSpec extends SpecBase {
@@ -97,7 +96,7 @@ class DoYouHaveCtUtrPageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+          routes.CheckYourAnswersController.onPageLoad()
 
     }
 
@@ -133,7 +132,7 @@ class DoYouHaveCtUtrPageNavigatorSpec extends SpecBase {
         )
 
       pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-        routes.CheckYourAnswersController.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial))
+        routes.CheckYourAnswersController.onPageLoad()
 
     }
 

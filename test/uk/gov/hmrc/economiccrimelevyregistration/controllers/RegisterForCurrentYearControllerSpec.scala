@@ -28,7 +28,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.{LiabilityDateAdditionalInfoCleanup, LiabilityDateRegistrationCleanup}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
@@ -55,9 +54,7 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
 
     override protected def navigateInCheckMode(
       eclRegistrationModel: EclRegistrationModel
-    ): Call = routes.CheckYourAnswersController.onPageLoad(
-      eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-    )
+    ): Call = routes.CheckYourAnswersController.onPageLoad()
   }
 
   val registrationDataCleanup: LiabilityDateRegistrationCleanup = new LiabilityDateRegistrationCleanup() {
@@ -271,7 +268,7 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
             status(result) shouldBe SEE_OTHER
 
             redirectLocation(result) shouldBe Some(
-              routes.CheckYourAnswersController.onPageLoad(Initial).url
+              routes.CheckYourAnswersController.onPageLoad().url
             )
           }
       }

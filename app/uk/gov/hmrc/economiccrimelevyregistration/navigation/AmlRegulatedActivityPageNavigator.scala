@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration}
 
 import javax.inject.Inject
@@ -33,7 +32,7 @@ class AmlRegulatedActivityPageNavigator @Inject() extends PageNavigator {
   ): Call = if (eclRegistrationModel.hasRegistrationChanged) {
     navigateInBothModes(eclRegistrationModel.registration, CheckMode)
   } else {
-    routes.CheckYourAnswersController.onPageLoad(eclRegistrationModel.registration.registrationType.getOrElse(Initial))
+    routes.CheckYourAnswersController.onPageLoad()
   }
 
   private def navigateInBothModes(registration: Registration, mode: Mode): Call =

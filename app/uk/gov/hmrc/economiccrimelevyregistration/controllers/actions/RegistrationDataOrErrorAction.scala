@@ -22,7 +22,6 @@ import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{ErrorHandler, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{ErrorCode, ResponseError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
@@ -76,9 +75,9 @@ class RegistrationDataOrErrorActionImpl @Inject() (
 
   private def getRedirectUrl(request: AuthorisedRequest[_]) =
     request.uri match {
-      case amendUrl if amendUrl == routes.CheckYourAnswersController.onPageLoad(Amendment).url =>
+      case amendUrl if amendUrl == routes.CheckYourAnswersController.onPageLoad().url =>
         routes.NotableErrorController.youAlreadyRequestedToAmend()
-      case _                                                                                   => routes.NotableErrorController.youHaveAlreadyRegistered()
+      case _                                                                          => routes.NotableErrorController.youHaveAlreadyRegistered()
     }
 
   private def extractRegistration(registrationOption: Option[Registration]) =

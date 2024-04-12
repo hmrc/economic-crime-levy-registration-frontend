@@ -234,8 +234,11 @@ abstract class BaseAuthorisedAction @Inject() (
           Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
       }
 
-    val initialUrl = routes.CheckYourAnswersController.onPageLoad(Initial).url
-    val amendUrl   = routes.CheckYourAnswersController.onPageLoad(Amendment).url
+    /**
+      * TODO: Query session for registrationType here
+      */
+    val initialUrl = routes.CheckYourAnswersController.onPageLoad().url
+    val amendUrl   = routes.CheckYourAnswersController.onPageLoad().url
     request.uri match {
       case uri if uri == initialUrl || uri == amendUrl =>
         (for {

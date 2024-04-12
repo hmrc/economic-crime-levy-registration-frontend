@@ -18,8 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 import javax.inject.Inject
 
@@ -53,14 +52,14 @@ class DoYouHaveCtUtrPageNavigator @Inject() extends PageNavigator {
     if (isCtUtrPresent) {
       (mode, postcode) match {
         case (CheckMode, Some(_)) =>
-          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+          routes.CheckYourAnswersController.onPageLoad()
         case (CheckMode, None)    => routes.CtUtrController.onPageLoad(mode)
         case (NormalMode, _)      => routes.CtUtrController.onPageLoad(mode)
       }
     } else {
       mode match {
         case NormalMode => routes.BusinessSectorController.onPageLoad(NormalMode)
-        case CheckMode  => routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+        case CheckMode  => routes.CheckYourAnswersController.onPageLoad()
       }
     }
 }

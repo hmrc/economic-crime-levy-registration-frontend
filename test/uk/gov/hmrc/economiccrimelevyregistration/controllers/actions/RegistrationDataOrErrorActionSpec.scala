@@ -24,7 +24,6 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo}
@@ -113,7 +112,7 @@ class RegistrationDataOrErrorActionSpec extends SpecBase {
         when(mockEclRegistrationService.get(any())(any(), any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Option[Registration]](Future.successful(Right(None))))
 
-        val request                                                                         = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(Initial).url)
+        val request                                                                         = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
         val authorisedRequest                                                               = AuthorisedRequest(request, internalId, groupId, Some("ECLRefNumber12345"))
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           RegistrationDataAction.refine(authorisedRequest)
@@ -126,7 +125,7 @@ class RegistrationDataOrErrorActionSpec extends SpecBase {
         when(mockEclRegistrationService.get(any())(any(), any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Option[Registration]](Future.successful(Right(None))))
 
-        val request                                                                         = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(Amendment).url)
+        val request                                                                         = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
         val authorisedRequest                                                               = AuthorisedRequest(request, internalId, groupId, Some("ECLRefNumber12345"))
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           RegistrationDataAction.refine(authorisedRequest)

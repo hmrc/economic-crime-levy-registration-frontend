@@ -50,7 +50,7 @@ class AmendReasonPageDeregisterNavigatorSpec extends SpecBase {
       pageNavigator.nextPage(
         CheckMode,
         EclRegistrationModel(updatedRegistration)
-      ) shouldBe routes.CheckYourAnswersController.onPageLoad(Amendment)
+      ) shouldBe routes.CheckYourAnswersController.onPageLoad()
     }
   }
 }

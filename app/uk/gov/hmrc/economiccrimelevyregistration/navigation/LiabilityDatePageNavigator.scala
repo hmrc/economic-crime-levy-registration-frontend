@@ -31,5 +31,5 @@ class LiabilityDatePageNavigator extends PageNavigator {
     }
 
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
-    routes.CheckYourAnswersController.onPageLoad(eclRegistrationModel.registration.registrationType.getOrElse(Initial))
+    routes.CheckYourAnswersController.onPageLoad()
 }
