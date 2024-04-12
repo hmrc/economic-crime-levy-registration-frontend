@@ -35,14 +35,14 @@ sealed trait AmlSupervisorType
 
 object AmlSupervisorType {
   case object FinancialConductAuthority extends AmlSupervisorType
-  case object GamblingCommission extends AmlSupervisorType
   case object Hmrc extends AmlSupervisorType
+  case object GamblingCommission extends AmlSupervisorType
   case object Other extends AmlSupervisorType
 
   val values: Seq[AmlSupervisorType] = Seq(
-    FinancialConductAuthority,
-    GamblingCommission,
     Hmrc,
+    GamblingCommission,
+    FinancialConductAuthority,
     Other
   )
 
