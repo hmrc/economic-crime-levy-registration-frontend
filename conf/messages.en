@@ -369,7 +369,7 @@ checkYourAnswers.secondContactNumber.label = Second contact telephone number
 checkYourAnswers.useRegisteredAddress.label = Use registered address
 checkYourAnswers.address.label = Contact address
 checkYourAnswers.nowSend = Now send your registration
-checkYourAnswers.bySubmitting = By submitting this registration you are confirming that, to the best of your knowledge, the details you are providing are correct and complete.
+checkYourAnswers.bySubmitting = By submitting this registration, you are confirming that, to the best of your knowledge, the details you are providing are correct.
 checkYourAnswers.confirmAndSend = Confirm and send
 checkYourAnswers.otherEntityType.label = Other entity type
 checkYourAnswers.businessName.label = Business name
@@ -387,7 +387,7 @@ checkYourAnswers.amendReason.label = Additional Information
 checkYourAnswers.cancel = <a href="{0}" class="govuk-link">Cancel this amendment</a>
 checkYourAnswers.amendedAnswers = Amended answers
 checkYourAnswers.nowSendAmend = Now send your amended registration
-checkYourAnswers.bySending = By sending this request to amend your registration, you are confirming that, to the best of your knowledge, the details you are providing are correct and complete.
+checkYourAnswers.bySending = By sending this request to amend your registration, you are confirming that, to the best of your knowledge, the details you are providing are correct.
 checkYourAnswers.submittingRequest = Submitting your request to amend your registration
 checkYourAnswers.notMadeChanges = You cannot submit this request as you have not made any changes.
 
