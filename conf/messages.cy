@@ -425,7 +425,7 @@ groupAlreadyEnrolled.body.p2.link = <a href="{0}" class="govuk-link">ychwanegu�
 agentCannotRegister.title = Ni allwch ddefnyddio’r gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd
 agentCannotRegister.heading = Ni allwch ddefnyddio’r gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd
 agentCannotRegister.p1 = Ni all asiantau cwblhau cofrestriad ar gyfer yr Ardoll Troseddau Economaidd (ECL) ar ran cleient.
-agentCannotRegister.p2 = Rhaid i'ch cleient gofrestru gan ddefnyddio ei ID defnyddiwr a'i gyfrinair ei hun.
+agentCannotRegister.p2 = Rhaid i''ch cleient gofrestru gan ddefnyddio ei ID defnyddiwr a''i gyfrinair ei hun.
 agentCannotRegister.p3 = Ewch i’ch {0}.
 agentCannotRegister.p3.link = <a href="https://www.gov.uk/guidance/sign-in-to-your-agent-services-account" class="govuk-link">cyfrif gwasanaethau asiant</a>
 
