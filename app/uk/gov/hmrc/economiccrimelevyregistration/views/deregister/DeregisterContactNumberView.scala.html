@@ -48,7 +48,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(Text(messages("deregisterContactNumber.label"))),
+                label = LabelViewModel(Text(messages("deregisterContactNumber.label"))).withCssClass("govuk-body govuk-!-font-weight-bold"),
                 attributes = Map("autocomplete" -> "tel"),
                 inputType = "tel"
             ).withWidth(Fixed20).withHint(Hint(content = Text(messages("deregisterContactNumber.hint"))))
