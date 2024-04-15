@@ -7,7 +7,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
@@ -101,7 +100,7 @@ class BusinessNameISpec extends ISpecBase with AuthorisedBehaviour {
               redirectLocation(result) shouldBe Some(nextPage(updatedRegistration.entityType.get).url)
             } else {
               redirectLocation(result) shouldBe Some(
-                routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+                routes.CheckYourAnswersController.onPageLoad().url
               )
             }
         }

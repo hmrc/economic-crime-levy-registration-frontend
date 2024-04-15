@@ -7,7 +7,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.telephoneNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
@@ -97,7 +96,7 @@ class FirstContactNumberISpec extends ISpecBase with AuthorisedBehaviour {
             )
           case CheckMode  =>
             redirectLocation(result) shouldBe Some(
-              routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+              routes.CheckYourAnswersController.onPageLoad().url
             )
         }
 

@@ -7,7 +7,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.nameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class SecondContactNameISpec extends ISpecBase with AuthorisedBehaviour {
@@ -83,7 +82,7 @@ class SecondContactNameISpec extends ISpecBase with AuthorisedBehaviour {
           case CheckMode  =>
             updatedRegistration.contacts.secondContactDetails match {
               case ContactDetails(Some(_), Some(_), Some(_), Some(_)) =>
-                routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+                routes.CheckYourAnswersController.onPageLoad()
               case _                                                  => contacts.routes.SecondContactRoleController.onPageLoad(CheckMode)
             }
         }

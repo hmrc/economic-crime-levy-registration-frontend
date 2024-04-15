@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{NonUKEstablishment, Trust}
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class CtUtrPageNavigator extends PageNavigator {
@@ -43,13 +42,9 @@ class CtUtrPageNavigator extends PageNavigator {
     registration.entityType match {
       case None                        => routes.NotableErrorController.answersAreInvalid()
       case Some(_ @Trust)              =>
-        routes.CheckYourAnswersController.onPageLoad(
-          eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-        )
+        routes.CheckYourAnswersController.onPageLoad()
       case Some(_ @NonUKEstablishment) =>
-        routes.CheckYourAnswersController.onPageLoad(
-          eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-        )
+        routes.CheckYourAnswersController.onPageLoad()
       case Some(_)                     =>
         registration.otherEntityJourneyData.isCtUtrPresent match {
           case None           => routes.NotableErrorController.answersAreInvalid()
@@ -57,14 +52,10 @@ class CtUtrPageNavigator extends PageNavigator {
             registration.otherEntityJourneyData.postcode match {
               case None    => routes.CtUtrPostcodeController.onPageLoad(CheckMode)
               case Some(_) =>
-                routes.CheckYourAnswersController.onPageLoad(
-                  eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-                )
+                routes.CheckYourAnswersController.onPageLoad()
             }
           case Some(_)        =>
-            routes.CheckYourAnswersController.onPageLoad(
-              eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-            )
+            routes.CheckYourAnswersController.onPageLoad()
         }
     }
   }

@@ -19,25 +19,26 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 import cats.data.EitherT
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
+import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Request, Result}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo, RegistrationType, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
-
 import uk.gov.hmrc.http.HttpVerbs.GET
 
 import scala.concurrent.Future
 
 class RegistrationDataOrErrorActionSpec extends SpecBase {
 
-  val mockEclRegistrationService: EclRegistrationService                       = mock[EclRegistrationService]
-  val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
+  private val mockEclRegistrationService: EclRegistrationService                       = mock[EclRegistrationService]
+  private val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService =
+    mock[RegistrationAdditionalInfoService]
+  private val registrationTypeFormat                                                   = RegistrationType.format
 
   class TestRegistrationDataAction
       extends RegistrationDataOrErrorActionImpl(
@@ -74,7 +75,7 @@ class RegistrationDataOrErrorActionSpec extends SpecBase {
         val result = intercept[Exception] {
           await(
             RegistrationDataAction.refine(
-              AuthorisedRequest(fakeRequest, internalId, groupId, Some("ECLRefNumber12345"))
+              AuthorisedRequest(fakeRequest.withSession(), internalId, groupId, Some("ECLRefNumber12345"))
             )
           )
         }
@@ -113,7 +114,9 @@ class RegistrationDataOrErrorActionSpec extends SpecBase {
         when(mockEclRegistrationService.get(any())(any(), any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Option[Registration]](Future.successful(Right(None))))
 
-        val request                                                                         = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(Initial).url)
+        val registrationTypeJson                                                            = Json.stringify(Json.toJson(registrationTypeFormat.writes(RegistrationType.Initial)))
+        val request                                                                         = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+          .withSession(SessionKeys.registrationType -> registrationTypeJson)
         val authorisedRequest                                                               = AuthorisedRequest(request, internalId, groupId, Some("ECLRefNumber12345"))
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           RegistrationDataAction.refine(authorisedRequest)
@@ -126,12 +129,31 @@ class RegistrationDataOrErrorActionSpec extends SpecBase {
         when(mockEclRegistrationService.get(any())(any(), any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Option[Registration]](Future.successful(Right(None))))
 
-        val request                                                                         = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad(Amendment).url)
+        val registrationTypeJson                                                            =
+          Json.stringify(Json.toJson(registrationTypeFormat.writes(RegistrationType.Amendment)))
+        val request                                                                         = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+          .withSession(SessionKeys.registrationType -> registrationTypeJson)
         val authorisedRequest                                                               = AuthorisedRequest(request, internalId, groupId, Some("ECLRefNumber12345"))
         val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
           RegistrationDataAction.refine(authorisedRequest)
 
         await(result) shouldBe Left(Redirect(routes.NotableErrorController.youAlreadyRequestedToAmend()))
+    }
+
+    "redirect to 'answersAreInvalid' error page when data retrieval fails" in forAll {
+      (internalId: String, groupId: String) =>
+        when(mockEclRegistrationService.get(any())(any(), any()))
+          .thenReturn(EitherT[Future, DataRetrievalError, Option[Registration]](Future.successful(Right(None))))
+
+        val registrationTypeJson                                                            =
+          Json.stringify(Json.toJson(registrationTypeFormat.writes(RegistrationType.DeRegistration)))
+        val request                                                                         = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+          .withSession(SessionKeys.registrationType -> registrationTypeJson)
+        val authorisedRequest                                                               = AuthorisedRequest(request, internalId, groupId, Some("ECLRefNumber12345"))
+        val result: Future[Either[Result, RegistrationDataRequest[AnyContentAsEmpty.type]]] =
+          RegistrationDataAction.refine(authorisedRequest)
+
+        await(result) shouldBe Left(Redirect(routes.NotableErrorController.answersAreInvalid()))
     }
   }
 

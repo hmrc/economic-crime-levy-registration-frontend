@@ -19,16 +19,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclRegistrationModel
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 
 class AddressLookupContinuePageNavigator extends PageNavigator {
 
   override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
-    navigateInBothModes(eclRegistrationModel)
+    navigateInBothModes()
 
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
-    navigateInBothModes(eclRegistrationModel)
+    navigateInBothModes()
 
-  private def navigateInBothModes(eclRegistrationModel: EclRegistrationModel): Call =
-    routes.CheckYourAnswersController.onPageLoad(eclRegistrationModel.registration.registrationType.getOrElse(Initial))
+  private def navigateInBothModes(): Call =
+    routes.CheckYourAnswersController.onPageLoad()
 }

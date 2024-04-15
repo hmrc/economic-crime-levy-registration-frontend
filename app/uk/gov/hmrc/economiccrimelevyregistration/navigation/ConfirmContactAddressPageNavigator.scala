@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode}
 
 import javax.inject.Inject
@@ -37,9 +36,7 @@ class ConfirmContactAddressPageNavigator @Inject() () extends PageNavigator {
   ): Call =
     eclRegistrationModel.registration.useRegisteredOfficeAddressAsContactAddress match {
       case Some(true)  =>
-        routes.CheckYourAnswersController.onPageLoad(
-          eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-        )
+        routes.CheckYourAnswersController.onPageLoad()
       case Some(false) =>
         routes.IsUkAddressController.onPageLoad(mode)
       case _           =>

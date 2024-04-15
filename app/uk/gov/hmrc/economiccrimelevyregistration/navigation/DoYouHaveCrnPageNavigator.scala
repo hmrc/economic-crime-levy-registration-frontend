@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode}
 
 import javax.inject.Inject
@@ -41,14 +40,10 @@ class DoYouHaveCrnPageNavigator @Inject() extends PageNavigator {
       registration.otherEntityJourneyData.companyRegistrationNumber
     ) match {
       case (Some(true), Some(_)) =>
-        routes.CheckYourAnswersController.onPageLoad(
-          eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-        )
+        routes.CheckYourAnswersController.onPageLoad()
       case (Some(true), None)    => routes.NonUkCrnController.onPageLoad(CheckMode)
       case (Some(false), _)      =>
-        routes.CheckYourAnswersController.onPageLoad(
-          eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-        )
+        routes.CheckYourAnswersController.onPageLoad()
       case (None, _)             => routes.NotableErrorController.answersAreInvalid()
     }
   }

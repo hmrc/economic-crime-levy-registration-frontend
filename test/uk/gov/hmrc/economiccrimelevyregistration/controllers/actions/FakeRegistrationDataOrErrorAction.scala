@@ -19,7 +19,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequest, RegistrationDataRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
 
@@ -56,8 +55,8 @@ class FakeRegistrationDataOrErrorAction(
 
   private def getRedirectUrl(request: AuthorisedRequest[_]) =
     request.uri match {
-      case amendUrl if amendUrl == routes.CheckYourAnswersController.onPageLoad(Amendment).url =>
+      case amendUrl if amendUrl == routes.CheckYourAnswersController.onPageLoad().url =>
         routes.NotableErrorController.youAlreadyRequestedToAmend()
-      case _                                                                                   => routes.NotableErrorController.youHaveAlreadyRegistered()
+      case _                                                                          => routes.NotableErrorController.youHaveAlreadyRegistered()
     }
 }

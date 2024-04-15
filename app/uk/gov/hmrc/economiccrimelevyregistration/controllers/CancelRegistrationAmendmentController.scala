@@ -24,7 +24,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.CancelRegistrationAmendmentFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CancelRegistrationAmendmentView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -63,7 +62,7 @@ class CancelRegistrationAmendmentController @Inject() (
           } else {
             Future.successful(
               Redirect(
-                routes.CheckYourAnswersController.onPageLoad(request.registration.registrationType.getOrElse(Initial))
+                routes.CheckYourAnswersController.onPageLoad()
               )
             )
           }

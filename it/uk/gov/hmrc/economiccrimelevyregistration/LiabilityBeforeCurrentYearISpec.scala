@@ -209,7 +209,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       status(result) shouldBe SEE_OTHER
 
       redirectLocation(result) shouldBe Some(
-        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)).url
+        routes.CheckYourAnswersController.onPageLoad().url
       )
     }
 

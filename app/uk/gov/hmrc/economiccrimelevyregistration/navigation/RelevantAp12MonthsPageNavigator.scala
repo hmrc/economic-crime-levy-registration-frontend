@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration}
 
 class RelevantAp12MonthsPageNavigator extends PageNavigator {
@@ -47,7 +46,7 @@ class RelevantAp12MonthsPageNavigator extends PageNavigator {
         case _                         => routes.NotableErrorController.answersAreInvalid()
       }
     } else {
-      routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+      routes.CheckYourAnswersController.onPageLoad()
     }
 
 }

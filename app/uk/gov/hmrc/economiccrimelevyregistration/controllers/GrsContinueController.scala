@@ -21,7 +21,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors._
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.ResponseError
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
@@ -149,11 +148,11 @@ class GrsContinueController @Inject() (
                       routes.PartnershipNameController.onPageLoad(mode)
                     } else {
                       routes.CheckYourAnswersController
-                        .onPageLoad(request.registration.registrationType.getOrElse(Initial))
+                        .onPageLoad()
                     }
                   case _                                        =>
                     routes.CheckYourAnswersController
-                      .onPageLoad(request.registration.registrationType.getOrElse(Initial))
+                      .onPageLoad()
                 })
             }
           case EclSubscriptionStatus(Subscribed(eclRegistrationReference))   =>

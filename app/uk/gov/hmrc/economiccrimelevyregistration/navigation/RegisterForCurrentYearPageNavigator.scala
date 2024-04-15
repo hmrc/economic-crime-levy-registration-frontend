@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode}
 
 class RegisterForCurrentYearPageNavigator extends PageNavigator {
@@ -48,9 +47,7 @@ class RegisterForCurrentYearPageNavigator extends PageNavigator {
                 routes.AmlRegulatedActivityController.onPageLoad(NormalMode)
               } else {
                 if (additionalInfo.liabilityStartDate.isDefined) {
-                  routes.CheckYourAnswersController.onPageLoad(
-                    eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-                  )
+                  routes.CheckYourAnswersController.onPageLoad()
                 } else {
                   routes.LiabilityDateController.onPageLoad(CheckMode)
                 }
@@ -60,8 +57,6 @@ class RegisterForCurrentYearPageNavigator extends PageNavigator {
         case None                 => routes.NotableErrorController.answersAreInvalid()
       }
     } else {
-      routes.CheckYourAnswersController.onPageLoad(
-        eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-      )
+      routes.CheckYourAnswersController.onPageLoad()
     }
 }

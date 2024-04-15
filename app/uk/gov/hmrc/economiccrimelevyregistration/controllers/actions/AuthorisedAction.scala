@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 import cats.data.EitherT
 import com.google.inject.{ImplementedBy, Inject}
 import play.api.Logging
+import play.api.libs.json.Json
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
@@ -27,7 +28,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{ErrorHandler, routes}
-import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationType, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{ErrorCode, ResponseError}
@@ -234,10 +235,9 @@ abstract class BaseAuthorisedAction @Inject() (
           Future.successful(Redirect(routes.NotableErrorController.userAlreadyEnrolled().url))
       }
 
-    val initialUrl = routes.CheckYourAnswersController.onPageLoad(Initial).url
-    val amendUrl   = routes.CheckYourAnswersController.onPageLoad(Amendment).url
+    val checkYourAnswersUrl = routes.CheckYourAnswersController.onPageLoad().url
     request.uri match {
-      case uri if uri == initialUrl || uri == amendUrl =>
+      case uri if uri == checkYourAnswersUrl =>
         (for {
           registrationOption <- eclRegistrationService.get(internalId).asResponseError
           registration       <- extractRegistration(registrationOption)
@@ -245,16 +245,12 @@ abstract class BaseAuthorisedAction @Inject() (
           error =>
             error.code match {
               case ErrorCode.NotFound =>
-                if (uri == initialUrl) {
-                  Future.successful(Redirect(routes.NotableErrorController.youHaveAlreadyRegistered().url))
-                } else {
-                  Future.successful(Redirect(routes.NotableErrorController.youAlreadyRequestedToAmend().url))
-                }
+                Future.successful(Redirect(getRedirectUrl(request)))
               case _                  => Future.failed(new Exception(error.message))
             },
           registration => redirectRegType(registration)
         )
-      case _                                           =>
+      case _                                 =>
         (for {
           registration <- eclRegistrationService.getOrCreate(internalId).asResponseError
         } yield registration).foldF(
@@ -263,6 +259,21 @@ abstract class BaseAuthorisedAction @Inject() (
         )
     }
   }
+
+  private def getRedirectUrl[A](request: Request[A]): Call =
+    request.session.get(SessionKeys.registrationType) match {
+      case Some(registrationTypeString: String) =>
+        Json.fromJson[RegistrationType](Json.parse(registrationTypeString)).asOpt match {
+          case Some(registrationType: RegistrationType) =>
+            registrationType match {
+              case Initial        => routes.NotableErrorController.youHaveAlreadyRegistered()
+              case Amendment      => routes.NotableErrorController.youAlreadyRequestedToAmend()
+              case DeRegistration => routes.NotableErrorController.answersAreInvalid()
+            }
+          case None                                     => routes.NotableErrorController.answersAreInvalid()
+        }
+      case None                                 => routes.NotableErrorController.answersAreInvalid()
+    }
 
   private def extractRegistration(registrationOption: Option[Registration]) =
     EitherT {

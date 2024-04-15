@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import cats.data.EitherT
 import play.api.data.Form
 import play.api.i18n.I18nSupport
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.cleanup.{LiabilityDateAdditionalInfoCleanup, LiabilityDateRegistrationCleanup}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction}
@@ -71,7 +72,13 @@ class RegisterForCurrentYearController @Inject() (
     } yield urlToReturnTo).fold(
       err => routeError(err),
       {
-        case Some(_) => Redirect(routes.SavedResponsesController.onPageLoad)
+        case Some(_) =>
+          Redirect(routes.SavedResponsesController.onPageLoad)
+            .withSession(
+              request.session ++ Seq(
+                SessionKeys.registrationType -> Json.stringify(Json.toJson(request.registration.registrationType))
+              )
+            )
         case None    =>
           request.additionalInfo match {
             case Some(value) =>
@@ -84,6 +91,10 @@ class RegisterForCurrentYearController @Inject() (
                   EclTaxYear.currentFinancialYearStartDate,
                   EclTaxYear.currentFinancialYearFinishDate
                 )
+              ).withSession(
+                request.session ++ Seq(
+                  SessionKeys.registrationType -> Json.stringify(Json.toJson(request.registration.registrationType))
+                )
               )
             case None        =>
               Ok(
@@ -94,6 +105,10 @@ class RegisterForCurrentYearController @Inject() (
                   EclTaxYear.currentFinishYear().toString,
                   EclTaxYear.currentFinancialYearStartDate,
                   EclTaxYear.currentFinancialYearFinishDate
+                )
+              ).withSession(
+                request.session ++ Seq(
+                  SessionKeys.registrationType -> Json.stringify(Json.toJson(request.registration.registrationType))
                 )
               )
           }

@@ -96,9 +96,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
         when(mockEclRegistrationService.getRegistrationValidationErrors(anyString())(any()))
           .thenReturn(EitherT[Future, DataRetrievalError, Option[DataValidationError]](Future.successful(Right(None))))
 
-        val result: Future[Result] = controller.onPageLoad(
-          validRegistration.registration.registrationType.getOrElse(Initial)
-        )(registrationDataRequest)
+        val result: Future[Result] = controller.onPageLoad()(registrationDataRequest)
 
         status(result)          shouldBe OK
         contentAsString(result) shouldBe view(
@@ -155,7 +153,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           when(mockAppConfig.getSubscriptionEnabled).thenReturn(true)
 
           val result: Future[Result] =
-            controller.onPageLoad(updatedRegistration.registrationType.getOrElse(Initial))(registrationDataRequest)
+            controller.onPageLoad()(registrationDataRequest)
 
           status(result)          shouldBe OK
           contentAsString(result) shouldBe view(
@@ -188,9 +186,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
           when(mockEclRegistrationService.getRegistrationValidationErrors(anyString())(any()))
             .thenReturn(EitherT.fromEither[Future](Left(DataRetrievalError.InternalUnexpectedError("", None))))
 
-          val result: Future[Result] = controller.onPageLoad(
-            validRegistration.registration.registrationType.getOrElse(Initial)
-          )(registrationDataRequest)
+          val result: Future[Result] = controller.onPageLoad()(registrationDataRequest)
 
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
@@ -206,7 +202,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
       ) =>
         new TestContext(registration, Some(additionalInfo), true) {
 
-          val result: Future[Result] = controller.onPageLoad(Initial)(fakeRequest)
+          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
           status(result)           shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.NotableErrorController.youHaveAlreadyRegistered().url)

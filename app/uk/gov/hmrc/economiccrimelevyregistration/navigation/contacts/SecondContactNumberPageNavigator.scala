@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts
 
 import play.api.mvc.Call
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, EclRegistrationModel, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.PageNavigator
 
@@ -40,9 +39,7 @@ class SecondContactNumberPageNavigator extends PageNavigator {
   override protected def navigateInCheckMode(eclRegistrationModel: EclRegistrationModel): Call =
     eclRegistrationModel.registration.contacts.secondContactDetails match {
       case ContactDetails(Some(_), Some(_), Some(_), Some(_)) =>
-        routes.CheckYourAnswersController.onPageLoad(
-          eclRegistrationModel.registration.registrationType.getOrElse(Initial)
-        )
+        routes.CheckYourAnswersController.onPageLoad()
       case _                                                  => routes.NotableErrorController.answersAreInvalid()
     }
 

@@ -20,7 +20,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, UnincorporatedAssociation}
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
@@ -93,7 +92,7 @@ class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
           )
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe
-          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+          routes.CheckYourAnswersController.onPageLoad()
     }
 
     "(Check Mode) return a call to the Utr type page if ctUtr is present and ctUtr does not contain a value" in forAll {
@@ -135,11 +134,11 @@ class DoYouHaveUtrPageNavigatorSpec extends SpecBase {
         )
 
       val nextPage = if (updatedRegistration.entityType.contains(UnincorporatedAssociation)) {
-        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+        routes.CheckYourAnswersController.onPageLoad()
       } else {
         if (updatedRegistration.otherEntityJourneyData.companyRegistrationNumber.isEmpty) {
           routes.CompanyRegistrationNumberController.onPageLoad(CheckMode)
-        } else { routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial)) }
+        } else { routes.CheckYourAnswersController.onPageLoad() }
       }
 
       pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe

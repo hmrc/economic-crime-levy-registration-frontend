@@ -19,7 +19,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.navigation
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class SaUtrPageDeregisterNavigatorSpec extends SpecBase {
@@ -34,7 +33,7 @@ class SaUtrPageDeregisterNavigatorSpec extends SpecBase {
 
     "return a call to the check your answers page in Check mode" in forAll { (registration: Registration) =>
       pageNavigator.nextPage(CheckMode, EclRegistrationModel(registration)) shouldBe
-        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+        routes.CheckYourAnswersController.onPageLoad()
     }
   }
 

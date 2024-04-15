@@ -24,7 +24,6 @@ import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithEnrolmentCheck, RegistrationDataAction, StoreUrlAction}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYearFormProvider
-import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
@@ -121,7 +120,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
         if (!liableBeforeCurrentYear && registration.isVoid) {
           routes.NotLiableController.youDoNotNeedToRegister()
         } else if (!answerChanged || !liableBeforeCurrentYear || info.liabilityStartDate.isDefined) {
-          routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+          routes.CheckYourAnswersController.onPageLoad()
         } else {
           routes.LiabilityDateController.onPageLoad(CheckMode)
         }
@@ -141,7 +140,7 @@ class LiabilityBeforeCurrentYearController @Inject() (
       case (true, _, None)            =>
         routes.LiabilityDateController.onPageLoad(mode)
       case (_, _, Some(_))            =>
-        routes.CheckYourAnswersController.onPageLoad(registration.registrationType.getOrElse(Initial))
+        routes.CheckYourAnswersController.onPageLoad()
     }
 
   private def sendNotLiableAuditEvent(registration: Registration)(implicit hc: HeaderCarrier) =
