@@ -755,7 +755,7 @@ youAlreadyRequestedToAmend.heading = Rydych eisoes wedi gwneud cais i ddiwygio�
 youAlreadyRequestedToAmend.body.p1 = Mae’ch gwybodaeth wedi cael ei hanfon i CThEF.
 youAlreadyRequestedToAmend.body.link = <a href="{0}" class="govuk-link">Yn ôl i’ch cyfrif Ardoll Troseddau Economaidd</a>
 
-alreadyDeregistered.title = Rydych eisoes wedi datgofrestru’ch cyfrif Ardoll Troseddau Economaidd – Datgofrestru rhag ECL – GOV.UK
-alreadyDeregistered.heading = Rydych eisoes wedi datgofrestru’ch cyfrif Ardoll Troseddau Economaidd
+alreadyDeregistered.title = Rydych eisoes wedi gwneud cais i ddadgofrestru eich cyfrif Ardoll Troseddau Economaidd – Datgofrestru rhag ECL – GOV.UK
+alreadyDeregistered.heading = Rydych eisoes wedi gwneud cais i ddadgofrestru eich cyfrif Ardoll Troseddau Economaidd
 alreadyDeregistered.body.p1 = Mae’ch gwybodaeth wedi cael ei hanfon i CThEF.
 alreadyDeregistered.body.link = <a href="{0}" class="govuk-link">Yn ôl i’ch cyfrif Ardoll Troseddau Economaidd</a>
