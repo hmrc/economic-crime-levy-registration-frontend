@@ -34,7 +34,7 @@
 @(form: Form[Boolean], mode: Mode, currentFyStartYear: String, currentFyFinishYear: String, currentFinancialYearStartDate: LocalDate, currentFinancialYearEndDate: LocalDate)(implicit messages: Messages, request: Request[_])
 
 @layout(
-    pageTitle = titleWithForm(form, messages("register.currentYear.title")),
+    pageTitle = titleWithForm(form, messages("register.currentYear.title", ViewUtils.formatLocalDate(currentFinancialYearStartDate), ViewUtils.formatLocalDate(currentFinancialYearEndDate))),
     showBackLink = true
 ) {
     @formHelper(action = RegisterForCurrentYearController.onSubmit(mode)) {
