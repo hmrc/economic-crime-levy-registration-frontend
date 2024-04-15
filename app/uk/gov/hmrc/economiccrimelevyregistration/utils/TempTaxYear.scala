@@ -20,13 +20,13 @@ import java.time.{LocalDate, MonthDay}
 
 case class TempTaxYear(startYear: Int) {
 
-  private val dayDue: Int      = 30
-  private val monthDue: Int    = 9
+  private val dayDue: Int   = 30
+  private val monthDue: Int = 9
 
   val finishYear: Int = startYear + 1
 
   val dateDue: LocalDate = LocalDate.of(finishYear, monthDue, dayDue)
-  
+
   val previous: TempTaxYear = TempTaxYear.fromStartYear(startYear - 1)
 }
 
@@ -41,14 +41,14 @@ object TempTaxYear {
   }
 
   def fromCurrentDate(currentDate: LocalDate = LocalDate.now()): TempTaxYear = {
-    val startMonth: Int  = 10
-    val startDay: Int    = 1
+    val startMonth: Int = 10
+    val startDay: Int   = 1
     calculateTaxYear(currentDate, startMonth, startDay)
   }
 
   def fromDate(date: LocalDate): TempTaxYear = {
-    val startMonth: Int  = 4
-    val startDay: Int    = 1
+    val startMonth: Int = 4
+    val startDay: Int   = 1
     calculateTaxYear(date, startMonth, startDay)
   }
 

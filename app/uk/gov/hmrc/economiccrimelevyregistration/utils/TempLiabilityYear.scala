@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.utils
 import play.api.libs.json.{Format, Json}
 
 case class TempLiabilityYear(value: Int) {
-  val asString: String             = value.toString
+  val asString: String = value.toString
 }
 
 object TempLiabilityYear {
