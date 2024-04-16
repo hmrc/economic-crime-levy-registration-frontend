@@ -37,10 +37,11 @@ object TempTaxYear {
   private val postEclDateDueStartDay   = 1
   private val postEclDateDueStartMonth = 10
 
-  val eclStartMonth: Int  = 4
-  val eclStartDay: Int    = 1
   val eclFinishDay: Int   = 31
   val eclFinishMonth: Int = 3
+  val eclInitialYear: Int = 2022
+  val eclStartMonth: Int  = 4
+  val eclStartDay: Int    = 1
   val yearInDays: Int     = 365
 
   private def calculateTaxYear(date: LocalDate, startMonth: Int, startDay: Int): TempTaxYear = {

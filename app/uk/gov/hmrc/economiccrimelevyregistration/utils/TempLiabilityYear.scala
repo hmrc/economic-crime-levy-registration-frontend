@@ -18,8 +18,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.utils
 
 import play.api.libs.json.{Format, Json}
 
+import java.time.LocalDate
+
 case class TempLiabilityYear(value: Int) {
-  val asString: String = value.toString
+  def now(): LocalDate              = LocalDate.now()
+  def currentTaxYear(): TempTaxYear = TempTaxYear.fromCurrentDate(now())
+  val followingYear: String         = (value + 1).toString
+  val asString: String              = value.toString
+  val isCurrentFY: Boolean          = value == currentTaxYear().startYear
+  val isNotCurrentFY: Boolean       = !isCurrentFY
 }
 
 object TempLiabilityYear {
