@@ -425,7 +425,7 @@ groupAlreadyEnrolled.body.p2.link = <a href="{0}" class="govuk-link">ychwanegu�
 agentCannotRegister.title = Ni allwch ddefnyddio’r gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd
 agentCannotRegister.heading = Ni allwch ddefnyddio’r gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd
 agentCannotRegister.p1 = Ni all asiantau cwblhau cofrestriad ar gyfer yr Ardoll Troseddau Economaidd (ECL) ar ran cleient.
-agentCannotRegister.p2 = Mae’n rhaid i’ch cleient gofrestru drwy ddefnyddio’i Dynodydd Defnyddiwr (ID) ar gyfer Porth y Llywodraeth ei hun.
+agentCannotRegister.p2 = Rhaid i''ch cleient gofrestru gan ddefnyddio ei ID defnyddiwr a''i gyfrinair ei hun.
 agentCannotRegister.p3 = Ewch i’ch {0}.
 agentCannotRegister.p3.link = <a href="https://www.gov.uk/guidance/sign-in-to-your-agent-services-account" class="govuk-link">cyfrif gwasanaethau asiant</a>
 
@@ -725,7 +725,7 @@ savedResponses.false = Dileu’ch cynnydd hyd yma a dechrau eto
 savedResponses.error.required = Dewiswch yr opsiwn cyntaf os ydych am fynd yn eich blaen â’ch atebion sydd wedi’u cadw
 
 register.currentYear.h1 = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0} i {1}?
-register.currentYear.title = A ydych yn cofrestru ar gyfer y flwyddyn ariannol bresennol?
+register.currentYear.title = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0} i {1}?
 register.currentYear.label = Cofrestru ar gyfer y flwyddyn ariannol gyfredol
 register.currentYear.error = Dewiswch ‘Iawn’ os ydych yn cofrestru ar gyfer blwyddyn ariannol {0} i {1}
 register.currentYear.yes = Iawn, parhau i gofrestru ar gyfer {0} i {1}
