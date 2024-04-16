@@ -422,7 +422,7 @@ groupAlreadyEnrolled.body.p1 = Your ECL reference number is {0}.
 groupAlreadyEnrolled.body.p2 = You can {0}.
 groupAlreadyEnrolled.body.p2.link = <a href="{0}" class="govuk-link">add this levy to your business tax account</a>
 
-agentCannotRegister.title = You cannot use this service to register for the Economic Crime Levy
+agentCannotRegister.title = You cannot use this service to register for the Economic Crime Levy - Economic Crime Levy - GOV.UK
 agentCannotRegister.heading = You cannot use this service to register for the Economic Crime Levy
 agentCannotRegister.p1 = Agents cannot complete an Economic Crime Levy (ECL) registration on behalf of a client.
 agentCannotRegister.p2 = Your client must register using their own user ID and password.
