@@ -85,7 +85,7 @@ abstract class ISpecBase
   val appConfig: AppConfig              = app.injector.instanceOf[AppConfig]
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val testCurrentDate: LocalDate = LocalDate.of(2024, 10, 1)
+  val testCurrentDate: LocalDate = LocalDate.now()
   val testEclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(testCurrentDate)
 
   /*

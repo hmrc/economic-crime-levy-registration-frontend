@@ -7,14 +7,13 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Hmrc
-import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
+import uk.gov.hmrc.economiccrimelevyregistration.models._
 
 class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
   s"GET ${routes.AmlRegulatedActivityController.onPageLoad(NormalMode).url}" should {
     behave like authorisedActionWithEnrolmentCheckRoute(routes.AmlRegulatedActivityController.onPageLoad(NormalMode))
-
     "respond with 200 status and the Aml regulated HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
