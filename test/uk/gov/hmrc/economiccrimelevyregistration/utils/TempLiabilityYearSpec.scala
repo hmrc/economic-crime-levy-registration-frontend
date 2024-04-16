@@ -58,7 +58,6 @@ class TempLiabilityYearSpec extends SpecBase {
         liabilityYear,
         expectedTaxYear: TempTaxYear
       ) =>
-
         val year: TempLiabilityYear = new TempLiabilityYear(liabilityYear) {
           override def now(): LocalDate = currentDate
         }
@@ -88,7 +87,6 @@ class TempLiabilityYearSpec extends SpecBase {
         liabilityYear: Int,
         expectedFollowingYear: Int
       ) =>
-
         val year = TempLiabilityYear(liabilityYear)
 
         expectedFollowingYear.toString shouldBe year.followingYear
@@ -116,7 +114,6 @@ class TempLiabilityYearSpec extends SpecBase {
         liabilityYear,
         expectedLiabilityYearAsString
       ) =>
-
         val year = TempLiabilityYear(liabilityYear)
 
         expectedLiabilityYearAsString shouldBe year.asString
@@ -129,18 +126,16 @@ class TempLiabilityYearSpec extends SpecBase {
     (2022, LocalDate.of(2023, taxYearStartMonthMinusOne, taxYearStartDayMinusOne), true),
     (2022, LocalDate.of(2023, taxYearStartMonth, taxYearStartDay), true),
     (2023, LocalDate.of(2023, dueMonthPlusOne, dueDayPlusOne), true),
-    (2023, LocalDate.of(2023, dueMonth, dueDay), false),
+    (2023, LocalDate.of(2023, dueMonth, dueDay), false)
   )
 
   "isCurrentFY" should {
-    "returns the expected isCurrentFY" in forAll (isCurrentFYParameters) {
+    "returns the expected isCurrentFY" in forAll(isCurrentFYParameters) {
       (
         liabilityYear: Int,
         currentDate: LocalDate,
         expectedIsCurrentFy: Boolean
-        
       ) =>
-
         val year: TempLiabilityYear = new TempLiabilityYear(liabilityYear) {
           override def now(): LocalDate = currentDate
         }
@@ -154,17 +149,16 @@ class TempLiabilityYearSpec extends SpecBase {
     (2022, LocalDate.of(2023, taxYearStartMonthMinusOne, taxYearStartDayMinusOne), false),
     (2022, LocalDate.of(2023, taxYearStartMonth, taxYearStartDay), false),
     (2023, LocalDate.of(2023, dueMonthPlusOne, dueDayPlusOne), false),
-    (2023, LocalDate.of(2023, dueMonth, dueDay), true),
+    (2023, LocalDate.of(2023, dueMonth, dueDay), true)
   )
 
   "isNotCurrentFY" should {
-    "returns the expected isNotCurrentFY" in forAll (isNotCurrentFYParameters) {
+    "returns the expected isNotCurrentFY" in forAll(isNotCurrentFYParameters) {
       (
         liabilityYear: Int,
         currentDate: LocalDate,
         expectedIsNotCurrentFY: Boolean
       ) =>
-
         val year: TempLiabilityYear = new TempLiabilityYear(liabilityYear) {
           override def now(): LocalDate = currentDate
         }
@@ -172,5 +166,4 @@ class TempLiabilityYearSpec extends SpecBase {
         expectedIsNotCurrentFY shouldBe year.isNotCurrentFY
     }
   }
-
 }
