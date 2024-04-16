@@ -28,13 +28,20 @@ case class TempTaxYear(startYear: Int) {
   lazy val dateDue: LocalDate = LocalDate.of(finishYear, monthDue, dayDue)
 
   lazy val previous: TempTaxYear = TempTaxYear(startYear - 1)
+
+  lazy val startDate: LocalDate  = LocalDate.of(startYear, TempTaxYear.eclStartMonth, TempTaxYear.eclStartDay)
+  lazy val finishDate: LocalDate = LocalDate.of(finishYear, TempTaxYear.eclFinishMonth, TempTaxYear.eclFinishDay)
 }
 
 object TempTaxYear {
-  private val eclStartMonth            = 4
-  private val eclStartDay              = 1
   private val postEclDateDueStartDay   = 1
   private val postEclDateDueStartMonth = 10
+
+  val eclStartMonth: Int  = 4
+  val eclStartDay: Int    = 1
+  val eclFinishDay: Int   = 31
+  val eclFinishMonth: Int = 3
+  val yearInDays: Int     = 365
 
   private def calculateTaxYear(date: LocalDate, startMonth: Int, startDay: Int): TempTaxYear = {
     val startOfTaxYear = MonthDay.of(startMonth, startDay)
