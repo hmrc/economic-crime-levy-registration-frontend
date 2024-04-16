@@ -725,7 +725,7 @@ savedResponses.false = Dileu’ch cynnydd hyd yma a dechrau eto
 savedResponses.error.required = Dewiswch yr opsiwn cyntaf os ydych am fynd yn eich blaen â’ch atebion sydd wedi’u cadw
 
 register.currentYear.h1 = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0} i {1}?
-register.currentYear.title = A ydych yn cofrestru ar gyfer y flwyddyn ariannol bresennol?
+register.currentYear.title = A ydych yn cofrestru ar gyfer blwyddyn ariannol {0} i {1}?
 register.currentYear.label = Cofrestru ar gyfer y flwyddyn ariannol gyfredol
 register.currentYear.error = Dewiswch ‘Iawn’ os ydych yn cofrestru ar gyfer blwyddyn ariannol {0} i {1}
 register.currentYear.yes = Iawn, parhau i gofrestru ar gyfer {0} i {1}

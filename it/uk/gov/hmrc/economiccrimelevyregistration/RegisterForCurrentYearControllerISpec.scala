@@ -34,7 +34,8 @@ class RegisterForCurrentYearControllerISpec extends ISpecBase with AuthorisedBeh
 
       status(result) shouldBe OK
 
-      html(result) should include("enter the date you became liable for ECL")
+      html(result) should include("Yes, continue with registration for ")
+      html(result) should include("No, enter the date you became liable for ECL")
     }
 
     s"POST ${routes.RegisterForCurrentYearController.onSubmit(CheckMode).url}" should {
