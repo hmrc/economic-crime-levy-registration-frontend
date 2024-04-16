@@ -24,7 +24,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.AmlRegulatedActivityFormP
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlRegulatedActivityView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -41,7 +42,8 @@ class AmlRegulatedActivityController @Inject() (
   additionalInfoService: RegistrationAdditionalInfoService,
   formProvider: AmlRegulatedActivityFormProvider,
   pageNavigator: AmlRegulatedActivityPageNavigator,
-  view: AmlRegulatedActivityView
+  view: AmlRegulatedActivityView,
+  localDateService: LocalDateService
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with ErrorHandler
@@ -52,14 +54,16 @@ class AmlRegulatedActivityController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
     implicit request =>
-      Ok(view(form.prepare(request.registration.carriedOutAmlRegulatedActivityInCurrentFy), mode))
+      val eclTaxYear: TempTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
+      Ok(view(form.prepare(request.registration.carriedOutAmlRegulatedActivityInCurrentFy), mode, eclTaxYear))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+    val eclTaxYear: TempTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, eclTaxYear))),
         amlRegulatedActivity => {
           val answerChanged =
             !request.registration.carriedOutAmlRegulatedActivityInCurrentFy.contains(amlRegulatedActivity)

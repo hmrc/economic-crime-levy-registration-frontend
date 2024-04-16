@@ -19,8 +19,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionKeys, TempLiabilityYear}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegistrationReceivedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -33,7 +34,8 @@ class RegistrationReceivedController @Inject() (
   authorise: AuthorisedActionWithoutEnrolmentCheck,
   view: RegistrationReceivedView,
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
-  registrationService: EclRegistrationService
+  registrationService: EclRegistrationService,
+  localDateService: LocalDateService
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with BaseController
@@ -50,11 +52,13 @@ class RegistrationReceivedController @Inject() (
       registeringForCurrentYear <-
         valueOrError(request.session.get(SessionKeys.registeringForCurrentFY), "Registering for current FY")
       liabilityYear             <- valueOrError(request.session.get(SessionKeys.liabilityYear), "Liability Year")
+      eclTaxYear                 = TempTaxYear.fromCurrentDate(localDateService.now())
       registrationReceivedView   = view(
                                      firstContactEmailAddress,
                                      secondContactEmailAddress,
-                                     Some(LiabilityYear(liabilityYear.toInt)),
-                                     registeringForCurrentYear.toBoolean
+                                     Some(TempLiabilityYear(liabilityYear.toInt)),
+                                     registeringForCurrentYear.toBoolean,
+                                     eclTaxYear
                                    )
     } yield registrationReceivedView).fold(
       error => routeError(error),

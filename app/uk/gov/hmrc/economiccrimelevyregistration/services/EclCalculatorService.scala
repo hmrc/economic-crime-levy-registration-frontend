@@ -20,7 +20,7 @@ import cats.data.EitherT
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EclCalculatorConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import javax.inject.{Inject, Singleton}
@@ -38,7 +38,7 @@ class EclCalculatorService @Inject() (
     registration.relevantApRevenue match {
       case Some(revenue) =>
         registration.relevantAp12Months match {
-          case Some(true)  => calculateLiabilityAmount(EclTaxYear.yearInDays, revenue)
+          case Some(true)  => calculateLiabilityAmount(TempTaxYear.yearInDays, revenue)
           case Some(false) =>
             registration.relevantApLength match {
               case Some(relevantApLength) => calculateLiabilityAmount(relevantApLength, revenue)

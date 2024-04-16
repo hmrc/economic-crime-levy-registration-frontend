@@ -15,7 +15,7 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-@import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+@import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 
 @this(
@@ -23,7 +23,7 @@
         appConfig: AppConfig
 )
 
-@(eclReference: String, liabilityYear: Option[LiabilityYear], registeredForCurrentFY: Option[Boolean])(implicit request: Request[_], messages: Messages)
+@(eclReference: String, liabilityYear: Option[TempLiabilityYear], registeredForCurrentFY: Option[Boolean], eclTaxYear: TempTaxYear)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = title(messages("submitted.title")),
@@ -39,7 +39,7 @@
     <p class="govuk-body">@messages("submitted.p2")</p>
 
     @if(registeredForCurrentFY.contains(true)) {
-        <p class="govuk-body">@messages("submitted.p3", formatLocalDate(EclTaxYear.dueDate))</p>
+        <p class="govuk-body">@messages("submitted.p3", formatLocalDate(eclTaxYear.dateDue))</p>
     }
 
     @if(liabilityYear.exists(_.isNotCurrentFY)) {

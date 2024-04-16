@@ -15,7 +15,7 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-@import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+@import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 
 @this(
@@ -24,16 +24,16 @@
         appConfig: AppConfig
 )
 
-@(firstContactEmailAddress: String, secondContactEmailAddress: Option[String], liabilityYear: Option[LiabilityYear], registeringForCurrentYear: Boolean)(implicit request: Request[_], messages: Messages)
+@(firstContactEmailAddress: String, secondContactEmailAddress: Option[String], liabilityYear: Option[TempLiabilityYear], registeringForCurrentYear: Boolean, eclTaxYear: TempTaxYear)(implicit request: Request[_], messages: Messages)
 
 @getPreviousYearContent() = {
     <p class="govuk-body">@messages("registration.received.p7.previous")</p>
 }
 @getCurrentYearContent() = {
-    <p class="govuk-body">@messages("registration.received.p7.current", formatLocalDate(EclTaxYear.dueDate))</p>
+    <p class="govuk-body">@messages("registration.received.p7.current", formatLocalDate(eclTaxYear.dateDue))</p>
 }
 @getBothYearsContent() = {
-    <p class="govuk-body">@messages("registration.received.p7.both.years.p1", formatLocalDate(EclTaxYear.dueDate))</p>
+    <p class="govuk-body">@messages("registration.received.p7.both.years.p1", formatLocalDate(eclTaxYear.dateDue))</p>
     <p class="govuk-body">@messages("registration.received.p7.both.years.p2")</p>
 }
 @layout(

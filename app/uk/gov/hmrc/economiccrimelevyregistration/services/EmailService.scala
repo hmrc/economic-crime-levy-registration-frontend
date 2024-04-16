@@ -23,7 +23,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.EmailConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, DeregistrationRequestedEmailParameters, RegistrationSubmittedEmailParameters}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EclAddress, EntityType, GetCorrespondenceAddressDetails, RegistrationAdditionalInfo}
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
+import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
@@ -32,7 +33,10 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
-class EmailService @Inject() (emailConnector: EmailConnector)(implicit
+class EmailService @Inject() (
+  emailConnector: EmailConnector,
+  localDateService: LocalDateService
+)(implicit
   ec: ExecutionContext
 ) extends Logging {
 
@@ -48,12 +52,13 @@ class EmailService @Inject() (emailConnector: EmailConnector)(implicit
     hc: HeaderCarrier,
     messages: Messages
   ): ServiceResult[Unit] = {
-    val eclDueDate       = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)
+    val eclTaxYear       = TempTaxYear.fromCurrentDate(localDateService.now())
+    val eclDueDate       = ViewUtils.formatLocalDate(eclTaxYear.dateDue, translate = false)
     val registrationDate = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)
     val previousFY       =
       additionalInfo.flatMap(_.liabilityYear.flatMap(year => if (year.isNotCurrentFY) Some(year.asString) else None))
     val currentFY        =
-      liableForCurrentFY.map(_ => EclTaxYear.current.currentYear.toString)
+      liableForCurrentFY.map(_ => eclTaxYear.startYear.toString)
 
     def sendEmail(
       name: String,

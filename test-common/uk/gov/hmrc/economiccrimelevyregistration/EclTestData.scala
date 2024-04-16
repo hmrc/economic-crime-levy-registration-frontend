@@ -168,7 +168,7 @@ trait EclTestData {
       eclReferenceNumber        <- Arbitrary.arbitrary[String]
     } yield RegistrationAdditionalInfo(
       internalId,
-      Some(LiabilityYear(liabilityYear)),
+      Some(TempLiabilityYear(liabilityYear)),
       Some(liabilityStartDate),
       Some(registeringForCurrentYear),
       Some(liableForPreviousYears),

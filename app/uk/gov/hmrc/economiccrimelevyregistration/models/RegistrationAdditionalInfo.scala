@@ -22,7 +22,7 @@ import java.time.LocalDate
 
 case class RegistrationAdditionalInfo(
   internalId: String,
-  liabilityYear: Option[LiabilityYear],
+  liabilityYear: Option[TempLiabilityYear],
   liabilityStartDate: Option[LocalDate],
   registeringForCurrentYear: Option[Boolean],
   liableForPreviousYears: Option[Boolean],

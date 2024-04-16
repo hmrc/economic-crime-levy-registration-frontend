@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
-
-import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import java.time.LocalDate
+import javax.inject.Singleton
 
-object MinMaxValues {
-  val eclStartDate: LocalDate =
-    LocalDate.of(TempTaxYear.eclInitialYear, TempTaxYear.eclStartMonth, TempTaxYear.eclStartDay)
-  val minDays                 = 1
-  val maxDays                 = 999
-  val minRevenue: BigDecimal  = 0
-  val maxRevenue: BigDecimal  = 99999999999.99
+@Singleton
+class LocalDateService {
+  def now(): LocalDate = LocalDate.now()
 }

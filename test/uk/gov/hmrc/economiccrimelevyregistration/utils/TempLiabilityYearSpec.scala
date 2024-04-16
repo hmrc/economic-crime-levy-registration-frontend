@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.utils
 import org.scalatest.prop.TableFor2
 import org.scalatest.prop.TableFor3
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
+import uk.gov.hmrc.economiccrimelevyregistration.models.TempLiabilityYear
 
 import java.time.LocalDate
 

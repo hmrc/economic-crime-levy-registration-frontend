@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.economiccrimelevyregistration.utils
+package uk.gov.hmrc.economiccrimelevyregistration.models
 
 import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
 
 import java.time.LocalDate
 
