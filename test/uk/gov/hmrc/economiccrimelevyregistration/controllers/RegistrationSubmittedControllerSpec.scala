@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 
 import scala.concurrent.Future
@@ -36,6 +36,9 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
     app.injector.instanceOf[OutOfSessionRegistrationSubmittedView]
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService     = mock[RegistrationAdditionalInfoService]
   val mockEclRegistrationService: EclRegistrationService                           = mock[EclRegistrationService]
+  val mockLocalDateService: LocalDateService                                       = mock[LocalDateService]
+
+  when(mockLocalDateService.now()).thenReturn(testCurrentDate)
 
   class TestContext(registrationData: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None) {
     val controller = new RegistrationSubmittedController(
@@ -45,7 +48,8 @@ class RegistrationSubmittedControllerSpec extends SpecBase {
       view,
       outOfSessionRegistrationSubmittedView,
       mockRegistrationAdditionalInfoService,
-      mockEclRegistrationService
+      mockEclRegistrationService,
+      mockLocalDateService
     )
   }
 

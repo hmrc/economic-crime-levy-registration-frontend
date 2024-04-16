@@ -23,7 +23,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RegistrationReceivedView
 
 import scala.concurrent.Future
@@ -33,13 +33,17 @@ class RegistrationReceivedControllerSpec extends SpecBase {
   val view: RegistrationReceivedView                                           = app.injector.instanceOf[RegistrationReceivedView]
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
   val mockEclRegistrationService: EclRegistrationService                       = mock[EclRegistrationService]
+  val mockLocalDateService: LocalDateService                                   = mock[LocalDateService]
+
+  when(mockLocalDateService.now()).thenReturn(testCurrentDate)
 
   val controller = new RegistrationReceivedController(
     mcc,
     fakeAuthorisedActionWithoutEnrolmentCheck(testInternalId),
     view,
     mockRegistrationAdditionalInfoService,
-    mockEclRegistrationService
+    mockEclRegistrationService,
+    mockLocalDateService
   )
 
   "onPageLoad" should {
@@ -67,7 +71,8 @@ class RegistrationReceivedControllerSpec extends SpecBase {
           firstContactEmailAddress,
           None,
           Some(liabilityYear),
-          registeringForCurrentYear
+          registeringForCurrentYear,
+          testEclTaxYear
         )(fakeRequest, messages).toString
     }
 
@@ -95,7 +100,8 @@ class RegistrationReceivedControllerSpec extends SpecBase {
           firstContactEmailAddress,
           Some(secondContactEmailAddress),
           Some(liabilityYear),
-          registeringForCurrentYear
+          registeringForCurrentYear,
+          testEclTaxYear
         )(fakeRequest, messages).toString
     }
 

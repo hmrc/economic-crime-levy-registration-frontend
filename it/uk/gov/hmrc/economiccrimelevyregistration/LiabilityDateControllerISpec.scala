@@ -51,7 +51,7 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
         stubAuthorisedWithNoGroupEnrolment()
 
         val date = LocalDate.now()
-        val year = EclTaxYear.taxYearFor(date)
+        val year = EclTaxYear.fromDate(date)
 
         val registration = random[Registration]
           .copy(

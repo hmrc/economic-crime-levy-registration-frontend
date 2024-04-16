@@ -15,7 +15,7 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-@import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+@import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 
 @this(
@@ -24,7 +24,7 @@
         appConfig: AppConfig
 )
 
-@(eclReference: String, firstContactEmailAddress: String, secondContactEmailAddress: Option[String], liabilityYear: Option[TempLiabilityYear], registeredForCurrentFY: Option[Boolean], eclTaxYear: TempTaxYear)(implicit request: Request[_], messages: Messages)
+@(eclReference: String, firstContactEmailAddress: String, secondContactEmailAddress: Option[String], liabilityYear: Option[LiabilityYear], registeredForCurrentFY: Option[Boolean], eclTaxYear: EclTaxYear)(implicit request: Request[_], messages: Messages)
 
 @panelContentHtml = {
     <p class="govuk-label--m">@messages("submitted.reference", eclReference)</p>

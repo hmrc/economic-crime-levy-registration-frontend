@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlRegulatedActivityView
 
 import scala.concurrent.Future
@@ -42,6 +42,9 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
 
   val mockEclRegistrationService: EclRegistrationService           = mock[EclRegistrationService]
   val mockAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
+  val mockLocalDateService: LocalDateService                       = mock[LocalDateService]
+
+  when(mockLocalDateService.now()).thenReturn(testCurrentDate)
 
   val pageNavigator: AmlRegulatedActivityPageNavigator = new AmlRegulatedActivityPageNavigator() {
     override protected def navigateInNormalMode(eclRegistrationModel: EclRegistrationModel): Call =
@@ -61,7 +64,8 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
       mockAdditionalInfoService,
       formProvider,
       pageNavigator,
-      view
+      view,
+      mockLocalDateService
     )
   }
 
@@ -72,7 +76,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
 
         status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(form, NormalMode, testEclTaxYear)(fakeRequest, messages).toString
       }
     }
 
@@ -84,7 +88,7 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result)          shouldBe OK
-          contentAsString(result) shouldBe view(form.fill(carriedOutAmlRegulatedActivity), NormalMode)(
+          contentAsString(result) shouldBe view(form.fill(carriedOutAmlRegulatedActivity), NormalMode, testEclTaxYear)(
             fakeRequest,
             messages
           ).toString
@@ -156,7 +160,10 @@ class AmlRegulatedActivityControllerSpec extends SpecBase {
 
         status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(formWithErrors, NormalMode)(fakeRequest, messages).toString
+        contentAsString(result) shouldBe view(formWithErrors, NormalMode, testEclTaxYear)(
+          fakeRequest,
+          messages
+        ).toString
       }
     }
   }

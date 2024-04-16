@@ -19,12 +19,12 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
 import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
-import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 class RegisterForCurrentYearFormProvider extends Mappings {
 
   def apply(localDateService: LocalDateService): Form[Boolean] = {
-    val eclTaxYear: TempTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
+    val eclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
     Form(
       (
         "value",

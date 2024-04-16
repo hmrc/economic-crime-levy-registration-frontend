@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYea
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
-import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, LocalDateService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
 
 import scala.concurrent.Future
@@ -40,6 +40,9 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
   val mockAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
   val mockAuditService: AuditService                               = mock[AuditService]
+  val mockLocalDateService: LocalDateService                       = mock[LocalDateService]
+
+  when(mockLocalDateService.now()).thenReturn(testCurrentDate)
 
   class TestContext(registrationData: Registration, additionalInfo: Option[RegistrationAdditionalInfo] = None) {
     val controller = new LiabilityBeforeCurrentYearController(
@@ -50,7 +53,8 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
       formProvider,
       mockAdditionalInfoService,
       view,
-      mockAuditService
+      mockAuditService,
+      mockLocalDateService
     )
   }
 
@@ -74,7 +78,8 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
           contentAsString(result) shouldBe view(
             form,
-            NormalMode
+            NormalMode,
+            testEclTaxYear
           )(fakeRequest, messages).toString
         }
     }
@@ -120,7 +125,8 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
 
         contentAsString(result) shouldBe view(
           formWithErrors,
-          NormalMode
+          NormalMode,
+          testEclTaxYear
         )(fakeRequest, messages).toString
       }
     }

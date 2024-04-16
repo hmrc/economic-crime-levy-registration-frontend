@@ -8,7 +8,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Hmrc
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 
 class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
@@ -19,8 +18,8 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the Aml regulated HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val expectedTaxYearStart = EclTaxYear.currentFyStartYear.toString
-      val expectedTaxYearEnd   = EclTaxYear.currentFyFinishYear.toString
+      val expectedTaxYearStart = testEclTaxYear.startYear.toString
+      val expectedTaxYearEnd   = testEclTaxYear.finishYear.toString
       val registration         = random[Registration]
         .copy(
           internalId = testInternalId,
@@ -50,8 +49,8 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the Aml regulated HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val expectedTaxYearStart = EclTaxYear.currentFyStartYear.toString
-      val expectedTaxYearEnd   = EclTaxYear.currentFyFinishYear.toString
+      val expectedTaxYearStart = testEclTaxYear.startYear.toString
+      val expectedTaxYearEnd   = testEclTaxYear.finishYear.toString
       val additionalInfo       = RegistrationAdditionalInfo(testInternalId)
 
       stubGetRegistrationAdditionalInfo(additionalInfo)

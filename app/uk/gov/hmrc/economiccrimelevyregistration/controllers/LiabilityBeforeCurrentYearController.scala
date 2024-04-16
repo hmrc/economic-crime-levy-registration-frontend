@@ -28,7 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, LocalDateService, RegistrationAdditionalInfoService}
-import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityBeforeCurrentYearView}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -59,14 +59,14 @@ class LiabilityBeforeCurrentYearController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData andThen storeUrl) { implicit request =>
-      val eclTaxYear: TempTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
+      val eclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
       Ok(view(form.prepare(request.additionalInfo.flatMap(info => info.liableForPreviousYears)), mode, eclTaxYear))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData).async { implicit request =>
-      val registration            = request.registration
-      val eclTaxYear: TempTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
+      val registration           = request.registration
+      val eclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
       form
         .bindFromRequest()
         .fold(
@@ -174,11 +174,11 @@ class LiabilityBeforeCurrentYearController @Inject() (
   private def getFirstLiabilityYear(
     liableForCurrentFY: Option[Boolean],
     liableForPreviousFY: Boolean
-  ): Option[TempLiabilityYear] = {
-    val eclTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
+  ): Option[LiabilityYear] = {
+    val eclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
     (liableForCurrentFY, liableForPreviousFY) match {
-      case (Some(_), true)     => Some(TempLiabilityYear(eclTaxYear.previous.startYear))
-      case (Some(true), false) => Some(TempLiabilityYear(eclTaxYear.startYear))
+      case (Some(_), true)     => Some(LiabilityYear(eclTaxYear.previous.startYear))
+      case (Some(true), false) => Some(LiabilityYear(eclTaxYear.startYear))
       case _                   => None
     }
   }

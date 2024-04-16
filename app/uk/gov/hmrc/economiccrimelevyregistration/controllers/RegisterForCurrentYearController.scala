@@ -27,10 +27,10 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.RegisterForCurrentYearFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.SessionError
-import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys, TempLiabilityYear}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, LiabilityYear, Mode, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService, SessionService}
-import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegisterForCurrentYearView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -83,7 +83,7 @@ class RegisterForCurrentYearController @Inject() (
         case None    =>
           request.additionalInfo match {
             case Some(value) =>
-              val eclTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
+              val eclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
               Ok(
                 view(
                   form.prepare(value.registeringForCurrentYear),
@@ -99,7 +99,7 @@ class RegisterForCurrentYearController @Inject() (
                 )
               )
             case None        =>
-              val eclTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
+              val eclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
               Ok(
                 view(
                   form,
@@ -120,7 +120,7 @@ class RegisterForCurrentYearController @Inject() (
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
-    val eclTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
+    val eclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
     form
       .bindFromRequest()
       .fold(
@@ -144,7 +144,7 @@ class RegisterForCurrentYearController @Inject() (
             currentAnswer           = additionalInfo.get.liabilityYear.isDefined
             updatedAdditionalInfo   = additionalInfo.get.copy(
                                         registeringForCurrentYear = Some(answer),
-                                        liabilityYear = liabilityYear.map(value => TempLiabilityYear(value))
+                                        liabilityYear = liabilityYear.map(value => LiabilityYear(value))
                                       )
             cleanedUpAdditionalInfo = additionalInfoCleanup(updatedAdditionalInfo)
             _                      <- registrationAdditionalInfoService.upsert(cleanedUpAdditionalInfo).asResponseError

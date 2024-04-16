@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EclAddress, EntityType, GetCorrespondenceAddressDetails, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
-import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
@@ -52,7 +52,7 @@ class EmailService @Inject() (
     hc: HeaderCarrier,
     messages: Messages
   ): ServiceResult[Unit] = {
-    val eclTaxYear       = TempTaxYear.fromCurrentDate(localDateService.now())
+    val eclTaxYear       = EclTaxYear.fromCurrentDate(localDateService.now())
     val eclDueDate       = ViewUtils.formatLocalDate(eclTaxYear.dateDue, translate = false)
     val registrationDate = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)
     val previousFY       =

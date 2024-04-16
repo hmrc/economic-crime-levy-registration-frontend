@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+@import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 @import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.LegendSize
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 
@@ -26,7 +26,7 @@
         button: GovukButton
 )
 
-@(form: Form[Boolean], mode: Mode, eclTaxYear: TempTaxYear)(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], mode: Mode, eclTaxYear: EclTaxYear)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleWithForm(form, messages("amlRegulatedActivity.title", eclTaxYear.startYear.toString, eclTaxYear.finishYear.toString))) {
     @formHelper(action = AmlRegulatedActivityController.onSubmit(mode)) {

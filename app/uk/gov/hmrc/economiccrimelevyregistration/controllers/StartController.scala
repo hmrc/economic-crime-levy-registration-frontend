@@ -19,7 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
-import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.StartView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -34,7 +34,7 @@ class StartController @Inject() (
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    val eclTaxYear: TempTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
+    val eclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
     Ok(view(eclTaxYear))
   }
 }

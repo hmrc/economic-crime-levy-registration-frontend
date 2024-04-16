@@ -19,9 +19,9 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.AuthorisedActionWithoutEnrolmentCheck
-import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionKeys, TempLiabilityYear}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService}
-import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegistrationReceivedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -52,11 +52,11 @@ class RegistrationReceivedController @Inject() (
       registeringForCurrentYear <-
         valueOrError(request.session.get(SessionKeys.registeringForCurrentFY), "Registering for current FY")
       liabilityYear             <- valueOrError(request.session.get(SessionKeys.liabilityYear), "Liability Year")
-      eclTaxYear                 = TempTaxYear.fromCurrentDate(localDateService.now())
+      eclTaxYear                 = EclTaxYear.fromCurrentDate(localDateService.now())
       registrationReceivedView   = view(
                                      firstContactEmailAddress,
                                      secondContactEmailAddress,
-                                     Some(TempLiabilityYear(liabilityYear.toInt)),
+                                     Some(LiabilityYear(liabilityYear.toInt)),
                                      registeringForCurrentYear.toBoolean,
                                      eclTaxYear
                                    )

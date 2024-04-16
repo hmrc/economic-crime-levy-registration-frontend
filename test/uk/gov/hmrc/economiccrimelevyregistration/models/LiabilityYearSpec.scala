@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,116 +16,154 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import org.scalatest.matchers.should.Matchers
+import org.scalatest.prop.{TableFor2, TableFor3}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
 
-class LiabilityYearSpec extends SpecBase with Matchers {
+class LiabilityYearSpec extends SpecBase {
 
-  class setUp(taxYear: Int) {
-    def givenALiabilityStartDateOf(when: LocalDate): LiabilityYear = {
-      val year              = EclTaxYear.taxYearFor(when)
-      val mockLiabilityYear = new LiabilityYear(year.startYear) {
-        override def currentTaxYear(): EclTaxYear = EclTaxYear(taxYear)
-      }
-      mockLiabilityYear
+  private val dueDay                    = 30
+  private val dueDayPlusOne             = 1
+  private val dueMonth                  = 9
+  private val dueMonthPlusOne           = 10
+  private val taxYearStartMonth         = 4
+  private val taxYearStartMonthMinusOne = 3
+  private val taxYearStartDay           = 1
+  private val taxYearStartDayMinusOne   = 31
+
+  val currentTaxYearParameters: TableFor3[LocalDate, Int, EclTaxYear] = Table(
+    (
+      "currentDate",
+      "liabilityYear",
+      "expectedTaxYear"
+    ),
+    (
+      LocalDate.of(2022, taxYearStartMonth, taxYearStartDay),
+      2021,
+      EclTaxYear.fromCurrentDate(LocalDate.of(2022, taxYearStartMonth, taxYearStartDay))
+    ),
+    (
+      LocalDate.of(2022, dueMonthPlusOne, dueDayPlusOne),
+      2022,
+      EclTaxYear.fromCurrentDate(LocalDate.of(2022, dueMonthPlusOne, dueDayPlusOne))
+    )
+  )
+
+  "currentTaxYear" should {
+    "return current tax year for the specified date and liability year" in forAll(currentTaxYearParameters) {
+      (
+        currentDate: LocalDate,
+        liabilityYear,
+        expectedTaxYear: EclTaxYear
+      ) =>
+        val year: LiabilityYear = new LiabilityYear(liabilityYear) {
+          override def now(): LocalDate = currentDate
+        }
+
+        expectedTaxYear shouldBe year.currentTaxYear()
     }
   }
+
+  val followingYearParameters: TableFor2[Int, Int] = Table(
+    (
+      "liabilityYear",
+      "expectedFollowingYear"
+    ),
+    (
+      2021,
+      2022
+    ),
+    (
+      2022,
+      2023
+    )
+  )
+
+  "followingYear" should {
+    "return following liability year" in forAll(followingYearParameters) {
+      (
+        liabilityYear: Int,
+        expectedFollowingYear: Int
+      ) =>
+        val year = LiabilityYear(liabilityYear)
+
+        expectedFollowingYear.toString shouldBe year.followingYear
+    }
+  }
+
+  val asStringParameters: TableFor2[Int, String] = Table(
+    (
+      "liabilityYear",
+      "expectedYearAsString"
+    ),
+    (
+      2021,
+      "2021"
+    ),
+    (
+      2022,
+      "2022"
+    )
+  )
+
+  "asString" should {
+    "return liability year as string" in forAll(asStringParameters) {
+      (
+        liabilityYear,
+        expectedLiabilityYearAsString
+      ) =>
+        val year = LiabilityYear(liabilityYear)
+
+        expectedLiabilityYearAsString shouldBe year.asString
+    }
+
+  }
+
+  val isCurrentFYParameters: TableFor3[Int, LocalDate, Boolean] = Table(
+    ("liabilityYear", "currentDate", "expectedIsCurrentFy"),
+    (2022, LocalDate.of(2023, taxYearStartMonthMinusOne, taxYearStartDayMinusOne), true),
+    (2022, LocalDate.of(2023, taxYearStartMonth, taxYearStartDay), true),
+    (2023, LocalDate.of(2023, dueMonthPlusOne, dueDayPlusOne), true),
+    (2023, LocalDate.of(2023, dueMonth, dueDay), false)
+  )
 
   "isCurrentFY" should {
-    "return true if liability start date is set to 10th Feb 2023 and the current tax year is 2022" in new setUp(2022) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2023, 2, 10))
-      liabilityYear.isCurrentFY shouldBe true
-      liabilityYear.asString    shouldBe "2022"
-    }
+    "returns the expected isCurrentFY" in forAll(isCurrentFYParameters) {
+      (
+        liabilityYear: Int,
+        currentDate: LocalDate,
+        expectedIsCurrentFy: Boolean
+      ) =>
+        val year: LiabilityYear = new LiabilityYear(liabilityYear) {
+          override def now(): LocalDate = currentDate
+        }
 
-    "return true if liability start date is set to 10th Feb 2024 and the current tax year is 2023" in new setUp(2023) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 2, 10))
-      liabilityYear.isCurrentFY shouldBe true
-      liabilityYear.asString    shouldBe "2023"
-    }
-
-    "return false if liability start date is set to 10th Feb 2024 and the current tax year is 2024" in new setUp(2024) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 2, 10))
-      liabilityYear.isCurrentFY shouldBe false
-      liabilityYear.asString    shouldBe "2023"
-    }
-
-    "return false if liability start date is set to 31st Mar 2024 and the current tax year is 2024" in new setUp(2024) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 3, 31))
-      liabilityYear.isCurrentFY shouldBe false
-      liabilityYear.asString    shouldBe "2023"
-    }
-
-    "return true if liability start date is set to 6th Apr 2024 and the current tax year is 2024" in new setUp(2024) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 4, 6))
-      liabilityYear.isCurrentFY shouldBe true
-      liabilityYear.asString    shouldBe "2024"
-    }
-
-    "return true if liability start date is set to 14th Apr 2029 and the current tax year is 2029" in new setUp(2029) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2029, 4, 14))
-      liabilityYear.isCurrentFY shouldBe true
-      liabilityYear.asString    shouldBe "2029"
-    }
-
-    "return true if liability start date is set to 20th Dec 2024 and the current tax year is 2024" in new setUp(2024) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 12, 20))
-      liabilityYear.isCurrentFY shouldBe true
-      liabilityYear.asString    shouldBe "2024"
-    }
-
-    "return false if liability start date is set to 29th Feb 2024 and the current tax year is 2026" in new setUp(2026) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 2, 29))
-      liabilityYear.isCurrentFY shouldBe false
-      liabilityYear.asString    shouldBe "2023"
+        expectedIsCurrentFy shouldBe year.isCurrentFY
     }
   }
+
+  val isNotCurrentFYParameters: TableFor3[Int, LocalDate, Boolean] = Table(
+    ("liabilityYear", "currentDate", "expectedIsNotCurrentFY"),
+    (2022, LocalDate.of(2023, taxYearStartMonthMinusOne, taxYearStartDayMinusOne), false),
+    (2022, LocalDate.of(2023, taxYearStartMonth, taxYearStartDay), false),
+    (2023, LocalDate.of(2023, dueMonthPlusOne, dueDayPlusOne), false),
+    (2023, LocalDate.of(2023, dueMonth, dueDay), true)
+  )
 
   "isNotCurrentFY" should {
-    "return false if liability start date is set to 12th Apr 2022 and the current tax year is 2022" in new setUp(2022) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2022, 4, 12))
-      liabilityYear.isNotCurrentFY shouldBe false
-      liabilityYear.asString       shouldBe "2022"
-    }
+    "returns the expected isNotCurrentFY" in forAll(isNotCurrentFYParameters) {
+      (
+        liabilityYear: Int,
+        currentDate: LocalDate,
+        expectedIsNotCurrentFY: Boolean
+      ) =>
+        val year: LiabilityYear = new LiabilityYear(liabilityYear) {
+          override def now(): LocalDate = currentDate
+        }
 
-    "return false if liability start date is set to 22nd Jul 2024 and the current tax year is 2023" in new setUp(2023) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 7, 22))
-      liabilityYear.isNotCurrentFY shouldBe false
-      liabilityYear.asString       shouldBe "2024"
-    }
-
-    "return false if liability start date is set to 10th Sep 2024 and the current tax year is 2024" in new setUp(2024) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 9, 10))
-      liabilityYear.isNotCurrentFY shouldBe false
-      liabilityYear.asString       shouldBe "2024"
-    }
-
-    "return true if liability start date is set to 31st Mar 2024 and the current tax year is 2024" in new setUp(2024) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 3, 31))
-      liabilityYear.isNotCurrentFY shouldBe true
-      liabilityYear.asString       shouldBe "2023"
-    }
-
-    "return true if liability start date is set to 31 Aug 2024 and the current tax year is 2025" in new setUp(2025) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2024, 8, 31))
-      liabilityYear.isNotCurrentFY shouldBe true
-      liabilityYear.asString       shouldBe "2024"
-    }
-
-    "return true if liability start date is set to 20th Nov 2023 and the current tax year is 2024" in new setUp(2024) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2023, 11, 20))
-      liabilityYear.isNotCurrentFY shouldBe true
-      liabilityYear.asString       shouldBe "2023"
-    }
-
-    "return false if liability start date is set to 16th Oct 2028 and the current tax year is 2028" in new setUp(2028) {
-      val liabilityYear: LiabilityYear = givenALiabilityStartDateOf(LocalDate.of(2028, 10, 16))
-      liabilityYear.isNotCurrentFY shouldBe false
-      liabilityYear.asString       shouldBe "2028"
+        expectedIsNotCurrentFY shouldBe year.isNotCurrentFY
     }
   }
-
 }

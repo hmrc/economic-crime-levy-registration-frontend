@@ -19,10 +19,10 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{AuthorisedActionWithoutEnrolmentCheck, RegistrationDataAction}
-import uk.gov.hmrc.economiccrimelevyregistration.models.{SessionKeys, TempLiabilityYear}
+import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService}
-import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{OutOfSessionRegistrationSubmittedView, RegistrationSubmittedView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -71,7 +71,7 @@ class RegistrationSubmittedController @Inject() (
       .fold(
         _ => Redirect(routes.NotableErrorController.answersAreInvalid()),
         data => {
-          val eclTaxYear: TempTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
+          val eclTaxYear: EclTaxYear  = EclTaxYear.fromCurrentDate(localDateService.now())
           val liabilityYear           = data._1.toInt
           val firstContactEmail       = data._2
           val secondContactEmail      = data._3
@@ -81,7 +81,7 @@ class RegistrationSubmittedController @Inject() (
               eclReference,
               firstContactEmail,
               secondContactEmail,
-              Some(TempLiabilityYear(liabilityYear)),
+              Some(LiabilityYear(liabilityYear)),
               Some(registeringForCurrentFY),
               eclTaxYear
             )
@@ -92,8 +92,8 @@ class RegistrationSubmittedController @Inject() (
   private def outOfSessionRouting(eclReference: String)(implicit
     request: RegistrationDataRequest[_]
   ): Future[Result] = {
-    val eclTaxYear              = TempTaxYear.fromCurrentDate(localDateService.now())
-    val liabilityYear           = request.session.get(SessionKeys.liabilityYear).map(year => TempLiabilityYear(year.toInt))
+    val eclTaxYear              = EclTaxYear.fromCurrentDate(localDateService.now())
+    val liabilityYear           = request.session.get(SessionKeys.liabilityYear).map(year => LiabilityYear(year.toInt))
     val registeringForCurrentFY = request.session.get(SessionKeys.registeringForCurrentFY).map(_.toBoolean)
 
     Future.successful(

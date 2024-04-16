@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.models
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
+import java.time.LocalDate
+
 case class LiabilityYear(value: Int) {
-  def currentTaxYear(): EclTaxYear = EclTaxYear.current
+  def now(): LocalDate             = LocalDate.now()
+  def currentTaxYear(): EclTaxYear = EclTaxYear.fromCurrentDate(now())
   val followingYear: String        = (value + 1).toString
   val asString: String             = value.toString
-  val isCurrentFY: Boolean         = value == currentTaxYear().startYear || value == currentTaxYear().finishYear
+  val isCurrentFY: Boolean         = value == currentTaxYear().startYear
   val isNotCurrentFY: Boolean      = !isCurrentFY
-
 }
 
 object LiabilityYear {

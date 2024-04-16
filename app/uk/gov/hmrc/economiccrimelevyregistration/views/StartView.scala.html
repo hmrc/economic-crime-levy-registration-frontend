@@ -15,7 +15,7 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
-@import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+@import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 
 @this(
@@ -25,7 +25,7 @@
         appConfig: AppConfig
 )
 
-@(eclTaxYear: TempTaxYear)(implicit request: Request[_], messages: Messages)
+@(eclTaxYear: EclTaxYear)(implicit request: Request[_], messages: Messages)
 
 
 @layout(

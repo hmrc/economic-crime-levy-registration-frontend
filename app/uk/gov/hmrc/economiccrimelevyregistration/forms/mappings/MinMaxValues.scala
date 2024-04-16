@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
 
-import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
 
 object MinMaxValues {
   val eclStartDate: LocalDate =
-    LocalDate.of(TempTaxYear.eclInitialYear, TempTaxYear.eclStartMonth, TempTaxYear.eclStartDay)
+    LocalDate.of(EclTaxYear.eclInitialYear, EclTaxYear.eclStartMonth, EclTaxYear.eclStartDay)
   val minDays                 = 1
   val maxDays                 = 999
   val minRevenue: BigDecimal  = 0

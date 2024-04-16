@@ -25,7 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, Mode, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlRegulatedActivityPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService}
-import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{AmlRegulatedActivityView, ErrorTemplate}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -54,12 +54,12 @@ class AmlRegulatedActivityController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
     implicit request =>
-      val eclTaxYear: TempTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
+      val eclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
       Ok(view(form.prepare(request.registration.carriedOutAmlRegulatedActivityInCurrentFy), mode, eclTaxYear))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
-    val eclTaxYear: TempTaxYear = TempTaxYear.fromCurrentDate(localDateService.now())
+    val eclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
     form
       .bindFromRequest()
       .fold(

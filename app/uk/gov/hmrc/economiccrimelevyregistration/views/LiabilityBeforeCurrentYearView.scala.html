@@ -15,7 +15,7 @@
  *@
 
 @import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
-@import uk.gov.hmrc.economiccrimelevyregistration.utils.TempTaxYear
+@import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 @import uk.gov.hmrc.economiccrimelevyregistration.views.html.templates.Layout
 @import uk.gov.hmrc.govukfrontend.views.html.components.{GovukRadios, _}
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
@@ -29,7 +29,7 @@
         errorSummary: GovukErrorSummary
 )
 
-@(form: Form[Boolean], mode: Mode, eclTaxYear: TempTaxYear)(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], mode: Mode, eclTaxYear: EclTaxYear)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = titleWithForm(form, messages("liabilityBeforeCurrentYear.title")),

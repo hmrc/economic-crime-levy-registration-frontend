@@ -38,10 +38,12 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
 import uk.gov.hmrc.economiccrimelevyregistration.handlers.ErrorHandler
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationAdditionalInfo}
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpVerbs.GET
 
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext
 
 trait SpecBase
@@ -81,6 +83,9 @@ trait SpecBase
   implicit val errorTemplate: ErrorTemplate            = app.injector.instanceOf[ErrorTemplate]
   val config: Config                                   = app.injector.instanceOf[Config]
   val actorSystem: ActorSystem                         = ActorSystem("actor")
+
+  val testCurrentDate: LocalDate = LocalDate.of(2024, 10, 1)
+  val testEclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(testCurrentDate)
 
   def fakeAuthorisedActionWithEnrolmentCheck(internalId: String, eclRegistrationReference: Option[String] = None) =
     new FakeAuthorisedActionWithEnrolmentCheck(internalId, bodyParsers, eclRegistrationReference)
