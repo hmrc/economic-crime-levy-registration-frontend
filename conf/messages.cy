@@ -422,7 +422,7 @@ groupAlreadyEnrolled.body.p1 = Eich cyfeirnod ECL yw {0}.
 groupAlreadyEnrolled.body.p2 = Gallwch wneud y canlynol: {0}.
 groupAlreadyEnrolled.body.p2.link = <a href="{0}" class="govuk-link">ychwanegu’r ardoll hwn i’ch cyfrif treth busnes</a>
 
-agentCannotRegister.title = Ni allwch ddefnyddio’r gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd - Ardoll Troseddau Economaidd - GOV.UK
+agentCannotRegister.title = Ni allwch ddefnyddio’r gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd
 agentCannotRegister.heading = Ni allwch ddefnyddio’r gwasanaeth hwn i gofrestru ar gyfer yr Ardoll Troseddau Economaidd
 agentCannotRegister.p1 = Ni all asiantau cwblhau cofrestriad ar gyfer yr Ardoll Troseddau Economaidd (ECL) ar ran cleient.
 agentCannotRegister.p2 = Rhaid i''ch cleient gofrestru gan ddefnyddio ei ID defnyddiwr a''i gyfrinair ei hun.
