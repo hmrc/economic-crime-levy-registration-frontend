@@ -425,7 +425,7 @@ groupAlreadyEnrolled.body.p2.link = <a href="{0}" class="govuk-link">add this le
 agentCannotRegister.title = You cannot use this service to register for the Economic Crime Levy
 agentCannotRegister.heading = You cannot use this service to register for the Economic Crime Levy
 agentCannotRegister.p1 = Agents cannot complete an Economic Crime Levy (ECL) registration on behalf of a client.
-agentCannotRegister.p2 = Your client must register using their own Government Gateway ID.
+agentCannotRegister.p2 = Your client must register using their own user ID and password.
 agentCannotRegister.p3 = Go to your {0}.
 agentCannotRegister.p3.link = <a href="https://www.gov.uk/guidance/sign-in-to-your-agent-services-account" class="govuk-link">agent services account</a>
 
