@@ -267,7 +267,7 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
         val result         = isBeforeCurrentTaxYearStart(mockLocalDateService, "liability.date.error.before")(testDate)
         val expectedResult = isValid match {
           case true  => Valid
-          case false => Invalid("liability.date.error.before", EclTaxYear.fromDate(fromDate).startYear)
+          case false => Invalid("liability.date.error.before", EclTaxYear.fromDate(fromDate).startYear.toString)
         }
         result shouldEqual expectedResult
     }
