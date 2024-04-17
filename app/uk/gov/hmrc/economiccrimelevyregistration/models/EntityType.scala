@@ -71,7 +71,7 @@ object EntityType {
           id = Some(s"value_$index")
         )
       }
-      .sortBy(_.content.toString)
+      .sortBy(_.id.toString)
 
   implicit val enumerable: Enumerable[EntityType] = Enumerable(values.map(v => (v.toString, v)): _*)
 

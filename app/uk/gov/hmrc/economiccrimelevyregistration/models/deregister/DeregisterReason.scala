@@ -59,7 +59,7 @@ object DeregisterReason {
           id = Some(s"value_$index")
         )
       }
-      .sortBy(_.content.toString)
+      .sortBy(_.id.toString)
 
   implicit val enumerable: Enumerable[DeregisterReason] = Enumerable(values.map(v => (v.toString, v)): _*)
 }
