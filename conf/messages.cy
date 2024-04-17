@@ -386,7 +386,7 @@ checkYourAnswers.amendReason.title = Rheswm dros ddiwygio
 checkYourAnswers.amendReason.label = Gwybodaeth ychwanegol
 checkYourAnswers.cancel = <a href="{0}" class="govuk-link">Canslo’r diwygiad hwn</a>
 checkYourAnswers.amendedAnswers = Atebion sydd wedi’u diwygio
-checkYourAnswers.nowSend = Anfonwch eich cofrestriad nawr
+checkYourAnswers.nowSendAmend = Ewch ati i anfon eich cofrestriad diwygiedig nawr
 checkYourAnswers.bySending = Drwy gyflwyno’r cais hwn i ddiwygio’ch cofrestriad, rydych yn cadarnhau, hyd eithaf eich gwybodaeth, fod y manylion a rowch yn gywir.
 checkYourAnswers.submittingRequest = Wrthi’n cyflwyno’ch cais i ddiwygio’ch cofrestriad
 checkYourAnswers.notMadeChanges = Ni allwch gyflwyno'r cais hwn gan nad ydych wedi gwneud unrhyw newidiadau.
