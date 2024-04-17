@@ -16,15 +16,26 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
+import org.mockito.Mockito.when
+import org.mockito.MockitoSugar.mock
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.DateBehaviours
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MinMaxValues
+import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
 
 class LiabilityDateFormProviderSpec extends DateBehaviours {
 
-  val form = new LiabilityDateFormProvider()()
+  val testCurrentDate: LocalDate = LocalDate.of(2024, 10, 1)
+  val testEclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(testCurrentDate)
+
+  val mockLocalDateService: LocalDateService = mock[LocalDateService]
+
+  when(mockLocalDateService.now()).thenReturn(testCurrentDate)
+
+  val form = new LiabilityDateFormProvider()(mockLocalDateService)
 
   "value" should {
     val fieldName   = "value"

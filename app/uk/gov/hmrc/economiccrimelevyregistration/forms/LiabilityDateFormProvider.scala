@@ -18,6 +18,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.{Mappings, MinMaxValues}
+import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
 
 import java.time.LocalDate
 
@@ -30,7 +31,7 @@ class LiabilityDateFormProvider extends Mappings {
       None
     }
 
-  def apply(): Form[LocalDate] =
+  def apply(localDateService: LocalDateService): Form[LocalDate] =
     Form(
       "value" -> localDate(
         invalidKey = "liability.date.error.invalid",
@@ -38,6 +39,6 @@ class LiabilityDateFormProvider extends Mappings {
         removeSpaces,
         minDateConstraint = Some(minDate(MinMaxValues.eclStartDate, "liability.date.error.early.date")),
         maxDateConstraint = Some(maxDate(LocalDate.now(), "liability.date.error.future.date"))
-      )
+      ).verifying(isBeforeCurrentTaxYearStart(localDateService, "liability.date.error.before"))
     )
 }

@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityDatePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{LocalDateService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityDateView
 
 import java.time.LocalDate
@@ -37,8 +37,12 @@ import scala.concurrent.Future
 
 class LiabilityDateControllerSpec extends SpecBase {
 
+  val mockLocalDateService: LocalDateService = mock[LocalDateService]
+
+  when(mockLocalDateService.now()).thenReturn(testCurrentDate)
+
   val formProvider          = new LiabilityDateFormProvider()
-  val form: Form[LocalDate] = formProvider()
+  val form: Form[LocalDate] = formProvider(mockLocalDateService)
 
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
   val view: LiabilityDateView                                                  = app.injector.instanceOf[LiabilityDateView]
@@ -63,7 +67,8 @@ class LiabilityDateControllerSpec extends SpecBase {
       mockRegistrationAdditionalInfoService,
       formProvider,
       pageNavigator,
-      view
+      view,
+      mockLocalDateService
     )
   }
 

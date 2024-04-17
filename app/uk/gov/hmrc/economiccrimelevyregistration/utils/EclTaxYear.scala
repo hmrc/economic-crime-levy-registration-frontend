@@ -31,6 +31,13 @@ case class EclTaxYear(startYear: Int) {
 
   lazy val startDate: LocalDate  = LocalDate.of(startYear, EclTaxYear.eclStartMonth, EclTaxYear.eclStartDay)
   lazy val finishDate: LocalDate = LocalDate.of(finishYear, EclTaxYear.eclFinishMonth, EclTaxYear.eclFinishDay)
+
+  def isBetweenStartDateAndDateDue(date: LocalDate): Boolean = {
+    val startDateMinusOne = startDate.minusDays(1)
+    val dateDuePlusOne    = dateDue.plusDays(1)
+    date.isAfter(startDateMinusOne) && date.isBefore(dateDuePlusOne)
+  }
+
 }
 
 object EclTaxYear {

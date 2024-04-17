@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.utils
 
-import org.scalatest.prop.TableFor6
+import org.scalatest.prop.{TableFor3, TableFor6}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 
 import java.time.LocalDate
@@ -35,7 +35,7 @@ class EclTaxYearSpec extends SpecBase {
   val fromCurrentDateTestParameters: TableFor6[LocalDate, Int, Int, LocalDate, LocalDate, LocalDate] = Table(
     (
       "currentDate",
-      "expectedStartyear",
+      "expectedStartYear",
       "expectedFinishYear",
       "expectedDateDue",
       "expectedStartDate",
@@ -126,7 +126,7 @@ class EclTaxYearSpec extends SpecBase {
   val previousFromCurrentDateTestParameters: TableFor6[LocalDate, Int, Int, LocalDate, LocalDate, LocalDate] = Table(
     (
       "currentDate",
-      "expectedPreviousStartyear",
+      "expectedPreviousStartYear",
       "expectedPreviousFinishYear",
       "expectedPreviousDateDue",
       "expectedStartDate",
@@ -236,7 +236,7 @@ class EclTaxYearSpec extends SpecBase {
     "return expected previous start and finish year and dateDue" in forAll(previousFromCurrentDateTestParameters) {
       (
         currentDate: LocalDate,
-        expectedPreviousStartyear: Int,
+        expectedPreviousStartYear: Int,
         expectedPreviousFinishYear: Int,
         expectedPreviousDateDue: LocalDate,
         expectedStartDate: LocalDate,
@@ -244,7 +244,7 @@ class EclTaxYearSpec extends SpecBase {
       ) =>
         val eclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(currentDate).previous
 
-        expectedPreviousStartyear  shouldBe eclTaxYear.startYear
+        expectedPreviousStartYear  shouldBe eclTaxYear.startYear
         expectedPreviousFinishYear shouldBe eclTaxYear.finishYear
         expectedPreviousDateDue    shouldBe eclTaxYear.dateDue
         expectedStartDate          shouldBe eclTaxYear.startDate
@@ -253,7 +253,7 @@ class EclTaxYearSpec extends SpecBase {
   }
 
   val fromDateTestParameters: TableFor6[LocalDate, Int, Int, LocalDate, LocalDate, LocalDate] = Table(
-    ("date", "expectedStartyear", "expectedFinishYear", "expectedDueDate", "expectedStartDate", "expectedFinishDate"),
+    ("date", "expectedStartYear", "expectedFinishYear", "expectedDueDate", "expectedStartDate", "expectedFinishDate"),
     (
       LocalDate.of(2022, taxYearStartMonthMinusOne, taxYearStartDayMinusOne),
       2021,
@@ -353,7 +353,7 @@ class EclTaxYearSpec extends SpecBase {
   )
 
   val previousFromDateTestParameters: TableFor6[LocalDate, Int, Int, LocalDate, LocalDate, LocalDate] = Table(
-    ("date", "expectedStartyear", "expectedFinishYear", "expectedDueDate", "expectedStartDate", "expectedFinishDate"),
+    ("date", "expectedStartYear", "expectedFinishYear", "expectedDueDate", "expectedStartDate", "expectedFinishDate"),
     (
       LocalDate.of(2022, taxYearStartMonthMinusOne, taxYearStartDayMinusOne),
       2020,
@@ -707,6 +707,28 @@ class EclTaxYearSpec extends SpecBase {
         expectedDateDue    shouldBe eclTaxYear.dateDue
         expectedStartDate  shouldBe eclTaxYear.startDate
         expectedFinishDate shouldBe eclTaxYear.finishDate
+    }
+  }
+
+  val isBetweenStartDateAndDateDueParameters: TableFor3[LocalDate, LocalDate, Boolean] = Table(
+    ("currentDate", "testDate", "isBetweenStartDateAndDateDue"),
+    (LocalDate.of(2024, 4, 17), LocalDate.of(2024, 4, 1), false),
+    (LocalDate.of(2024, 10, 1), LocalDate.of(2024, 1, 1), true),
+    (LocalDate.of(2024, 10, 1), LocalDate.of(2023, 1, 1), true)
+  )
+
+  "isBetweenStartDateAndDateDue" should {
+    "return whether the test date is between current tax year start date and date due" in forAll(
+      isBetweenStartDateAndDateDueParameters
+    ) {
+      (
+        currentDate: LocalDate,
+        testDate: LocalDate,
+        expectedResult: Boolean
+      ) =>
+        val eclTaxYear = EclTaxYear.fromCurrentDate(currentDate)
+        val result     = eclTaxYear.isBetweenStartDateAndDateDue(testDate)
+        result shouldEqual expectedResult
     }
   }
 }
