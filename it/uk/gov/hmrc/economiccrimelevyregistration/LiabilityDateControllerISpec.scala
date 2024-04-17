@@ -50,7 +50,7 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
       "save the entered date then redirect to the check your answers page" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val date = LocalDate.now()
+        val date = LocalDate.now().minusYears(1).withDayOfYear(1)
         val year = EclTaxYear.fromDate(date)
 
         val registration = random[Registration]

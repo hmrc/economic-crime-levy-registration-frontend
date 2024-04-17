@@ -29,7 +29,6 @@ import java.time.LocalDate
 class LiabilityDateFormProviderSpec extends DateBehaviours {
 
   val testCurrentDate: LocalDate = LocalDate.of(2024, 10, 1)
-  val testEclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(testCurrentDate)
 
   val mockLocalDateService: LocalDateService = mock[LocalDateService]
 
@@ -46,7 +45,10 @@ class LiabilityDateFormProviderSpec extends DateBehaviours {
     behave like dateField(
       form,
       fieldName,
-      datesBetween(MinMaxValues.eclStartDate, LocalDate.now())
+      datesBetween(
+        MinMaxValues.eclStartDate,
+        EclTaxYear.fromDate(testCurrentDate).previous.dateDue.minusDays(1)
+      )
     )
 
     behave like mandatoryDateField(
