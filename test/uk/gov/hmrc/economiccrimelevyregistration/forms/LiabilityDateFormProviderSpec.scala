@@ -47,7 +47,7 @@ class LiabilityDateFormProviderSpec extends DateBehaviours {
       fieldName,
       datesBetween(
         MinMaxValues.eclStartDate,
-        EclTaxYear.fromDate(testCurrentDate).previous.dateDue.minusDays(1)
+        EclTaxYear.fromDate(testCurrentDate).startDate.minusDays(1)
       )
     )
 
@@ -71,7 +71,7 @@ class LiabilityDateFormProviderSpec extends DateBehaviours {
     behave like dateFieldWithMax(
       form,
       fieldName,
-      LocalDate.now(),
+      EclTaxYear.fromDate(testCurrentDate).startDate.minusDays(1),
       Seq(
         FormError(s"$fieldName.day", futureKey),
         FormError(s"$fieldName.month", futureKey),
