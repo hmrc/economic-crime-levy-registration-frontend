@@ -21,6 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 trait Constraints {
 
@@ -106,7 +107,7 @@ trait Constraints {
 
     Constraint {
       case date if eclTaxYear.isBetweenStartDateAndPreviousDateDue(date) =>
-        Invalid(errorKey, eclTaxYear.startYear)
+        Invalid(errorKey, eclTaxYear.startYear.toString)
       case _                                                             =>
         Valid
     }
