@@ -26,7 +26,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{AmendRegistrationSubmittedEmailParameters, DeregistrationRequestedEmailParameters, RegistrationSubmittedEmailParameters}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contacts, EclAddress, EntityType, GetCorrespondenceAddressDetails}
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
@@ -35,9 +34,13 @@ import scala.concurrent.Future
 
 class EmailServiceSpec extends SpecBase {
 
-  val mockEmailConnector: EmailConnector = mock[EmailConnector]
-  val service                            = new EmailService(mockEmailConnector)
-  private val entityType                 = Some(random[EntityType])
+  val mockLocalDateService: LocalDateService = mock[LocalDateService]
+  val mockEmailConnector: EmailConnector     = mock[EmailConnector]
+
+  when(mockLocalDateService.now()).thenReturn(testCurrentDate)
+
+  val service            = new EmailService(mockEmailConnector, mockLocalDateService)
+  private val entityType = Some(random[EntityType])
 
   "sendRegistrationSubmittedEmails" should {
     "send an email for the first contact and return unit" in forAll {
@@ -52,7 +55,7 @@ class EmailServiceSpec extends SpecBase {
           firstContactName,
           eclRegistrationReference,
           ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
-          ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages),
+          ViewUtils.formatLocalDate(testEclTaxYear.dateDue, translate = false)(messages),
           "true",
           None,
           None,
@@ -106,7 +109,7 @@ class EmailServiceSpec extends SpecBase {
             contacts.secondContactDetails.copy(name = Some(secondContactName), emailAddress = Some(secondContactEmail))
         )
 
-        val eclDueDate = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages)
+        val eclDueDate = ViewUtils.formatLocalDate(testEclTaxYear.dateDue, translate = false)(messages)
 
         val expectedFirstContactParams = RegistrationSubmittedEmailParameters(
           firstContactName,
@@ -183,7 +186,7 @@ class EmailServiceSpec extends SpecBase {
           firstContactName,
           eclRegistrationReference,
           ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
-          ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages),
+          ViewUtils.formatLocalDate(testEclTaxYear.dateDue, translate = false)(messages),
           "true",
           None,
           None,
@@ -233,7 +236,7 @@ class EmailServiceSpec extends SpecBase {
           firstContactName,
           eclRegistrationReference,
           ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
-          ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages),
+          ViewUtils.formatLocalDate(testEclTaxYear.dateDue, translate = false)(messages),
           "true",
           None,
           None,
@@ -284,7 +287,7 @@ class EmailServiceSpec extends SpecBase {
           firstContactName,
           eclRegistrationReference,
           ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(messages),
-          ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(messages),
+          ViewUtils.formatLocalDate(testEclTaxYear.dateDue, translate = false)(messages),
           "true",
           None,
           None,

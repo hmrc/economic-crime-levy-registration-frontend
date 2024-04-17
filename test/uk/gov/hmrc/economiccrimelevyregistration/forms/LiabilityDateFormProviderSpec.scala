@@ -16,15 +16,25 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
+import org.mockito.Mockito.when
+import org.mockito.MockitoSugar.mock
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.DateBehaviours
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MinMaxValues
+import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
 
 class LiabilityDateFormProviderSpec extends DateBehaviours {
 
-  val form = new LiabilityDateFormProvider()()
+  val testCurrentDate: LocalDate = LocalDate.of(2024, 10, 1)
+
+  val mockLocalDateService: LocalDateService = mock[LocalDateService]
+
+  when(mockLocalDateService.now()).thenReturn(testCurrentDate)
+
+  val form = new LiabilityDateFormProvider()(mockLocalDateService)
 
   "value" should {
     val fieldName   = "value"
@@ -35,7 +45,10 @@ class LiabilityDateFormProviderSpec extends DateBehaviours {
     behave like dateField(
       form,
       fieldName,
-      datesBetween(MinMaxValues.eclStartDate, LocalDate.now())
+      datesBetween(
+        MinMaxValues.eclStartDate,
+        EclTaxYear.fromDate(testCurrentDate).startDate.minusDays(1)
+      )
     )
 
     behave like mandatoryDateField(
@@ -58,7 +71,7 @@ class LiabilityDateFormProviderSpec extends DateBehaviours {
     behave like dateFieldWithMax(
       form,
       fieldName,
-      LocalDate.now(),
+      EclTaxYear.fromDate(testCurrentDate).startDate.minusDays(1),
       Seq(
         FormError(s"$fieldName.day", futureKey),
         FormError(s"$fieldName.month", futureKey),

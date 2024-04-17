@@ -737,6 +737,7 @@ liability.date.hint = Dyma’r dyddiad y gwnaethoch ddechrau gweithgareddau a re
 liability.date.label = Dyddiad cychwyn atebolrwydd
 liability.date.error.future.date = Mae’n rhaid i’r dyddiad fod yn y gorffennol
 liability.date.error.early.date = Mae’n rhaid i’r dyddiad fod ar ôl 1 Ebrill 2022
+liability.date.error.before = Rhaid i’r dyddiad fod cyn 31 Mawrth {0}
 liability.date.error.required = Nodwch y dyddiad pan ddaethoch yn agored i ECL
 liability.date.error.invalid = Rhowch ddyddiad dilys
 

@@ -17,8 +17,11 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
 
 import play.api.data.validation.{Constraint, Invalid, Valid}
+import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 trait Constraints {
 
@@ -94,6 +97,21 @@ trait Constraints {
       case _                              =>
         Valid
     }
+
+  protected def isBeforeCurrentTaxYearStart(
+    localDateService: LocalDateService,
+    errorKey: String
+  ): Constraint[LocalDate] = {
+    val now        = localDateService.now()
+    val eclTaxYear = EclTaxYear.fromDate(now)
+
+    Constraint {
+      case date if eclTaxYear.isBetweenStartDateAndPreviousDateDue(date) =>
+        Invalid(errorKey, eclTaxYear.startYear.toString)
+      case _                                                             =>
+        Valid
+    }
+  }
 
   protected def telephoneNumber(max: Int, maxLengthKey: String, invalidKey: String): Constraint[String] = Constraint {
     s =>

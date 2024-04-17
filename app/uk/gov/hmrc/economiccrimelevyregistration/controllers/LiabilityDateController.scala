@@ -24,7 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityDateFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, LiabilityYear, Mode, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityDatePageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.RegistrationAdditionalInfoService
+import uk.gov.hmrc.economiccrimelevyregistration.services.{LocalDateService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityDateView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -41,13 +41,16 @@ class LiabilityDateController @Inject() (
   registrationAdditionalInfoService: RegistrationAdditionalInfoService,
   formProvider: LiabilityDateFormProvider,
   pageNavigator: LiabilityDatePageNavigator,
-  view: LiabilityDateView
+  view: LiabilityDateView,
+  localDateService: LocalDateService
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with ErrorHandler
     with BaseController {
-  val form: Form[LocalDate]                      = formProvider()
+
+  val form: Form[LocalDate] = formProvider(localDateService)
+
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
     implicit request =>
       request.additionalInfo match {
@@ -63,7 +66,7 @@ class LiabilityDateController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(mode, formWithErrors))),
           liabilityDate => {
-            val year           = EclTaxYear.taxYearFor(liabilityDate)
+            val year           = EclTaxYear.fromDate(liabilityDate)
             val registration   = request.registration
             val additionalInfo = request.additionalInfo.get.copy(
               liabilityStartDate = Some(liabilityDate),

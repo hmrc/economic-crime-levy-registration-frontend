@@ -29,7 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.SessionError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, LiabilityYear, Mode, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, RegisterForCurrentYearView}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -48,14 +48,15 @@ class RegisterForCurrentYearController @Inject() (
   pageNavigator: RegisterForCurrentYearPageNavigator,
   registrationDataCleanup: LiabilityDateRegistrationCleanup,
   additionalInfoDataCleanup: LiabilityDateAdditionalInfoCleanup,
-  view: RegisterForCurrentYearView
+  view: RegisterForCurrentYearView,
+  localDateService: LocalDateService
 )(implicit ec: ExecutionContext, errorTemplate: ErrorTemplate)
     extends FrontendBaseController
     with I18nSupport
     with BaseController
     with ErrorHandler {
 
-  val form: Form[Boolean] = formProvider()
+  val form: Form[Boolean] = formProvider(localDateService)
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
     (for {
@@ -82,14 +83,15 @@ class RegisterForCurrentYearController @Inject() (
         case None    =>
           request.additionalInfo match {
             case Some(value) =>
+              val eclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
               Ok(
                 view(
                   form.prepare(value.registeringForCurrentYear),
                   mode,
-                  EclTaxYear.currentStartYear().toString,
-                  EclTaxYear.currentFinishYear().toString,
-                  EclTaxYear.currentFinancialYearStartDate,
-                  EclTaxYear.currentFinancialYearFinishDate
+                  eclTaxYear.startYear.toString,
+                  eclTaxYear.finishYear.toString,
+                  eclTaxYear.startDate,
+                  eclTaxYear.finishDate
                 )
               ).withSession(
                 request.session ++ Seq(
@@ -97,14 +99,15 @@ class RegisterForCurrentYearController @Inject() (
                 )
               )
             case None        =>
+              val eclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
               Ok(
                 view(
                   form,
                   mode,
-                  EclTaxYear.currentStartYear().toString,
-                  EclTaxYear.currentFinishYear().toString,
-                  EclTaxYear.currentFinancialYearStartDate,
-                  EclTaxYear.currentFinancialYearFinishDate
+                  eclTaxYear.startYear.toString,
+                  eclTaxYear.finishYear.toString,
+                  eclTaxYear.startDate,
+                  eclTaxYear.finishDate
                 )
               ).withSession(
                 request.session ++ Seq(
@@ -117,6 +120,7 @@ class RegisterForCurrentYearController @Inject() (
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData).async { implicit request =>
+    val eclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
     form
       .bindFromRequest()
       .fold(
@@ -126,17 +130,17 @@ class RegisterForCurrentYearController @Inject() (
               view(
                 formWithErrors,
                 mode,
-                EclTaxYear.currentStartYear().toString,
-                EclTaxYear.currentFinishYear().toString,
-                EclTaxYear.currentFinancialYearStartDate,
-                EclTaxYear.currentFinancialYearFinishDate
+                eclTaxYear.startYear.toString,
+                eclTaxYear.finishYear.toString,
+                eclTaxYear.startDate,
+                eclTaxYear.finishDate
               )
             )
           ),
         answer =>
           (for {
             additionalInfo         <- registrationAdditionalInfoService.get(request.internalId).asResponseError
-            liabilityYear           = if (answer) Some(EclTaxYear.currentStartYear()) else None
+            liabilityYear           = if (answer) Some(eclTaxYear.startYear) else None
             currentAnswer           = additionalInfo.get.liabilityYear.isDefined
             updatedAdditionalInfo   = additionalInfo.get.copy(
                                         registeringForCurrentYear = Some(answer),

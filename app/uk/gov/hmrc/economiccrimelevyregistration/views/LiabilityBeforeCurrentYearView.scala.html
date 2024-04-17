@@ -29,7 +29,7 @@
         errorSummary: GovukErrorSummary
 )
 
-@(form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], mode: Mode, eclTaxYear: EclTaxYear)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle = titleWithForm(form, messages("liabilityBeforeCurrentYear.title")),
@@ -54,7 +54,7 @@
                     RadioItem(
                         id = Some("no"),
                         value = Some("false"),
-                        content = Text(messages("liabilityBeforeCurrentYear.no", s"${EclTaxYear.currentStartYear().toString} to ${EclTaxYear.currentFinishYear().toString}"))
+                        content = Text(messages("liabilityBeforeCurrentYear.no", s"${eclTaxYear.startYear.toString} to ${eclTaxYear.finishYear.toString}"))
                     )
                 )
             )

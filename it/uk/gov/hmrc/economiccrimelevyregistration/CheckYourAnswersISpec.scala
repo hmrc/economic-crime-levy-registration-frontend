@@ -13,7 +13,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendm
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationError
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 
 import java.time.{LocalDate, ZoneOffset}
@@ -131,7 +130,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
           eclRegistrationDate = ViewUtils.formatLocalDate(LocalDate.now(ZoneOffset.UTC), translate = false)(
             messagesApi.preferred(Seq(Languages.english))
           ),
-          dateDue = ViewUtils.formatLocalDate(EclTaxYear.dueDate, translate = false)(
+          dateDue = ViewUtils.formatLocalDate(testEclTaxYear.dateDue, translate = false)(
             messagesApi.preferred(Seq(Languages.english))
           ),
           "true",

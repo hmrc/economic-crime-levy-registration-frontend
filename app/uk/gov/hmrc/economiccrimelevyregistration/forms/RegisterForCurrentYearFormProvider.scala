@@ -18,17 +18,21 @@ package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import play.api.data.Form
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.Mappings
+import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 class RegisterForCurrentYearFormProvider extends Mappings {
 
-  def apply(): Form[Boolean] = Form(
-    (
-      "value",
-      boolean(
-        "register.currentYear.error",
-        messageArgs = Seq(EclTaxYear.currentStartYear().toString, EclTaxYear.currentFinishYear().toString)
+  def apply(localDateService: LocalDateService): Form[Boolean] = {
+    val eclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
+    Form(
+      (
+        "value",
+        boolean(
+          "register.currentYear.error",
+          messageArgs = Seq(eclTaxYear.startYear.toString, eclTaxYear.finishYear.toString)
+        )
       )
     )
-  )
+  }
 }

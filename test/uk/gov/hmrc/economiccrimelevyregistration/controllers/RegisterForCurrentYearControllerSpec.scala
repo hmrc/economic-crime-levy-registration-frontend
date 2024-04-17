@@ -31,21 +31,23 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration, RegistrationAdditionalInfo, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYearPageNavigator
-import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RegisterForCurrentYearView
 
 import scala.concurrent.Future
 
 class RegisterForCurrentYearControllerSpec extends SpecBase {
 
-  val view: RegisterForCurrentYearView = app.injector.instanceOf[RegisterForCurrentYearView]
-  val formProvider                     = new RegisterForCurrentYearFormProvider
-  val form: Form[Boolean]              = formProvider()
-
   val mockRegistrationAdditionalInfoService: RegistrationAdditionalInfoService = mock[RegistrationAdditionalInfoService]
   val mockEclRegistrationService: EclRegistrationService                       = mock[EclRegistrationService]
   val mockSessionService: SessionService                                       = mock[SessionService]
+  val mockLocalDateService: LocalDateService                                   = mock[LocalDateService]
+
+  when(mockLocalDateService.now()).thenReturn(testCurrentDate)
+
+  val view: RegisterForCurrentYearView = app.injector.instanceOf[RegisterForCurrentYearView]
+  val formProvider                     = new RegisterForCurrentYearFormProvider
+  val form: Form[Boolean]              = formProvider(mockLocalDateService)
 
   val pageNavigator: RegisterForCurrentYearPageNavigator = new RegisterForCurrentYearPageNavigator() {
     override protected def navigateInNormalMode(
@@ -77,7 +79,8 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
       pageNavigator,
       registrationDataCleanup,
       additionalInfoDataCleanup,
-      view
+      view,
+      mockLocalDateService
     )
   }
 
@@ -95,10 +98,10 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             form,
             NormalMode,
-            EclTaxYear.currentStartYear().toString,
-            EclTaxYear.currentFinishYear().toString,
-            EclTaxYear.currentFinancialYearStartDate,
-            EclTaxYear.currentFinancialYearFinishDate
+            testEclTaxYear.startYear.toString,
+            testEclTaxYear.finishYear.toString,
+            testEclTaxYear.startDate,
+            testEclTaxYear.finishDate
           )(messages, fakeRequest).toString()
         }
     }
@@ -116,10 +119,10 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             form.fill(true),
             NormalMode,
-            EclTaxYear.currentStartYear().toString,
-            EclTaxYear.currentFinishYear().toString,
-            EclTaxYear.currentFinancialYearStartDate,
-            EclTaxYear.currentFinancialYearFinishDate
+            testEclTaxYear.startYear.toString,
+            testEclTaxYear.finishYear.toString,
+            testEclTaxYear.startDate,
+            testEclTaxYear.finishDate
           )(messages, fakeRequest).toString()
         }
     }
@@ -137,10 +140,10 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             form.fill(false),
             NormalMode,
-            EclTaxYear.currentStartYear().toString,
-            EclTaxYear.currentFinishYear().toString,
-            EclTaxYear.currentFinancialYearStartDate,
-            EclTaxYear.currentFinancialYearFinishDate
+            testEclTaxYear.startYear.toString,
+            testEclTaxYear.finishYear.toString,
+            testEclTaxYear.startDate,
+            testEclTaxYear.finishDate
           )(messages, fakeRequest).toString()
         }
     }
@@ -171,10 +174,10 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             form.fill(updatedAdditionalInfo.registeringForCurrentYear.get),
             CheckMode,
-            EclTaxYear.currentStartYear().toString,
-            EclTaxYear.currentFinishYear().toString,
-            EclTaxYear.currentFinancialYearStartDate,
-            EclTaxYear.currentFinancialYearFinishDate
+            testEclTaxYear.startYear.toString,
+            testEclTaxYear.finishYear.toString,
+            testEclTaxYear.startDate,
+            testEclTaxYear.finishDate
           )(messages, fakeRequest).toString()
         }
     }
@@ -191,10 +194,10 @@ class RegisterForCurrentYearControllerSpec extends SpecBase {
           contentAsString(result) shouldBe view(
             form,
             CheckMode,
-            EclTaxYear.currentStartYear().toString,
-            EclTaxYear.currentFinishYear().toString,
-            EclTaxYear.currentFinancialYearStartDate,
-            EclTaxYear.currentFinancialYearFinishDate
+            testEclTaxYear.startYear.toString,
+            testEclTaxYear.finishYear.toString,
+            testEclTaxYear.startDate,
+            testEclTaxYear.finishDate
           )(messages, fakeRequest).toString()
         }
     }

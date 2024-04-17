@@ -25,7 +25,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.ar
 import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.isOther
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.global
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -82,6 +84,9 @@ abstract class ISpecBase
 
   val appConfig: AppConfig              = app.injector.instanceOf[AppConfig]
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  val testCurrentDate: LocalDate = LocalDate.now()
+  val testEclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(testCurrentDate)
 
   /*
   This is to initialise the app before running any tests, as it is lazy by default in org.scalatestplus.play.BaseOneAppPerSuite.

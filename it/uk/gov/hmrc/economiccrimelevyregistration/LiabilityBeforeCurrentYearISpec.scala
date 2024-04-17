@@ -8,7 +8,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
 
@@ -191,7 +190,7 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
           internalId = registration.internalId,
           liableForPreviousYears = Some(liableBeforeCurrentYear),
           liabilityStartDate = Some(random[LocalDate]),
-          liabilityYear = Some(LiabilityYear(EclTaxYear.current.previous.startYear)),
+          liabilityYear = Some(LiabilityYear(testEclTaxYear.previous.startYear)),
           eclReference = None
         )
 

@@ -27,7 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityBeforeCurrentYea
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.{NotLiableReason, RegistrationNotLiableAuditEvent}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AuditError
-import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, RegistrationAdditionalInfoService}
+import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, LocalDateService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.{ErrorTemplate, LiabilityBeforeCurrentYearView}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -45,7 +45,8 @@ class LiabilityBeforeCurrentYearController @Inject() (
   formProvider: LiabilityBeforeCurrentYearFormProvider,
   additionalInfoService: RegistrationAdditionalInfoService,
   view: LiabilityBeforeCurrentYearView,
-  auditService: AuditService
+  auditService: AuditService,
+  localDateService: LocalDateService
 )(implicit
   ec: ExecutionContext,
   errorTemplate: ErrorTemplate
@@ -58,16 +59,18 @@ class LiabilityBeforeCurrentYearController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData andThen storeUrl) { implicit request =>
-      Ok(view(form.prepare(request.additionalInfo.flatMap(info => info.liableForPreviousYears)), mode))
+      val eclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
+      Ok(view(form.prepare(request.additionalInfo.flatMap(info => info.liableForPreviousYears)), mode, eclTaxYear))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
     (authorise andThen getRegistrationData).async { implicit request =>
-      val registration = request.registration
+      val registration           = request.registration
+      val eclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, eclTaxYear))),
           liableBeforeCurrentYear => {
             val liabilityYear = getFirstLiabilityYear(
               registration.carriedOutAmlRegulatedActivityInCurrentFy,
@@ -143,7 +146,9 @@ class LiabilityBeforeCurrentYearController @Inject() (
         routes.CheckYourAnswersController.onPageLoad()
     }
 
-  private def sendNotLiableAuditEvent(registration: Registration)(implicit hc: HeaderCarrier) =
+  private def sendNotLiableAuditEvent(
+    registration: Registration
+  )(implicit hc: HeaderCarrier): EitherT[Future, AuditError, Unit] =
     registration.revenueMeetsThreshold match {
       case Some(true)  =>
         val event = RegistrationNotLiableAuditEvent(
@@ -169,11 +174,13 @@ class LiabilityBeforeCurrentYearController @Inject() (
   private def getFirstLiabilityYear(
     liableForCurrentFY: Option[Boolean],
     liableForPreviousFY: Boolean
-  ): Option[LiabilityYear] =
+  ): Option[LiabilityYear] = {
+    val eclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
     (liableForCurrentFY, liableForPreviousFY) match {
-      case (Some(_), true)     => Some(LiabilityYear(EclTaxYear.current.previous.startYear))
-      case (Some(true), false) => Some(LiabilityYear(EclTaxYear.current.currentYear))
+      case (Some(_), true)     => Some(LiabilityYear(eclTaxYear.previous.startYear))
+      case (Some(true), false) => Some(LiabilityYear(eclTaxYear.startYear))
       case _                   => None
     }
+  }
 
 }

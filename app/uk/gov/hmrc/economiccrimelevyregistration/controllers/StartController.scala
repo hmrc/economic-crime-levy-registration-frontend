@@ -18,6 +18,8 @@ package uk.gov.hmrc.economiccrimelevyregistration.controllers
 
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.StartView
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -26,11 +28,13 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class StartController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  view: StartView
+  view: StartView,
+  localDateService: LocalDateService
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(view())
+    val eclTaxYear: EclTaxYear = EclTaxYear.fromCurrentDate(localDateService.now())
+    Ok(view(eclTaxYear))
   }
 }

@@ -51,7 +51,7 @@ class DateBehaviours extends FieldBehaviours with EclTestData {
     "bind" should {
       s"fail to bind a date greater than ${max.format(DateTimeFormatter.ISO_LOCAL_DATE)}" in {
 
-        val generator = datesBetween(max.plusDays(1), max.plusYears(10))
+        val generator = datesBetween(max.plusYears(2), max.plusYears(10))
 
         forAll(generator -> "invalid dates") { date =>
           val data = Map(

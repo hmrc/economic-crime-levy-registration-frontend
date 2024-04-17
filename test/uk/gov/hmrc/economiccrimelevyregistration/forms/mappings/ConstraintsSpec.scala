@@ -16,17 +16,24 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.forms.mappings
 
+import org.mockito.Mockito.when
 import org.scalacheck.Gen
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.prop.TableFor3
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.data.validation.{Invalid, Valid}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{emailMaxLength, telephoneNumberMaxLength, utrLength}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.Generators
+import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
+import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
 
 class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyChecks with Generators with Constraints {
+
+  val mockLocalDateService: LocalDateService = mock[LocalDateService]
 
   "firstError" should {
 
@@ -237,6 +244,32 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
       val result =
         areAllElementsNumbersOfExactLength(utrLength, "otherEntityType.addCtutr.error.length").apply("10234567UK")
       result shouldEqual Invalid("otherEntityType.addCtutr.error.length", utrLength)
+    }
+  }
+
+  val isBeforeCurrentTaxYearStartParameters: TableFor3[LocalDate, LocalDate, Boolean] = Table(
+    ("fromDate", "testDate", "isValid"),
+    (LocalDate.of(2024, 4, 17), LocalDate.of(2024, 4, 1), false),
+    (LocalDate.of(2024, 10, 1), LocalDate.of(2024, 1, 1), true),
+    (LocalDate.of(2024, 10, 1), LocalDate.of(2023, 1, 1), true)
+  )
+
+  "isBeforeCurrentTaxYearStart" should {
+    "disallow dates before current tax year start for dates between the start of the tax year and the due date" in forAll(
+      isBeforeCurrentTaxYearStartParameters
+    ) {
+      (
+        fromDate: LocalDate,
+        testDate: LocalDate,
+        isValid: Boolean
+      ) =>
+        when(mockLocalDateService.now()).thenReturn(fromDate)
+        val result         = isBeforeCurrentTaxYearStart(mockLocalDateService, "liability.date.error.before")(testDate)
+        val expectedResult = isValid match {
+          case true  => Valid
+          case false => Invalid("liability.date.error.before", EclTaxYear.fromDate(fromDate).startYear.toString)
+        }
+        result shouldEqual expectedResult
     }
   }
 }

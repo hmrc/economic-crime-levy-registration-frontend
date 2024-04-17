@@ -25,7 +25,7 @@
         appConfig: AppConfig
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(eclTaxYear: EclTaxYear)(implicit request: Request[_], messages: Messages)
 
 
 @layout(
@@ -46,8 +46,8 @@
 
     <p class="govuk-body">@Html(messages("start.p2", messages("start.p2.link")))</p>
 
-    <p class="govuk-body">@messages("start.p3", EclTaxYear.yearDue.toString)</p>
-    <p class="govuk-body">@messages("start.p4", EclTaxYear.yearDue.toString)</p>
+    <p class="govuk-body">@messages("start.p3", eclTaxYear.finishYear.toString)</p>
+    <p class="govuk-body">@messages("start.p4", eclTaxYear.finishYear.toString)</p>
 
     <h2 class="govuk-heading-m">@messages("start.beforeYouStart")</h2>
 
