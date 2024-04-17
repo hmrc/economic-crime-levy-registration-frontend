@@ -102,11 +102,12 @@ trait Constraints {
     errorKey: String
   ): Constraint[LocalDate] = {
     val now        = localDateService.now()
-    val eclTaxYear = EclTaxYear.fromCurrentDate(now)
+    val eclTaxYear = EclTaxYear.fromDate(now)
+
     Constraint {
-      case date if eclTaxYear.isBetweenStartDateAndDateDue(date) =>
+      case date if eclTaxYear.isBetweenStartDateAndPreviousDateDue(date) =>
         Invalid(errorKey, eclTaxYear.startYear)
-      case _                                                     =>
+      case _                                                             =>
         Valid
     }
   }

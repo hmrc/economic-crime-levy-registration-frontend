@@ -26,8 +26,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.forms.FormImplicits.FormOps
 import uk.gov.hmrc.economiccrimelevyregistration.forms.LiabilityDateFormProvider
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
-import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityDatePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{LocalDateService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityDateView
@@ -38,7 +38,6 @@ import scala.concurrent.Future
 class LiabilityDateControllerSpec extends SpecBase {
 
   val mockLocalDateService: LocalDateService = mock[LocalDateService]
-
   when(mockLocalDateService.now()).thenReturn(testCurrentDate)
 
   val formProvider          = new LiabilityDateFormProvider()
@@ -88,18 +87,22 @@ class LiabilityDateControllerSpec extends SpecBase {
 
     "return OK with form populated with today's date" in forAll {
       (registration: Registration, additionalInfo: RegistrationAdditionalInfo) =>
-        new TestContext(registration, Some(additionalInfo.copy(liabilityStartDate = Some(LocalDate.now())))) {
+        new TestContext(registration, Some(additionalInfo.copy(liabilityStartDate = Some(testCurrentDate)))) {
+          reset(mockLocalDateService)
+          when(mockLocalDateService.now()).thenReturn(testCurrentDate)
+
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
           status(result)          shouldBe OK
-          contentAsString(result) shouldBe view(NormalMode, form.prepare(Some(LocalDate.now())))(
+          contentAsString(result) shouldBe view(NormalMode, form.prepare(Some(testCurrentDate)))(
             fakeRequest,
             messages
           ).toString
         }
     }
   }
-  "onSubmit"   should {
+
+  "onSubmit" should {
     "return BAD_REQUEST and view with errors when no date has been passed in" in forAll {
       (registration: Registration) =>
         new TestContext(registration, None) {
@@ -108,10 +111,10 @@ class LiabilityDateControllerSpec extends SpecBase {
           status(result) shouldBe BAD_REQUEST
         }
     }
+
     "return OK and redirect to next page in Normal mode when correct date has been passed in" in forAll {
       (registration: Registration, additionalInformation: RegistrationAdditionalInfo) =>
-        val date = LocalDate.now()
-        new TestContext(registration, Some(additionalInformation.copy(liabilityStartDate = Some(date)))) {
+        new TestContext(registration, Some(additionalInformation.copy(liabilityStartDate = Some(testCurrentDate)))) {
 
           when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
@@ -119,9 +122,9 @@ class LiabilityDateControllerSpec extends SpecBase {
           val result: Future[Result] =
             controller.onSubmit(NormalMode)(
               fakeRequest.withFormUrlEncodedBody(
-                ("value.day", date.getDayOfMonth.toString),
-                ("value.month", date.getMonthValue.toString),
-                ("value.year", date.getYear.toString)
+                ("value.day", testCurrentDate.getDayOfMonth.toString),
+                ("value.month", testCurrentDate.getMonthValue.toString),
+                ("value.year", testCurrentDate.getYear.toString)
               )
             )
 
@@ -133,8 +136,9 @@ class LiabilityDateControllerSpec extends SpecBase {
 
     "return OK and redirect to next page in Check mode when correct date has been passed in" in forAll {
       (registration: Registration, additionalInformation: RegistrationAdditionalInfo) =>
-        val date = LocalDate.now()
+        val date = testCurrentDate
         new TestContext(registration, Some(additionalInformation.copy(liabilityStartDate = Some(date)))) {
+
           when(mockRegistrationAdditionalInfoService.upsert(any())(any(), any()))
             .thenReturn(EitherT[Future, DataRetrievalError, Unit](Future.successful(Right(()))))
 

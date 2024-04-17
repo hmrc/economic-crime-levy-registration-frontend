@@ -26,7 +26,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.mvc._
 import play.api.test.Helpers.{stubBodyParser, stubControllerComponents}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
@@ -61,6 +61,8 @@ trait SpecBase
     with ScalaCheckPropertyChecks
     with EclTestData
     with Generators {
+
+  def moduleOverrides(): Seq[GuiceableModule] = Seq.empty
 
   val additionalAppConfig: Map[String, Any] = Map(
     "features.getSubscriptionEnabled" -> false

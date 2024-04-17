@@ -48,7 +48,9 @@ class LiabilityDateController @Inject() (
     with I18nSupport
     with ErrorHandler
     with BaseController {
-  val form: Form[LocalDate]                      = formProvider(localDateService)
+
+  val form: Form[LocalDate] = formProvider(localDateService)
+
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData andThen storeUrl) {
     implicit request =>
       request.additionalInfo match {

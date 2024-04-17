@@ -711,10 +711,11 @@ class EclTaxYearSpec extends SpecBase {
   }
 
   val isBetweenStartDateAndDateDueParameters: TableFor3[LocalDate, LocalDate, Boolean] = Table(
-    ("currentDate", "testDate", "isBetweenStartDateAndDateDue"),
-    (LocalDate.of(2024, 4, 17), LocalDate.of(2024, 4, 1), false),
-    (LocalDate.of(2024, 10, 1), LocalDate.of(2024, 1, 1), true),
-    (LocalDate.of(2024, 10, 1), LocalDate.of(2023, 1, 1), true)
+    ("fromDate", "testDate", "isBetweenStartDateAndDateDue"),
+    (LocalDate.of(2024, 4, 17), LocalDate.of(2024, 4, 1), true),
+    (LocalDate.of(2024, 10, 1), LocalDate.of(2024, 1, 1), false),
+    (LocalDate.of(2024, 10, 1), LocalDate.of(2023, 1, 1), false),
+    (LocalDate.of(2024, 10, 1), LocalDate.of(2024, 10, 1), false)
   )
 
   "isBetweenStartDateAndDateDue" should {
@@ -722,12 +723,12 @@ class EclTaxYearSpec extends SpecBase {
       isBetweenStartDateAndDateDueParameters
     ) {
       (
-        currentDate: LocalDate,
+        fromDate: LocalDate,
         testDate: LocalDate,
         expectedResult: Boolean
       ) =>
-        val eclTaxYear = EclTaxYear.fromCurrentDate(currentDate)
-        val result     = eclTaxYear.isBetweenStartDateAndDateDue(testDate)
+        val eclTaxYear = EclTaxYear.fromDate(fromDate)
+        val result     = eclTaxYear.isBetweenStartDateAndPreviousDateDue(testDate)
         result shouldEqual expectedResult
     }
   }

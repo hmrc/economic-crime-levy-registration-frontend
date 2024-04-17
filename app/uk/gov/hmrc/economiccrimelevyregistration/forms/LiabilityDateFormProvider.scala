@@ -38,7 +38,7 @@ class LiabilityDateFormProvider extends Mappings {
         requiredKey = "liability.date.error.required",
         removeSpaces,
         minDateConstraint = Some(minDate(MinMaxValues.eclStartDate, "liability.date.error.early.date")),
-        maxDateConstraint = Some(maxDate(LocalDate.now(), "liability.date.error.future.date"))
+        maxDateConstraint = Some(maxDate(localDateService.now(), "liability.date.error.future.date"))
       ).verifying(isBeforeCurrentTaxYearStart(localDateService, "liability.date.error.before"))
     )
 }

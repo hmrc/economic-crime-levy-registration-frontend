@@ -247,8 +247,8 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
     }
   }
 
-  val parameters: TableFor3[LocalDate, LocalDate, Boolean] = Table(
-    ("currentDate", "testDate", "isValid"),
+  val isBeforeCurrentTaxYearStartParameters: TableFor3[LocalDate, LocalDate, Boolean] = Table(
+    ("fromDate", "testDate", "isValid"),
     (LocalDate.of(2024, 4, 17), LocalDate.of(2024, 4, 1), false),
     (LocalDate.of(2024, 10, 1), LocalDate.of(2024, 1, 1), true),
     (LocalDate.of(2024, 10, 1), LocalDate.of(2023, 1, 1), true)
@@ -256,18 +256,18 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
 
   "isBeforeCurrentTaxYearStart" should {
     "disallow dates before current tax year start for dates between the start of the tax year and the due date" in forAll(
-      parameters
+      isBeforeCurrentTaxYearStartParameters
     ) {
       (
-        currentDate: LocalDate,
+        fromDate: LocalDate,
         testDate: LocalDate,
         isValid: Boolean
       ) =>
-        when(mockLocalDateService.now()).thenReturn(currentDate)
+        when(mockLocalDateService.now()).thenReturn(fromDate)
         val result         = isBeforeCurrentTaxYearStart(mockLocalDateService, "liability.date.error.before")(testDate)
         val expectedResult = isValid match {
           case true  => Valid
-          case false => Invalid("liability.date.error.before", EclTaxYear.fromCurrentDate(currentDate).startYear)
+          case false => Invalid("liability.date.error.before", EclTaxYear.fromDate(fromDate).startYear)
         }
         result shouldEqual expectedResult
     }
