@@ -30,7 +30,7 @@ final case class AlfOptions(
   signOutHref: String,
   accessibilityFooterUrl: String,
   deskProServiceName: String,
-  showPhaseBanner: Boolean = true,
+  showPhaseBanner: Boolean = false,
   includeHMRCBranding: Boolean = false,
   pageHeadingStyle: String = "govuk-heading-l",
   ukMode: Boolean

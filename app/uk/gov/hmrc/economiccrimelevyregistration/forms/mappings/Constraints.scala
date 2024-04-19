@@ -21,7 +21,6 @@ import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 trait Constraints {
 
