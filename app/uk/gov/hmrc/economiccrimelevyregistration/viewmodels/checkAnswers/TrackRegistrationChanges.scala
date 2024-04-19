@@ -59,17 +59,17 @@ trait TrackRegistrationChanges {
   val hasAddressLine2Changed: Boolean = getSubscriptionResponse match {
     case Some(response) =>
       response.correspondenceAddressDetails.addressLine2 match {
-        case Some(addressLine2) =>
+        case Some(responseAddressLine2) =>
           registration.contactAddress match {
-            case Some(contactAddress) => !contactAddress.addressLine2.contains(addressLine2)
-            case None                 => true
+            case Some(registrationContactAddress) =>
+              !registrationContactAddress.addressLine2.contains(responseAddressLine2)
+            case None                             => true
 
           }
-        case None               =>
+        case None                       =>
           registration.contactAddress match {
-            case Some(_) => true
-            case None    => false
-
+            case Some(registrationContactAddress) => registrationContactAddress.addressLine2.isDefined
+            case None                             => false
           }
       }
     case None           => false
@@ -78,17 +78,17 @@ trait TrackRegistrationChanges {
   val hasAddressLine3Changed: Boolean = getSubscriptionResponse match {
     case Some(response) =>
       response.correspondenceAddressDetails.addressLine3 match {
-        case Some(addressLine3) =>
+        case Some(responseAddressLine3) =>
           registration.contactAddress match {
-            case Some(contactAddress) => !contactAddress.addressLine3.contains(addressLine3)
-            case None                 => true
+            case Some(registrationContactAddress) =>
+              !registrationContactAddress.addressLine3.contains(responseAddressLine3)
+            case None                             => true
 
           }
-        case None               =>
+        case None                       =>
           registration.contactAddress match {
-            case Some(_) => true
-            case None    => false
-
+            case Some(registrationContactAddress) => registrationContactAddress.addressLine3.isDefined
+            case None                             => false
           }
       }
     case None           => false
@@ -97,24 +97,25 @@ trait TrackRegistrationChanges {
   val hasAddressLine4Changed: Boolean = getSubscriptionResponse match {
     case Some(response) =>
       response.correspondenceAddressDetails.addressLine4 match {
-        case Some(addressLine4) =>
+        case Some(responseAddressLine4) =>
           registration.contactAddress match {
-            case Some(contactAddress) => !contactAddress.addressLine4.contains(addressLine4)
-            case None                 => true
+            case Some(registrationContactAddress) =>
+              !registrationContactAddress.addressLine4.contains(responseAddressLine4)
+            case None                             => true
 
           }
-        case None               =>
+        case None                       =>
           registration.contactAddress match {
-            case Some(_) => true
-            case None    => false
-
+            case Some(registrationContactAddress) => registrationContactAddress.addressLine4.isDefined
+            case None                             => false
           }
       }
     case None           => false
   }
 
-  val hasAddressChanged: Boolean =
+  val hasAddressChanged: Boolean = {
     hasAddressLine1Changed || hasAddressLine2Changed || hasAddressLine3Changed || hasAddressLine4Changed
+  }
 
   val hasAmlSupervisorChanged: Boolean = getSubscriptionResponse match {
     case Some(response) =>
@@ -127,20 +128,23 @@ trait TrackRegistrationChanges {
     case None           => false
   }
 
-  val hasFirstContactNameChanged: Boolean  = getSubscriptionResponse match {
+  val hasFirstContactNameChanged: Boolean = getSubscriptionResponse match {
     case Some(response) => !registration.contacts.firstContactDetails.name.contains(response.primaryContactDetails.name)
     case None           => false
   }
-  val hasFirstContactRoleChanged: Boolean  = getSubscriptionResponse match {
+
+  val hasFirstContactRoleChanged: Boolean = getSubscriptionResponse match {
     case Some(response) =>
       !registration.contacts.firstContactDetails.role.contains(response.primaryContactDetails.positionInCompany)
     case None           => false
   }
+
   val hasFirstContactEmailChanged: Boolean = getSubscriptionResponse match {
     case Some(response) =>
       !registration.contacts.firstContactDetails.emailAddress.contains(response.primaryContactDetails.emailAddress)
     case None           => false
   }
+
   val hasFirstContactPhoneChanged: Boolean = getSubscriptionResponse match {
     case Some(response) =>
       !registration.contacts.firstContactDetails.telephoneNumber.contains(response.primaryContactDetails.telephone)
@@ -166,7 +170,7 @@ trait TrackRegistrationChanges {
     case None           => false
   }
 
-  val hasSecondContactRoleChanged: Boolean  = getSubscriptionResponse match {
+  val hasSecondContactRoleChanged: Boolean = getSubscriptionResponse match {
     case Some(response) =>
       response.secondaryContactDetails match {
         case Some(secondaryContactDetails) =>
@@ -179,6 +183,7 @@ trait TrackRegistrationChanges {
       }
     case None           => false
   }
+
   val hasSecondContactPhoneChanged: Boolean = getSubscriptionResponse match {
     case Some(response) =>
       response.secondaryContactDetails match {
@@ -192,6 +197,7 @@ trait TrackRegistrationChanges {
       }
     case None           => false
   }
+
   val hasSecondContactEmailChanged: Boolean = getSubscriptionResponse match {
     case Some(response) =>
       response.secondaryContactDetails match {
