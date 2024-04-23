@@ -105,9 +105,12 @@ trait Constraints {
     val eclTaxYear = EclTaxYear.fromDate(now)
 
     Constraint {
-      case date if eclTaxYear.isBetweenStartDateAndPreviousDateDue(date) =>
+      case date
+          if eclTaxYear
+            .isBetweenStartDateAndPreviousDateDue(date) &&
+            eclTaxYear.isBetweenStartDateAndPreviousDateDue(now) =>
         Invalid(errorKey, eclTaxYear.startYear.toString)
-      case _                                                             =>
+      case _ =>
         Valid
     }
   }
