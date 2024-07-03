@@ -30,13 +30,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class EclCalculatorConnector @Inject() (appConfig: AppConfig, httpClient: HttpClientV2)(implicit ec: ExecutionContext)
     extends BaseConnector {
 
-  def calculateLiability(relevantApLength: Int, relevantApRevenue: BigDecimal)(implicit
+  def calculateLiability(relevantApLength: Int, relevantApRevenue: BigDecimal, taxYearStart: Int)(implicit
     hc: HeaderCarrier
   ): Future[CalculatedLiability] = {
     val body = CalculateLiabilityRequest(
       amlRegulatedActivityLength = EclTaxYear.yearInDays,
       relevantApLength = relevantApLength,
-      ukRevenue = relevantApRevenue.toLong
+      ukRevenue = relevantApRevenue.toLong,
+      year = taxYearStart
     )
 
     httpClient

@@ -67,7 +67,12 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
         )
         stubUpsertRegistration(updatedRegistration)
         stubCalculateLiability(
-          CalculateLiabilityRequest(EclTaxYear.yearInDays, EclTaxYear.yearInDays, ukRevenue),
+          CalculateLiabilityRequest(
+            EclTaxYear.yearInDays,
+            EclTaxYear.yearInDays,
+            ukRevenue,
+            EclTaxYear.fromCurrentDate().startYear
+          ),
           liable = true
         )
 
@@ -115,7 +120,12 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       stubUpsertRegistration(updatedRegistration)
 
       stubCalculateLiability(
-        CalculateLiabilityRequest(EclTaxYear.yearInDays, EclTaxYear.yearInDays, ukRevenue),
+        CalculateLiabilityRequest(
+          EclTaxYear.yearInDays,
+          EclTaxYear.yearInDays,
+          ukRevenue,
+          EclTaxYear.fromCurrentDate().startYear
+        ),
         liable = false
       )
 

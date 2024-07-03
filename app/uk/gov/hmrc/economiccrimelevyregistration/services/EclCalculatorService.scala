@@ -38,10 +38,12 @@ class EclCalculatorService @Inject() (
     registration.relevantApRevenue match {
       case Some(revenue) =>
         registration.relevantAp12Months match {
-          case Some(true)  => calculateLiabilityAmount(EclTaxYear.yearInDays, revenue)
+          case Some(true)  =>
+            calculateLiabilityAmount(EclTaxYear.yearInDays, revenue, EclTaxYear.fromCurrentDate().startYear)
           case Some(false) =>
             registration.relevantApLength match {
-              case Some(relevantApLength) => calculateLiabilityAmount(relevantApLength, revenue)
+              case Some(relevantApLength) =>
+                calculateLiabilityAmount(relevantApLength, revenue, EclTaxYear.fromCurrentDate().startYear)
               case _                      => EitherT.fromEither[Future](Right(None))
             }
           case _           => EitherT.fromEither[Future](Right(None))
@@ -49,12 +51,12 @@ class EclCalculatorService @Inject() (
       case _             => EitherT.fromEither[Future](Right(None))
     }
 
-  private def calculateLiabilityAmount(relevantApLength: Int, revenue: BigDecimal)(implicit
+  private def calculateLiabilityAmount(relevantApLength: Int, revenue: BigDecimal, taxYearStart: Int)(implicit
     hc: HeaderCarrier
   ): EitherT[Future, DataRetrievalError, Option[Boolean]] =
     EitherT {
       eclCalculatorConnector
-        .calculateLiability(relevantApLength, revenue)
+        .calculateLiability(relevantApLength, revenue, taxYearStart)
         .map { liability =>
           val revenueMoreThanZero = liability.amountDue.amount > 0
           Right(Some(revenueMoreThanZero))

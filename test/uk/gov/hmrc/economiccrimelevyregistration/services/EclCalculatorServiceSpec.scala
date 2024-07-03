@@ -45,7 +45,11 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         when(
           mockEclCalculatorConnector
-            .calculateLiability(ArgumentMatchers.eq(EclTaxYear.yearInDays), ArgumentMatchers.eq(relevantApRevenue))(
+            .calculateLiability(
+              ArgumentMatchers.eq(EclTaxYear.yearInDays),
+              ArgumentMatchers.eq(relevantApRevenue),
+              ArgumentMatchers.eq(EclTaxYear.fromCurrentDate().startYear)
+            )(
               any()
             )
         )
@@ -72,7 +76,11 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         when(
           mockEclCalculatorConnector
-            .calculateLiability(ArgumentMatchers.eq(relevantApLength), ArgumentMatchers.eq(relevantApRevenue))(
+            .calculateLiability(
+              ArgumentMatchers.eq(relevantApLength),
+              ArgumentMatchers.eq(relevantApRevenue),
+              ArgumentMatchers.eq(EclTaxYear.fromCurrentDate().startYear)
+            )(
               any()
             )
         )
@@ -94,7 +102,11 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         when(
           mockEclCalculatorConnector
-            .calculateLiability(ArgumentMatchers.eq(EclTaxYear.yearInDays), ArgumentMatchers.eq(relevantApRevenue))(
+            .calculateLiability(
+              ArgumentMatchers.eq(EclTaxYear.yearInDays),
+              ArgumentMatchers.eq(relevantApRevenue),
+              ArgumentMatchers.eq(EclTaxYear.fromCurrentDate().startYear)
+            )(
               any()
             )
         )
@@ -121,7 +133,11 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         when(
           mockEclCalculatorConnector
-            .calculateLiability(ArgumentMatchers.eq(relevantApLength), ArgumentMatchers.eq(relevantApRevenue))(
+            .calculateLiability(
+              ArgumentMatchers.eq(relevantApLength),
+              ArgumentMatchers.eq(relevantApRevenue),
+              ArgumentMatchers.eq(EclTaxYear.fromCurrentDate().startYear)
+            )(
               any()
             )
         )
@@ -176,15 +192,18 @@ class EclCalculatorServiceSpec extends SpecBase {
     "return an error when the call to the calculator connector returns an Upstream5xxResponse" in forAll {
       (
         registration: Registration,
-        relevantApRevenue: BigDecimal,
-        calculatedLiability: CalculatedLiability
+        relevantApRevenue: BigDecimal
       ) =>
         val updatedRegistration =
           registration.copy(relevantAp12Months = Some(true), relevantApRevenue = Some(relevantApRevenue))
 
         when(
           mockEclCalculatorConnector
-            .calculateLiability(ArgumentMatchers.eq(EclTaxYear.yearInDays), ArgumentMatchers.eq(relevantApRevenue))(
+            .calculateLiability(
+              ArgumentMatchers.eq(EclTaxYear.yearInDays),
+              ArgumentMatchers.eq(relevantApRevenue),
+              ArgumentMatchers.eq(EclTaxYear.fromCurrentDate().startYear)
+            )(
               any()
             )
         )
@@ -202,7 +221,11 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         when(
           mockEclCalculatorConnector
-            .calculateLiability(ArgumentMatchers.eq(EclTaxYear.yearInDays), ArgumentMatchers.eq(relevantApRevenue))(
+            .calculateLiability(
+              ArgumentMatchers.eq(EclTaxYear.yearInDays),
+              ArgumentMatchers.eq(relevantApRevenue),
+              ArgumentMatchers.eq(EclTaxYear.fromCurrentDate().startYear)
+            )(
               any()
             )
         )
@@ -221,7 +244,11 @@ class EclCalculatorServiceSpec extends SpecBase {
 
         when(
           mockEclCalculatorConnector
-            .calculateLiability(ArgumentMatchers.eq(EclTaxYear.yearInDays), ArgumentMatchers.eq(relevantApRevenue))(
+            .calculateLiability(
+              ArgumentMatchers.eq(EclTaxYear.yearInDays),
+              ArgumentMatchers.eq(relevantApRevenue),
+              ArgumentMatchers.eq(EclTaxYear.fromCurrentDate().startYear)
+            )(
               any()
             )
         )

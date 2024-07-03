@@ -54,7 +54,11 @@ class EclCalculatorConnectorSpec extends SpecBase {
           .thenReturn(Future.successful(HttpResponse.apply(OK, Json.toJson(newCalculatedLiability).toString())))
 
         val result = await(
-          connector.calculateLiability(calculateLiabilityRequest.relevantApLength, calculateLiabilityRequest.ukRevenue)
+          connector.calculateLiability(
+            calculateLiabilityRequest.relevantApLength,
+            calculateLiabilityRequest.ukRevenue,
+            calculateLiabilityRequest.year
+          )
         )
 
         result shouldBe newCalculatedLiability
