@@ -191,7 +191,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
             Some(
               EclAddress(
                 addressLine1 = Some(address),
-                countryCode = Some("GB"),
+                countryCode = "GB",
                 organisation = None,
                 addressLine3 = None,
                 addressLine2 = None,
@@ -224,7 +224,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
             Some(
               EclAddress(
                 addressLine1 = Some(address),
-                countryCode = Some("GB"),
+                countryCode = "GB",
                 organisation = None,
                 addressLine3 = None,
                 addressLine2 = None,
@@ -284,7 +284,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
             Some(
               EclAddress(
                 addressLine1 = None,
-                countryCode = Some("GB"),
+                countryCode = "GB",
                 organisation = None,
                 addressLine3 = None,
                 addressLine2 = Some(address),
@@ -316,7 +316,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
             Some(
               EclAddress(
                 addressLine1 = None,
-                countryCode = Some("GB"),
+                countryCode = "GB",
                 organisation = None,
                 addressLine3 = None,
                 addressLine2 = Some(address),
@@ -376,7 +376,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
             Some(
               EclAddress(
                 addressLine1 = None,
-                countryCode = Some("GB"),
+                countryCode = "GB",
                 organisation = None,
                 addressLine3 = Some(address),
                 addressLine2 = None,
@@ -408,7 +408,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
             Some(
               EclAddress(
                 addressLine1 = None,
-                countryCode = Some("GB"),
+                countryCode = "GB",
                 organisation = None,
                 addressLine3 = Some(address),
                 addressLine2 = None,
@@ -468,7 +468,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
             Some(
               EclAddress(
                 addressLine1 = None,
-                countryCode = Some("GB"),
+                countryCode = "GB",
                 organisation = None,
                 addressLine3 = None,
                 addressLine2 = None,
@@ -500,7 +500,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
             Some(
               EclAddress(
                 addressLine1 = None,
-                countryCode = Some("GB"),
+                countryCode = "GB",
                 organisation = None,
                 addressLine3 = None,
                 addressLine2 = None,
