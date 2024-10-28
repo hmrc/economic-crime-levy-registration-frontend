@@ -270,15 +270,15 @@ class EclRegistrationService @Inject() (
     val businessSector: BusinessSector =
       BusinessSector.transformFromSubscriptionResponse(getSubscriptionResponse.additionalDetails.businessSector)
     val address: EclAddress            = EclAddress(
-      organisation = None,
-      addressLine1 = Some(subscriptionAddress.addressLine1),
-      addressLine2 = subscriptionAddress.addressLine2,
-      addressLine3 = subscriptionAddress.addressLine3,
-      addressLine4 = subscriptionAddress.addressLine4,
-      region = None,
-      postCode = subscriptionAddress.postCode,
-      poBox = None,
-      countryCode = subscriptionAddress.countryCode
+      None,
+      Some(subscriptionAddress.addressLine1),
+      subscriptionAddress.addressLine2,
+      subscriptionAddress.addressLine3,
+      subscriptionAddress.addressLine4,
+      None,
+      subscriptionAddress.postCode,
+      None,
+      subscriptionAddress.countryCode.get
     )
     registration.copy(
       contacts = contacts,

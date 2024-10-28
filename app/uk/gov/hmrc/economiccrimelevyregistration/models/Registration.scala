@@ -68,7 +68,7 @@ final case class Registration(
           region = address.region.map(_.trim),
           postCode = address.postal_code.map(_.trim),
           poBox = address.po_box.map(_.trim),
-          countryCode = Some("GB")
+          countryCode = "GB"
         )
       }
     }

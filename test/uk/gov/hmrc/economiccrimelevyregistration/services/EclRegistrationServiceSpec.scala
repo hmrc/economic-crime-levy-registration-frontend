@@ -280,7 +280,7 @@ class EclRegistrationServiceSpec extends SpecBase {
           None,
           subscriptionAddress.postCode,
           None,
-          Some(subscriptionAddress.countryCode.get)
+          subscriptionAddress.countryCode.get
         )
 
         val registrationFromSubscriptionResponse = registration.copy(
