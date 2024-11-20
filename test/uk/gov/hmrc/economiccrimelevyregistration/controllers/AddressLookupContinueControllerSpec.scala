@@ -75,7 +75,7 @@ class AddressLookupContinueControllerSpec extends SpecBase {
                 region = None,
                 postCode = alfAddressData.address.postcode,
                 poBox = alfAddressData.address.poBox,
-                countryCode = alfAddressData.address.country.code
+                countryCode = Some(alfAddressData.address.country.code)
               )
             )
           )

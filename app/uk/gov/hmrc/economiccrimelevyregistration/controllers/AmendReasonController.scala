@@ -46,7 +46,8 @@ class AmendReasonController @Inject() (
     with I18nSupport
     with BaseController
     with ErrorHandler {
-  val form: Form[String]                         = formProvider()
+  val form: Form[String] = formProvider()
+
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
     Ok(
       view(

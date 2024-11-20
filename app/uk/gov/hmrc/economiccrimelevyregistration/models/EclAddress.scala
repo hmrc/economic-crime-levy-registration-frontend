@@ -27,11 +27,11 @@ final case class EclAddress(
   region: Option[String],
   postCode: Option[String],
   poBox: Option[String],
-  countryCode: String
+  countryCode: Option[String]
 )
 
 object EclAddress {
-  def empty = new EclAddress(None, None, None, None, None, None, None, None, "")
+  def empty = new EclAddress(None, None, None, None, None, None, None, None, None)
 
   implicit val format: OFormat[EclAddress] = Json.format[EclAddress]
 }

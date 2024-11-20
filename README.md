@@ -4,6 +4,9 @@ This is the frontend microservice that enables customers to register for the Eco
 using the ROSM pattern. Transient journey data is stored in the
 backend [economic-crime-levy-registration](https://github.com/hmrc/economic-crime-levy-registration) microservice.
 
+## This service depends on Node 
+The node version used by jenkins build is v18.14.0
+
 ## Running the service
 
 > `sbt run`
