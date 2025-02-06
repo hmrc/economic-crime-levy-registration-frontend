@@ -78,7 +78,7 @@ trait GrsStubData {
   private def validCompanyProfile(partnership: Boolean): CompanyProfile = CompanyProfile(
     companyName = if (partnership) "Test Partnership Name" else "Test Company Name",
     companyNumber = "01234567",
-    dateOfIncorporation = Some("2007-12-03"),
+    dateOfIncorporation = "2007-12-03",
     unsanitisedCHROAddress = IncorporatedEntityAddress(
       address_line_1 = Some("Test Address Line 1"),
       address_line_2 = Some("Test Address Line 2"),
