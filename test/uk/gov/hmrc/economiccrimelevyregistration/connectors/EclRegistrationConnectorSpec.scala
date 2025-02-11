@@ -221,7 +221,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
     "throw an UpstreamErrorResponse exception when the http client returns a error response for getSubscription call" in forAll {
       eclReference: String =>
         val expectedUrl = url"$eclRegistrationUrl/subscription/$eclReference"
-        val msg         = "Internal server error"
+        val msg = "Internal server error"
 
         when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
         when(mockRequestBuilder.execute[HttpResponse](any(), any()))
@@ -229,10 +229,15 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
         Try(await(connector.getSubscription(eclReference))) match {
           case Failure(thr) => thr.getMessage shouldBe msg
-          case Success(_)   => fail("expected exception to be thrown")
+          case Success(_) => fail("expected exception to be thrown")
         }
-
     }
   }
-
+  // Added a new test to cover a scenario for reactivateSubscription
+  "reactivateSubscription" should {
+    "return a Subscribed status with the same registration reference" in forAll { eclRegistrationReference: String =>
+      val result = await(connector.reactivateSubscription(eclRegistrationReference)(HeaderCarrier()))
+      result shouldBe EclSubscriptionStatus(EclSubscriptionStatus.Subscribed(eclRegistrationReference))
+    }
+  }
 }
