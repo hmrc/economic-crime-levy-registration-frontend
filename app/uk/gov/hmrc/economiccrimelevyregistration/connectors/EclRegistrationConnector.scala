@@ -81,4 +81,12 @@ class EclRegistrationConnector @Inject() (appConfig: AppConfig, httpClient: Http
       .get(url"$eclRegistrationUrl/subscription/$eclReference")
       .executeAndDeserialise[GetSubscriptionResponse]
 
+  // For the POC, we return the same reference wrapped as a Subscribed status
+  // Add reactivateSubscription method
+  // This New method will tak the existing ECL registration reference and simulate a reactivation by returning a Subscribed status with that sme reference
+  def reactivateSubscription(eclRegistrationReference: String)(implicit
+    hc: HeaderCarrier
+  ): Future[EclSubscriptionStatus] =
+    Future.successful(EclSubscriptionStatus(EclSubscriptionStatus.Subscribed(eclRegistrationReference)))
+
 }

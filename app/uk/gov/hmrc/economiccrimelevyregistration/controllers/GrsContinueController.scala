@@ -77,7 +77,6 @@ class GrsContinueController @Inject() (
                              mode
                            )
           } yield result
-
         case Some(
               e @ (GeneralPartnership | ScottishPartnership | LimitedPartnership | ScottishLimitedPartnership |
               LimitedLiabilityPartnership)
@@ -94,13 +93,11 @@ class GrsContinueController @Inject() (
                 )
               )
           }
-
-        case None =>
+        case None                                                                =>
           Future.successful(
             routeError(ResponseError.badRequestError("No entity type found in registration data"))
           )
-
-        case _ =>
+        case _                                                                   =>
           Future.successful(
             routeError(ResponseError.internalServiceError("No valid entity type found in registration data"))
           )
@@ -128,41 +125,52 @@ class GrsContinueController @Inject() (
     mode: Mode
   )(implicit hc: HeaderCarrier, request: RegistrationDataRequest[_]): Future[Result] =
     (identifiersMatch, bvResult, grsResult.registrationStatus, grsResult.registeredBusinessPartnerId) match {
-      case (false, _, _, _)                                  => Future.successful(Redirect(routes.NotableErrorController.verificationFailed()))
+      case (false, _, _, _)                                  =>
+        Future.successful(Redirect(routes.NotableErrorController.verificationFailed()))
       case (_, Some(BusinessVerificationResult(Fail)), _, _) =>
         Future.successful(Redirect(routes.NotableErrorController.verificationFailed()))
       case (_, _, _, Some(businessPartnerId))                =>
-        eclRegistrationConnector.getSubscriptionStatus(businessPartnerId).map {
+        // Use flatMap to flatten nested futures.
+        eclRegistrationConnector.getSubscriptionStatus(businessPartnerId).flatMap {
           case EclSubscriptionStatus(NotSubscribed)                          =>
             mode match {
               case NormalMode =>
                 entityType match {
                   case GeneralPartnership | ScottishPartnership =>
-                    Redirect(routes.PartnershipNameController.onPageLoad(NormalMode))
-                  case _                                        => Redirect(routes.BusinessSectorController.onPageLoad(NormalMode))
+                    Future.successful(Redirect(routes.PartnershipNameController.onPageLoad(NormalMode)))
+                  case _                                        =>
+                    Future.successful(Redirect(routes.BusinessSectorController.onPageLoad(NormalMode)))
                 }
               case CheckMode  =>
-                Redirect(entityType match {
-                  case GeneralPartnership | ScottishPartnership =>
-                    if (request.registration.partnershipName.isEmpty) {
-                      routes.PartnershipNameController.onPageLoad(mode)
-                    } else {
-                      routes.CheckYourAnswersController
-                        .onPageLoad()
+                Future.successful(
+                  Redirect(
+                    entityType match {
+                      case GeneralPartnership | ScottishPartnership =>
+                        if (request.registration.partnershipName.isEmpty)
+                          routes.PartnershipNameController.onPageLoad(mode)
+                        else
+                          routes.CheckYourAnswersController.onPageLoad()
+                      case _                                        =>
+                        routes.CheckYourAnswersController.onPageLoad()
                     }
-                  case _                                        =>
-                    routes.CheckYourAnswersController
-                      .onPageLoad()
-                })
+                  )
+                )
             }
           case EclSubscriptionStatus(Subscribed(eclRegistrationReference))   =>
-            Redirect(routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference))
-          case EclSubscriptionStatus(DeRegistered(eclRegistrationReference)) =>
-            routeError(
-              ResponseError.internalServiceError(
-                s"ECL Subscription is deregistered for $eclRegistrationReference"
-              )
+            Future.successful(
+              Redirect(routes.NotableErrorController.organisationAlreadyRegistered(eclRegistrationReference))
             )
+          case EclSubscriptionStatus(DeRegistered(eclRegistrationReference)) =>
+            // Call the reactivation method and flatten its future.
+            eclRegistrationConnector.reactivateSubscription(eclRegistrationReference).map {
+              case EclSubscriptionStatus(Subscribed(ref)) =>
+                Redirect(routes.NotableErrorController.organisationAlreadyRegistered(ref))
+              case _                                      =>
+                routeError(
+                  ResponseError
+                    .internalServiceError(s"Failed to reactivate subscription for reference $eclRegistrationReference")
+                )
+            }
         }
       case (_, _, RegistrationFailed, _)                     =>
         grsResult.failures match {
