@@ -40,7 +40,7 @@
         autoCompleteEnabled: Boolean = false,
         registrationTypeForTopBanner: Option[RegistrationType] = Some(Initial),
         eclReferenceForStartLink: Option[String] = None
-)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
 @language_key = @{"PLAY_LANG"}
 
