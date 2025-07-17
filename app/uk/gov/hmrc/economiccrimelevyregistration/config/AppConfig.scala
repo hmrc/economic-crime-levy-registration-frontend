@@ -68,13 +68,6 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
   val timeout: Int   = configuration.get[Int]("timeout-dialog.timeout")
   val countdown: Int = configuration.get[Int]("timeout-dialog.countdown")
 
-  val platformHost: Option[String] = configuration.getOptional[String]("platform.frontend.host")
-
-  lazy val basGatewayLoggedOutUrl: String = {
-    val baseUrl = platformHost.getOrElse("http://localhost:9553")
-    s"$baseUrl/bas-gateway/loggedout"
-  }
-
   val eclRegistrationBaseUrl: String = servicesConfig.baseUrl("economic-crime-levy-registration")
   val eclCalculatorBaseUrl: String   = servicesConfig.baseUrl("economic-crime-levy-calculator")
 
