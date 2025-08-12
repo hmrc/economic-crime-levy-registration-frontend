@@ -23,14 +23,15 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.AddressLookupFronten
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.utils.Base64Utils
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier}
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject
 import scala.concurrent.Future
 
 class StubAddressLookupFrontendConnector @Inject() (
   appConfig: AppConfig,
-  httpClient: HttpClient
+  httpClientV2: HttpClientV2
 )(implicit
   val messagesApi: MessagesApi
 ) extends AddressLookupFrontendConnector {

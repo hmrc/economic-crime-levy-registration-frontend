@@ -18,14 +18,15 @@ package uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors
 
 import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TestOnlyConnector @Inject() (
   appConfig: AppConfig,
-  httpClient: HttpClient
+  httpClientV2: HttpClientV2
 )(implicit
   val ec: ExecutionContext
 ) {
@@ -34,18 +35,18 @@ class TestOnlyConnector @Inject() (
     s"${appConfig.eclRegistrationBaseUrl}/economic-crime-levy-registration/test-only"
 
   def clearAllData()(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClient.GET(
-      s"$eclRegistrationsUrl/clear-all"
-    )
+    httpClientV2
+      .get(url"$eclRegistrationsUrl/clear-all")
+      .execute[HttpResponse]
 
   def clearCurrentData()(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClient.GET(
-      s"$eclRegistrationsUrl/clear-current"
-    )
+    httpClientV2
+      .get(url"$eclRegistrationsUrl/clear-current")
+      .execute[HttpResponse]
 
   def deEnrol(groupId: String, eclReference: String)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClient.GET(
-      s"$eclRegistrationsUrl/de-enrol/$groupId/$eclReference"
-    )
+    httpClientV2
+      .get(url"$eclRegistrationsUrl/de-enrol/$groupId/$eclReference")
+      .execute[HttpResponse]
 
 }
