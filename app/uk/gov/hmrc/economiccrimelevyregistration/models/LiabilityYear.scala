@@ -31,5 +31,5 @@ case class LiabilityYear(value: Int) {
 }
 
 object LiabilityYear {
-  implicit val format: Format[LiabilityYear] = Json.valueFormat[LiabilityYear]
+  implicit val format: Format[LiabilityYear] = Json.format[LiabilityYear]
 }

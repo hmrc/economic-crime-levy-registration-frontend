@@ -39,7 +39,7 @@
             RadiosViewModel(
                 field = form("value"),
                 legend = LegendViewModel(messages("utrType.heading")).asPageHeading(LegendSize.Large),
-                items = UtrType.options
+                items = UtrType.options()
             ).withHint(Hint(content = Text(messages("utrType.p1"))))
         )
 

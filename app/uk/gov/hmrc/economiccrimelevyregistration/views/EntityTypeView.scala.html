@@ -38,8 +38,8 @@
             RadiosViewModel(
                 field = form("value"),
                 legend = LegendViewModel(messages("entityType.title")).asPageHeading(LegendSize.Large),
-                items = EntityType.options
-            )
+                items = EntityType.options()
+)
         )
 
         @button(
