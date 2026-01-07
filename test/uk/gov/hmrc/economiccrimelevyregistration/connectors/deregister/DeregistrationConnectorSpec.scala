@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistratio
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, StringContextOps}
 import org.mockito.Mockito.{reset, when}
+import play.api.libs.ws.writeableOf_JsValue
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}

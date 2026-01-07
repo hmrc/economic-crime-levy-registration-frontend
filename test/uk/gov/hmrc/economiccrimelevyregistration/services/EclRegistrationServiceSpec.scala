@@ -17,7 +17,6 @@
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import cats.data.OptionT
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.scalacheck.Arbitrary

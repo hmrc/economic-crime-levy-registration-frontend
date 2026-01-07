@@ -96,7 +96,7 @@ class DeregisterContactNameControllerSpec extends SpecBase {
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> name))
 
-        status(result) shouldBe SEE_OTHER
+        status(result)           shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.DeregisterContactRoleController.onPageLoad(NormalMode).url)
 
         verify(mockDeregistrationService, times(1)).upsert(any())(any())
@@ -111,7 +111,7 @@ class DeregisterContactNameControllerSpec extends SpecBase {
           when(mockDeregistrationService.getOrCreate(anyString())(any()))
             .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 
-          val result: Future[Result]       =
+          val result: Future[Result] =
             controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody("value" -> ""))
 
           val formWithErrors: Form[String] = form.bind(Map("value" -> ""))

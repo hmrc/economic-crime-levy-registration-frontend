@@ -93,7 +93,7 @@ class EmailService @Inject() (
           }
       }
 
-    ((
+    (
       contacts.firstContactDetails.name,
       contacts.firstContactDetails.emailAddress,
       contacts.secondContactDetails.name,
@@ -125,7 +125,7 @@ class EmailService @Inject() (
         EitherT.fromEither[Future](
           Left(DataRetrievalError.InternalUnexpectedError("Invalid contact details", None))
         )
-    })
+    }
 
   }
 

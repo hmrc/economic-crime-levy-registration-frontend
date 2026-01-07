@@ -688,7 +688,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
   }
 
   "hasFirstContactEmailChanged" should {
-    "return false when getSubscriptionResponse is not present" in forAll forAll { (registration: Registration) =>
+    "return false when getSubscriptionResponse is not present" in forAll { (registration: Registration) =>
       val sut = TestTrackEclReturnChanges(
         defaultEclRegistration(registration),
         None

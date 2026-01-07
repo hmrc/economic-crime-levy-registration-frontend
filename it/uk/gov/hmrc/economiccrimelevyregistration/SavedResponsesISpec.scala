@@ -43,7 +43,7 @@ class SavedResponsesISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with the next page" in {
       stubAuthorisedWithNoGroupEnrolment()
-      val url    = random[String]
+      val url = random[String]
       stubGetSession(SessionData(random[String], Map(SessionKeys.urlToReturnTo -> url)))
 
       val result = callRoute(

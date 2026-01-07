@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.libs.json._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._

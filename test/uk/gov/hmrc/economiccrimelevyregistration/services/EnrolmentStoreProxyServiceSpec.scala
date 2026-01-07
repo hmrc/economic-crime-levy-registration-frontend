@@ -23,6 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.{GroupEnrolmentsResponseWithEcl
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EnrolmentStoreProxyConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.EnrolmentStoreProxyError
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 

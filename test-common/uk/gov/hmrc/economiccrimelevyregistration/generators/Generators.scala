@@ -59,7 +59,7 @@ trait Generators {
 
   def bigDecimalOutOfRange(min: BigDecimal, max: BigDecimal): Gen[BigDecimal] =
     arbitrary[BigDecimal].map(_.setScale(2, RoundingMode.DOWN)) suchThat (x => x < min || x > max)
-  def bigDecimalInRangeWithCommas(min: Double, max: Double): Gen[String] = {
+  def bigDecimalInRangeWithCommas(min: Double, max: Double): Gen[String]      = {
     val numberGen = bigDecimalInRange(min, max).map(_.toString)
     genIntersperseString(numberGen, ",")
   }
@@ -133,7 +133,7 @@ trait Generators {
     RegexpGen
       .from(s"${Regex.telephoneNumberRegex}")
       .retryUntil(s => s.length <= maxLength && s.trim.nonEmpty)
-      .map(_.trim.filterNot(_.isWhitespace))
+      .map(s => s.replaceAll("\\s", ""))
 
   def emailAddress(maxLength: Int): Gen[String] = {
     val emailPartsLength = maxLength / 5
@@ -142,7 +142,7 @@ trait Generators {
       firstPart  <- alphaNumStringsWithMaxLength(emailPartsLength)
       secondPart <- alphaNumStringsWithMaxLength(emailPartsLength)
       thirdPart  <- alphaNumStringsWithMaxLength(3)
-    } yield (s"$firstPart@$secondPart.$thirdPart".toLowerCase)
+    } yield s"$firstPart@$secondPart.$thirdPart".toLowerCase
   }
 
   def stringsLongerThan(minLength: Int): Gen[String] = for {

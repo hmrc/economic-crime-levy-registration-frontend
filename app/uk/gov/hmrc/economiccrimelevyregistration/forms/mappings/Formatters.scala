@@ -131,7 +131,7 @@ trait Formatters {
     requiredKey: String,
     wholeNumberKey: String,
     nonNumericKey: String
-  ): Formatter[Long]       =
+  ): Formatter[Long] =
     numberFormatter[Long](_.toLong, requiredKey, wholeNumberKey, nonNumericKey)
 
   private[mappings] def intFormatter(

@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}

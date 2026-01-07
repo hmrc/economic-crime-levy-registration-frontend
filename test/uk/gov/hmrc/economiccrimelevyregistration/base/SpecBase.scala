@@ -44,6 +44,8 @@ import uk.gov.hmrc.http.HttpVerbs.GET
 import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.scalacheck.Arbitrary
+import org.scalacheck.Arbitrary.arbitrary
 
 import java.time.LocalDate
 import scala.concurrent.ExecutionContext
@@ -69,6 +71,9 @@ trait SpecBase
   val additionalAppConfig: Map[String, Any] = Map(
     "features.getSubscriptionEnabled" -> false
   )
+
+  def random[T](implicit arb: Arbitrary[T]): T =
+    arbitrary[T].sample.get
 
   override def fakeApplication(): Application =
     GuiceApplicationBuilder()

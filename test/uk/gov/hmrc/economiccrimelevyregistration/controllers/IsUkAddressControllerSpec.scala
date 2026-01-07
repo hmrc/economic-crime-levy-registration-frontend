@@ -60,7 +60,7 @@ class IsUkAddressControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll {
       (
-        registration: Registration,
+        registration: Registration
       ) =>
         val updatedRegistration = registration.copy(contactAddressIsUk = None, registrationType = Some(Initial))
 

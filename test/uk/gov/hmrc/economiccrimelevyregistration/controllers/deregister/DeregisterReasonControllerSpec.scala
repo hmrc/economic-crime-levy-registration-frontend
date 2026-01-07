@@ -87,7 +87,7 @@ class DeregisterReasonControllerSpec extends SpecBase {
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> reason.toString))
 
-        status(result) shouldBe SEE_OTHER
+        status(result)           shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.DeregisterDateController.onPageLoad(NormalMode).url)
 
         verify(mockDeregistrationService, times(1)).upsert(any())(any())

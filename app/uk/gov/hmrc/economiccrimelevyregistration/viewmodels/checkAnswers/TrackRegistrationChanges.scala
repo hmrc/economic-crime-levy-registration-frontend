@@ -113,9 +113,8 @@ trait TrackRegistrationChanges {
     case None           => false
   }
 
-  val hasAddressChanged: Boolean = {
+  val hasAddressChanged: Boolean =
     hasAddressLine1Changed || hasAddressLine2Changed || hasAddressLine3Changed || hasAddressLine4Changed
-  }
 
   val hasAmlSupervisorChanged: Boolean = getSubscriptionResponse match {
     case Some(response) =>

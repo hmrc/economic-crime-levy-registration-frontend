@@ -23,7 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.AddressLookupFronten
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.utils.Base64Utils
-import uk.gov.hmrc.http.{HeaderCarrier}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.Inject

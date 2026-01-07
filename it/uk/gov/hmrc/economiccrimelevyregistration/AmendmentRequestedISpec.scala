@@ -41,8 +41,8 @@ class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(routes.AmendmentRequestedController.onPageLoad()).withSession(
-          (SessionKeys.firstContactEmail -> email),
-          (SessionKeys.contactAddress    -> Json.stringify(Json.toJson(eclAddress)))
+          SessionKeys.firstContactEmail -> email,
+          SessionKeys.contactAddress    -> Json.stringify(Json.toJson(eclAddress))
         )
       )
 
@@ -60,7 +60,7 @@ class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(routes.AmendmentRequestedController.onPageLoad()).withSession(
-          (SessionKeys.firstContactEmail -> email)
+          SessionKeys.firstContactEmail -> email
         )
       )
 
@@ -77,7 +77,7 @@ class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
       val result = callRoute(
         FakeRequest(routes.AmendmentRequestedController.onPageLoad()).withSession(
-          (SessionKeys.contactAddress -> Json.stringify(Json.toJson(eclAddress)))
+          SessionKeys.contactAddress -> Json.stringify(Json.toJson(eclAddress))
         )
       )
 
