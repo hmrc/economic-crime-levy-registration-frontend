@@ -31,6 +31,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registra
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.http.HttpVerbs.GET
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

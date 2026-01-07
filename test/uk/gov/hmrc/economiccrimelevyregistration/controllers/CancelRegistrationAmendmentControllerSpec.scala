@@ -30,6 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CancelRegistrationAmendmentView
 import org.mockito.Mockito.{reset, times, verify, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

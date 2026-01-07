@@ -33,6 +33,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.navigation.RegisterForCurrentYe
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RegisterForCurrentYearView
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

@@ -27,6 +27,7 @@ import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, StringContextOps}
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.ws.writeableOf_JsValue
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}

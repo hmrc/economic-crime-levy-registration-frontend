@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.SessionData
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.SessionError
 import uk.gov.hmrc.http.client.RequestBuilder
 import org.mockito.Mockito.{reset, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._

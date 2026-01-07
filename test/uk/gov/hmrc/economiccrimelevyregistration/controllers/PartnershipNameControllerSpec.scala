@@ -34,6 +34,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.Partnership
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.PartnershipNameView
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

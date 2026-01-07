@@ -29,7 +29,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.economiccrimelevyregistration.{IncorporatedEntityType, LimitedPartnershipType, PartnershipType, ScottishOrGeneralPartnershipType}
-import org.mockito.Mockito.{reset, times, verify, when}
+import org.mockito.Mockito.{times, verify, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

@@ -33,6 +33,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantAp12MonthsPa
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantAp12MonthsView
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

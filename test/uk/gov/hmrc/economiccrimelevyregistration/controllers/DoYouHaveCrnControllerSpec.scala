@@ -32,6 +32,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveCrnPageNavi
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveCrnView
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

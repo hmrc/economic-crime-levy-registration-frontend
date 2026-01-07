@@ -30,6 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalErr
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, BusinessSector, ContactDetails, Contacts, CreateEclSubscriptionResponse, EclAddress, EclSubscriptionStatus, EntityType, GetAdditionalDetails, GetSubscriptionResponse, Mode, Registration}
 import uk.gov.hmrc.http.{StringContextOps, UpstreamErrorResponse}
 import org.mockito.Mockito.{reset, times, verify, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial

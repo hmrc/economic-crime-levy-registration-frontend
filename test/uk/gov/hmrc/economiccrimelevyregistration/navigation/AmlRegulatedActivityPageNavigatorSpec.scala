@@ -21,6 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.{Amendment, Initial}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, Mode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
 

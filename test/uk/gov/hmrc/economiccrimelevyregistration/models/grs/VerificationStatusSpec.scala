@@ -20,6 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import play.api.libs.json.{JsBoolean, JsError, JsString, Json}
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus._
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class VerificationStatusSpec extends SpecBase {
   "writes" should {

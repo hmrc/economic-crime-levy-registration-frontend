@@ -22,6 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class AmendReasonPageDeregisterNavigatorSpec extends SpecBase {
 

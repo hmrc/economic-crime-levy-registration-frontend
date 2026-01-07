@@ -21,6 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, EclRegistrationModel, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class AddAnotherContactPageNavigatorSpec extends SpecBase {
 

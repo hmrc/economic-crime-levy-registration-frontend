@@ -29,6 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.Deregistrat
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregistrationRequestedView
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

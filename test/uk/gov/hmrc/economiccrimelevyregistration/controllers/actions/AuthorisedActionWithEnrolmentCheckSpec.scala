@@ -36,6 +36,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.EnrolmentStorePro
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
 import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, EnrolmentsWithoutEcl, ValidRegistrationWithRegistrationType}
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

@@ -33,6 +33,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.navigation.UkRevenuePageNavigat
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclCalculatorService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UkRevenueView
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

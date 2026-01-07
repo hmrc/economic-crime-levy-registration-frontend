@@ -38,6 +38,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.economiccrimelevyregistration.views.html._
 import org.mockito.Mockito.{reset, times, verify, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import java.time.LocalDate
 import java.util.Base64

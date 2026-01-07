@@ -21,6 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers.CheckYourAnswersViewModel
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import java.time.LocalDate
 

@@ -24,6 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.{char
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{Charity, NonUKEstablishment, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class BusinessNamePageDeregisterNavigatorSpec extends SpecBase {
 

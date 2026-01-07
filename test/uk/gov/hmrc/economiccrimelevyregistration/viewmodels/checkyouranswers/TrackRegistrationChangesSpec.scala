@@ -24,6 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers.TrackRe
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Hmrc, Other}
 import uk.gov.hmrc.economiccrimelevyregistration.models.BusinessSector.{InsolvencyPractitioner, TaxAdviser}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import java.time.LocalDate
 

@@ -28,6 +28,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contact
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import org.mockito.Mockito.{reset, times, verify, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import java.time.{LocalDate, ZoneOffset}
 import scala.concurrent.Future

@@ -30,6 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalErro
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendRegistrationStartView
 import org.mockito.Mockito.{reset, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

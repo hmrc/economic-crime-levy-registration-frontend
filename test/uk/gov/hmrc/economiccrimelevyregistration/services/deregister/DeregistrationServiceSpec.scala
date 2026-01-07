@@ -25,6 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistratio
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

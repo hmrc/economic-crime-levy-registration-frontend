@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

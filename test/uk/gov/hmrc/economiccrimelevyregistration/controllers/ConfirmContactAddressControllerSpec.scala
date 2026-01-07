@@ -35,6 +35,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.AddressViewModel
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ConfirmContactAddressView
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

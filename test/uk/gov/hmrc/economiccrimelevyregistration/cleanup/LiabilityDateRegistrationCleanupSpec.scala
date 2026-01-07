@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.cleanup
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class LiabilityDateRegistrationCleanupSpec extends SpecBase {
 

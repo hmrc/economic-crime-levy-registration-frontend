@@ -21,6 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.PartnershipNamePageNavigator
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class PartnershipNamePageDeregisterNavigatorSpec extends SpecBase {
 

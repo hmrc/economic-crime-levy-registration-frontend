@@ -29,6 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, EclRegistra
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AddressLookupContinuePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupService, EclRegistrationService}
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

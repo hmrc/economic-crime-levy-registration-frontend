@@ -29,6 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

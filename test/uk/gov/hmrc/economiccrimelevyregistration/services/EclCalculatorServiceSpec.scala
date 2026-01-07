@@ -27,6 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculatedLiability, Ec
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

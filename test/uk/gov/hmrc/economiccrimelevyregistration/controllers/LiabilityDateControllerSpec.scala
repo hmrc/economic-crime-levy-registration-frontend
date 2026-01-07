@@ -32,6 +32,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityDatePageNav
 import uk.gov.hmrc.economiccrimelevyregistration.services.{LocalDateService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityDateView
 import org.mockito.Mockito.{reset, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import java.time.LocalDate
 import scala.concurrent.Future

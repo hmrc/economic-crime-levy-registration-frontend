@@ -23,6 +23,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{FinancialConductAuthority, GamblingCommission, Hmrc, Other}
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
 

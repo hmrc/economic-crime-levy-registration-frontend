@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.views.html._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.AlreadyDeregisteredView
 import uk.gov.hmrc.economiccrimelevyregistration.{IncorporatedEntityType, SelfAssessmentEntityType}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

@@ -24,10 +24,11 @@ import uk.gov.hmrc.economiccrimelevyregistration.config.AppConfig
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
-import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment, GroupEnrolmentsResponse}
+import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.{EclEnrolment, Enrolment => EacdEnrolment, GroupEnrolmentsResponse}
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.RegistrationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.VerificationStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import java.time.{Instant, LocalDate}
 
@@ -81,6 +82,31 @@ trait EclTestData {
 
   implicit val arbLocalDate: Arbitrary[LocalDate] = Arbitrary {
     LocalDate.now()
+  }
+
+  implicit val arbEnrolmentIdentifier: Arbitrary[EnrolmentIdentifier] = Arbitrary {
+    for {
+      key   <- Gen.alphaNumStr.retryUntil(_.nonEmpty)
+      value <- Gen.alphaNumStr.retryUntil(_.nonEmpty)
+    } yield EnrolmentIdentifier(key = key, value = value)
+  }
+
+  implicit val arbAuthEnrolment: Arbitrary[AuthEnrolment] = Arbitrary {
+    for {
+      key         <- Gen.alphaNumStr.retryUntil(_.nonEmpty)
+      identifiers <- Gen.listOf(arbEnrolmentIdentifier.arbitrary)
+      state       <- Gen.alphaNumStr.retryUntil(_.nonEmpty)
+      delegated   <- Gen.option(Gen.alphaNumStr.retryUntil(_.nonEmpty))
+    } yield AuthEnrolment(
+      key = key,
+      identifiers = identifiers,
+      state = state,
+      delegatedAuthRule = delegated
+    )
+  }
+
+  implicit val arbEnrolments: Arbitrary[Enrolments] = Arbitrary {
+    Gen.listOf(arbAuthEnrolment.arbitrary).map(list => Enrolments(list.toSet))
   }
 
   implicit val arbIncorporatedEntityType: Arbitrary[IncorporatedEntityType] = Arbitrary {
@@ -295,7 +321,7 @@ trait EclTestData {
 
   private def authEnrolmentsToEnrolments(authEnrolments: Enrolments) =
     authEnrolments.enrolments
-      .map(e => Enrolment(e.key, e.identifiers.map(i => KeyValue(i.key, i.value))))
+      .map(e => EacdEnrolment(e.key, e.identifiers.map(i => KeyValue(i.key, i.value))))
       .toSeq
 
   def alphaNumericString: String = Gen.alphaNumStr.retryUntil(_.nonEmpty).sample.get
