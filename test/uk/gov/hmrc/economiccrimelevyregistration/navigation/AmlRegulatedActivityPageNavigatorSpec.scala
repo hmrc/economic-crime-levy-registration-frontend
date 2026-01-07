@@ -64,7 +64,7 @@ class AmlRegulatedActivityPageNavigatorSpec extends SpecBase {
     }
 
     "return a Call to the check your answers page from the AML regulated activity page if data hasn't changed" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         pageNavigator.nextPage(
           CheckMode,
           EclRegistrationModel(registration = registration)

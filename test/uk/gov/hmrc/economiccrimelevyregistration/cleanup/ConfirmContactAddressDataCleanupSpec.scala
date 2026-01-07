@@ -26,7 +26,7 @@ class ConfirmContactAddressDataCleanupSpec extends SpecBase {
 
   "cleanup" should {
     "return a registration with the address set to none when use registered office address is false" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(
           useRegisteredOfficeAddressAsContactAddress = Some(false)
         )
@@ -35,7 +35,7 @@ class ConfirmContactAddressDataCleanupSpec extends SpecBase {
     }
 
     "return a registration with address preserved when use registered office address is true" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(
           useRegisteredOfficeAddressAsContactAddress = Some(true)
         )

@@ -30,7 +30,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
 
   "nextPage" should {
     "return a Call to the register with GC page in NormalMode when the Gambling Commission option is selected" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(
           amlSupervisor = Some(AmlSupervisor(GamblingCommission, None)),
           registrationType = Some(Initial)
@@ -41,7 +41,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
     }
 
     "return a Call to the register with GC page in CheckMode when the Gambling Commission option is selected" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(
           amlSupervisor = Some(AmlSupervisor(GamblingCommission, None)),
           registrationType = Some(Initial)
@@ -52,7 +52,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
     }
 
     "return a Call to the register with FCA page in NormalMode when the Financial Conduct Authority option is selected" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration =
           registration.copy(
             amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None)),
@@ -64,7 +64,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
     }
 
     "return a Call to the register with FCA page in CheckMode when the Financial Conduct Authority option is selected" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration =
           registration.copy(
             amlSupervisor = Some(AmlSupervisor(FinancialConductAuthority, None)),
@@ -76,7 +76,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
     }
 
     "return a Call to the relevant AP 12 months page in NormalMode when either the HMRC or Other AML Supervisor option is selected" +
-      "and the user has carried out Aml regulated activity in current FY" in forAll { registration: Registration =>
+      "and the user has carried out Aml regulated activity in current FY" in forAll { (registration: Registration) =>
         val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
         val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample
         val amlSupervisor         =
@@ -93,7 +93,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
       }
 
     "return a Call to the check your answers page in CheckMode when either the HMRC or Other AML Supervisor option is selected" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
         val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample
         val amlSupervisor         =
@@ -107,7 +107,7 @@ class AmlSupervisorPageDeregisterNavigatorSpec extends SpecBase {
   }
 
   "return a Call to the entity type page in NormalMode when either the HMRC or Other AML Supervisor option is selected" +
-    "and the user has NOT carried out Aml regulated activity in current FY" in forAll { registration: Registration =>
+    "and the user has NOT carried out Aml regulated activity in current FY" in forAll { (registration: Registration) =>
       val supervisorType        = Gen.oneOf[AmlSupervisorType](Seq(Hmrc, Other)).sample.get
       val otherProfessionalBody = Gen.oneOf(appConfig.amlProfessionalBodySupervisors).sample
       val amlSupervisor         =

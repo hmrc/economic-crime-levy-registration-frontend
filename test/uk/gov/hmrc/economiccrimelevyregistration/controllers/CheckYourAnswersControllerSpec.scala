@@ -37,6 +37,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.services._
 import uk.gov.hmrc.economiccrimelevyregistration.viewmodels.checkAnswers._
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import uk.gov.hmrc.economiccrimelevyregistration.views.html._
+import org.mockito.Mockito.{reset, times, verify, when}
 
 import java.time.LocalDate
 import java.util.Base64
@@ -80,7 +81,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view" in forAll { validRegistration: ValidRegistrationWithRegistrationType =>
+    "return OK and the correct view" in forAll { (validRegistration: ValidRegistrationWithRegistrationType) =>
       new TestContext(validRegistration.registration) {
         implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
           RegistrationDataRequest(
@@ -170,7 +171,7 @@ class CheckYourAnswersControllerSpec extends SpecBase {
     }
 
     "return a DataRetrieval error when getRegistrationValidationErrors returns an error" in forAll {
-      validRegistration: ValidRegistrationWithRegistrationType =>
+      (validRegistration: ValidRegistrationWithRegistrationType) =>
         new TestContext(validRegistration.registration) {
           implicit val registrationDataRequest: RegistrationDataRequest[AnyContentAsEmpty.type] =
             RegistrationDataRequest(

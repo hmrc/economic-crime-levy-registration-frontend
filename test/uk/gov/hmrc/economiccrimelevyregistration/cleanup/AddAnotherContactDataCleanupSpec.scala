@@ -26,7 +26,7 @@ class AddAnotherContactDataCleanupSpec extends SpecBase {
 
   "cleanup" should {
     "return a registration with second contact details set to none when add another contact is false" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(
           contacts = registration.contacts.copy(secondContact = Some(false))
         )
@@ -38,7 +38,7 @@ class AddAnotherContactDataCleanupSpec extends SpecBase {
     }
 
     "return a registration with second contact details preserved when add another contact is true" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(
           contacts = registration.contacts.copy(secondContact = Some(true))
         )

@@ -34,6 +34,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{Contacts, EclRegistrati
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNamePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNameView
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 
@@ -63,23 +64,24 @@ class SecondContactNameControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(
-        registration.copy(contacts = Contacts.empty, registrationType = Some(Initial))
-      ) {
-        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+    "return OK and the correct view when no answer has already been provided" in forAll {
+      (registration: Registration) =>
+        new TestContext(
+          registration.copy(contacts = Contacts.empty, registrationType = Some(Initial))
+        ) {
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
-        status(result) shouldBe OK
+          status(result) shouldBe OK
 
-        val resultAsString: String = contentAsString(result)
+          val resultAsString: String = contentAsString(result)
 
-        resultAsString shouldBe view(form, NormalMode, None, Some(testEclRegistrationReference))(
-          fakeRequest,
-          messages
-        ).toString
+          resultAsString shouldBe view(form, NormalMode, None, Some(testEclRegistrationReference))(
+            fakeRequest,
+            messages
+          ).toString
 
-        resultAsString should include("autocomplete=\"name\"")
-      }
+          resultAsString should include("autocomplete=\"name\"")
+        }
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
@@ -133,7 +135,7 @@ class SecondContactNameControllerSpec extends SpecBase {
       }
     }
 
-    "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
+    "return a Bad Request with form errors when invalid data is submitted" in forAll { (registration: Registration) =>
       val updatedRegistration = registration.copy(registrationType = Some(Initial))
       new TestContext(updatedRegistration) {
         val result: Future[Result]       = controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))

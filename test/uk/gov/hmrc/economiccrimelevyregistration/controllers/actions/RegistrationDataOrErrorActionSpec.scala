@@ -30,6 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.requests.{AuthorisedRequ
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo, RegistrationType, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.http.HttpVerbs.GET
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 

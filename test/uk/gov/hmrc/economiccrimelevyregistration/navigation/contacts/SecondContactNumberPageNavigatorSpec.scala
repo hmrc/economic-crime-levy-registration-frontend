@@ -67,7 +67,7 @@ class SecondContactNumberPageNavigatorSpec extends SpecBase {
           routes.IsUkAddressController.onPageLoad(NormalMode)
     }
 
-    "return a Call to the check your answers page in CheckMode" in forAll { registration: Registration =>
+    "return a Call to the check your answers page in CheckMode" in forAll { (registration: Registration) =>
       val updatedRegistration: Registration =
         registration.copy(
           contacts = registration.contacts.copy(secondContactDetails = validContactDetails)
@@ -79,7 +79,7 @@ class SecondContactNumberPageNavigatorSpec extends SpecBase {
 
     Seq(NormalMode, CheckMode).foreach { mode =>
       s"return a call to the answers are invalid page when there is no second contact number present in $mode " in forAll {
-        registration: Registration =>
+        (registration: Registration) =>
           val updatedRegistration: Registration =
             registration.copy(contacts =
               registration.contacts.copy(secondContactDetails =

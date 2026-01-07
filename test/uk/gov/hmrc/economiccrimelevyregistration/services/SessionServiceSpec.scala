@@ -25,6 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.connectors.SessionDataConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionData
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.SessionError
 import uk.gov.hmrc.http.client.RequestBuilder
+import org.mockito.Mockito.{reset, when}
 
 import scala.concurrent.Future
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
@@ -137,7 +138,7 @@ class SessionServiceSpec extends SpecBase {
   }
 
   "delete" should {
-    "return a unit when the connector successfully deletes the session" in forAll { internalId: String =>
+    "return a unit when the connector successfully deletes the session" in forAll { (internalId: String) =>
       when(mockSessionDataConnector.delete(ArgumentMatchers.eq(internalId))(any()))
         .thenReturn(Future.successful(()))
 
@@ -146,7 +147,7 @@ class SessionServiceSpec extends SpecBase {
       result shouldBe Right(())
     }
 
-    "return a SessionError when the connector fails to delete the session" in forAll { internalId: String =>
+    "return a SessionError when the connector fails to delete the session" in forAll { (internalId: String) =>
       when(mockSessionDataConnector.delete(ArgumentMatchers.eq(internalId))(any()))
         .thenReturn(Future.failed(UpstreamErrorResponse("Error deleting session", BAD_REQUEST)))
 
@@ -155,7 +156,7 @@ class SessionServiceSpec extends SpecBase {
       result shouldBe Left(SessionError.BadGateway("Error deleting session", BAD_REQUEST))
     }
 
-    "return an InternalUnexpectedError when a non fatal exception is thrown" in forAll { internalId: String =>
+    "return an InternalUnexpectedError when a non fatal exception is thrown" in forAll { (internalId: String) =>
       val exception = new Exception("Exception thrown whilst trying to delete the session")
       when(mockSessionDataConnector.delete(ArgumentMatchers.eq(internalId))(any()))
         .thenReturn(Future.failed(exception))

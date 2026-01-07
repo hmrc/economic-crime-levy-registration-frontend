@@ -35,6 +35,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmlSupervisorPageNav
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmlSupervisorView
 import uk.gov.hmrc.economiccrimelevyregistration.services.AuditService
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 
@@ -77,23 +78,24 @@ class AmlSupervisorControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(registration.copy(amlSupervisor = None)) {
-        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+    "return OK and the correct view when no answer has already been provided" in forAll {
+      (registration: Registration) =>
+        new TestContext(registration.copy(amlSupervisor = None)) {
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
-        status(result) shouldBe OK
+          status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(
-          form,
-          NormalMode,
-          Some(RegistrationType.Initial),
-          registration.carriedOutAmlRegulatedActivityInCurrentFy,
-          None
-        )(
-          fakeRequest,
-          messages
-        ).toString
-      }
+          contentAsString(result) shouldBe view(
+            form,
+            NormalMode,
+            Some(RegistrationType.Initial),
+            registration.carriedOutAmlRegulatedActivityInCurrentFy,
+            None
+          )(
+            fakeRequest,
+            messages
+          ).toString
+        }
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
@@ -146,7 +148,7 @@ class AmlSupervisorControllerSpec extends SpecBase {
         }
     }
 
-    "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
+    "return a Bad Request with form errors when invalid data is submitted" in forAll { (registration: Registration) =>
       new TestContext(registration) {
         val result: Future[Result]              = controller.onSubmit(NormalMode, RegistrationType.Initial)(
           fakeRequest.withFormUrlEncodedBody(("value", ""))

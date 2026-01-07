@@ -25,7 +25,7 @@ class EntityTypeDataCleanupSpec extends SpecBase {
   val dataCleanup = new EntityTypeDataCleanup
 
   "cleanup" should {
-    "return a registration with the GRS journey data set to none" in forAll { registration: Registration =>
+    "return a registration with the GRS journey data set to none" in forAll { (registration: Registration) =>
       dataCleanup.cleanup(registration) shouldBe registration.copy(
         incorporatedEntityJourneyData = None,
         partnershipEntityJourneyData = None,
@@ -36,7 +36,7 @@ class EntityTypeDataCleanupSpec extends SpecBase {
     }
 
     "return a registration with the GRS journey data and other entity journey data set to none" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val otherEntityJourneyData = registration.otherEntityJourneyData.copy(
           charityRegistrationNumber = None,
           companyRegistrationNumber = None,

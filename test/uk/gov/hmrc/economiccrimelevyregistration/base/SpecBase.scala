@@ -18,7 +18,6 @@ package uk.gov.hmrc.economiccrimelevyregistration.base
 
 import org.apache.pekko.actor.ActorSystem
 import com.typesafe.config.Config
-import org.mockito.MockitoSugar
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterEach, EitherValues, OptionValues, TryValues}
@@ -42,6 +41,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.ErrorTemplate
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpVerbs.GET
+import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.Mockito.{reset, times, verify, when}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 
 import java.time.LocalDate
 import scala.concurrent.ExecutionContext

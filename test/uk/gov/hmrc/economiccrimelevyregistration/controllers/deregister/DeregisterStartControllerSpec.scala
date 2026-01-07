@@ -27,6 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.DeRegis
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterStartView
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 

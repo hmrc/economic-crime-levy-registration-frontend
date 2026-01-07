@@ -35,6 +35,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, M
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPostcodePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrPostcodeView
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 

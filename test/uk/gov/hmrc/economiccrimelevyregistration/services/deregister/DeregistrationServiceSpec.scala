@@ -24,6 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.http.UpstreamErrorResponse
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 
@@ -36,7 +37,7 @@ class DeregistrationServiceSpec extends SpecBase {
   val e = new Exception("error")
 
   "getOrCreate" should {
-    "return a created deregistration when one does not exist" in forAll { internalId: String =>
+    "return a created deregistration when one does not exist" in forAll { (internalId: String) =>
       val emptyRegistration = Deregistration.empty(internalId)
       when(mockDeregistrationConnector.getDeregistration(any())(any()))
         .thenReturn(Future.failed(UpstreamErrorResponse("Not found", NOT_FOUND)))
@@ -48,7 +49,7 @@ class DeregistrationServiceSpec extends SpecBase {
       result shouldBe Right(emptyRegistration)
     }
 
-    "return an existing deregistration" in forAll { deregistration: Deregistration =>
+    "return an existing deregistration" in forAll { (deregistration: Deregistration) =>
       when(mockDeregistrationConnector.getDeregistration(any())(any()))
         .thenReturn(Future.successful(deregistration))
 
@@ -56,7 +57,7 @@ class DeregistrationServiceSpec extends SpecBase {
       result shouldBe Right(deregistration)
     }
 
-    "return an error if failed" in forAll { internalId: String =>
+    "return an error if failed" in forAll { (internalId: String) =>
       when(mockDeregistrationConnector.getDeregistration(any())(any()))
         .thenReturn(Future.failed(e))
 
@@ -66,7 +67,7 @@ class DeregistrationServiceSpec extends SpecBase {
   }
 
   "upsert" should {
-    "return an upserted deregistration" in forAll { deregistration: Deregistration =>
+    "return an upserted deregistration" in forAll { (deregistration: Deregistration) =>
       when(mockDeregistrationConnector.upsertDeregistration(any())(any()))
         .thenReturn(Future.successful(()))
 
@@ -74,7 +75,7 @@ class DeregistrationServiceSpec extends SpecBase {
       result shouldBe Right(())
     }
 
-    "return an error if connector returns an Upstream5xxResponse" in forAll { deregistration: Deregistration =>
+    "return an error if connector returns an Upstream5xxResponse" in forAll { (deregistration: Deregistration) =>
       when(mockDeregistrationConnector.upsertDeregistration(any())(any()))
         .thenReturn(Future.failed(UpstreamErrorResponse("Error", INTERNAL_SERVER_ERROR)))
 
@@ -82,7 +83,7 @@ class DeregistrationServiceSpec extends SpecBase {
       result shouldBe Left(DataRetrievalError.BadGateway("Error", INTERNAL_SERVER_ERROR))
     }
 
-    "return an error if connector returns an Upstream4xxResponse" in forAll { deregistration: Deregistration =>
+    "return an error if connector returns an Upstream4xxResponse" in forAll { (deregistration: Deregistration) =>
       when(mockDeregistrationConnector.upsertDeregistration(any())(any()))
         .thenReturn(Future.failed(UpstreamErrorResponse("Error", NOT_FOUND)))
 
@@ -90,7 +91,7 @@ class DeregistrationServiceSpec extends SpecBase {
       result shouldBe Left(DataRetrievalError.BadGateway("Error", NOT_FOUND))
     }
 
-    "return an error if failed" in forAll { deregistration: Deregistration =>
+    "return an error if failed" in forAll { (deregistration: Deregistration) =>
       when(mockDeregistrationConnector.upsertDeregistration(any())(any()))
         .thenReturn(Future.failed(e))
 
@@ -100,7 +101,7 @@ class DeregistrationServiceSpec extends SpecBase {
   }
 
   "delete" should {
-    "return normally" in forAll { internalId: String =>
+    "return normally" in forAll { (internalId: String) =>
       when(mockDeregistrationConnector.deleteDeregistration(any())(any()))
         .thenReturn(Future.successful(()))
 
@@ -108,7 +109,7 @@ class DeregistrationServiceSpec extends SpecBase {
       result shouldBe Right(())
     }
 
-    "return an error if failed" in forAll { internalId: String =>
+    "return an error if failed" in forAll { (internalId: String) =>
       when(mockDeregistrationConnector.deleteDeregistration(any())(any()))
         .thenReturn(Future.failed(e))
 
@@ -142,7 +143,7 @@ class DeregistrationServiceSpec extends SpecBase {
       result shouldBe Left(DataRetrievalError.BadGateway("Error", NOT_FOUND))
     }
 
-    "return an error if an exception is thrown" in forAll { internalId: String =>
+    "return an error if an exception is thrown" in forAll { (internalId: String) =>
       when(mockDeregistrationConnector.submitDeregistration(any())(any()))
         .thenReturn(Future.failed(e))
 

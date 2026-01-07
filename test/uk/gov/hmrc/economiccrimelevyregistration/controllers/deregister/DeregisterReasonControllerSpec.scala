@@ -30,6 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterReasonView
 import scala.concurrent.Future
+import org.mockito.Mockito.{reset, times, verify, when}
 
 class DeregisterReasonControllerSpec extends SpecBase {
 

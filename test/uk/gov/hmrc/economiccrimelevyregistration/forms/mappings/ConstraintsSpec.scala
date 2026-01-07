@@ -190,28 +190,28 @@ class ConstraintsSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyC
 
   "telephoneNumber" should {
     "return invalid when the telephone number is too long" in forAll(stringsLongerThan(telephoneNumberMaxLength)) {
-      s: String =>
+      (s: String) =>
         val result = telephoneNumber(telephoneNumberMaxLength, "error.length", "error.invalid")(s)
         result shouldEqual Invalid("error.length", telephoneNumberMaxLength)
     }
 
     "return invalid when the telephone number is not valid" in forAll(
       stringsWithMaxLength(telephoneNumberMaxLength).retryUntil(s => !s.matches(Regex.telephoneNumberRegex))
-    ) { s: String =>
+    ) { (s: String) =>
       val result = telephoneNumber(telephoneNumberMaxLength, "error.length", "error.invalid")(s)
       result shouldEqual Invalid("error.invalid", Regex.telephoneNumberRegex)
     }
   }
 
   "emailAddress" should {
-    "return invalid when the email address is too long" in forAll(stringsLongerThan(emailMaxLength)) { s: String =>
+    "return invalid when the email address is too long" in forAll(stringsLongerThan(emailMaxLength)) { (s: String) =>
       val result = emailAddress(emailMaxLength, "error.length", "error.invalid")(s)
       result shouldEqual Invalid("error.length", emailMaxLength)
     }
 
     "return invalid when the email address is not valid" in forAll(
       stringsWithMaxLength(emailMaxLength).retryUntil(s => !s.matches(Regex.emailRegex))
-    ) { s: String =>
+    ) { (s: String) =>
       val result = emailAddress(emailMaxLength, "error.length", "error.invalid")(s)
       result shouldEqual Invalid("error.invalid", Regex.emailRegex)
     }

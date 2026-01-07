@@ -27,7 +27,7 @@ class LiabilityDateRegistrationCleanupSpec extends SpecBase {
   "cleanup" should {
     "return a registration with carriedOutAmlRegulatedActivityInCurrentFy, amlSupervisor, " +
       "relevantAp12Months, relevantApLength, relevantApRevenue, revenueMeetsThreshold set to none " in forAll {
-        registration: Registration =>
+        (registration: Registration) =>
           dataCleanup.cleanup(registration) shouldBe registration.copy(
             carriedOutAmlRegulatedActivityInCurrentFy = None,
             amlSupervisor = None,

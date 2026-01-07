@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CreateEclSubscriptionResponse, EclSubscriptionStatus, GetSubscriptionResponse, Registration}
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, StringContextOps}
+import org.mockito.Mockito.{reset, when}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -66,7 +67,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
   }
 
   "deleteRegistration" should {
-    "return unit when the http client successfully returns a http response" in forAll { internalId: String =>
+    "return unit when the http client successfully returns a http response" in forAll { (internalId: String) =>
       beforeEach()
       val expectedUrl = url"$eclRegistrationUrl/registrations/$internalId"
       val response    = HttpResponse(NO_CONTENT, "")
@@ -82,7 +83,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
     }
 
     "throw an UpstreamErrorResponse exception when the http client returns a error response" in forAll {
-      internalId: String =>
+      (internalId: String) =>
         beforeEach()
         val expectedUrl = url"$eclRegistrationUrl/registrations/$internalId"
         val msg         = "Internal server error"
@@ -100,7 +101,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
   }
 
   "upsertRegistration" should {
-    "return a unit when registration is successfully upserted" in forAll { registration: Registration =>
+    "return a unit when registration is successfully upserted" in forAll { (registration: Registration) =>
       beforeEach()
       val expectedUrl = url"$eclRegistrationUrl/registrations"
       val response    = HttpResponse(NO_CONTENT, "")
@@ -135,7 +136,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
 
   "getRegistrationValidationErrors" should {
     "return None when the http client returns 204 no content with no validation errors" in forAll {
-      internalId: String =>
+      (internalId: String) =>
         beforeEach()
         val expectedUrl = url"$eclRegistrationUrl/registrations/$internalId/validation-errors"
         val response    = HttpResponse(NO_CONTENT, Json.toJson(None).toString())
@@ -163,7 +164,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
     }
 
     "throw an UpstreamErrorResponse exception when the http client returns a error response" in forAll {
-      internalId: String =>
+      (internalId: String) =>
         beforeEach()
         val expectedUrl = url"$eclRegistrationUrl/registrations/$internalId/validation-errors"
         val msg         = "Internal server error"
@@ -219,7 +220,7 @@ class EclRegistrationConnectorSpec extends SpecBase {
     }
 
     "throw an UpstreamErrorResponse exception when the http client returns a error response for getSubscription call" in forAll {
-      eclReference: String =>
+      (eclReference: String) =>
         val expectedUrl = url"$eclRegistrationUrl/subscription/$eclReference"
         val msg         = "Internal server error"
 

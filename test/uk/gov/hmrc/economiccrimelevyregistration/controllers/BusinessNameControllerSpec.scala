@@ -34,6 +34,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.navigation.BusinessNamePageNavi
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.BusinessNameView
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 

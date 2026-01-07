@@ -69,7 +69,7 @@ class DoYouHaveCrnPageDeregisterNavigatorSpec extends SpecBase {
           routes.CheckYourAnswersController.onPageLoad()
     }
 
-    "return a Call to the Non UK CRN page in CheckMode" in forAll { registration: Registration =>
+    "return a Call to the Non UK CRN page in CheckMode" in forAll { (registration: Registration) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(

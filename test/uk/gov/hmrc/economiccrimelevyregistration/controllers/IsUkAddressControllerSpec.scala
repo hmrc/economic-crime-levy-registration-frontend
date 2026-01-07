@@ -31,6 +31,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AddressLookupCon
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 

@@ -32,6 +32,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{BusinessSector, EclRegi
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.BusinessSectorPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.BusinessSectorView
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 
@@ -64,14 +65,15 @@ class BusinessSectorControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(registration.copy(businessSector = None, registrationType = Some(Initial))) {
-        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+    "return OK and the correct view when no answer has already been provided" in forAll {
+      (registration: Registration) =>
+        new TestContext(registration.copy(businessSector = None, registrationType = Some(Initial))) {
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
-        status(result) shouldBe OK
+          status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, None, NormalMode, None)(fakeRequest, messages).toString
-      }
+          contentAsString(result) shouldBe view(form, None, NormalMode, None)(fakeRequest, messages).toString
+        }
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
@@ -107,7 +109,7 @@ class BusinessSectorControllerSpec extends SpecBase {
         }
     }
 
-    "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
+    "return a Bad Request with form errors when invalid data is submitted" in forAll { (registration: Registration) =>
       val updatedRegistration = registration.copy(registrationType = Some(Initial))
       new TestContext(updatedRegistration) {
         val result: Future[Result]               = controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))

@@ -33,6 +33,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, N
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.RelevantApLengthPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RelevantApLengthView
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 
@@ -72,14 +73,15 @@ class RelevantApLengthControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(registration.copy(relevantApLength = None)) {
-        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+    "return OK and the correct view when no answer has already been provided" in forAll {
+      (registration: Registration) =>
+        new TestContext(registration.copy(relevantApLength = None)) {
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
-        status(result) shouldBe OK
+          status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
-      }
+          contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
+        }
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {

@@ -68,7 +68,7 @@ class CtUtrPageNavigatorSpec extends SpecBase {
         routes.CtUtrPostcodeController.onPageLoad(NormalMode)
     }
 
-    "return a call to the answers are invalid page if entity type is None" in forAll { registration: Registration =>
+    "return a call to the answers are invalid page if entity type is None" in forAll { (registration: Registration) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
@@ -85,7 +85,7 @@ class CtUtrPageNavigatorSpec extends SpecBase {
         routes.NotableErrorController.answersAreInvalid()
     }
 
-    "return a call to the answers are invalid page if ctUtr is None" in forAll { registration: Registration =>
+    "return a call to the answers are invalid page if ctUtr is None" in forAll { (registration: Registration) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(

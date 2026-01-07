@@ -32,6 +32,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalErro
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UtrTypePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UtrTypeView
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 

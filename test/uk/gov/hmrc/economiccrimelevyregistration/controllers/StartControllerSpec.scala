@@ -21,6 +21,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.services.LocalDateService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.StartView
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 

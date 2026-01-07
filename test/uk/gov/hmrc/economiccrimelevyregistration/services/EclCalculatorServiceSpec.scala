@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalErro
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CalculatedLiability, EclAmount, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.http.UpstreamErrorResponse
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 
@@ -148,7 +149,7 @@ class EclCalculatorServiceSpec extends SpecBase {
         result shouldBe Right(Some(false))
     }
 
-    "return None if the relevantApRevenue is set to None " in forAll { registration: Registration =>
+    "return None if the relevantApRevenue is set to None " in forAll { (registration: Registration) =>
       val updatedRegistration =
         registration.copy(
           relevantApRevenue = None

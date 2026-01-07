@@ -527,7 +527,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
   }
 
   "hasAmlSupervisorChanged" should {
-    "return false if getSubscriptionResponse is not present" in forAll { registration: Registration =>
+    "return false if getSubscriptionResponse is not present" in forAll { (registration: Registration) =>
       val sut = TestTrackEclReturnChanges(
         defaultEclRegistration(registration),
         None
@@ -592,7 +592,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
   }
 
   "hasFirstContactNameChanged" should {
-    "return false when getSubscriptionResponse is not present" in forAll { registration: Registration =>
+    "return false when getSubscriptionResponse is not present" in forAll { (registration: Registration) =>
       val sut = TestTrackEclReturnChanges(
         defaultEclRegistration(registration),
         None
@@ -639,7 +639,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
   }
 
   "hasFirstContactRoleChanged" should {
-    "return false when getSubscriptionResponse is not present" in forAll { registration: Registration =>
+    "return false when getSubscriptionResponse is not present" in forAll { (registration: Registration) =>
       val sut = TestTrackEclReturnChanges(
         defaultEclRegistration(registration),
         None
@@ -688,7 +688,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
   }
 
   "hasFirstContactEmailChanged" should {
-    "return false when getSubscriptionResponse is not present" in forAll { registration: Registration =>
+    "return false when getSubscriptionResponse is not present" in forAll forAll { (registration: Registration) =>
       val sut = TestTrackEclReturnChanges(
         defaultEclRegistration(registration),
         None
@@ -739,7 +739,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
   }
 
   "hasFirstContactPhoneChanged"           should {
-    "return false when getSubscriptionResponse is not present" in forAll { registration: Registration =>
+    "return false when getSubscriptionResponse is not present" in forAll { (registration: Registration) =>
       val sut = TestTrackEclReturnChanges(
         defaultEclRegistration(registration),
         None
@@ -787,7 +787,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
     }
   }
   "hasSecondContactDetailsPresentChanged" should {
-    "return false when getSubscriptionResponse is not set" in forAll { registration: Registration =>
+    "return false when getSubscriptionResponse is not set" in forAll { (registration: Registration) =>
       val sut = TestTrackEclReturnChanges(
         defaultEclRegistration(registration),
         None
@@ -830,7 +830,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
   }
 
   "hasSecondContactNameChanged" should {
-    "return false if getSubscriptionResponse is not set" in forAll { registration: Registration =>
+    "return false if getSubscriptionResponse is not set" in forAll { (registration: Registration) =>
       val sut = TestTrackEclReturnChanges(
         defaultEclRegistration(registration),
         None
@@ -904,7 +904,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
   }
 
   "hasSecondContactRoleChanged" should {
-    "return false if getSubscriptionResponse is not set" in forAll { registration: Registration =>
+    "return false if getSubscriptionResponse is not set" in forAll { (registration: Registration) =>
       val sut = TestTrackEclReturnChanges(
         defaultEclRegistration(registration),
         None
@@ -978,7 +978,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
   }
 
   "hasSecondContactPhoneChanged" should {
-    "return false if getSubscriptionResponse is not set" in forAll { registration: Registration =>
+    "return false if getSubscriptionResponse is not set" in forAll { (registration: Registration) =>
       val sut = TestTrackEclReturnChanges(
         defaultEclRegistration(registration),
         None
@@ -1053,7 +1053,7 @@ class TrackRegistrationChangesSpec extends SpecBase {
   }
 
   "hasSecondContactEmailChanged" should {
-    "return false if getSubscriptionResponse is not set" in forAll { registration: Registration =>
+    "return false if getSubscriptionResponse is not set" in forAll { (registration: Registration) =>
       val sut = TestTrackEclReturnChanges(
         defaultEclRegistration(registration),
         None

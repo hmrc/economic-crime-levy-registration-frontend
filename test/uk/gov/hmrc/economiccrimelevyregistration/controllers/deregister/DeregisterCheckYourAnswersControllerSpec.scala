@@ -29,6 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, GetSubs
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EmailService}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.{DeregisterCheckYourAnswersView, DeregistrationPdfView}
+import org.mockito.Mockito.{reset, times, verify, when}
 
 import scala.concurrent.Future
 
@@ -98,7 +99,7 @@ class DeregisterCheckYourAnswersControllerSpec extends SpecBase {
     }
 
     "return an internal server error when getSubscription returns a DataRetrievalError" in forAll {
-      deregistration: Deregistration =>
+      (deregistration: Deregistration) =>
         new TestContext(testInternalId, Some(testEclRegistrationReference), deregistration) {
           when(mockEclRegistrationService.getSubscription(anyString())(any()))
             .thenReturn(EitherT.fromEither[Future](Left(DataRetrievalError.InternalUnexpectedError("", None))))

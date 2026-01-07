@@ -34,6 +34,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Contact
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.contacts.SecondContactNumberPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.contacts.SecondContactNumberView
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 
@@ -89,7 +90,7 @@ class SecondContactNumberControllerSpec extends SpecBase {
     }
 
     "return INTERNAL_SERVER_ERROR when there is no second contact name in the registration data" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(contacts = Contacts.empty)
 
         new TestContext(updatedRegistration) {

@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{Bands, CalculateLiabili
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 
