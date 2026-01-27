@@ -111,26 +111,25 @@ class DeregisterContactRoleControllerSpec extends SpecBase {
       Arbitrary.arbitrary[Deregistration],
       stringsWithMaxLength(roleMaxLength)
     ) { (deregistration: Deregistration, role: String) =>
-      new TestContext(deregistration) {
-        when(mockDeregistrationService.getOrCreate(anyString())(any()))
-          .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
+      val ctx = new TestContext(deregistration)
+      import ctx.*
 
-        when(mockDeregistrationService.upsert(any())(any()))
-          .thenReturn(
-            EitherT.fromEither[Future](
-              Right(deregistration.copy(contactDetails = deregistration.contactDetails.copy(role = Some(role))))
-            )
-          )
+      when(mockDeregistrationService.getOrCreate(anyString())(any()))
+        .thenReturn(EitherT.rightT[Future, DataRetrievalError](deregistration))
 
-        val result: Future[Result] =
-          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> role))
+      when(mockDeregistrationService.upsert(any())(any()))
+        .thenReturn(EitherT.rightT[Future, DataRetrievalError](()))
 
-        status(result)           shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.DeregisterContactEmailController.onPageLoad(NormalMode).url)
+      val result =
+        controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> role))
 
-        verify(mockDeregistrationService, times(1)).upsert(any())(any())
-        reset(mockDeregistrationService)
-      }
+      status(result)           shouldBe SEE_OTHER
+      redirectLocation(result) shouldBe Some(routes.DeregisterContactEmailController.onPageLoad(NormalMode).url)
+
+      verify(mockDeregistrationService, times(1)).upsert(any())(any())
+      reset(mockDeregistrationService)
+
+      succeed
     }
 
     "return an error when the upsert fails" in forAll(

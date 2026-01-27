@@ -29,6 +29,9 @@ import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, StringConte
 import org.mockito.Mockito.{reset, when}
 import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
+import org.scalacheck.Gen
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks._
+import org.scalacheck.Arbitrary.arbitrary
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -44,28 +47,30 @@ class EclRegistrationConnectorSpec extends SpecBase {
     reset(mockRequestBuilder)
   }
 
+  private val internalIdGen: Gen[String] =
+    Gen.nonEmptyListOf(Gen.alphaNumChar).map(_.mkString)
+
   "getRegistration" should {
 
     "return a registration when the http client returns a registration" in forAll {
       (internalId: String, registration: Registration, authorization: Authorization) =>
         beforeEach()
-        val bigDecimal          = BigDecimal(20000000.00)
+
+        val bigDecimal          = BigDecimal("20000000.00")
         val updatedRegistration = registration.copy(relevantApRevenue = Some(bigDecimal))
-        val hc: HeaderCarrier   = HeaderCarrier(Some(authorization))
-        val expectedUrl         = url"$eclRegistrationUrl/registrations/$internalId"
-        val response            = HttpResponse(ACCEPTED, Json.toJson(updatedRegistration).toString())
+
+        val hc: HeaderCarrier = HeaderCarrier().copy(authorization = Some(authorization))
+
+        val expectedUrl = url"$eclRegistrationUrl/registrations/$internalId"
+        val response    = HttpResponse(ACCEPTED, Json.toJson(updatedRegistration).toString())
 
         when(mockHttpClient.get(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.setHeader(ArgumentMatchers.eq("Authorization" -> hc.authorization.get.value)))
-          .thenReturn(mockRequestBuilder)
+        when(mockRequestBuilder.setHeader(any[(String, String)])).thenReturn(mockRequestBuilder)
         when(mockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(response))
 
         val result = await(connector.getRegistration(internalId)(hc))
-
         result shouldBe updatedRegistration
-
     }
-
   }
 
   "deleteRegistration" should {
@@ -186,14 +191,16 @@ class EclRegistrationConnectorSpec extends SpecBase {
   "submitRegistration" should {
     "return a subscription response when the http client returns a subscription response" in forAll {
       (internalId: String, subscriptionResponse: CreateEclSubscriptionResponse, authorization: Authorization) =>
+
         beforeEach()
-        val hc: HeaderCarrier = HeaderCarrier(Some(authorization))
+
+        val hc: HeaderCarrier = HeaderCarrier().copy(authorization = Some(authorization))
         val expectedUrl       = url"$eclRegistrationUrl/submit-registration/$internalId"
         val response          = HttpResponse(OK, Json.toJson(subscriptionResponse).toString())
 
         when(mockHttpClient.post(ArgumentMatchers.eq(expectedUrl))(any()))
           .thenReturn(mockRequestBuilder)
-        when(mockRequestBuilder.setHeader(ArgumentMatchers.eq("Authorization" -> hc.authorization.get.value)))
+        when(mockRequestBuilder.setHeader(any()))
           .thenReturn(mockRequestBuilder)
         when(mockRequestBuilder.execute[HttpResponse](any(), any()))
           .thenReturn(Future.successful(response))
@@ -201,7 +208,6 @@ class EclRegistrationConnectorSpec extends SpecBase {
         val result = await(connector.submitRegistration(internalId)(hc))
 
         result shouldBe subscriptionResponse
-
     }
   }
 

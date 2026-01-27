@@ -208,10 +208,12 @@ trait EclTestData {
   }
 
   implicit val arbEnrolmentsWithoutEcl: Arbitrary[EnrolmentsWithoutEcl] = Arbitrary {
-    Arbitrary
-      .arbitrary[Enrolments]
-      .retryUntil(!_.enrolments.exists(_.key == EclEnrolment.serviceName))
-      .map(EnrolmentsWithoutEcl)
+    val nonEclAuthEnrolmentGen: Gen[AuthEnrolment] =
+      arbAuthEnrolment.arbitrary.suchThat(_.key != EclEnrolment.serviceName)
+
+    Gen
+      .listOf(nonEclAuthEnrolmentGen)
+      .map(list => EnrolmentsWithoutEcl(Enrolments(list.toSet)))
   }
 
   implicit val arbGroupEnrolmentsResponseWithEcl: Arbitrary[GroupEnrolmentsResponseWithEcl] = Arbitrary {
@@ -324,7 +326,7 @@ trait EclTestData {
       .map(e => EacdEnrolment(e.key, e.identifiers.map(i => KeyValue(i.key, i.value))))
       .toSeq
 
-  def alphaNumericString: String = Gen.alphaNumStr.retryUntil(_.nonEmpty).sample.get
+  def alphaNumericString: String = Gen.alphaNumStr.suchThat(_.nonEmpty).sample.getOrElse("X")
 
   val testInternalId: String               = alphaNumericString
   val testGroupId: String                  = alphaNumericString

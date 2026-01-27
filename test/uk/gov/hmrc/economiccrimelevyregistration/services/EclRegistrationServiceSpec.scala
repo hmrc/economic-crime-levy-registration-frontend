@@ -132,7 +132,7 @@ class EclRegistrationServiceSpec extends SpecBase {
   "upsertRegistration" should {
     "return unit when registration is upserted successfully" in forAll { (registration: Registration) =>
       when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(registration))(any()))
-        .thenReturn(Future.successful(Right(())))
+        .thenReturn(Future.successful(()))
 
       val result = await(service.upsertRegistration(registration).value)
 

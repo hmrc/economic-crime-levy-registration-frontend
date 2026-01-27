@@ -85,7 +85,7 @@ class DeregisterDateControllerSpec extends SpecBase {
           .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 
         when(mockDeregistrationService.upsert(any())(any()))
-          .thenReturn(EitherT.fromEither[Future](Right(deregistration.copy(date = Some(date)))))
+          .thenReturn(EitherT.rightT[Future, DataRetrievalError](()))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(

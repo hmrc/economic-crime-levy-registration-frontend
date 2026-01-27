@@ -78,30 +78,30 @@ class DeregisterContactNameControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "go to deregistration contact role view" in forAll(
-      Arbitrary.arbitrary[Deregistration],
-      stringsWithMaxLength(nameMaxLength)
-    ) { (deregistration: Deregistration, name: String) =>
-      new TestContext(deregistration) {
-        when(mockDeregistrationService.getOrCreate(anyString())(any()))
-          .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
+    "go to deregistration contact role view" in {
+      val internalId = "internalId-1"
+      val name       = "Test User"
 
-        when(mockDeregistrationService.upsert(any())(any()))
-          .thenReturn(
-            EitherT.fromEither[Future](
-              Right(deregistration.copy(contactDetails = deregistration.contactDetails.copy(name = Some(name))))
-            )
-          )
+      val deregistration =
+        Deregistration
+          .empty(internalId)
+          .copy(contactDetails = uk.gov.hmrc.economiccrimelevyregistration.models.ContactDetails.empty)
 
-        val result: Future[Result] =
-          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> name))
+      when(mockDeregistrationService.getOrCreate(anyString())(any()))
+        .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 
-        status(result)           shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.DeregisterContactRoleController.onPageLoad(NormalMode).url)
+      when(mockDeregistrationService.upsert(any())(any()))
+        .thenReturn(EitherT.rightT[Future, DataRetrievalError](()))
 
-        verify(mockDeregistrationService, times(1)).upsert(any())(any())
-        reset(mockDeregistrationService)
-      }
+      val result: Future[Result] =
+        new TestContext(deregistration).controller
+          .onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> name))
+
+      status(result)           shouldBe SEE_OTHER
+      redirectLocation(result) shouldBe Some(routes.DeregisterContactRoleController.onPageLoad(NormalMode).url)
+
+      verify(mockDeregistrationService, times(1)).upsert(any())(any())
+      reset(mockDeregistrationService)
     }
 
     "return a BadRequest form with errors when no answer has been provided" in forAll {

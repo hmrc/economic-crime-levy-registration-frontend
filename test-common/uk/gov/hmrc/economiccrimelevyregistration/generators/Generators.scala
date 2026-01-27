@@ -104,7 +104,7 @@ trait Generators {
     arbitrary[String] suchThat (!_.isBlank)
 
   def nonEmptyString: Gen[String] =
-    Gen.resize(10, Gen.alphaNumStr.suchThat(_.nonEmpty).retryUntil(_ => true))
+    Gen.nonEmptyListOf(Gen.alphaNumChar).map(_.mkString)
 
   def nonBooleans: Gen[String] =
     nonBlankString

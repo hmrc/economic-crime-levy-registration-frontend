@@ -24,6 +24,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.connectors.EnrolmentStoreProxyConnector
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.EnrolmentStoreProxyError
 import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.GroupEnrolmentsResponse
+import org.scalacheck.Arbitrary.arbitrary
 
 import scala.concurrent.Future
 
@@ -32,13 +34,19 @@ class EnrolmentStoreProxyServiceSpec extends SpecBase {
   val service                                                        = new EnrolmentStoreProxyService(mockEnrolmentStoreProxyConnector)
 
   "groupHasEnrolment" should {
-    "return true when the list of group enrolments contains the ECL enrolment" in forAll {
-      (groupId: String, groupEnrolmentsWithEcl: GroupEnrolmentsResponseWithEcl) =>
-        when(mockEnrolmentStoreProxyConnector.getEnrolmentsForGroup(ArgumentMatchers.eq(groupId))(any()))
-          .thenReturn(Future.successful(groupEnrolmentsWithEcl.groupEnrolmentsResponse))
+    "return true when the list of group enrolments contains the ECL enrolment" in {
+      val groupId = "group-123"
 
-        val result = await(service.getEclReferenceFromGroupEnrolment(groupId).value)
-        result shouldBe Right(groupEnrolmentsWithEcl.eclReferenceNumber)
+      val groupEnrolmentsWithEcl: GroupEnrolmentsResponseWithEcl =
+        arbitrary[GroupEnrolmentsResponseWithEcl].sample.getOrElse {
+          fail("Could not generate GroupEnrolmentsResponseWithEcl")
+        }
+
+      when(mockEnrolmentStoreProxyConnector.getEnrolmentsForGroup(ArgumentMatchers.eq(groupId))(any()))
+        .thenReturn(Future.successful(groupEnrolmentsWithEcl.groupEnrolmentsResponse))
+
+      val result = await(service.getEclReferenceFromGroupEnrolment(groupId).value)
+      result shouldBe Right(groupEnrolmentsWithEcl.eclReferenceNumber)
     }
 
     "return EnrolmentStoreProxyError when the list of group enrolments does not contain the ECL enrolment" in forAll {

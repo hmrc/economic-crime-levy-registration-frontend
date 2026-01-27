@@ -122,7 +122,7 @@ class DeregistrationServiceSpec extends SpecBase {
   "submit" should {
     "return a unit when the submission is successful" in {
       when(mockDeregistrationConnector.submitDeregistration(any())(any()))
-        .thenReturn(Future.successful(Right(())))
+        .thenReturn(Future.successful(()))
 
       val result = await(service.submit(testInternalId).value)
       result shouldBe Right(())

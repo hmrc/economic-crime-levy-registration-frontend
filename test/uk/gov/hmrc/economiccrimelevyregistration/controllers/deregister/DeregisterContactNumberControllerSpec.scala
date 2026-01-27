@@ -116,13 +116,7 @@ class DeregisterContactNumberControllerSpec extends SpecBase {
           .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 
         when(mockDeregistrationService.upsert(any())(any()))
-          .thenReturn(
-            EitherT.fromEither[Future](
-              Right(
-                deregistration.copy(contactDetails = deregistration.contactDetails.copy(telephoneNumber = Some(number)))
-              )
-            )
-          )
+          .thenReturn(EitherT.rightT[Future, DataRetrievalError](()))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> number))

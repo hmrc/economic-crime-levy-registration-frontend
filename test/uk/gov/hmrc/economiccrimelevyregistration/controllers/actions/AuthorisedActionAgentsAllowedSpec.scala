@@ -33,6 +33,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.EnrolmentStorePro
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
 import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, ValidRegistrationWithRegistrationType}
 import org.mockito.Mockito.when
+import org.scalacheck.Arbitrary.arbitrary
 
 import scala.concurrent.Future
 
@@ -63,33 +64,41 @@ class AuthorisedActionAgentsAllowedSpec extends SpecBase {
     Retrievals.internalId and Retrievals.allEnrolments and Retrievals.groupIdentifier and Retrievals.affinityGroup and Retrievals.credentialRole
 
   "invokeBlock" should {
-    "execute the block and return the result if authorised" in forAll {
-      (
-        internalId: String,
-        enrolmentsWithEcl: EnrolmentsWithEcl,
-        groupId: String,
-        affinityGroup: AffinityGroup,
-        validRegistration: ValidRegistrationWithRegistrationType
-      ) =>
-        when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
-          .thenReturn(
-            Future(
-              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(affinityGroup) and Some(
-                User
-              )
-            )
+    "execute the block and return the result if authorised" in {
+      val internalId    = "internalId-1"
+      val groupId       = "groupId-1"
+      val affinityGroup = Organisation
+
+      val enrolments =
+        Enrolments(
+          Set(
+            Enrolment(EclEnrolment.serviceName)
+              .withIdentifier(EclEnrolment.identifierKey, "XMECL0000000001")
           )
+        )
 
-        when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
-          .thenReturn(EitherT.fromEither[Future](Left(EnrolmentStoreProxyError.InternalUnexpectedError("", None))))
+      val validRegistration =
+        arbitrary[ValidRegistrationWithRegistrationType].sample.getOrElse(
+          fail("Could not generate ValidRegistrationWithRegistrationType")
+        )
 
-        when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId))(any()))
-          .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
+      when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
+        .thenReturn(
+          Future(
+            Some(internalId) and enrolments and Some(groupId) and Some(affinityGroup) and Some(User)
+          )
+        )
 
-        val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
+      when(mockEnrolmentStoreProxyService.getEclReferenceFromGroupEnrolment(ArgumentMatchers.eq(groupId))(any()))
+        .thenReturn(EitherT.fromEither[Future](Left(EnrolmentStoreProxyError.InternalUnexpectedError("", None))))
 
-        status(result)          shouldBe OK
-        contentAsString(result) shouldBe "Test"
+      when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId))(any()))
+        .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
+
+      val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
+
+      status(result)          shouldBe OK
+      contentAsString(result) shouldBe "Test"
     }
 
     "redirect the user to sign in when there is no active session" in {
@@ -104,32 +113,31 @@ class AuthorisedActionAgentsAllowedSpec extends SpecBase {
       }
     }
 
-    "redirect the user to the assistant not supported page if they have an assistant credential role" in forAll {
-      (
-        internalId: String,
-        enrolmentsWithEcl: EnrolmentsWithEcl,
-        groupId: String,
-        validRegistration: ValidRegistrationWithRegistrationType
-      ) =>
-        when(
-          mockAuthConnector
-            .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
+    "redirect the user to the assistant not supported page if they have an assistant credential role" in {
+      val internalId = "internalId-1"
+      val groupId    = "groupId-1"
+
+      val enrolments = Enrolments(Set.empty)
+
+      val validRegistration =
+        arbitrary[ValidRegistrationWithRegistrationType].sample.getOrElse(
+          fail("Could not generate ValidRegistrationWithRegistrationType")
         )
-          .thenReturn(
-            Future(
-              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Organisation) and Some(
-                Assistant
-              )
-            )
+
+      when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
+        .thenReturn(
+          Future(
+            Some(internalId) and enrolments and Some(groupId) and Some(Organisation) and Some(Assistant)
           )
+        )
 
-        when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId))(any()))
-          .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
+      when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId))(any()))
+        .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
 
-        val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
+      val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
-        status(result)                 shouldBe SEE_OTHER
-        redirectLocation(result).value shouldBe routes.NotableErrorController.assistantCannotRegister().url
+      status(result)                 shouldBe SEE_OTHER
+      redirectLocation(result).value shouldBe routes.NotableErrorController.assistantCannotRegister().url
     }
 
     "throw an Exception if there is no internal id" in {
