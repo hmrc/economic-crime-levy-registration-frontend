@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -8,6 +7,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.Trust
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -18,12 +19,12 @@ class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
       "respond with 200 status and the do you have utr HTML view" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -45,10 +46,10 @@ class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
       "save the selected option" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val hasUtr            = random[Boolean]
-        val registration      = random[Registration]
+        val hasUtr            = arbitrary[Boolean].sample.get
+        val registration      = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
         val validRegistration = registration.copy(entityType = Some(Trust))
@@ -62,7 +63,7 @@ class DoYouHaveUtrISpec extends ISpecBase with AuthorisedBehaviour {
           }
         )
         val updatedRegistration    = validRegistration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
-        val additionalInfo         = random[RegistrationAdditionalInfo]
+        val additionalInfo         = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(validRegistration)

@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.deregister
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -25,6 +24,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class DeregisterContactNameISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -37,7 +38,7 @@ class DeregisterContactNameISpec extends ISpecBase with AuthorisedBehaviour {
 
       "respond with 200 status and the deregister name HTML view" in {
         stubAuthorisedWithEclEnrolment()
-        stubGetDeregistration(random[Deregistration])
+        stubGetDeregistration(arbitrary[Deregistration].sample.get)
 
         val result = callRoute(
           FakeRequest(
@@ -59,7 +60,7 @@ class DeregisterContactNameISpec extends ISpecBase with AuthorisedBehaviour {
 
       "save the selected answer then redirect the deregister role page" in {
         stubAuthorisedWithEclEnrolment()
-        val deregistration = random[Deregistration].copy(internalId = testInternalId)
+        val deregistration = arbitrary[Deregistration].sample.get.copy(internalId = testInternalId)
         val name           = stringsWithMaxLength(nameMaxLength).sample.get
         stubGetDeregistration(deregistration)
         stubUpsertDeregistration(
