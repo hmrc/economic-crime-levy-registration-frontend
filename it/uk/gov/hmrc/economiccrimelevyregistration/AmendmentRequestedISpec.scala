@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
@@ -24,6 +23,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclAddress, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -36,13 +37,13 @@ class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
       stubDeleteRegistration()
       stubDeleteRegistrationAdditionalInfo()
 
-      val email      = random[String]
-      val eclAddress = random[EclAddress]
+      val email      = arbitrary[String].sample.get
+      val eclAddress = arbitrary[EclAddress].sample.get
 
       val result = callRoute(
         FakeRequest(routes.AmendmentRequestedController.onPageLoad()).withSession(
-          (SessionKeys.firstContactEmail -> email),
-          (SessionKeys.contactAddress    -> Json.stringify(Json.toJson(eclAddress)))
+          SessionKeys.firstContactEmail -> email,
+          SessionKeys.contactAddress    -> Json.stringify(Json.toJson(eclAddress))
         )
       )
 
@@ -56,11 +57,11 @@ class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
       stubDeleteRegistration()
       stubDeleteRegistrationAdditionalInfo()
 
-      val email = random[String]
+      val email = arbitrary[String].sample.get
 
       val result = callRoute(
         FakeRequest(routes.AmendmentRequestedController.onPageLoad()).withSession(
-          (SessionKeys.firstContactEmail -> email)
+          SessionKeys.firstContactEmail -> email
         )
       )
 
@@ -73,11 +74,11 @@ class AmendmentRequestedISpec extends ISpecBase with AuthorisedBehaviour {
       stubDeleteRegistration()
       stubDeleteRegistrationAdditionalInfo()
 
-      val eclAddress = random[EclAddress]
+      val eclAddress = arbitrary[EclAddress].sample.get
 
       val result = callRoute(
         FakeRequest(routes.AmendmentRequestedController.onPageLoad()).withSession(
-          (SessionKeys.contactAddress -> Json.stringify(Json.toJson(eclAddress)))
+          SessionKeys.contactAddress -> Json.stringify(Json.toJson(eclAddress))
         )
       )
 

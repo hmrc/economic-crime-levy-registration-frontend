@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.deregister
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.GetSubscriptionResponse
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class DeregisterStartISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -33,7 +34,7 @@ class DeregisterStartISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the start HTML view" in {
       stubAuthorisedWithEclEnrolment()
-      stubGetSubscription(random[GetSubscriptionResponse])
+      stubGetSubscription(arbitrary[GetSubscriptionResponse].sample.get)
 
       val result = callRoute(
         FakeRequest(

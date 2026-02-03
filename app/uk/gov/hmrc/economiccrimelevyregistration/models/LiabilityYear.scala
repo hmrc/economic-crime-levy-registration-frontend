@@ -31,5 +31,11 @@ case class LiabilityYear(value: Int) {
 }
 
 object LiabilityYear {
-  implicit val format: Format[LiabilityYear] = Json.valueFormat[LiabilityYear]
+  import play.api.libs.json.{Format, JsNumber, Reads, Writes}
+
+  implicit val format: Format[LiabilityYear] =
+    Format(
+      Reads.IntReads.map(LiabilityYear.apply),
+      Writes(ly => JsNumber(ly.value))
+    )
 }

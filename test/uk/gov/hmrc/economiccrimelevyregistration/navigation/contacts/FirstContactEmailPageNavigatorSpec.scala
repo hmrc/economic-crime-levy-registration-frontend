@@ -20,6 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class FirstContactEmailPageNavigatorSpec extends SpecBase {
 
@@ -41,7 +42,7 @@ class FirstContactEmailPageNavigatorSpec extends SpecBase {
 
     Seq(NormalMode, CheckMode).foreach { mode =>
       s"return a call to the answers are invalid page when there is no first contact email present in $mode " in forAll {
-        registration: Registration =>
+        (registration: Registration) =>
           val updatedRegistration: Registration =
             registration.copy(contacts =
               registration.contacts.copy(firstContactDetails =

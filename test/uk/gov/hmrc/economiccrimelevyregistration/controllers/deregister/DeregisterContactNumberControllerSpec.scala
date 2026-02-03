@@ -31,6 +31,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalErro
 import uk.gov.hmrc.economiccrimelevyregistration.models.{ContactDetails, Mode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterContactNumberView
+import org.mockito.Mockito.{reset, times, verify, when}
 
 import scala.concurrent.Future
 
@@ -115,18 +116,12 @@ class DeregisterContactNumberControllerSpec extends SpecBase {
           .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 
         when(mockDeregistrationService.upsert(any())(any()))
-          .thenReturn(
-            EitherT.fromEither[Future](
-              Right(
-                deregistration.copy(contactDetails = deregistration.contactDetails.copy(telephoneNumber = Some(number)))
-              )
-            )
-          )
+          .thenReturn(EitherT.rightT[Future, DataRetrievalError](()))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> number))
 
-        status(result) shouldBe SEE_OTHER
+        status(result)           shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.DeregisterCheckYourAnswersController.onPageLoad().url)
 
         verify(mockDeregistrationService, times(1)).upsert(any())(any())
@@ -165,7 +160,7 @@ class DeregisterContactNumberControllerSpec extends SpecBase {
         when(mockDeregistrationService.getOrCreate(anyString())(any()))
           .thenReturn(EitherT.fromEither[Future](Right(updatedDeregistration)))
 
-        val result: Future[Result]       =
+        val result: Future[Result] =
           controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody("value" -> ""))
 
         val formWithErrors: Form[String] = form.bind(Map("value" -> ""))

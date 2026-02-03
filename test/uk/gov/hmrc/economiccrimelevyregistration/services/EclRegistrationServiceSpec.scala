@@ -17,7 +17,6 @@
 package uk.gov.hmrc.economiccrimelevyregistration.services
 
 import cats.data.OptionT
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.scalacheck.Arbitrary
@@ -30,6 +29,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{GeneralPartn
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{DataRetrievalError, DataValidationError}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{AmlSupervisor, AmlSupervisorType, BusinessSector, ContactDetails, Contacts, CreateEclSubscriptionResponse, EclAddress, EclSubscriptionStatus, EntityType, GetAdditionalDetails, GetSubscriptionResponse, Mode, Registration}
 import uk.gov.hmrc.http.{StringContextOps, UpstreamErrorResponse}
+import org.mockito.Mockito.{reset, times, verify, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
@@ -53,7 +54,7 @@ class EclRegistrationServiceSpec extends SpecBase {
   )
 
   "getOrCreateRegistration" should {
-    "return a created registration when one does not exist" in forAll { internalId: String =>
+    "return a created registration when one does not exist" in forAll { (internalId: String) =>
       val emptyRegistration = Registration.empty(internalId).copy(registrationType = Some(Initial))
       when(mockEclRegistrationConnector.getRegistration(any())(any()))
         .thenReturn(Future.failed(UpstreamErrorResponse("Not found", NOT_FOUND)))
@@ -129,16 +130,16 @@ class EclRegistrationServiceSpec extends SpecBase {
   }
 
   "upsertRegistration" should {
-    "return unit when registration is upserted successfully" in forAll { registration: Registration =>
+    "return unit when registration is upserted successfully" in forAll { (registration: Registration) =>
       when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(registration))(any()))
-        .thenReturn(Future.successful(Right(())))
+        .thenReturn(Future.successful(()))
 
       val result = await(service.upsertRegistration(registration).value)
 
       result shouldBe Right(())
     }
 
-    "return an error when the upsert fails" in forAll { registration: Registration =>
+    "return an error when the upsert fails" in forAll { (registration: Registration) =>
       when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(registration))(any()))
         .thenReturn(Future.failed(UpstreamErrorResponse("Error", INTERNAL_SERVER_ERROR)))
 
@@ -147,7 +148,7 @@ class EclRegistrationServiceSpec extends SpecBase {
       result shouldBe Left(DataRetrievalError.BadGateway("Error", INTERNAL_SERVER_ERROR))
     }
 
-    "return an error when the upsert fails with an Upstream4xxResponse" in forAll { registration: Registration =>
+    "return an error when the upsert fails with an Upstream4xxResponse" in forAll { (registration: Registration) =>
       when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(registration))(any()))
         .thenReturn(Future.failed(UpstreamErrorResponse("Error", BAD_REQUEST)))
 
@@ -157,7 +158,7 @@ class EclRegistrationServiceSpec extends SpecBase {
     }
 
     "return an DataRetrievalError.InternalUnexpectedError when an exception is thrown" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val exception = new NullPointerException("NullPointerEx")
         when(mockEclRegistrationConnector.upsertRegistration(ArgumentMatchers.eq(registration))(any()))
           .thenReturn(Future.failed(exception))
@@ -171,7 +172,7 @@ class EclRegistrationServiceSpec extends SpecBase {
 
   "submitRegistration" should {
     "return a CreateEclSubscriptionResponse when the registration is submitted successfully" in forAll {
-      subscriptionResponse: CreateEclSubscriptionResponse =>
+      (subscriptionResponse: CreateEclSubscriptionResponse) =>
         when(mockEclRegistrationConnector.submitRegistration(ArgumentMatchers.eq(testInternalId))(any()))
           .thenReturn(Future.successful(subscriptionResponse))
 
@@ -192,7 +193,7 @@ class EclRegistrationServiceSpec extends SpecBase {
 
   "getRegistrationValidationErrors" should {
     "return Some and a DataValidationError when a DataValidationError is present in the registration" in forAll {
-      error: String =>
+      (error: String) =>
         val updatedDataValidationError = DataValidationError(error)
         when(mockEclRegistrationConnector.getRegistrationValidationErrors(ArgumentMatchers.eq(testInternalId))(any()))
           .thenReturn(OptionT[Future, String](Future.successful(Some(error))))
@@ -327,7 +328,7 @@ class EclRegistrationServiceSpec extends SpecBase {
     }
 
     "return an error if call to incorporatedEntityIdentificationConnector fails for an incorporated entity type" in forAll {
-      mode: Mode =>
+      (mode: Mode) =>
         val entityType = random[IncorporatedEntityType].entityType
 
         when(
@@ -342,7 +343,7 @@ class EclRegistrationServiceSpec extends SpecBase {
     }
 
     "return an InternalUnexpectedError if call to incorporatedEntityIdentificationConnector throws an exception" in forAll {
-      mode: Mode =>
+      (mode: Mode) =>
         val entityType = random[IncorporatedEntityType].entityType
         val exception  = new NullPointerException("Null Pointer Exception")
 
@@ -375,7 +376,7 @@ class EclRegistrationServiceSpec extends SpecBase {
     }
 
     "return an error if call to soleTraderIdentificationFrontendConnector fails for an incorporated entity type" in forAll {
-      mode: Mode =>
+      (mode: Mode) =>
         val entityType = SoleTrader
 
         when(mockSoleTraderIdentificationFrontendConnector.createSoleTraderJourney(ArgumentMatchers.eq(mode))(any()))
@@ -387,7 +388,7 @@ class EclRegistrationServiceSpec extends SpecBase {
     }
 
     "return an InternalUnexpectedError if call to soleTraderIdentificationFrontendConnector throws an exception" in forAll {
-      mode: Mode =>
+      (mode: Mode) =>
         val exception  = new NullPointerException("Null Pointer Exception")
         val entityType = SoleTrader
 
@@ -427,7 +428,7 @@ class EclRegistrationServiceSpec extends SpecBase {
         result shouldBe Right(updatedJourneyResponse.journeyStartUrl)
     }
 
-    "return an error if call to partnershipIdentificationFrontEndConnector fails" in forAll { mode: Mode =>
+    "return an error if call to partnershipIdentificationFrontEndConnector fails" in forAll { (mode: Mode) =>
       val entityType = random[LimitedPartnershipType].entityType
 
       when(
@@ -442,7 +443,7 @@ class EclRegistrationServiceSpec extends SpecBase {
     }
 
     "return an InternalUnexpectedError if call to partnershipIdentificationFrontendConnector throws an exception" in forAll {
-      mode: Mode =>
+      (mode: Mode) =>
         val exception  = new NullPointerException("Null Pointer Exception")
         val entityType = random[LimitedPartnershipType].entityType
 
@@ -471,7 +472,7 @@ class EclRegistrationServiceSpec extends SpecBase {
     }
 
     "return a Left(DataRetrievalError.BadGateway) when the connector fails with a Upstream5xxResponse" in forAll {
-      businessPartnerId: String =>
+      (businessPartnerId: String) =>
         when(mockEclRegistrationConnector.getSubscriptionStatus(anyString())(any()))
           .thenReturn(Future.failed(UpstreamErrorResponse("Error", INTERNAL_SERVER_ERROR)))
 
@@ -481,7 +482,7 @@ class EclRegistrationServiceSpec extends SpecBase {
     }
 
     "return a Left(DataRetrievalError.BadGateway) when the connector fails with a Upstream4xxResponse" in forAll {
-      businessPartnerId: String =>
+      (businessPartnerId: String) =>
         when(mockEclRegistrationConnector.getSubscriptionStatus(anyString())(any()))
           .thenReturn(Future.failed(UpstreamErrorResponse("Error", NOT_FOUND)))
 
@@ -491,7 +492,7 @@ class EclRegistrationServiceSpec extends SpecBase {
     }
 
     "return a Left(DataRetrievalError.InternalUnexpectedError) if an exception is thrown" in forAll {
-      businessPartnerId: String =>
+      (businessPartnerId: String) =>
         val exception = new NullPointerException("NullPointerException")
         when(mockEclRegistrationConnector.getSubscriptionStatus(anyString())(any()))
           .thenReturn(Future.failed(exception))

@@ -27,6 +27,6 @@ class AlfStubFormProvider extends Mappings {
     Form(
       mapping(
         "addressJson" -> text(removeAllWhitespace = false)
-      )(AlfStubFormData.apply)(AlfStubFormData.unapply)
+      )(AlfStubFormData.apply)(a => Some(a.addressJson))
     )
 }

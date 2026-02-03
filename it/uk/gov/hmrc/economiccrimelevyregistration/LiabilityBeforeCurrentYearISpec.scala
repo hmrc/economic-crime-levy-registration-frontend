@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -8,6 +7,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import java.time.LocalDate
 
@@ -22,12 +23,12 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       "respond with 200 status and the liability before current year HTML view" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -51,14 +52,14 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       stubAuthorisedWithNoGroupEnrolment()
 
       val liableBeforeCurrentYear = true
-      val registration            = random[Registration]
+      val registration            = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           registrationType = Some(Initial),
           relevantApRevenue = Some(randomApRevenue()),
           businessSector = None
         )
-      val additionalInfo          = random[RegistrationAdditionalInfo]
+      val additionalInfo          = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -89,15 +90,15 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       stubAuthorisedWithNoGroupEnrolment()
 
       val liableBeforeCurrentYear = false
-      val registration            = random[Registration]
+      val registration            = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           registrationType = Some(Initial),
           relevantApRevenue = Some(randomApRevenue()),
           businessSector = None,
           revenueMeetsThreshold = Some(true)
         )
-      val additionalInfo          = random[RegistrationAdditionalInfo]
+      val additionalInfo          = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -129,15 +130,15 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
         stubAuthorisedWithNoGroupEnrolment()
 
         val liableBeforeCurrentYear = false
-        val registration            = random[Registration]
+        val registration            = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             registrationType = Some(Initial),
             relevantApRevenue = Some(randomApRevenue()),
             businessSector = None,
             revenueMeetsThreshold = revenueMeetsThreshold
           )
-        val additionalInfo          = random[RegistrationAdditionalInfo]
+        val additionalInfo          = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -175,10 +176,10 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       stubAuthorisedWithNoGroupEnrolment()
 
       val liableBeforeCurrentYear = true
-      val registration            = random[Registration]
+      val registration            = arbitrary[Registration].sample.get
         .copy(
           internalId = testInternalId,
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           registrationType = Some(Initial),
           relevantApRevenue = Some(randomApRevenue()),
           businessSector = None,
@@ -186,10 +187,10 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
           carriedOutAmlRegulatedActivityInCurrentFy = Some(true)
         )
       val additionalInfo          =
-        random[RegistrationAdditionalInfo].copy(
+        arbitrary[RegistrationAdditionalInfo].sample.get.copy(
           internalId = registration.internalId,
           liableForPreviousYears = Some(liableBeforeCurrentYear),
-          liabilityStartDate = Some(random[LocalDate]),
+          liabilityStartDate = Some(arbitrary[LocalDate].sample.get),
           liabilityYear = Some(LiabilityYear(testEclTaxYear.previous.startYear)),
           eclReference = None
         )
@@ -216,15 +217,15 @@ class LiabilityBeforeCurrentYearISpec extends ISpecBase with AuthorisedBehaviour
       stubAuthorisedWithNoGroupEnrolment()
 
       val liableBeforeCurrentYear = true
-      val registration            = random[Registration]
+      val registration            = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           registrationType = Some(Initial),
           relevantApRevenue = Some(randomApRevenue()),
           businessSector = None
         )
       val additionalInfo          =
-        random[RegistrationAdditionalInfo].copy(
+        arbitrary[RegistrationAdditionalInfo].sample.get.copy(
           liableForPreviousYears = Some(!liableBeforeCurrentYear),
           liabilityStartDate = None
         )

@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -8,6 +7,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -19,13 +20,13 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
     "respond with 200 status and the cancel registration view" in {
       stubAuthorisedWithEclEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
         .copy(registrationType = Some(Amendment))
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -46,13 +47,13 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
     "delete the registration when the Yes option is selected" in {
       stubAuthorisedWithEclEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           registrationType = Some(Amendment),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -71,13 +72,13 @@ class CancelRegistrationAmendmentISpec extends ISpecBase with AuthorisedBehaviou
     "return to the Check Your Answers Page when the No option is selected" in {
       stubAuthorisedWithEclEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           registrationType = Some(Amendment),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubGetRegistrationAdditionalInfo(additionalInfo)

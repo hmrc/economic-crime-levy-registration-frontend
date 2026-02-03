@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, SessionData, SessionKeys}
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class SavedResponsesISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -43,8 +44,8 @@ class SavedResponsesISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with the next page" in {
       stubAuthorisedWithNoGroupEnrolment()
-      val url    = random[String]
-      stubGetSession(SessionData(random[String], Map(SessionKeys.urlToReturnTo -> url)))
+      val url = arbitrary[String].sample.get
+      stubGetSession(SessionData(arbitrary[String].sample.get, Map(SessionKeys.urlToReturnTo -> url)))
 
       val result = callRoute(
         FakeRequest(routes.SavedResponsesController.onSubmit)

@@ -33,6 +33,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, N
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.AmendReasonPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.AmendReasonView
+import org.mockito.Mockito.{reset, times, verify, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 
@@ -59,7 +61,7 @@ class AmendReasonControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and correct view when no answer has already been provided" in forAll { registration: Registration =>
+    "return OK and correct view when no answer has already been provided" in forAll { (registration: Registration) =>
       new TestContext(registration.copy(amendReason = None, registrationType = Some(Amendment))) {
         val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
@@ -112,21 +114,23 @@ class AmendReasonControllerSpec extends SpecBase {
         reset(mockRegistrationService)
       }
     }
-    "return a Bad Request with form errors when user has provided wrong input" in forAll { registration: Registration =>
-      new TestContext(registration.copy(registrationType = Some(Amendment))) {
+    "return a Bad Request with form errors when user has provided wrong input" in forAll {
+      (registration: Registration) =>
+        new TestContext(registration.copy(registrationType = Some(Amendment))) {
 
-        val result: Future[Result]       = controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> ""))
-        val formWithErrors: Form[String] = form.bind(Map("value" -> ""))
+          val result: Future[Result]       =
+            controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> ""))
+          val formWithErrors: Form[String] = form.bind(Map("value" -> ""))
 
-        status(result) shouldBe BAD_REQUEST
+          status(result) shouldBe BAD_REQUEST
 
-        contentAsString(result) shouldBe view(
-          formWithErrors,
-          NormalMode,
-          Some(Amendment),
-          Some(testEclRegistrationReference)
-        )(fakeRequest, messages).toString()
-      }
+          contentAsString(result) shouldBe view(
+            formWithErrors,
+            NormalMode,
+            Some(Amendment),
+            Some(testEclRegistrationReference)
+          )(fakeRequest, messages).toString()
+        }
 
     }
   }

@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
@@ -9,6 +8,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EntityType, LiabilityYear, NormalMode, Registration, RegistrationAdditionalInfo, RegistrationType}
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import java.time.LocalDate
 
@@ -24,12 +25,12 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
         stubAuthorisedWithNoGroupEnrolment()
         stubSessionForStoreUrl()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -53,14 +54,14 @@ class LiabilityDateControllerISpec extends ISpecBase with AuthorisedBehaviour {
         val date = LocalDate.now().minusYears(1).withDayOfYear(1)
         val year = EclTaxYear.fromDate(date)
 
-        val registration = random[Registration]
+        val registration = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
-            registrationType = Some(random[RegistrationType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
+            registrationType = Some(arbitrary[RegistrationType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
 
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)

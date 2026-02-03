@@ -22,6 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class DoYouHaveCrnPageDeregisterNavigatorSpec extends SpecBase {
 
@@ -69,7 +70,7 @@ class DoYouHaveCrnPageDeregisterNavigatorSpec extends SpecBase {
           routes.CheckYourAnswersController.onPageLoad()
     }
 
-    "return a Call to the Non UK CRN page in CheckMode" in forAll { registration: Registration =>
+    "return a Call to the Non UK CRN page in CheckMode" in forAll { (registration: Registration) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(

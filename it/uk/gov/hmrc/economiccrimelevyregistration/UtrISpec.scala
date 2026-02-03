@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -8,6 +7,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.utrLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class UtrISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -18,12 +19,12 @@ class UtrISpec extends ISpecBase with AuthorisedBehaviour {
       "respond with 200 status and the company registration number HTML view" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -53,9 +54,9 @@ class UtrISpec extends ISpecBase with AuthorisedBehaviour {
       "save the UTR then redirect to the company registration number page page" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
-          .copy(entityType = Some(random[EntityType]), relevantApRevenue = Some(randomApRevenue()))
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val registration   = arbitrary[Registration].sample.get
+          .copy(entityType = Some(arbitrary[EntityType].sample.get), relevantApRevenue = Some(randomApRevenue()))
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
         val Utr            = numStringsWithConcreteLength(utrLength).sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)

@@ -19,6 +19,7 @@ package uk.gov.hmrc.economiccrimelevyregistration.cleanup
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class LiabilityDateRegistrationCleanupSpec extends SpecBase {
 
@@ -27,7 +28,7 @@ class LiabilityDateRegistrationCleanupSpec extends SpecBase {
   "cleanup" should {
     "return a registration with carriedOutAmlRegulatedActivityInCurrentFy, amlSupervisor, " +
       "relevantAp12Months, relevantApLength, relevantApRevenue, revenueMeetsThreshold set to none " in forAll {
-        registration: Registration =>
+        (registration: Registration) =>
           dataCleanup.cleanup(registration) shouldBe registration.copy(
             carriedOutAmlRegulatedActivityInCurrentFy = None,
             amlSupervisor = None,

@@ -35,6 +35,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, M
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.CtUtrPostcodePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CtUtrPostcodeView
+import org.mockito.Mockito.when
+import play.api.test.Helpers._
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 
@@ -73,7 +76,7 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
         new TestContext(updatedRegistration) {
           val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
-          status(result) shouldBe Ok
+          status(result) shouldBe OK
 
           contentAsString(result) shouldBe view(form, mode)(fakeRequest, messages).toString()
         }
@@ -89,7 +92,7 @@ class CtUtrPostcodeControllerSpec extends SpecBase {
         new TestContext(updatedRegistration) {
           val result: Future[Result] = controller.onPageLoad(mode)(fakeRequest)
 
-          status(result) shouldBe Ok
+          status(result) shouldBe OK
 
           contentAsString(result) shouldBe view(
             form.fill(updatedRegistration.otherEntityJourneyData.postcode.get),

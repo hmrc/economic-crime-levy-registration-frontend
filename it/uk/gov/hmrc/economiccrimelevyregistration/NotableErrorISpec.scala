@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, Registration, RegistrationAdditionalInfo}
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -31,12 +32,12 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the answers are invalid HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      val registration = random[Registration]
+      val registration = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
 
@@ -54,7 +55,7 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the user already enrolled HTML view" in {
       stubAuthorisedWithEclEnrolment()
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       val result = callRoute(FakeRequest(routes.NotableErrorController.userAlreadyEnrolled()))
@@ -153,13 +154,13 @@ class NotableErrorISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the details do not match HTML view" in {
       stubAuthorised()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val entityType     = random[EntityType]
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val entityType     = arbitrary[EntityType].sample.get
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration.copy(entityType = Some(entityType)))

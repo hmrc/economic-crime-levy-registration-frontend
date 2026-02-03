@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -10,6 +9,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.EclSubscriptionStatus._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models.grs.{IncorporatedEntityJourneyData, PartnershipEntityJourneyData, SoleTraderEntityJourneyData}
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EclSubscriptionStatus, NormalMode, Registration, RegistrationAdditionalInfo}
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -23,7 +24,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   =
-        random[Registration]
+        arbitrary[Registration].sample.get
           .copy(
             entityType = Some(UkLimitedCompany),
             relevantApRevenue = Some(randomApRevenue()),
@@ -31,12 +32,12 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
             soleTraderEntityJourneyData = None,
             partnershipEntityJourneyData = None
           )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
-      val incorporatedEntityJourneyData = random[IncorporatedEntityJourneyData]
+      val incorporatedEntityJourneyData = arbitrary[IncorporatedEntityJourneyData].sample.get
 
       val updatedIncorporatedEntityJourneyData = incorporatedEntityJourneyData.copy(
         identifiersMatch = true,
@@ -72,7 +73,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   =
-        random[Registration]
+        arbitrary[Registration].sample.get
           .copy(
             entityType = Some(UkLimitedCompany),
             incorporatedEntityJourneyData = None,
@@ -80,12 +81,12 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
             partnershipEntityJourneyData = None,
             relevantApRevenue = Some(randomApRevenue())
           )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
-      val incorporatedEntityJourneyData = random[IncorporatedEntityJourneyData]
+      val incorporatedEntityJourneyData = arbitrary[IncorporatedEntityJourneyData].sample.get
 
       val updatedIncorporatedEntityJourneyData = incorporatedEntityJourneyData.copy(
         identifiersMatch = true,
@@ -123,7 +124,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   =
-        random[Registration]
+        arbitrary[Registration].sample.get
           .copy(
             entityType = Some(SoleTrader),
             incorporatedEntityJourneyData = None,
@@ -131,12 +132,12 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
             partnershipEntityJourneyData = None,
             relevantApRevenue = Some(randomApRevenue())
           )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
-      val soleTraderEntityJourneyData = random[SoleTraderEntityJourneyData]
+      val soleTraderEntityJourneyData = arbitrary[SoleTraderEntityJourneyData].sample.get
 
       val updatedSoleTraderEntityJourneyData = soleTraderEntityJourneyData.copy(
         identifiersMatch = true,
@@ -167,11 +168,11 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
     "retrieve the sole trader entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {
       stubAuthorisedWithNoGroupEnrolment()
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       val registration =
-        random[Registration]
+        arbitrary[Registration].sample.get
           .copy(
             entityType = Some(SoleTrader),
             incorporatedEntityJourneyData = None,
@@ -182,7 +183,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
-      val soleTraderEntityJourneyData = random[SoleTraderEntityJourneyData]
+      val soleTraderEntityJourneyData = arbitrary[SoleTraderEntityJourneyData].sample.get
 
       val updatedSoleTraderEntityJourneyData = soleTraderEntityJourneyData.copy(
         identifiersMatch = true,
@@ -216,12 +217,12 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
     "retrieve the partnership entity GRS journey data for a limited liability, limited or scottish limited partnership, update the registration" +
       "with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
         stubAuthorisedWithNoGroupEnrolment()
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
-        val entityType   = random[LimitedPartnershipType].entityType
+        val entityType   = arbitrary[LimitedPartnershipType].sample.get.entityType
         val registration =
-          random[Registration]
+          arbitrary[Registration].sample.get
             .copy(
               entityType = Some(entityType),
               incorporatedEntityJourneyData = None,
@@ -232,7 +233,7 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
-        val partnershipEntityJourneyData = random[PartnershipEntityJourneyData]
+        val partnershipEntityJourneyData = arbitrary[PartnershipEntityJourneyData].sample.get
 
         val updatedPartnershipEntityJourneyData = partnershipEntityJourneyData.copy(
           identifiersMatch = true,
@@ -268,9 +269,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
       "with the GRS journey data and handle the GRS/BV response to continue the registration journey" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val entityType     = random[ScottishOrGeneralPartnershipType].entityType
+        val entityType     = arbitrary[ScottishOrGeneralPartnershipType].sample.get.entityType
         val registration   =
-          random[Registration]
+          arbitrary[Registration].sample.get
             .copy(
               entityType = Some(entityType),
               incorporatedEntityJourneyData = None,
@@ -278,12 +279,12 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
               partnershipEntityJourneyData = None,
               relevantApRevenue = Some(randomApRevenue())
             )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
-        val partnershipEntityJourneyData = random[PartnershipEntityJourneyData]
+        val partnershipEntityJourneyData = arbitrary[PartnershipEntityJourneyData].sample.get
 
         val updatedPartnershipEntityJourneyData = partnershipEntityJourneyData.copy(
           identifiersMatch = true,
@@ -318,9 +319,9 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
     "retrieve the partnership entity GRS journey data, update the registration with the GRS journey data and handle the GRS/BV response where already registered" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val entityType     = random[PartnershipType].entityType
+      val entityType     = arbitrary[PartnershipType].sample.get.entityType
       val registration   =
-        random[Registration]
+        arbitrary[Registration].sample.get
           .copy(
             entityType = Some(entityType),
             incorporatedEntityJourneyData = None,
@@ -328,12 +329,12 @@ class GrsContinueISpec extends ISpecBase with AuthorisedBehaviour {
             partnershipEntityJourneyData = None,
             relevantApRevenue = Some(randomApRevenue())
           )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
-      val partnershipEntityJourneyData = random[PartnershipEntityJourneyData]
+      val partnershipEntityJourneyData = arbitrary[PartnershipEntityJourneyData].sample.get
 
       val updatedPartnershipEntityJourneyData = partnershipEntityJourneyData.copy(
         identifiersMatch = true,

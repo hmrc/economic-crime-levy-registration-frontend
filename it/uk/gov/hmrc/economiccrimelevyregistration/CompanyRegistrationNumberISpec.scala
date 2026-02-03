@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -8,6 +7,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.companyRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -26,14 +27,14 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
           .empty()
           .copy(companyRegistrationNumber = Some(companyNumber))
 
-        val registration: Registration = random[Registration]
+        val registration: Registration = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             optOtherEntityJourneyData = Some(otherEntityJourneyData),
             relevantApRevenue = Some(randomApRevenue())
           )
 
-        val additionalInfo: RegistrationAdditionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo: RegistrationAdditionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
         stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -57,12 +58,12 @@ class CompanyRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
       "save the company registration number then redirect to the Business Sector Controller page" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         val companyNumber = stringsWithMaxLength(companyRegistrationNumberMaxLength).sample.get
 

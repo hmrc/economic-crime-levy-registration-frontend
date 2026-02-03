@@ -27,6 +27,6 @@ class GrsStubFormProvider extends Mappings {
     Form(
       mapping(
         "grsJourneyDataJson" -> text()
-      )(GrsStubFormData.apply)(GrsStubFormData.unapply)
+      )(GrsStubFormData.apply)(g => Some(g.grsJourneyDataJson))
     )
 }

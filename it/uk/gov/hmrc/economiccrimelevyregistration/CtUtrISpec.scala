@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -9,6 +8,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.utrLe
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{NonUKEstablishment, Trust, UnincorporatedAssociation}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class CtUtrISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -21,9 +22,10 @@ class CtUtrISpec extends ISpecBase with AuthorisedBehaviour {
       "respond with 200 status and the CtUtr HTML view" in {
         stubAuthorised()
 
-        val registration: Registration = random[Registration].copy(entityType = Some(UnincorporatedAssociation))
+        val registration: Registration =
+          arbitrary[Registration].sample.get.copy(entityType = Some(UnincorporatedAssociation))
 
-        val additionalInfo: RegistrationAdditionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo: RegistrationAdditionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
         stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -44,10 +46,10 @@ class CtUtrISpec extends ISpecBase with AuthorisedBehaviour {
         stubAuthorised()
         val entityType = generateOtherEntityType.sample.get
 
-        val registration = random[Registration]
+        val registration = arbitrary[Registration].sample.get
           .copy(entityType = Some(entityType), relevantApRevenue = Some(randomApRevenue()))
 
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         val ctUtr = numStringsWithConcreteLength(utrLength).sample.get
 

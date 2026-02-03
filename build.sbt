@@ -16,7 +16,7 @@ lazy val root = (project in file("."))
   .settings(scoverageSettings: _*)
   .settings(scalaCompilerOptions: _*)
   .settings(
-    scalaVersion := "2.13.16",
+    scalaVersion := "3.3.7",
     name := appName,
     RoutesKeys.routesImport ++= Seq(
       "uk.gov.hmrc.economiccrimelevyregistration.models._",
@@ -92,7 +92,6 @@ val scalaCompilerOptions: Def.Setting[Task[Seq[String]]] = scalacOptions ++= Seq
   "-feature",
   "-deprecation",
   "-Wconf:cat=feature:ws,cat=optimizer:ws,src=target/.*:s",
-  "-Xlint:-byname-implicit"
 )
 
 addCommandAlias("runAllChecks", ";clean;compile;scalafmtCheckAll;coverage;test;it:test;scalastyle;coverageReport")

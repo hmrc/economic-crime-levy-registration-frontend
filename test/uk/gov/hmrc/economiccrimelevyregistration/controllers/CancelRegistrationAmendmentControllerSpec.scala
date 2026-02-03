@@ -29,6 +29,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.Registration
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.CancelRegistrationAmendmentView
+import org.mockito.Mockito.{reset, times, verify, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 
@@ -60,15 +62,19 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      val updatedRegistration = registration.copy(registrationType = Some(Amendment))
-      new TestContext(updatedRegistration) {
-        val result: Future[Result] = controller.onPageLoad()(fakeRequest)
+    "return OK and the correct view when no answer has already been provided" in forAll {
+      (registration: Registration) =>
+        val updatedRegistration = registration.copy(registrationType = Some(Amendment))
+        new TestContext(updatedRegistration) {
+          val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
-        status(result) shouldBe OK
+          status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, Some(testEclRegistrationReference))(fakeRequest, messages).toString
-      }
+          contentAsString(result) shouldBe view(form, Some(testEclRegistrationReference))(
+            fakeRequest,
+            messages
+          ).toString
+        }
     }
   }
 
@@ -98,7 +104,7 @@ class CancelRegistrationAmendmentControllerSpec extends SpecBase {
         }
     }
 
-    "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
+    "return a Bad Request with form errors when invalid data is submitted" in forAll { (registration: Registration) =>
       val updatedRegistration = registration.copy(registrationType = Some(Amendment))
       new TestContext(updatedRegistration) {
         val result: Future[Result]        = controller.onSubmit()(fakeRequest.withFormUrlEncodedBody(("value", "")))

@@ -32,6 +32,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.EnrolmentStoreProxyError
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, EnrolmentStoreProxyService}
 import uk.gov.hmrc.economiccrimelevyregistration.{EnrolmentsWithEcl, ValidRegistrationWithRegistrationType}
+import org.mockito.Mockito.when
+import uk.gov.hmrc.auth.core.EnrolmentIdentifier
+import org.scalacheck.Arbitrary.arbitrary
 
 import scala.concurrent.Future
 
@@ -65,16 +68,21 @@ class AuthorisedActionAssistantsAllowedSpec extends SpecBase {
     "execute the block and return the result if authorised" in forAll {
       (
         internalId: String,
-        enrolmentsWithEcl: EnrolmentsWithEcl,
         groupId: String,
         validRegistration: ValidRegistrationWithRegistrationType
       ) =>
+        val enrolments: Enrolments =
+          Enrolments(
+            Set(
+              Enrolment(eclEnrolmentKey)
+                .withIdentifier(EclEnrolment.identifierKey, "XMECL0000000001")
+            )
+          )
+
         when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
           .thenReturn(
             Future(
-              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Organisation) and Some(
-                Assistant
-              )
+              Some(internalId) and enrolments and Some(groupId) and Some(Organisation) and Some(Assistant)
             )
           )
 
@@ -102,32 +110,29 @@ class AuthorisedActionAssistantsAllowedSpec extends SpecBase {
       }
     }
 
-    "redirect the user to the agent not supported page if they have an agent affinity group" in forAll {
-      (
-        internalId: String,
-        enrolmentsWithEcl: EnrolmentsWithEcl,
-        groupId: String,
-        validRegistration: ValidRegistrationWithRegistrationType
-      ) =>
-        when(
-          mockAuthConnector
-            .authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any())
-        )
-          .thenReturn(
-            Future(
-              Some(internalId) and enrolmentsWithEcl.enrolments and Some(groupId) and Some(Agent) and Some(
-                User
-              )
-            )
+    "redirect the user to the agent not supported page if they have an agent affinity group" in {
+      val internalId = "internalId-1"
+      val groupId    = "groupId-1"
+
+      val enrolments        = Enrolments(Set.empty)
+      val validRegistration = arbitrary[ValidRegistrationWithRegistrationType].sample.getOrElse(
+        fail("Could not generate ValidRegistrationWithRegistrationType")
+      )
+
+      when(mockAuthConnector.authorise(any(), ArgumentMatchers.eq(expectedRetrievals))(any(), any()))
+        .thenReturn(
+          Future(
+            Some(internalId) and enrolments and Some(groupId) and Some(Agent) and Some(User)
           )
+        )
 
-        when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId))(any()))
-          .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
+      when(mockEclRegistrationService.getOrCreate(ArgumentMatchers.eq(internalId))(any()))
+        .thenReturn(EitherT.fromEither[Future](Right(validRegistration.registration)))
 
-        val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
+      val result: Future[Result] = authorisedAction.invokeBlock(fakeRequest, testAction)
 
-        status(result)                 shouldBe SEE_OTHER
-        redirectLocation(result).value shouldBe routes.NotableErrorController.agentCannotRegister().url
+      status(result)                 shouldBe SEE_OTHER
+      redirectLocation(result).value shouldBe routes.NotableErrorController.agentCannotRegister().url
     }
 
     "throw an IllegalStateException if there is no internal id" in {

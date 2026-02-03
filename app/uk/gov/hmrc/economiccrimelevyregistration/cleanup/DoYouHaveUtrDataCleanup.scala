@@ -22,7 +22,7 @@ object DoYouHaveUtrDataCleanup extends DataCleanup[Registration] {
   def cleanup(registration: Registration): Registration = {
     val hasUtr = registration.otherEntityJourneyData.isCtUtrPresent.contains(true)
 
-    val otherEntityJourneyData = {
+    val otherEntityJourneyData =
       if (registration.isUnincorporatedAssociation && !hasUtr) {
         registration.otherEntityJourneyData.copy(
           utrType = None,
@@ -40,7 +40,6 @@ object DoYouHaveUtrDataCleanup extends DataCleanup[Registration] {
           utrType = registration.otherEntityJourneyData.utrType
         )
       }
-    }
 
     registration.copy(optOtherEntityJourneyData = Some(otherEntityJourneyData))
   }

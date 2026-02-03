@@ -25,6 +25,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.AddressLookupCont
 import uk.gov.hmrc.economiccrimelevyregistration.models.Mode
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
 import uk.gov.hmrc.http.UpstreamErrorResponse
+import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 
@@ -88,7 +90,7 @@ class AddressLookupServiceSpec extends SpecBase {
       result shouldBe Right(addressData)
     }
 
-    "return an error when the call to the connector returns an Upstream5xxResponse" in forAll { journeyId: String =>
+    "return an error when the call to the connector returns an Upstream5xxResponse" in forAll { (journeyId: String) =>
       when(mockAddressLookupFrontEndConnector.getAddress(anyString())(any()))
         .thenReturn(Future.failed(UpstreamErrorResponse("Failed to get address", INTERNAL_SERVER_ERROR)))
 
@@ -97,7 +99,7 @@ class AddressLookupServiceSpec extends SpecBase {
       result shouldBe Left(AddressLookupContinueError.BadGateway("Failed to get address", INTERNAL_SERVER_ERROR))
     }
 
-    "return an error when the call to the connector returns an Upstream4xxResponse" in forAll { journeyId: String =>
+    "return an error when the call to the connector returns an Upstream4xxResponse" in forAll { (journeyId: String) =>
       when(mockAddressLookupFrontEndConnector.getAddress(anyString())(any()))
         .thenReturn(Future.failed(UpstreamErrorResponse("Failed to get address", NOT_FOUND)))
 
@@ -106,7 +108,7 @@ class AddressLookupServiceSpec extends SpecBase {
       result shouldBe Left(AddressLookupContinueError.BadGateway("Failed to get address", NOT_FOUND))
     }
 
-    "return an error when the call to the connector throws a non fatal exception" in forAll { journeyId: String =>
+    "return an error when the call to the connector throws a non fatal exception" in forAll { (journeyId: String) =>
       val exception = new Exception("error")
       when(mockAddressLookupFrontEndConnector.getAddress(anyString())(any()))
         .thenReturn(Future.failed(exception))

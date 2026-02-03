@@ -24,6 +24,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.models.SessionData
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
+import org.mockito.Mockito.{reset, when}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -55,7 +56,7 @@ class SessionDataConnectorSpec extends SpecBase {
     }
 
     "throw an UpstreamErrorResponse exception when the http client returns an error response" in forAll {
-      internalId: String =>
+      (internalId: String) =>
         beforeEach()
         val expectedUrl = url"$eclSessionDataUrl/session/$internalId"
         val msg         = "Internal server error"
@@ -73,7 +74,7 @@ class SessionDataConnectorSpec extends SpecBase {
   }
 
   "delete" should {
-    "return unit when the http client successfully returns a http response" in forAll { internalId: String =>
+    "return unit when the http client successfully returns a http response" in forAll { (internalId: String) =>
       beforeEach()
       val expectedUrl = url"$eclSessionDataUrl/session/$internalId"
 
@@ -86,7 +87,7 @@ class SessionDataConnectorSpec extends SpecBase {
       result shouldBe ()
     }
 
-    "return an UpstreamErrorResponse when the http client returns an error response" in forAll { internalId: String =>
+    "return an UpstreamErrorResponse when the http client returns an error response" in forAll { (internalId: String) =>
       beforeEach()
       val expectedUrl = url"$eclSessionDataUrl/session/$internalId"
       val msg         = "Internal server error"
@@ -105,7 +106,7 @@ class SessionDataConnectorSpec extends SpecBase {
 
   "upsert" should {
     val expectedUrl = url"$eclSessionDataUrl/session"
-    "return unit when request succeeds" in forAll { sessionData: SessionData =>
+    "return unit when request succeeds" in forAll { (sessionData: SessionData) =>
       when(mockHttpClient.put(ArgumentMatchers.eq(expectedUrl))(any())).thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.withBody(any())(any(), any(), any()))
         .thenReturn(mockRequestBuilder)
@@ -117,7 +118,7 @@ class SessionDataConnectorSpec extends SpecBase {
     }
 
     "return an UpstreamErrorResponse when the http client returns an error response" in forAll {
-      sessionData: SessionData =>
+      (sessionData: SessionData) =>
         val expectedUrl = url"$eclSessionDataUrl/session"
         val msg         = "Internal server error"
 

@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.eacd.EclEnrolment
 import uk.gov.hmrc.economiccrimelevyregistration.views.html._
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.AlreadyDeregisteredView
 import uk.gov.hmrc.economiccrimelevyregistration.{IncorporatedEntityType, SelfAssessmentEntityType}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 
@@ -74,7 +75,7 @@ class NotableErrorControllerSpec extends SpecBase {
   }
 
   "answerAreInvalid" should {
-    "return OK and the correct view" in forAll { registration: Registration =>
+    "return OK and the correct view" in forAll { (registration: Registration) =>
       new TestContext(registration) {
         val result: Future[Result] = controller.answersAreInvalid()(fakeRequest)
 
@@ -118,7 +119,7 @@ class NotableErrorControllerSpec extends SpecBase {
   }
 
   "agentCannotRegister" should {
-    "return OK and the correct view" in forAll { registration: Registration =>
+    "return OK and the correct view" in forAll { (registration: Registration) =>
       new TestContext(registration) {
         val result: Future[Result] = controller.agentCannotRegister()(fakeRequest)
 
@@ -130,7 +131,7 @@ class NotableErrorControllerSpec extends SpecBase {
   }
 
   "assistantCannotRegister" should {
-    "return OK and the correct view" in forAll { registration: Registration =>
+    "return OK and the correct view" in forAll { (registration: Registration) =>
       new TestContext(registration) {
         val result: Future[Result] = controller.assistantCannotRegister()(fakeRequest)
 
@@ -157,7 +158,7 @@ class NotableErrorControllerSpec extends SpecBase {
   }
 
   "registrationFailed" should {
-    "return OK and the correct view" in forAll { registration: Registration =>
+    "return OK and the correct view" in forAll { (registration: Registration) =>
       new TestContext(registration) {
         val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(GET, "/registration-failed")
         val result: Future[Result]                       = controller.registrationFailed(request)
@@ -170,7 +171,7 @@ class NotableErrorControllerSpec extends SpecBase {
   }
 
   "partyTypeMismatch" should {
-    "return OK and the correct view" in forAll { registration: Registration =>
+    "return OK and the correct view" in forAll { (registration: Registration) =>
       new TestContext(registration) {
         val result: Future[Result] = controller.partyTypeMismatch()(fakeRequest)
 

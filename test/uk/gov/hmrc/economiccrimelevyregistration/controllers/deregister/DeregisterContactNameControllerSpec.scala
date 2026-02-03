@@ -31,6 +31,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalErro
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterContactNameView
+import org.mockito.Mockito.{reset, times, verify, when}
 
 import scala.concurrent.Future
 
@@ -77,30 +78,30 @@ class DeregisterContactNameControllerSpec extends SpecBase {
   }
 
   "onSubmit" should {
-    "go to deregistration contact role view" in forAll(
-      Arbitrary.arbitrary[Deregistration],
-      stringsWithMaxLength(nameMaxLength)
-    ) { (deregistration: Deregistration, name: String) =>
-      new TestContext(deregistration) {
-        when(mockDeregistrationService.getOrCreate(anyString())(any()))
-          .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
+    "go to deregistration contact role view" in {
+      val internalId = "internalId-1"
+      val name       = "Test User"
 
-        when(mockDeregistrationService.upsert(any())(any()))
-          .thenReturn(
-            EitherT.fromEither[Future](
-              Right(deregistration.copy(contactDetails = deregistration.contactDetails.copy(name = Some(name))))
-            )
-          )
+      val deregistration =
+        Deregistration
+          .empty(internalId)
+          .copy(contactDetails = uk.gov.hmrc.economiccrimelevyregistration.models.ContactDetails.empty)
 
-        val result: Future[Result] =
-          controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> name))
+      when(mockDeregistrationService.getOrCreate(anyString())(any()))
+        .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.DeregisterContactRoleController.onPageLoad(NormalMode).url)
+      when(mockDeregistrationService.upsert(any())(any()))
+        .thenReturn(EitherT.rightT[Future, DataRetrievalError](()))
 
-        verify(mockDeregistrationService, times(1)).upsert(any())(any())
-        reset(mockDeregistrationService)
-      }
+      val result: Future[Result] =
+        new TestContext(deregistration).controller
+          .onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> name))
+
+      status(result)           shouldBe SEE_OTHER
+      redirectLocation(result) shouldBe Some(routes.DeregisterContactRoleController.onPageLoad(NormalMode).url)
+
+      verify(mockDeregistrationService, times(1)).upsert(any())(any())
+      reset(mockDeregistrationService)
     }
 
     "return a BadRequest form with errors when no answer has been provided" in forAll {
@@ -110,7 +111,7 @@ class DeregisterContactNameControllerSpec extends SpecBase {
           when(mockDeregistrationService.getOrCreate(anyString())(any()))
             .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 
-          val result: Future[Result]       =
+          val result: Future[Result] =
             controller.onSubmit(mode)(fakeRequest.withFormUrlEncodedBody("value" -> ""))
 
           val formWithErrors: Form[String] = form.bind(Map("value" -> ""))

@@ -30,6 +30,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterReasonView
 import scala.concurrent.Future
+import org.mockito.Mockito.{reset, times, verify, when}
 
 class DeregisterReasonControllerSpec extends SpecBase {
 
@@ -81,12 +82,12 @@ class DeregisterReasonControllerSpec extends SpecBase {
           .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 
         when(mockDeregistrationService.upsert(any())(any()))
-          .thenReturn(EitherT.fromEither[Future](Right(deregistration.copy(reason = Some(reason)))))
+          .thenReturn(EitherT.rightT[Future, DataRetrievalError](()))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody("value" -> reason.toString))
 
-        status(result) shouldBe SEE_OTHER
+        status(result)           shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.DeregisterDateController.onPageLoad(NormalMode).url)
 
         verify(mockDeregistrationService, times(1)).upsert(any())(any())

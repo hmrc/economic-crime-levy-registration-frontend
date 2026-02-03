@@ -25,6 +25,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, StringContextOps}
+import org.mockito.Mockito.{reset, when}
+import play.api.libs.ws.writeableOf_JsValue
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -60,7 +63,7 @@ class DeregistrationConnectorSpec extends SpecBase {
   }
 
   "deleteDeregistration" should {
-    "return unit when the http client successfully returns a http response" in forAll { internalId: String =>
+    "return unit when the http client successfully returns a http response" in forAll { (internalId: String) =>
       beforeEach()
       val expectedUrl = url"$deregistrationUrl/deregistration/$internalId"
       val response    = HttpResponse(NO_CONTENT, "")
@@ -75,7 +78,7 @@ class DeregistrationConnectorSpec extends SpecBase {
     }
 
     "throw an UpstreamErrorResponse exception when the http client returns a error response" in forAll {
-      internalId: String =>
+      (internalId: String) =>
         beforeEach()
         val expectedUrl = url"$deregistrationUrl/deregistration/$internalId"
         val msg         = "Internal server error"
@@ -93,7 +96,7 @@ class DeregistrationConnectorSpec extends SpecBase {
   }
 
   "upsertDeregistration" should {
-    "return a unit when registration is successfully upserted" in forAll { deregistration: Deregistration =>
+    "return a unit when registration is successfully upserted" in forAll { (deregistration: Deregistration) =>
       beforeEach()
       val expectedUrl = url"$deregistrationUrl/deregistration"
       val response    = HttpResponse(NO_CONTENT, "")
@@ -126,7 +129,7 @@ class DeregistrationConnectorSpec extends SpecBase {
     }
 
     "throw an UpstreamErrorResponse exception when the http client returns a error response" in forAll {
-      internalId: String =>
+      (internalId: String) =>
         beforeEach()
         val expectedUrl = url"$deregistrationUrl/submit-deregistration/$internalId"
         val msg         = "Internal server error"
