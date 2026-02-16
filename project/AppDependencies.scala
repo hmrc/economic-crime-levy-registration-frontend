@@ -6,10 +6,14 @@ object AppDependencies {
   private val playVersion          = "30"
 
   val compile: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"   %% s"bootstrap-frontend-play-$playVersion"            % hmrcBootstrapVersion,
+    "uk.gov.hmrc"   %% s"bootstrap-frontend-play-$playVersion"            % hmrcBootstrapVersion exclude("org.apache.commons", "commons-lang3"),
     "uk.gov.hmrc"   %% s"play-frontend-hmrc-play-$playVersion"            % "12.31.0",
     "uk.gov.hmrc"   %% s"play-conditional-form-mapping-play-$playVersion" % "3.4.0",
-    "org.typelevel" %% "cats-core"                                        % "2.13.0"
+    "org.typelevel" %% "cats-core"                                        % "2.13.0",
+    "org.apache.commons" % "commons-lang3"    % "3.18.0",
+    "ch.qos.logback"     % "logback-core"     % "1.5.27",
+    "ch.qos.logback"     % "logback-classic"  % "1.5.27",
+    "org.lz4"            % "lz4-java"         % "1.10.3"
   )
 
   val test: Seq[ModuleID]    = Seq(
