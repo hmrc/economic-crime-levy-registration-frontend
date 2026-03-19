@@ -22,6 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.{NonUKEstablishment, Trust}
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class CtUtrPageNavigatorSpec extends SpecBase {
 
@@ -68,7 +69,7 @@ class CtUtrPageNavigatorSpec extends SpecBase {
         routes.CtUtrPostcodeController.onPageLoad(NormalMode)
     }
 
-    "return a call to the answers are invalid page if entity type is None" in forAll { registration: Registration =>
+    "return a call to the answers are invalid page if entity type is None" in forAll { (registration: Registration) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(
@@ -85,7 +86,7 @@ class CtUtrPageNavigatorSpec extends SpecBase {
         routes.NotableErrorController.answersAreInvalid()
     }
 
-    "return a call to the answers are invalid page if ctUtr is None" in forAll { registration: Registration =>
+    "return a call to the answers are invalid page if ctUtr is None" in forAll { (registration: Registration) =>
       val otherEntityJourneyData = OtherEntityJourneyData
         .empty()
         .copy(

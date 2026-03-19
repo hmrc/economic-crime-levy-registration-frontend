@@ -25,6 +25,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalErro
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, LocalDateService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.RegistrationReceivedView
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 
@@ -146,7 +147,7 @@ class RegistrationReceivedControllerSpec extends SpecBase {
     }
 
     "return an Internal Server Error when no liability year is present in the session" in forAll {
-      firstContactEmailAddress: String =>
+      (firstContactEmailAddress: String) =>
         val registeringForCurrentYear = true
 
         when(mockRegistrationAdditionalInfoService.delete(anyString())(any(), any()))

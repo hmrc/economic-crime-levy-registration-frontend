@@ -17,8 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.generators
 
 import org.scalacheck.Arbitrary
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.derivedArbitrary
-import org.scalacheck.derive.MkArbitrary
+import io.github.martinhh.derived.scalacheck.deriveArbitrary
 import play.api.mvc.Session
 import uk.gov.hmrc.economiccrimelevyregistration.EclTestData
 import uk.gov.hmrc.economiccrimelevyregistration.models._
@@ -32,48 +31,55 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.grs._
 import uk.gov.hmrc.http.Authorization
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
+import org.scalacheck.Gen
 
 object CachedArbitraries extends EclTestData {
 
-  private def mkArb[T](implicit mkArb: MkArbitrary[T]): Arbitrary[T] = MkArbitrary[T].arbitrary
-
-  implicit lazy val arbRegistration: Arbitrary[Registration]                                                     = mkArb
-  implicit lazy val arbBusinessSector: Arbitrary[BusinessSector]                                                 = mkArb
-  implicit lazy val arbVerificationStatus: Arbitrary[VerificationStatus]                                         = mkArb
-  implicit lazy val arbRegistrationStatus: Arbitrary[RegistrationStatus]                                         = mkArb
-  implicit lazy val arbSubscriptionStatus: Arbitrary[SubscriptionStatus]                                         = mkArb
-  implicit lazy val arbEntityType: Arbitrary[EntityType]                                                         = mkArb
-  implicit lazy val arbAmlSupervisorType: Arbitrary[AmlSupervisorType]                                           = mkArb
-  implicit lazy val arbIncorporatedEntityJourneyData: Arbitrary[IncorporatedEntityJourneyData]                   = mkArb
-  implicit lazy val arbPartnershipEntityJourneyData: Arbitrary[PartnershipEntityJourneyData]                     = mkArb
-  implicit lazy val arbSoleTraderEntityJourneyData: Arbitrary[SoleTraderEntityJourneyData]                       = mkArb
-  implicit lazy val arbGrsCreateJourneyResponse: Arbitrary[GrsCreateJourneyResponse]                             = mkArb
-  implicit lazy val arbGroupEnrolmentsResponse: Arbitrary[GroupEnrolmentsResponse]                               = mkArb
-  implicit lazy val arbEclSubscriptionStatus: Arbitrary[EclSubscriptionStatus]                                   = mkArb
-  implicit lazy val arbDataValidationError: Arbitrary[DataValidationError]                                       = mkArb
-  implicit lazy val arbAlfAddressData: Arbitrary[AlfAddressData]                                                 = mkArb
-  implicit lazy val arbCalculatedLiability: Arbitrary[CalculatedLiability]                                       = mkArb
-  implicit lazy val arbCalculateLiabilityRequest: Arbitrary[CalculateLiabilityRequest]                           = mkArb
-  implicit lazy val arbCreateEclSubscriptionResponse: Arbitrary[CreateEclSubscriptionResponse]                   = mkArb
-  implicit lazy val arbRegistrationSubmittedParameters: Arbitrary[RegistrationSubmittedEmailParameters]          = mkArb
-  implicit lazy val arbContacts: Arbitrary[Contacts]                                                             = mkArb
-  implicit lazy val arbContactDetails: Arbitrary[ContactDetails]                                                 = mkArb
-  implicit lazy val arbMode: Arbitrary[Mode]                                                                     = mkArb
-  implicit lazy val arbRevenueDoesNotMeetThreshold: Arbitrary[RevenueDoesNotMeetThreshold]                       = mkArb
-  implicit lazy val arbUtrType: Arbitrary[UtrType]                                                               = mkArb
-  implicit lazy val arbAuthorization: Arbitrary[Authorization]                                                   = mkArb
-  implicit lazy val arbGetSubscriptionResponse: Arbitrary[GetSubscriptionResponse]                               = mkArb
-  implicit lazy val arbGetAdditionalDetails: Arbitrary[GetAdditionalDetails]                                     = mkArb
-  implicit lazy val arbEclAddress: Arbitrary[EclAddress]                                                         = mkArb
-  implicit lazy val arbDeregisterReason: Arbitrary[DeregisterReason]                                             = mkArb
-  implicit lazy val arbDeregistration: Arbitrary[Deregistration]                                                 = mkArb
-  implicit lazy val arbGetCorrespondenceAddressDetails: Arbitrary[GetCorrespondenceAddressDetails]               = mkArb
-  implicit lazy val arbRegistrationType: Arbitrary[RegistrationType]                                             = mkArb
-  implicit lazy val arbEclRegistrationModel: Arbitrary[EclRegistrationModel]                                     = mkArb
-  implicit lazy val arbDeregistrationRequestedEmailRequest: Arbitrary[DeregistrationRequestedEmailRequest]       = mkArb
-  implicit lazy val arbDeregistrationRequestedEmailParameters: Arbitrary[DeregistrationRequestedEmailParameters] = mkArb
-  implicit lazy val arbSession: Arbitrary[Session]                                                               = mkArb
-  implicit lazy val arbExtendedDataEvent: Arbitrary[ExtendedDataEvent]                                           = mkArb
-  implicit lazy val arbAuditResult: Arbitrary[AuditResult]                                                       = mkArb
+  given arbRegistration: Arbitrary[Registration]                                                     = deriveArbitrary
+  given arbBusinessSector: Arbitrary[BusinessSector]                                                 = deriveArbitrary
+  given arbVerificationStatus: Arbitrary[VerificationStatus]                                         = deriveArbitrary
+  given arbRegistrationStatus: Arbitrary[RegistrationStatus]                                         = deriveArbitrary
+  given arbSubscriptionStatus: Arbitrary[SubscriptionStatus]                                         = deriveArbitrary
+  given arbEntityType: Arbitrary[EntityType]                                                         = deriveArbitrary
+  given arbAmlSupervisorType: Arbitrary[AmlSupervisorType]                                           = deriveArbitrary
+  given arbIncorporatedEntityJourneyData: Arbitrary[IncorporatedEntityJourneyData]                   = deriveArbitrary
+  given arbPartnershipEntityJourneyData: Arbitrary[PartnershipEntityJourneyData]                     = deriveArbitrary
+  given arbSoleTraderEntityJourneyData: Arbitrary[SoleTraderEntityJourneyData]                       = deriveArbitrary
+  given arbGrsCreateJourneyResponse: Arbitrary[GrsCreateJourneyResponse]                             = deriveArbitrary
+  given arbGroupEnrolmentsResponse: Arbitrary[GroupEnrolmentsResponse]                               = deriveArbitrary
+  given arbEclSubscriptionStatus: Arbitrary[EclSubscriptionStatus]                                   = deriveArbitrary
+  given arbDataValidationError: Arbitrary[DataValidationError]                                       = deriveArbitrary
+  given arbAlfAddressData: Arbitrary[AlfAddressData]                                                 = deriveArbitrary
+  given arbCalculatedLiability: Arbitrary[CalculatedLiability]                                       = deriveArbitrary
+  given arbCalculateLiabilityRequest: Arbitrary[CalculateLiabilityRequest]                           = deriveArbitrary
+  given arbCreateEclSubscriptionResponse: Arbitrary[CreateEclSubscriptionResponse]                   = deriveArbitrary
+  given arbRegistrationSubmittedParameters: Arbitrary[RegistrationSubmittedEmailParameters]          =
+    deriveArbitrary
+  given arbContacts: Arbitrary[Contacts]                                                             = deriveArbitrary
+  given arbContactDetails: Arbitrary[ContactDetails]                                                 = deriveArbitrary
+  given arbMode: Arbitrary[Mode]                                                                     = deriveArbitrary
+  given arbRevenueDoesNotMeetThreshold: Arbitrary[RevenueDoesNotMeetThreshold]                       = deriveArbitrary
+  given arbUtrType: Arbitrary[UtrType]                                                               = deriveArbitrary
+  given arbAuthorization: Arbitrary[Authorization]                                                   =
+    Arbitrary(Gen.alphaNumStr.suchThat(_.nonEmpty).map(Authorization.apply))
+  given arbGetSubscriptionResponse: Arbitrary[GetSubscriptionResponse]                               = deriveArbitrary
+  given arbGetAdditionalDetails: Arbitrary[GetAdditionalDetails]                                     = deriveArbitrary
+  given arbEclAddress: Arbitrary[EclAddress]                                                         = deriveArbitrary
+  given arbDeregisterReason: Arbitrary[DeregisterReason]                                             = deriveArbitrary
+  given arbDeregistration: Arbitrary[Deregistration]                                                 = deriveArbitrary
+  given arbGetCorrespondenceAddressDetails: Arbitrary[GetCorrespondenceAddressDetails]               =
+    deriveArbitrary
+  given arbRegistrationType: Arbitrary[RegistrationType]                                             = deriveArbitrary
+  given arbEclRegistrationModel: Arbitrary[EclRegistrationModel]                                     = deriveArbitrary
+  given arbDeregistrationRequestedEmailRequest: Arbitrary[DeregistrationRequestedEmailRequest]       =
+    deriveArbitrary
+  given arbDeregistrationRequestedEmailParameters: Arbitrary[DeregistrationRequestedEmailParameters] =
+    deriveArbitrary
+  given arbSession: Arbitrary[Session]                                                               = deriveArbitrary
+  given arbExtendedDataEvent: Arbitrary[ExtendedDataEvent]                                           = deriveArbitrary
+  given arbAuditResult: Arbitrary[AuditResult]                                                       = deriveArbitrary
+  given arbGetLegalEntityDetails: Arbitrary[GetLegalEntityDetails]                                   = deriveArbitrary
+  given arbGetPrimaryContactDetails: Arbitrary[GetPrimaryContactDetails]                             = deriveArbitrary
+  given arbGetSecondaryContactDetails: Arbitrary[GetSecondaryContactDetails]                         = deriveArbitrary
 
 }

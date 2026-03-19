@@ -20,6 +20,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclRegistrationModel, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class SecondContactNamePageNavigatorSpec extends SpecBase {
 
@@ -40,7 +41,7 @@ class SecondContactNamePageNavigatorSpec extends SpecBase {
     }
 
     "return a Call to the second contact role page in CheckMode when a second contact role does not already exist" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration: Registration =
           registration.copy(contacts =
             registration.contacts.copy(secondContactDetails = validContactDetails.copy(role = None))
@@ -51,7 +52,7 @@ class SecondContactNamePageNavigatorSpec extends SpecBase {
     }
 
     "return a Call to the check your answers page in CheckMode when a second contact role already exists" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration: Registration =
           registration.copy(contacts = registration.contacts.copy(secondContactDetails = validContactDetails))
 
@@ -61,7 +62,7 @@ class SecondContactNamePageNavigatorSpec extends SpecBase {
 
     Seq(NormalMode, CheckMode).foreach { mode =>
       s"return a call to the answers are invalid page when there is no second contact name present in $mode " in forAll {
-        registration: Registration =>
+        (registration: Registration) =>
           val updatedRegistration: Registration =
             registration.copy(contacts =
               registration.contacts.copy(secondContactDetails =

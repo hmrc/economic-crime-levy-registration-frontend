@@ -27,6 +27,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.SavedResponsesFormProvide
 import uk.gov.hmrc.economiccrimelevyregistration.models.NormalMode
 import uk.gov.hmrc.economiccrimelevyregistration.services.{EclRegistrationService, RegistrationAdditionalInfoService, SessionService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.SavedResponsesView
+import org.mockito.Mockito.when
 
 import scala.concurrent.Future
 
@@ -53,7 +54,7 @@ class SavedResponsesControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view when no answer has already been provided" in forAll { internalID: String =>
+    "return OK and the correct view when no answer has already been provided" in forAll { (internalID: String) =>
       new TestContext(internalID) {
         val result: Future[Result] = controller.onPageLoad()(fakeRequest)
 
@@ -79,7 +80,7 @@ class SavedResponsesControllerSpec extends SpecBase {
       }
     }
 
-    "delete registration if answer is no" in forAll { internalId: String =>
+    "delete registration if answer is no" in forAll { (internalId: String) =>
       new TestContext(internalId) {
         when(mockEclRegistrationService.deleteRegistration(any())(any(), any()))
           .thenReturn(EitherT.fromEither[Future](Right(())))

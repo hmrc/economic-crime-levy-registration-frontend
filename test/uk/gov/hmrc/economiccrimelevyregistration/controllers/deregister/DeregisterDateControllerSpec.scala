@@ -29,6 +29,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalErro
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Mode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.services.deregister.DeregistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.DeregisterDateView
+import org.mockito.Mockito.{reset, times, verify, when}
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -84,7 +85,7 @@ class DeregisterDateControllerSpec extends SpecBase {
           .thenReturn(EitherT.fromEither[Future](Right(deregistration)))
 
         when(mockDeregistrationService.upsert(any())(any()))
-          .thenReturn(EitherT.fromEither[Future](Right(deregistration.copy(date = Some(date)))))
+          .thenReturn(EitherT.rightT[Future, DataRetrievalError](()))
 
         val result: Future[Result] =
           controller.onSubmit(NormalMode)(

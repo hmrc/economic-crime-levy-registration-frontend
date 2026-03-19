@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.scalacheck.Gen
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
@@ -8,6 +7,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -21,12 +22,12 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
       "respond with 200 status and the relevant AP length view" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -46,13 +47,13 @@ class RelevantApLengthISpec extends ISpecBase with AuthorisedBehaviour {
       "save the relevant AP length then redirect to the UK revenue page" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration     = random[Registration]
+        val registration     = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
         val relevantApLength = Gen.chooseNum[Int](minDays, maxDays).sample.get
-        val additionalInfo   = random[RegistrationAdditionalInfo]
+        val additionalInfo   = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)

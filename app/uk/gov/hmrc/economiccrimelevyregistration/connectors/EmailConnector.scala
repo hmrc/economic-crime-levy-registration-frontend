@@ -26,6 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.email.RegistrationSubmit
 import uk.gov.hmrc.economiccrimelevyregistration.models.email._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, Retries, StringContextOps}
+import play.api.libs.ws.writeableOf_JsValue
 
 import java.net.URL
 import javax.inject.{Inject, Singleton}

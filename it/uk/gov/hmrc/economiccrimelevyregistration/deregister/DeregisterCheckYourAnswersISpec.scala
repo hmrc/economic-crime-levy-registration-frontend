@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.deregister
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
@@ -30,6 +29,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.views.html.deregister.Deregistr
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{DeregistrationRequestedEmailParameters, DeregistrationRequestedEmailRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
 import java.time.{LocalDate, ZoneOffset}
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour with DeregisterPdfEncoder {
 
@@ -41,12 +42,12 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
 
     "respond with 200 status and the deregister name HTML view" in {
       stubAuthorisedWithEclEnrolment()
-      val deregistration = random[Deregistration].copy(internalId = testInternalId)
+      val deregistration = arbitrary[Deregistration].sample.get.copy(internalId = testInternalId)
       stubGetDeregistration(deregistration)
       stubUpsertDeregistration(
         deregistration.copy(eclReference = Some(testEclRegistrationReference))
       )
-      stubGetSubscription(random[GetSubscriptionResponse])
+      stubGetSubscription(arbitrary[GetSubscriptionResponse].sample.get)
 
       val result = callRoute(
         FakeRequest(
@@ -75,8 +76,8 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
         messagesApi.preferred(Seq(Languages.english))
       )
 
-      val subscription = random[GetSubscriptionResponse]
-      val emailParams  = random[DeregistrationRequestedEmailParameters]
+      val subscription = arbitrary[GetSubscriptionResponse].sample.get
+      val emailParams  = arbitrary[DeregistrationRequestedEmailParameters].sample.get
         .copy(
           name = name,
           dateSubmitted = date,
@@ -87,7 +88,7 @@ class DeregisterCheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour
           addressLine4 = subscription.correspondenceAddressDetails.addressLine4
         )
 
-      val deregistration = random[Deregistration].copy(
+      val deregistration = arbitrary[Deregistration].sample.get.copy(
         internalId = testInternalId,
         eclReference = Some(testEclRegistrationReference),
         contactDetails = ContactDetails(Some(name), None, Some(email), None)

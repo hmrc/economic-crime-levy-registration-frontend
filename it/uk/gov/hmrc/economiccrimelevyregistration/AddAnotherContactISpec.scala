@@ -1,12 +1,13 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -18,12 +19,12 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
 
       "respond with 200 status and the Add another contact HTML view" in {
         stubAuthorisedWithNoGroupEnrolment()
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
-        val registration = random[Registration]
+        val registration = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
 
@@ -47,13 +48,13 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected answer then redirect the second contact name page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(true)))
@@ -73,15 +74,15 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected answer then redirect to the registered office address page when the No option is selected and there is no existing second contact" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration                                         = random[Registration]
+      val registration                                         = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
       val incorporatedEntityJourneyDataWithValidCompanyProfile =
-        random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
+        arbitrary[IncorporatedEntityJourneyDataWithValidCompanyProfile].sample.get
 
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       val updatedRegistration = registration.copy(
@@ -107,17 +108,17 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
 
     "save the selected answer then redirect to the registered office address page when the No option is selected and there is an existing second contact" in {
       stubAuthorisedWithNoGroupEnrolment()
-      val contactName                                          = random[String]
-      val contactRole                                          = random[String]
-      val contactEmail                                         = random[String]
-      val contactTelephone                                     = random[String]
-      val registration                                         = random[Registration]
+      val contactName                                          = arbitrary[String].sample.get
+      val contactRole                                          = arbitrary[String].sample.get
+      val contactEmail                                         = arbitrary[String].sample.get
+      val contactTelephone                                     = arbitrary[String].sample.get
+      val registration                                         = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
       val incorporatedEntityJourneyDataWithValidCompanyProfile =
-        random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
+        arbitrary[IncorporatedEntityJourneyDataWithValidCompanyProfile].sample.get
 
       val regWithSecondContact = registration
         .copy(contacts =
@@ -134,7 +135,7 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
           soleTraderEntityJourneyData = None
         )
 
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
@@ -168,17 +169,17 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
 
     "save the selected answer then redirect to the Check Your Answers page when the No option is selected and there is an existing second contact" in {
       stubAuthorisedWithNoGroupEnrolment()
-      val contactName                                          = random[String]
-      val contactRole                                          = random[String]
-      val contactEmail                                         = random[String]
-      val contactTelephone                                     = random[String]
-      val registration                                         = random[Registration]
+      val contactName                                          = arbitrary[String].sample.get
+      val contactRole                                          = arbitrary[String].sample.get
+      val contactEmail                                         = arbitrary[String].sample.get
+      val contactTelephone                                     = arbitrary[String].sample.get
+      val registration                                         = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
       val incorporatedEntityJourneyDataWithValidCompanyProfile =
-        random[IncorporatedEntityJourneyDataWithValidCompanyProfile]
+        arbitrary[IncorporatedEntityJourneyDataWithValidCompanyProfile].sample.get
 
       val regWithSecondContact = registration
         .copy(contacts =
@@ -195,7 +196,7 @@ class AddAnotherContactISpec extends ISpecBase with AuthorisedBehaviour {
           soleTraderEntityJourneyData = None
         )
 
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
 

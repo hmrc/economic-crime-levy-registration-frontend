@@ -51,7 +51,7 @@ class FirstContactEmailFormProviderSpec extends StringFieldBehaviours {
       requiredError = FormError(fieldName, requiredKey)
     )
 
-    "remove all whitespace" in forAll(emailAddress(emailMaxLength)) { dataItem: String =>
+    "remove all whitespace" in forAll(emailAddress(emailMaxLength)) { (dataItem: String) =>
       val expectedValue  = dataItem.filterNot(_ == ',').toLowerCase
       val dataWithSpaces = "  " + dataItem.mkString(" ") + "  "
       val result         = form.bind(Map(fieldName -> dataWithSpaces))
@@ -61,7 +61,7 @@ class FirstContactEmailFormProviderSpec extends StringFieldBehaviours {
 
     "fail to bind an invalid email address" in forAll(
       stringsWithMaxLength(emailMaxLength).retryUntil(!_.matches(Regex.emailRegex))
-    ) { invalidEmail: String =>
+    ) { (invalidEmail: String) =>
       val result: Form[String] = form.bind(Map("value" -> invalidEmail))
 
       result.errors.map(_.message) should contain("firstContactEmail.error.invalid")

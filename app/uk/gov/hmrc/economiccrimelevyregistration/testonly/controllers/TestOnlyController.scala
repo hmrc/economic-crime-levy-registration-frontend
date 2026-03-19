@@ -22,6 +22,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.actions.{Authorised
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.connectors.TestOnlyConnector
 import uk.gov.hmrc.economiccrimelevyregistration.testonly.controllers.actions.TestOnlyAuthorisedAction
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import play.api.libs.ws.writeableOf_JsValue
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,7 +32,7 @@ class TestOnlyController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedActionWithoutEnrolmentCheck,
   testOnlyAuthorise: TestOnlyAuthorisedAction,
-  getRegistrationData: RegistrationDataAction,
+  registrationDataAction: RegistrationDataAction,
   testOnlyConnector: TestOnlyConnector
 )(implicit val ec: ExecutionContext)
     extends FrontendBaseController {
@@ -44,7 +45,7 @@ class TestOnlyController @Inject() (
     testOnlyConnector.clearCurrentData().map(httpResponse => Ok(httpResponse.body))
   }
 
-  def getRegistrationData(): Action[AnyContent] = (authorise andThen getRegistrationData) { implicit request =>
+  def getRegistrationData(): Action[AnyContent] = (authorise andThen registrationDataAction) { implicit request =>
     Ok(Json.toJson(request.registration))
   }
 

@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -8,6 +7,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.emailMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -20,13 +21,13 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
       "respond with 200 status and the first contact email HTML view" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val name           = random[String]
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val name           = arbitrary[String].sample.get
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(
@@ -57,12 +58,12 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
       "save the provided email address then redirect to the correct page" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration = random[Registration]
+        val registration = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val name         = random[String]
+        val name         = arbitrary[String].sample.get
         val email        = emailAddress(emailMaxLength).sample.get
 
         val updatedRegistration = registration.copy(contacts =
@@ -70,7 +71,7 @@ class FirstContactEmailISpec extends ISpecBase with AuthorisedBehaviour {
             registration.contacts.firstContactDetails.copy(name = Some(name), emailAddress = Some(email.toLowerCase))
           )
         )
-        val additionalInfo      = random[RegistrationAdditionalInfo]
+        val additionalInfo      = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(updatedRegistration)

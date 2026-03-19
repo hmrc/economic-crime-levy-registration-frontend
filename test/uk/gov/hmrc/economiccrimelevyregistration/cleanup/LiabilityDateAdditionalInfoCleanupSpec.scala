@@ -25,7 +25,7 @@ class LiabilityDateAdditionalInfoCleanupSpec extends SpecBase {
 
   "cleanup" should {
     "return a registrationAdditionalInfo with liableForPreviousYears set to None" in forAll {
-      additionalInfo: RegistrationAdditionalInfo =>
+      (additionalInfo: RegistrationAdditionalInfo) =>
         dataCleanup.cleanup(additionalInfo) shouldBe additionalInfo.copy(liableForPreviousYears = None)
     }
   }

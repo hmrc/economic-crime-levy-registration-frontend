@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Amendment
 import uk.gov.hmrc.economiccrimelevyregistration.models.{EntityType, GetSubscriptionResponse, Registration, RegistrationAdditionalInfo}
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class AmendRegistrationStartISpec extends ISpecBase {
 
@@ -31,13 +32,13 @@ class AmendRegistrationStartISpec extends ISpecBase {
 
       stubAuthorisedWithEclEnrolment()
 
-      val registration            = random[Registration]
+      val registration            = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           registrationType = Some(Amendment),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val getSubscriptionResponse = random[GetSubscriptionResponse]
+      val getSubscriptionResponse = arbitrary[GetSubscriptionResponse].sample.get
 
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubUpsertRegistrationWithoutRequestMatching(registration)

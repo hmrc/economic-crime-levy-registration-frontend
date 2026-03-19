@@ -29,6 +29,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalError
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AuditService, LocalDateService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityBeforeCurrentYearView
+import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 
@@ -115,7 +117,7 @@ class LiabilityBeforeCurrentYearControllerSpec extends SpecBase {
         }
     }
 
-    "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
+    "return a Bad Request with form errors when invalid data is submitted" in forAll { (registration: Registration) =>
       new TestContext(registration) {
         val result: Future[Result]        =
           controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))

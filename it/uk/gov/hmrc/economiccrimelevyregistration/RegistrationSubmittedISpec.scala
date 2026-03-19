@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{LiabilityYear, Registration, RegistrationAdditionalInfo, SessionKeys}
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -32,10 +33,10 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the registration submitted HTML view when all required details are present" in {
       stubAuthorisedWithEclEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
       val email          = alphaNumericString
-      val liabilityYear  = random[LiabilityYear]
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val liabilityYear  = arbitrary[LiabilityYear].sample.get
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
       stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -48,7 +49,7 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
           .withSession(
             SessionKeys.firstContactEmail       -> email,
             SessionKeys.liabilityYear           -> liabilityYear.asString,
-            SessionKeys.registeringForCurrentFY -> random[Boolean].toString
+            SessionKeys.registeringForCurrentFY -> arbitrary[Boolean].sample.get.toString
           )
       )
 
@@ -57,10 +58,10 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
     }
 
     "respond with 303 status and answers are invalid view when the first contact email address is missing from the session data" in {
-      val registration  = random[Registration]
-      val liabilityYear = random[LiabilityYear]
+      val registration  = arbitrary[Registration].sample.get
+      val liabilityYear = arbitrary[LiabilityYear].sample.get
 
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubAuthorisedWithEclEnrolment()
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -79,10 +80,11 @@ class RegistrationSubmittedISpec extends ISpecBase with AuthorisedBehaviour {
     }
 
     "respond with 303 status and answers are invalid view when the liability year is missing from the session data" in {
-      val registration = random[Registration]
+      val registration = arbitrary[Registration].sample.get
       val email        = alphaNumericString
 
-      val additionalInfo = random[RegistrationAdditionalInfo].copy(eclReference = Some(testEclRegistrationReference))
+      val additionalInfo =
+        arbitrary[RegistrationAdditionalInfo].sample.get.copy(eclReference = Some(testEclRegistrationReference))
 
       stubAuthorisedWithEclEnrolment()
       stubGetRegistrationWithEmptyAdditionalInfo(registration)

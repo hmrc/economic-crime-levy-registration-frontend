@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.scalacheck.Gen
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
@@ -9,6 +8,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -24,12 +25,12 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       "respond with 200 status and the UK revenue view" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -49,13 +50,13 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
       s"save the UK revenue then redirect to the liability before current year page if the amount due is more than 0 in $mode" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
         val ukRevenue      = revenueGen.sample.get
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration.copy(relevantAp12Months = Some(true)))
@@ -99,9 +100,9 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
     s"save the UK revenue then redirect to the liable for previous year page if the amount due is 0 in $mode" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration = random[Registration]
+      val registration = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           internalId = testInternalId,
           relevantApRevenue = Some(randomApRevenue())
         )
@@ -113,7 +114,7 @@ class UkRevenueISpec extends ISpecBase with AuthorisedBehaviour {
         relevantApRevenue = Some(ukRevenue),
         revenueMeetsThreshold = Some(false)
       )
-      val additionalInfo      = random[RegistrationAdditionalInfo]
+      val additionalInfo      = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
 

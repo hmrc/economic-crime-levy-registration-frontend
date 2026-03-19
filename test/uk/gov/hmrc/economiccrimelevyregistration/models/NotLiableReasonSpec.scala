@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.models
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.libs.json._
 import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.NotLiableReason
 import uk.gov.hmrc.economiccrimelevyregistration.models.audit.NotLiableReason._
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class NotLiableReasonSpec extends SpecBase {
 

@@ -31,6 +31,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataRetrievalErro
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.LiabilityDatePageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.{LocalDateService, RegistrationAdditionalInfoService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.LiabilityDateView
+import org.mockito.Mockito.{reset, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -73,7 +75,7 @@ class LiabilityDateControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK with form not populated because of additional information is missing" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         new TestContext(registration, None) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 

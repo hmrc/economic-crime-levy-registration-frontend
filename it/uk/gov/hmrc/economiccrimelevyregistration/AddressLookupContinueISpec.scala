@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -8,6 +7,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, EclAddress, EntityType, NormalMode, Registration, RegistrationAdditionalInfo}
 import uk.gov.hmrc.economiccrimelevyregistration.models.addresslookup.AlfAddressData
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
+
 class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
 
   val journeyId: String = "test-journey-id"
@@ -20,17 +22,17 @@ class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
     "retrieve the ALF address data, update the registration with the address and continue the registration journey" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
-      val alfAddressData = random[AlfAddressData]
+      val alfAddressData = arbitrary[AlfAddressData].sample.get
 
       val updatedRegistration = registration.copy(contactAddress =
         Some(
@@ -71,17 +73,17 @@ class AddressLookupContinueISpec extends ISpecBase with AuthorisedBehaviour {
     "retrieve the ALF address data, update the registration with the address and go to check your answers page" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
 
-      val alfAddressData = random[AlfAddressData]
+      val alfAddressData = arbitrary[AlfAddressData].sample.get
 
       val updatedRegistration = registration.copy(contactAddress =
         Some(

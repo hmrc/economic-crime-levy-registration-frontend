@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -8,6 +7,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.organisationNameMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class PartnershipNameISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -18,12 +19,12 @@ class PartnershipNameISpec extends ISpecBase with AuthorisedBehaviour {
       "respond with 200 status and the partnership name HTML view" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -45,13 +46,13 @@ class PartnershipNameISpec extends ISpecBase with AuthorisedBehaviour {
       "save the provided partnership name then redirect to the business sector page" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration    = random[Registration]
+        val registration    = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
         val partnershipName = stringsWithMaxLength(organisationNameMaxLength).sample.get
-        val additionalInfo  = random[RegistrationAdditionalInfo]
+        val additionalInfo  = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)

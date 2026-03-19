@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import com.github.tomakehurst.wiremock.client.WireMock.{postRequestedFor, urlEqualTo, verify}
 import org.scalacheck.Arbitrary
 import org.scalatest.concurrent.Eventually.eventually
@@ -14,6 +13,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models._
 import uk.gov.hmrc.economiccrimelevyregistration.models.email.{RegistrationSubmittedEmailParameters, RegistrationSubmittedEmailRequest}
 import uk.gov.hmrc.economiccrimelevyregistration.models.errors.DataValidationError
 import uk.gov.hmrc.economiccrimelevyregistration.views.ViewUtils
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import java.time.{LocalDate, ZoneOffset}
 
@@ -25,14 +26,14 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     "respond with 200 status and the Check your answers HTML view when the registration data is valid" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           registrationType = Some(Amendment),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val errors         = random[DataValidationError]
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val errors         = arbitrary[DataValidationError].sample.get
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -51,13 +52,13 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
     "redirect to the journey recovery page when the registration data is invalid" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val errors         = random[DataValidationError]
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val errors         = arbitrary[DataValidationError].sample.get
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -90,15 +91,15 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
   private def testOnSubmit(entityType: EntityType, expectedRedirectUrl: String): Unit = {
     stubAuthorisedWithNoGroupEnrolment()
 
-    val registration      = random[Registration]
+    val registration      = arbitrary[Registration].sample.get
       .copy(
-        entityType = Some(random[EntityType]),
+        entityType = Some(arbitrary[EntityType].sample.get),
         relevantApRevenue = Some(randomApRevenue())
       )
-    val eclReference      = random[String]
-    val contactDetails    = random[ContactDetails]
-    val firstContactName  = random[String]
-    val firstContactEmail = random[String]
+    val eclReference      = arbitrary[String].sample.get
+    val contactDetails    = arbitrary[ContactDetails].sample.get
+    val firstContactName  = arbitrary[String].sample.get
+    val firstContactEmail = arbitrary[String].sample.get
 
     val registrationWithOneContact = registration.copy(
       contacts = Contacts(
@@ -111,7 +112,7 @@ class CheckYourAnswersISpec extends ISpecBase with AuthorisedBehaviour {
       registrationType = Some(Initial)
     )
 
-    val additionalInfo = random[RegistrationAdditionalInfo]
+    val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
     stubGetRegistrationAdditionalInfo(additionalInfo)
 

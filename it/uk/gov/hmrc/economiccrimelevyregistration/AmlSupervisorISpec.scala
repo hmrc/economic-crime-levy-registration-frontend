@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.scalacheck.Gen
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
@@ -12,6 +11,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.{Finan
 import uk.gov.hmrc.economiccrimelevyregistration.models._
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.prop.TableFor2
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -32,12 +33,12 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       "respond with 200 status and the AML supervisor HTML view" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -61,16 +62,16 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       s"$mode save the selected option then redirect to the correct page when the answer is either HMRC or another professional body for $registrationType registration type" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val carriedOutAmlRegulatedActivityInCurrentFy = random[Boolean]
+        val carriedOutAmlRegulatedActivityInCurrentFy = arbitrary[Boolean].sample.get
         val registration                              =
-          random[Registration]
+          arbitrary[Registration].sample.get
             .copy(
-              entityType = Some(random[EntityType]),
+              entityType = Some(arbitrary[EntityType].sample.get),
               relevantApRevenue = Some(randomApRevenue())
             )
             .copy(carriedOutAmlRegulatedActivityInCurrentFy = Some(carriedOutAmlRegulatedActivityInCurrentFy))
         val validRegistration                         = registration.copy(registrationType = Some(registrationType))
-        val additionalInfo                            = random[RegistrationAdditionalInfo]
+        val additionalInfo                            = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
 
@@ -123,14 +124,14 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       s"$mode save the selected option then redirect to the register with GC page when the answer is GC for $registrationType registration type" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
             internalId = testInternalId,
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue()),
             registrationType = Some(registrationType)
           )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
 
@@ -156,9 +157,9 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
       s"$mode save the selected option then redirect to the register with FCA page when the answer is FCA for $registrationType registration type" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration = random[Registration]
+        val registration = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             internalId = testInternalId,
             registrationType = Some(registrationType),
             relevantApRevenue = Some(randomApRevenue())
@@ -166,7 +167,7 @@ class AmlSupervisorISpec extends ISpecBase with AuthorisedBehaviour {
 
         val amlSupervisor  =
           AmlSupervisor(FinancialConductAuthority, None)
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)

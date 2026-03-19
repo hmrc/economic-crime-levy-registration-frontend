@@ -31,6 +31,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, N
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.DoYouHaveCrnPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.DoYouHaveCrnView
+import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 
@@ -64,14 +66,15 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
   }
 
   "onPageLoad" should {
-    "return OK and the correct view when no answer has already been provided" in forAll { registration: Registration =>
-      new TestContext(registration.copy(optOtherEntityJourneyData = None)) {
-        val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
+    "return OK and the correct view when no answer has already been provided" in forAll {
+      (registration: Registration) =>
+        new TestContext(registration.copy(optOtherEntityJourneyData = None)) {
+          val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
-        status(result) shouldBe OK
+          status(result) shouldBe OK
 
-        contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
-      }
+          contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString
+        }
     }
 
     "populate the view correctly when the question has previously been answered" in forAll {
@@ -131,7 +134,7 @@ class DoYouHaveCrnControllerSpec extends SpecBase {
         }
     }
 
-    "return a Bad Request with form errors when invalid data is submitted" in forAll { registration: Registration =>
+    "return a Bad Request with form errors when invalid data is submitted" in forAll { (registration: Registration) =>
       new TestContext(registration) {
         val result: Future[Result]        = controller.onSubmit(NormalMode)(fakeRequest.withFormUrlEncodedBody(("value", "")))
         val formWithErrors: Form[Boolean] = form.bind(Map("value" -> ""))

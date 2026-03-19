@@ -30,7 +30,7 @@ trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Genera
   def fieldThatBindsValidData(form: Form[_], fieldName: String, validDataGenerator: Gen[String]): Unit =
     "bind" should {
       "bind valid data" in {
-        forAll(validDataGenerator -> "validDataItem") { dataItem: String =>
+        forAll(validDataGenerator -> "validDataItem") { (dataItem: String) =>
           val result = form.bind(Map(fieldName -> dataItem)).apply(fieldName)
           result.value.value shouldBe dataItem
           result.errors      shouldBe empty
@@ -54,7 +54,7 @@ trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Genera
   def stripValue(form: Form[_], fieldName: String, validDataGenerator: Gen[String]): Unit =
     "bind" should {
       "remove leading and trailing spaces" in {
-        forAll(validDataGenerator -> "validDataItem") { dataItem: String =>
+        forAll(validDataGenerator -> "validDataItem") { (dataItem: String) =>
           val expectedValue  = removeCommas(dataItem)
           val dataWithSpaces = "  " + dataItem + "  "
           val result         = form.bind(Map(fieldName -> dataWithSpaces))
@@ -67,7 +67,7 @@ trait FieldBehaviours extends FormSpec with ScalaCheckPropertyChecks with Genera
   def removeAllWhitespace(form: Form[_], fieldName: String, validDataGenerator: Gen[String]): Unit =
     "bind" should {
       "remove all whitespace" in {
-        forAll(validDataGenerator -> "validDataItem") { dataItem: String =>
+        forAll(validDataGenerator -> "validDataItem") { (dataItem: String) =>
           val expectedValue  = removeCommas(dataItem)
           val dataWithSpaces = "  " + dataItem.mkString(" ") + "  "
           val result         = form.bind(Map(fieldName -> dataWithSpaces))

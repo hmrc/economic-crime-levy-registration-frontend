@@ -56,8 +56,8 @@
     (eclReferenceForStartLink, registrationTypeForTopBanner) match {
         case (Some(reference), Some(Amendment)) => Some(AmendRegistrationStartController.onPageLoad(reference).url)
         case (_, Some(DeRegistration)) => Some(uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes.DeregisterStartController.onPageLoad().url)
-        case _ => Some(StartController.onPageLoad.url)
-    }
+        case _ => Some(StartController.onPageLoad().url)
+}
 }
 @head = {
     <link rel="stylesheet" href="@{
@@ -116,7 +116,7 @@
     pageTitle = Some(pageTitle),
     serviceURLs = ServiceURLs(
         serviceUrl = startServiceUrl,
-        signOutUrl = if(showSignOut) Some(SignOutController.signOut.url) else None,
+        signOutUrl = if(showSignOut) Some(SignOutController.signOut().url) else None,
     ),
     isWelshTranslationAvailable = isWelshTranslationAvailable.getOrElse(appConfig.languageTranslationEnabled),
     templateOverrides = TemplateOverrides(

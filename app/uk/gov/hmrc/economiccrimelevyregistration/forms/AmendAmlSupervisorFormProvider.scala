@@ -36,7 +36,7 @@ class AmendAmlSupervisorFormProvider extends Mappings {
         Other.toString,
         Forms.text.verifying("amlSupervisor.selectFromList.error", appConfig.amlProfessionalBodySupervisors.contains(_))
       )
-    )(AmlSupervisor.apply)(AmlSupervisor.unapply)
+    )(AmlSupervisor.apply)(a => Some((a.supervisorType, a.otherProfessionalBody)))
   )
 
 }

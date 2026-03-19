@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -8,6 +7,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.charityRegistrationNumberMaxLength
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -19,12 +20,12 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
     "respond with 200 status and the charity registration number HTML view" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -46,12 +47,12 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
 
       val charityNumber = stringsWithMaxLength(charityRegistrationNumberMaxLength).sample.get
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -85,14 +86,14 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
       val charityNumber = stringsWithMaxLength(charityRegistrationNumberMaxLength).sample.get
       val data          = OtherEntityJourneyData.empty().copy(isCtUtrPresent = None)
 
-      val registration = random[Registration]
+      val registration = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue()),
           optOtherEntityJourneyData = Some(data)
         )
 
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -118,17 +119,17 @@ class CharityRegistrationNumberISpec extends ISpecBase with AuthorisedBehaviour 
       stubAuthorisedWithNoGroupEnrolment()
 
       val charityNumber  = stringsWithMaxLength(charityRegistrationNumberMaxLength).sample.get
-      val isCtUtrPresent = random[Boolean]
+      val isCtUtrPresent = arbitrary[Boolean].sample.get
       val data           = OtherEntityJourneyData.empty().copy(isCtUtrPresent = Some(isCtUtrPresent))
 
-      val registration = random[Registration]
+      val registration = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue()),
           optOtherEntityJourneyData = Some(data)
         )
 
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)

@@ -29,6 +29,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDat
 import uk.gov.hmrc.economiccrimelevyregistration.models.{Registration, RegistrationType, SessionData, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
 import uk.gov.hmrc.http.HttpVerbs.GET
+import org.mockito.Mockito.{reset, times, verify, when}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 

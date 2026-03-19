@@ -290,7 +290,7 @@ abstract class BaseAuthorisedAction @Inject() (
     block: AuthorisedRequest[A] => Future[Result],
     groupId: String,
     eclRegistrationReference: Option[String]
-  ): Future[Result]                                                         =
+  ): Future[Result] =
     if (assistantsAllowed) {
       block(AuthorisedRequest(request, internalId, groupId, eclRegistrationReference))
     } else {

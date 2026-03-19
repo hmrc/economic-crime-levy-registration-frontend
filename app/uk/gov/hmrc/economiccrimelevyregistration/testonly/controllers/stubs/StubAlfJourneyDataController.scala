@@ -67,7 +67,7 @@ class StubAlfJourneyDataController @Inject() (
         alfStubFormData =>
           Redirect(
             s"/register-for-economic-crime-levy/address-lookup-continue/$continueUrl?id=${Base64Utils
-              .base64UrlEncode(alfStubFormData.addressJson)}"
+                .base64UrlEncode(alfStubFormData.addressJson)}"
           )
       )
   }

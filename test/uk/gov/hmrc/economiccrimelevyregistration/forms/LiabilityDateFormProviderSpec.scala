@@ -17,7 +17,7 @@
 package uk.gov.hmrc.economiccrimelevyregistration.forms
 
 import org.mockito.Mockito.when
-import org.mockito.MockitoSugar.mock
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.FormError
 import uk.gov.hmrc.economiccrimelevyregistration.forms.behaviours.DateBehaviours
 import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MinMaxValues
@@ -26,7 +26,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.utils.EclTaxYear
 
 import java.time.LocalDate
 
-class LiabilityDateFormProviderSpec extends DateBehaviours {
+class LiabilityDateFormProviderSpec extends DateBehaviours with MockitoSugar {
 
   val testCurrentDate: LocalDate = LocalDate.of(2024, 10, 1)
 

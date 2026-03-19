@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -9,6 +8,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.forms.mappings.MaxLengths.ctUtr
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType.UnincorporatedAssociation
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class CtUtrPostcodeISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -27,13 +28,13 @@ class CtUtrPostcodeISpec extends ISpecBase with AuthorisedBehaviour {
           .empty()
           .copy(postcode = Some(postcode))
 
-        val registration: Registration = random[Registration]
+        val registration: Registration = arbitrary[Registration].sample.get
           .copy(
             entityType = Some(UnincorporatedAssociation),
             optOtherEntityJourneyData = Some(otherEntityJourneyData)
           )
 
-        val additionalInfo: RegistrationAdditionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo: RegistrationAdditionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
         stubGetRegistrationAdditionalInfo(additionalInfo)
@@ -55,12 +56,12 @@ class CtUtrPostcodeISpec extends ISpecBase with AuthorisedBehaviour {
       "save the postcode then redirect to the business sector controller page" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
             entityType = Some(UnincorporatedAssociation),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         val postcode = stringsWithMaxLength(ctUtrPostcodeLength).sample.get
 

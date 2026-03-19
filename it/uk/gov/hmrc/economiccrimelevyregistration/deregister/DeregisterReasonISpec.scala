@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.deregister
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -24,6 +23,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, NormalMode}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.{DeregisterReason, Deregistration}
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister.routes._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class DeregisterReasonISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -36,7 +37,7 @@ class DeregisterReasonISpec extends ISpecBase with AuthorisedBehaviour {
 
       "respond with 200 status and the deregister reason HTML view" in {
         stubAuthorisedWithEclEnrolment()
-        stubGetDeregistration(random[Deregistration])
+        stubGetDeregistration(arbitrary[Deregistration].sample.get)
 
         val result = callRoute(
           FakeRequest(
@@ -58,8 +59,10 @@ class DeregisterReasonISpec extends ISpecBase with AuthorisedBehaviour {
 
       "save the selected answer then redirect the deregister date page" in {
         stubAuthorisedWithEclEnrolment()
-        val deregistration = random[Deregistration].copy(internalId = testInternalId)
-        val reason         = random[DeregisterReason]
+        val deregistration =
+          arbitrary[Deregistration].sample.get.copy(internalId = testInternalId)
+        val reason         =
+          arbitrary[DeregisterReason].sample.get
         stubGetDeregistration(deregistration)
         stubUpsertDeregistration(deregistration.copy(reason = Some(reason)))
 

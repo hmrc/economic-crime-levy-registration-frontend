@@ -31,6 +31,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.errors.{AddressLookupCon
 import uk.gov.hmrc.economiccrimelevyregistration.models.{NormalMode, Registration}
 import uk.gov.hmrc.economiccrimelevyregistration.services.{AddressLookupService, EclRegistrationService}
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.IsUkAddressView
+import org.mockito.Mockito.when
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 import scala.concurrent.Future
 
@@ -59,7 +61,7 @@ class IsUkAddressControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK and the correct view when no answer has already been provided" in forAll {
       (
-        registration: Registration,
+        registration: Registration
       ) =>
         val updatedRegistration = registration.copy(contactAddressIsUk = None, registrationType = Some(Initial))
 

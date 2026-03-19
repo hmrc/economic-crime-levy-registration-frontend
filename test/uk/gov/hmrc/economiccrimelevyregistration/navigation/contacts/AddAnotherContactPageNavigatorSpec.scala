@@ -21,6 +21,7 @@ import uk.gov.hmrc.economiccrimelevyregistration.base.SpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.{contacts, routes}
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{CheckMode, ContactDetails, EclRegistrationModel, NormalMode, Registration}
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class AddAnotherContactPageNavigatorSpec extends SpecBase {
 
@@ -28,7 +29,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
 
   "navigateInNormalMode" should {
     "return a Call to the second contact name page in NormalMode when the 'Yes' option is selected" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = Some(true)))
 
         pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
@@ -53,7 +54,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
     }
 
     "return a Call to the contact address in the UK page in NormalMode when the 'No' option is selected and there is no valid address present in the GRS journey data" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(
           contacts = registration.contacts.copy(secondContact = Some(false)),
           incorporatedEntityJourneyData = None,
@@ -69,7 +70,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
     }
 
     "return a call to the answers are invalid page when the secondContact is set to None" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = None))
 
         pageNavigator.nextPage(NormalMode, EclRegistrationModel(updatedRegistration)) shouldBe
@@ -79,7 +80,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
 
   "navigateInCheckMode" should {
     "return a Call to the second contact name page when the 'Yes' option is selected and there are no second contact details already present" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(contacts =
           registration.contacts.copy(secondContact = Some(true), secondContactDetails = ContactDetails.empty)
         )
@@ -92,7 +93,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
     }
 
     "return a Call to the check your answers page when the 'Yes' option is selected and there is a second contact name already present" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(contacts =
           registration.contacts.copy(
             secondContact = Some(true),
@@ -107,7 +108,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
     }
 
     "return a Call to the check your answers page when the 'No' option is selected" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(contacts =
           registration.contacts.copy(secondContact = Some(false), secondContactDetails = ContactDetails.empty)
         )
@@ -119,7 +120,7 @@ class AddAnotherContactPageNavigatorSpec extends SpecBase {
     }
 
     "return a call to the answers are invalid page when the secondContact is set to None" in forAll {
-      registration: Registration =>
+      (registration: Registration) =>
         val updatedRegistration = registration.copy(contacts = registration.contacts.copy(secondContact = None))
 
         pageNavigator.nextPage(CheckMode, EclRegistrationModel(updatedRegistration)) shouldBe

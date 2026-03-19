@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.controllers.actions
 
-import org.mockito.MockitoSugar.mock
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.mvc.Result
 import uk.gov.hmrc.economiccrimelevyregistration.models.requests.RegistrationDataRequest
 import uk.gov.hmrc.economiccrimelevyregistration.services.SessionService
@@ -26,10 +27,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class FakeStoreUrlAction @Inject() ()(implicit
   override val executionContext: ExecutionContext
-) extends StoreUrlAction(mock[SessionService]) {
+) extends StoreUrlAction(mock[SessionService])
+    with MockitoSugar {
+
   override protected def refine[A](
     request: RegistrationDataRequest[A]
   ): Future[Either[Result, RegistrationDataRequest[A]]] =
     Future.successful(Right(request))
-
 }

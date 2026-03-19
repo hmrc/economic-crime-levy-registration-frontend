@@ -32,6 +32,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.models.{EclRegistrationModel, N
 import uk.gov.hmrc.economiccrimelevyregistration.navigation.UtrPageNavigator
 import uk.gov.hmrc.economiccrimelevyregistration.services.EclRegistrationService
 import uk.gov.hmrc.economiccrimelevyregistration.views.html.UtrView
+import org.mockito.Mockito.when
+import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
@@ -72,7 +74,7 @@ class UtrControllerSpec extends SpecBase {
         ) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
-          status(result) shouldBe Ok
+          status(result) shouldBe OK
 
           contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString()
         }
@@ -85,7 +87,7 @@ class UtrControllerSpec extends SpecBase {
         ) {
           val result: Future[Result] = controller.onPageLoad(NormalMode)(fakeRequest)
 
-          status(result) shouldBe Ok
+          status(result) shouldBe OK
 
           contentAsString(result) shouldBe view(form, NormalMode)(fakeRequest, messages).toString()
         }

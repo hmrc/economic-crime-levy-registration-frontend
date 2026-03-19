@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.economiccrimelevyregistration.deregister
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -24,6 +23,9 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.{GetSubscriptionResponse, SessionKeys}
 import uk.gov.hmrc.economiccrimelevyregistration.models.deregister.Deregistration
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.deregister._
+import uk.gov.hmrc.economiccrimelevyregistration.base.ItTestData
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -31,17 +33,21 @@ class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
     "respond with 200 status and the start HTML view" in {
       stubAuthorisedWithEclEnrolment()
-      val email                 = random[String]
+      val email                 = ItTestData.email()
       val deregistration        =
-        random[Deregistration].copy(contactDetails = validContactDetails.copy(emailAddress = Some(email)))
+        arbitrary[Deregistration].sample.get.copy(
+          contactDetails = validContactDetails.copy(emailAddress = Some(email))
+        )
       val updatedDeregistration =
         deregistration.copy(
           internalId = testInternalId,
-          contactDetails = deregistration.contactDetails.copy(emailAddress = Some(random[String]))
+          contactDetails = deregistration.contactDetails.copy(
+            emailAddress = Some(arbitrary[String].sample.get)
+          )
         )
       stubGetDeregistration(updatedDeregistration)
       stubDeleteDeregistration()
-      stubGetSubscription(random[GetSubscriptionResponse])
+      stubGetSubscription(arbitrary[GetSubscriptionResponse].sample.get)
 
       val result = callRoute(
         FakeRequest(
@@ -57,17 +63,18 @@ class DeregistrationRequestedISpec extends ISpecBase with AuthorisedBehaviour {
 
   "respond with an error is no email on session" in {
     stubAuthorisedWithEclEnrolment()
-    val email                 = random[String]
+    val email                 = ItTestData.email()
     val deregistration        =
-      random[Deregistration].copy(contactDetails = validContactDetails.copy(emailAddress = Some(email)))
+      arbitrary[Deregistration].sample.get
+        .copy(contactDetails = validContactDetails.copy(emailAddress = Some(email)))
     val updatedDeregistration =
       deregistration.copy(
         internalId = testInternalId,
-        contactDetails = deregistration.contactDetails.copy(emailAddress = Some(random[String]))
+        contactDetails = deregistration.contactDetails.copy(emailAddress = Some(email))
       )
     stubGetDeregistration(updatedDeregistration)
     stubDeleteDeregistration()
-    stubGetSubscription(random[GetSubscriptionResponse])
+    stubGetSubscription(arbitrary[GetSubscriptionResponse].sample.get)
 
     val result = callRoute(
       FakeRequest(

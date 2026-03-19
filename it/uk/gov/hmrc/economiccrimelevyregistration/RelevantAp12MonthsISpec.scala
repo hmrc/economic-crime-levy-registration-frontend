@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import org.scalacheck.Gen
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
@@ -8,6 +7,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
 import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -18,12 +19,12 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
       "respond with 200 status and the relevant AP 12 months view" in {
         stubAuthorisedWithNoGroupEnrolment()
 
-        val registration   = random[Registration]
+        val registration   = arbitrary[Registration].sample.get
           .copy(
-            entityType = Some(random[EntityType]),
+            entityType = Some(arbitrary[EntityType].sample.get),
             relevantApRevenue = Some(randomApRevenue())
           )
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -44,12 +45,12 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option then redirect to the UK revenue page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -71,12 +72,12 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option then redirect to the relevant AP length page when the No option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -102,13 +103,13 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option then redirect to the CheckYourAnswers page when the Yes option is selected and the answer has not changed" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantAp12Months = Some(true),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -133,14 +134,14 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
       val validLength = Gen.chooseNum(apLengthMin, apLengthMax).sample.get
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantAp12Months = Some(false),
           relevantApRevenue = Some(randomApRevenue()),
           relevantApLength = Some(validLength)
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -162,13 +163,13 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option then redirect to the relevant AP length page when the No option is selected and the answer has not changed" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantAp12Months = Some(false),
           relevantApRevenue = Some(randomApRevenue())
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -192,14 +193,14 @@ class RelevantAp12MonthsISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected option then redirect to the relevant AP length page when the No option is selected and the answer has changed" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantAp12Months = Some(true),
           relevantApRevenue = Some(randomApRevenue()),
           relevantApLength = None
         )
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)

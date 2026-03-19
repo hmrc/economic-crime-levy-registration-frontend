@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -8,13 +7,15 @@ import uk.gov.hmrc.economiccrimelevyregistration.controllers.routes
 import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.EntityType._
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
   private def randomRegistration() =
-    random[Registration]
+    arbitrary[Registration].sample.get
       .copy(
-        entityType = Some(random[EntityType]),
+        entityType = Some(arbitrary[EntityType].sample.get),
         optOtherEntityJourneyData = None,
         relevantApRevenue = Some(randomApRevenue())
       )
@@ -27,7 +28,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
         stubAuthorisedWithNoGroupEnrolment()
 
         val registration   = randomRegistration()
-        val additionalInfo = random[RegistrationAdditionalInfo]
+        val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
         stubGetRegistrationAdditionalInfo(additionalInfo)
         stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -50,14 +51,14 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
 
       val registration = randomRegistration()
 
-      val entityType = random[IncorporatedEntityType].entityType
+      val entityType = arbitrary[IncorporatedEntityType].sample.get.entityType
 
       val urlIncorporatedEntityType: String = entityType match {
         case UkLimitedCompany | UnlimitedCompany => "limited-company-journey"
         case RegisteredSociety                   => "registered-society-journey"
         case e                                   => fail(s"$e is not a valid incorporated entity type")
       }
-      val additionalInfo                    = random[RegistrationAdditionalInfo]
+      val additionalInfo                    = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
 
@@ -89,7 +90,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       stubAuthorisedWithNoGroupEnrolment()
 
       val registration   = randomRegistration()
-      val additionalInfo = random[RegistrationAdditionalInfo]
+      val additionalInfo = arbitrary[RegistrationAdditionalInfo].sample.get
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
       stubGetRegistrationWithEmptyAdditionalInfo(registration)
@@ -119,7 +120,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
     stubAuthorisedWithNoGroupEnrolment()
 
     val registration = randomRegistration()
-    val entityType   = random[PartnershipType].entityType
+    val entityType   = arbitrary[PartnershipType].sample.get.entityType
 
     val urlPartnershipType: String = entityType match {
       case GeneralPartnership          => "general-partnership-journey"
@@ -129,7 +130,7 @@ class EntityTypeISpec extends ISpecBase with AuthorisedBehaviour {
       case LimitedLiabilityPartnership => "limited-liability-partnership-journey"
       case e                           => fail(s"$e is not a valid partnership type")
     }
-    val additionalInfo             = random[RegistrationAdditionalInfo]
+    val additionalInfo             = arbitrary[RegistrationAdditionalInfo].sample.get
 
     stubGetRegistrationAdditionalInfo(additionalInfo)
     stubGetRegistrationWithEmptyAdditionalInfo(registration)

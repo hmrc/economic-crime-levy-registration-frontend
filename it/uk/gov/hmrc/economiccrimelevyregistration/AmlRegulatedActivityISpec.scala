@@ -1,6 +1,5 @@
 package uk.gov.hmrc.economiccrimelevyregistration
 
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import play.api.test.FakeRequest
 import uk.gov.hmrc.economiccrimelevyregistration.base.ISpecBase
 import uk.gov.hmrc.economiccrimelevyregistration.behaviours.AuthorisedBehaviour
@@ -9,6 +8,8 @@ import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries._
 import uk.gov.hmrc.economiccrimelevyregistration.models.AmlSupervisorType.Hmrc
 import uk.gov.hmrc.economiccrimelevyregistration.models.RegistrationType.Initial
 import uk.gov.hmrc.economiccrimelevyregistration.models._
+import org.scalacheck.Arbitrary.arbitrary
+import uk.gov.hmrc.economiccrimelevyregistration.generators.CachedArbitraries.given
 
 class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
@@ -19,10 +20,10 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
 
       val expectedTaxYearStart = testEclTaxYear.startYear.toString
       val expectedTaxYearEnd   = testEclTaxYear.finishYear.toString
-      val registration         = random[Registration]
+      val registration         = arbitrary[Registration].sample.get
         .copy(
           internalId = testInternalId,
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
       val additionalInfo       = RegistrationAdditionalInfo(testInternalId)
@@ -53,10 +54,10 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
       val additionalInfo       = RegistrationAdditionalInfo(testInternalId)
 
       stubGetRegistrationAdditionalInfo(additionalInfo)
-      val registration = random[Registration]
+      val registration = arbitrary[Registration].sample.get
         .copy(
           internalId = testInternalId,
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
 
@@ -79,12 +80,12 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected AML regulated activity option then redirect to the AML supervisor page when the Yes option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
           internalId = testInternalId,
           carriedOutAmlRegulatedActivityInCurrentFy = None,
           amlSupervisor = Some(AmlSupervisor(Hmrc, None)),
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           registrationType = Some(Initial),
           relevantApRevenue = Some(randomApRevenue())
         )
@@ -115,11 +116,11 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected AML regulated activity option then redirect to the liable for previous year page when the No option is selected" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
           internalId = testInternalId,
           carriedOutAmlRegulatedActivityInCurrentFy = None,
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           relevantApRevenue = Some(randomApRevenue())
         )
       val additionalInfo = RegistrationAdditionalInfo(testInternalId)
@@ -154,12 +155,12 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected AML regulated activity option then redirect to the Check Your Answers Page when the Yes option is selected and the answer has not changed" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
           internalId = testInternalId,
           carriedOutAmlRegulatedActivityInCurrentFy = Some(true),
           amlSupervisor = Some(AmlSupervisor(Hmrc, None)),
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           registrationType = Some(Initial),
           relevantApRevenue = Some(randomApRevenue())
         )
@@ -188,12 +189,12 @@ class AmlRegulatedActivityISpec extends ISpecBase with AuthorisedBehaviour {
     "save the selected AML regulated activity option then redirect to the LiabilityBeforeCurrentYear page in Check Mode when the No option is selected and the answer has changed" in {
       stubAuthorisedWithNoGroupEnrolment()
 
-      val registration   = random[Registration]
+      val registration   = arbitrary[Registration].sample.get
         .copy(
           internalId = testInternalId,
           carriedOutAmlRegulatedActivityInCurrentFy = Some(true),
           amlSupervisor = Some(AmlSupervisor(Hmrc, None)),
-          entityType = Some(random[EntityType]),
+          entityType = Some(arbitrary[EntityType].sample.get),
           registrationType = Some(Initial),
           relevantApRevenue = Some(randomApRevenue())
         )
