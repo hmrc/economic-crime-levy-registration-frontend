@@ -7,7 +7,7 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"   %% s"bootstrap-frontend-play-$playVersion"            % hmrcBootstrapVersion,
-    "uk.gov.hmrc"   %% s"play-frontend-hmrc-play-$playVersion"            % "13.3.0",
+    "uk.gov.hmrc"   %% s"play-frontend-hmrc-play-$playVersion"            % "13.9.0",
     "uk.gov.hmrc"   %% s"play-conditional-form-mapping-play-$playVersion" % "3.5.0",
     "org.typelevel" %% "cats-core"                                        % "2.13.0",
     "ch.qos.logback"     % "logback-classic"                       % "1.5.27",
