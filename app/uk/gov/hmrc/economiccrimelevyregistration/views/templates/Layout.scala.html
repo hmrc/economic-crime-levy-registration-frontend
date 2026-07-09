@@ -126,7 +126,7 @@
             if(showResearchBanner && appConfig.researchBannerEnabled)
                 Some(UserResearchBanner(
                     language = if(messages.lang.code == "cy") Cy else En,
-                    url = appConfig.researchBannerUrl,
+                    url = if(messages.lang.code == "cy") appConfig.researchBannerCyUrl else appConfig.researchBannerUrl,
                     hideCloseButton = true
                 ))
             else None
