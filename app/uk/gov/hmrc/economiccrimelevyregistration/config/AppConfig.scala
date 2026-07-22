@@ -93,4 +93,9 @@ class AppConfig @Inject() (configuration: Configuration, servicesConfig: Service
 
   val amlProfessionalBodySupervisors: Seq[String] = configuration.get[Seq[String]]("amlProfessionalBodySupervisors")
 
+  val researchBannerEnabled: Boolean = configuration.get[Boolean]("features.researchBannerEnabled")
+
+  val researchBannerUrl: String   = configuration.get[String]("urls.researchBanner")
+  val researchBannerCyUrl: String = configuration.get[String]("urls.researchBannerCy")
+
 }
